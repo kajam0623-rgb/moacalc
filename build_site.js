@@ -6,6 +6,10 @@ const DIR = __dirname, OUT = path.join(DIR, "site");
 fs.mkdirSync(OUT, { recursive: true });
 
 const DOMAIN = "https://gyesangi.vercel.app"; // 배포 도메인
+// ↓ 승인/발급 후 값만 채우고 `node build_site.js` 재실행하면 전 페이지에 자동 적용됩니다.
+const GSC_VERIFY = "";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
+const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890123456)
+const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 
 // --- 원본에서 CSS / 헬퍼 / TOOLS 추출 (재작성 없이 재사용) ---
@@ -183,6 +187,12 @@ dice:[["결과가 정말 무작위인가요?","브라우저 난수를 사용해 
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
+const headExtra = (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
+  (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
+const adSlot = () => ADSENSE_CLIENT
+  ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
+  : `<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>`;
+
 // 전체 도구 내부링크 네비 (모든 페이지에 삽입 → SEO 링크)
 function siteNav(currentId){
   return '<nav class="sitenav">'+CATS.map(function(c){
@@ -212,7 +222,7 @@ function toolPage(t){
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
 <link rel="stylesheet" href="style.css">
-<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}
+<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
 </head><body><div class="wrap">
 <a class="back" href="index.html">← 전체 계산기</a>
 <h1 class="th">${t.name}</h1>
@@ -220,7 +230,7 @@ function toolPage(t){
 <div class="card tool" id="tool"></div>
 <p class="intro">${esc(intro[t.id]||t.desc)}</p>
 ${guideHtml}${faqHtml}
-<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>
+${adSlot()}
 ${siteNav(t.id)}
 <div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
 </div>
@@ -244,13 +254,13 @@ function indexPage(){
 <link rel="canonical" href="${DOMAIN}/">
 <meta property="og:title" content="모아계산기 — 무료 계산기 모음">
 <meta property="og:description" content="${esc(desc)}">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">${headExtra}
 </head><body><div class="wrap">
 <header class="masthead"><div><div class="brand">모아계산기</div><div class="mh-sub">물어보면 다 답하는 만능 계산 콘솔</div></div>
 <div class="meta">2026 KR<br>${meta.length} TOOLS</div></header>
 <div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><div class="mh-sub" style="margin-top:8px">숫자로 답하는 거의 모든 것. 실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지.</div></div>
 ${rows}
-<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>
+${adSlot()}
 <div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
 </div></body></html>`;
 }
@@ -279,6 +289,7 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
+fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
 
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
