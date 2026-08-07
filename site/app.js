@@ -415,7 +415,100 @@ var TOOLS=[
     function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
       var y=d.getFullYear(),ti=tti[((y-4)%12+12)%12],idx=d.getMonth(),st=d.getDate()<cut[idx][0]?cut[(idx+11)%12][1]:cut[idx][1];
       el.querySelector("#rows").innerHTML='<div class="li"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
-    el.querySelector("#d").addEventListener("change",calc);calc();}}
+    el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"installment",cat:"금융",icon:"",name:"카드 할부 수수료",desc:"할부 이자 계산",render:function(el){
+    el.innerHTML='<label>할부 금액</label><div class="field"><input class="money" id="p" value="1,200,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>할부 개월</label><input class="money" id="n" value="6"></div><div><label>수수료율(연 %)</label><input class="money" id="r" value="15"></div></div>'+
+    '<div class="out"><div class="k">총 수수료</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">잔액 기준 월 수수료 합산(근사). 실제는 카드사 방식에 따라 다릅니다.</p>';
+    function calc(){var p=num(el.querySelector("#p").value),n=num(el.querySelector("#n").value)||1,r=num(el.querySelector("#r").value)/100/12;
+      var monthly=p/n,fee=0;for(var i=0;i<n;i++)fee+=(p-monthly*i)*r;
+      el.querySelector("#v").innerHTML=won(fee)+'<small>원</small>';el.querySelector("#s").textContent="월 납부 약 "+won(p/n+fee/n)+"원";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>총 결제액</span><b>'+won(p+fee)+'원</b></div>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"savegoal",cat:"금융",icon:"",name:"목표 저축 계산기",desc:"목표까지 월 저축",render:function(el){
+    el.innerHTML='<label>목표 금액</label><div class="field"><input class="money" id="g" value="10,000,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>기간(개월)</label><input class="money" id="n" value="24"></div><div><label>연이율(%)</label><input class="money" id="r" value="3"></div></div>'+
+    '<div class="out"><div class="k">매달 저축액</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">적금 복리 가정. 이율 0이면 목표÷개월입니다.</p>';
+    function calc(){var g=num(el.querySelector("#g").value),n=num(el.querySelector("#n").value)||1,r=num(el.querySelector("#r").value)/100/12;
+      var pmt=r>0?g*r/(Math.pow(1+r,n)-1):g/n;el.querySelector("#v").innerHTML=won(pmt)+'<small>원</small>';el.querySelector("#s").textContent=n+"개월 · 총 납입 "+won(pmt*n)+"원";}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"realreturn",cat:"금융",icon:"",name:"실질 수익률",desc:"물가 반영 수익",render:function(el){
+    el.innerHTML='<div class="r2"><div><label>명목 수익률(%)</label><input class="money" id="a" value="5"></div><div><label>물가상승률(%)</label><input class="money" id="b" value="3"></div></div>'+
+    '<div class="out"><div class="k">실질 수익률</div><div class="v" id="v">0<small>%</small></div><div class="s">물가를 뺀 진짜 수익</div></div>'+
+    '<p class="note">실질 = (1+명목)/(1+물가) − 1.</p>';
+    function calc(){var a=num(el.querySelector("#a").value)/100,b=num(el.querySelector("#b").value)/100;el.querySelector("#v").innerHTML=(((1+a)/(1+b)-1)*100).toFixed(2)+'<small>%</small>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"incometax",cat:"급여·노동",icon:"",name:"종합소득세 계산기",desc:"과세표준→세액",render:function(el){
+    el.innerHTML='<label>과세표준</label><div class="field"><input class="money" id="b" value="30,000,000"><span class="suf">원</span></div>'+
+    '<div class="out"><div class="k">산출세액 + 지방소득세</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">2026 종합소득세율(6~45%) 기준. 세액공제 전 산출세액입니다.</p>';
+    function calc(){var b=num(el.querySelector("#b").value),t=progressive(b),lt=t*.1;
+      el.querySelector("#v").innerHTML=won(t+lt)+'<small>원</small>';el.querySelector("#s").textContent="실효세율 "+(b?((t+lt)/b*100).toFixed(1):0)+"%";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>산출세액</span><b>'+won(t)+'원</b></div><div class="li"><span>지방소득세 10%</span><b>'+won(lt)+'원</b></div>';}
+    bindMoney(el);el.querySelector("#b")._cb=calc;calc();}},
+
+  {id:"rentyield",cat:"부동산·세금",icon:"",name:"임대수익률 계산기",desc:"연 수익률",render:function(el){
+    el.innerHTML='<label>매매가</label><div class="field"><input class="money" id="p" value="300,000,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>보증금</label><div class="field"><input class="money" id="d" value="30,000,000"></div></div><div><label>월세</label><div class="field"><input class="money" id="m" value="1,000,000"></div></div></div>'+
+    '<div class="out"><div class="k">연 임대수익률</div><div class="v" id="v">0<small>%</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">수익률 = 연 월세 ÷ (매매가 − 보증금) × 100. 세금·관리비 제외.</p>';
+    function calc(){var p=num(el.querySelector("#p").value),d=num(el.querySelector("#d").value),m=num(el.querySelector("#m").value),invest=p-d;
+      el.querySelector("#v").innerHTML=(invest>0?(m*12/invest*100).toFixed(2):0)+'<small>%</small>';el.querySelector("#s").textContent="실투자금 "+won(invest)+"원";}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"weekday",cat:"생활",icon:"",name:"요일 계산기",desc:"그날 무슨 요일",render:function(el){
+    el.innerHTML='<label>날짜</label><input type="date" id="d">'+
+    '<div class="out"><div class="k">요일</div><div class="v" id="v" style="font-size:30px">-</div><div class="s" id="s"></div></div>';
+    el.querySelector("#d").value=new Date().toISOString().slice(0,10);
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
+      el.querySelector("#v").textContent=["일","월","화","수","목","금","토"][d.getDay()]+"요일";
+      el.querySelector("#s").textContent=d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일";}
+    el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"water",cat:"생활",icon:"",name:"물 섭취량 계산기",desc:"하루 권장량",render:function(el){
+    el.innerHTML='<label>체중(kg)</label><div class="field"><input class="money" id="w" value="60"><span class="suf">kg</span></div>'+
+    '<div class="out"><div class="k">하루 권장 수분</div><div class="v" id="v">0<small>ml</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">체중 1kg당 약 33ml 기준. 운동·날씨에 따라 더 필요할 수 있습니다.</p>';
+    function calc(){var w=num(el.querySelector("#w").value),ml=w*33;el.querySelector("#v").innerHTML=Math.round(ml).toLocaleString()+'<small>ml</small>';el.querySelector("#s").textContent="약 "+(ml/1000).toFixed(1)+"L · 물컵 "+Math.round(ml/200)+"잔";}
+    bindMoney(el);el.querySelector("#w")._cb=calc;calc();}},
+
+  {id:"average",cat:"변환·기타",icon:"",name:"평균 계산기",desc:"합·평균·최대최소",render:function(el){
+    el.innerHTML='<label>숫자 (쉼표 또는 줄바꿈)</label><textarea id="t" style="min-height:100px">90, 85, 78, 92, 88</textarea>'+
+    '<div class="rows" id="rows" style="margin-top:14px"></div>';
+    function calc(){var arr=el.querySelector("#t").value.split(/[\s,]+/).map(Number).filter(function(x){return !isNaN(x);});
+      if(!arr.length){el.querySelector("#rows").innerHTML='';return;}var sum=arr.reduce(function(a,b){return a+b;},0);
+      el.querySelector("#rows").innerHTML=[["개수",arr.length],["합계",sum],["평균",(sum/arr.length).toFixed(2)],["최대",Math.max.apply(null,arr)],["최소",Math.min.apply(null,arr)]]
+        .map(function(x){return '<div class="li"><span>'+x[0]+'</span><b>'+Number(x[1]).toLocaleString()+'</b></div>';}).join("");}
+    el.querySelector("#t").addEventListener("input",calc);calc();}},
+
+  {id:"gpa",cat:"생활",icon:"",name:"학점 계산기",desc:"평점(GPA)",render:function(el){
+    el.innerHTML='<label>과목 (학점,평점 — 한 줄에 하나)</label><textarea id="t" style="min-height:110px">3,4.5\n3,4.0\n2,3.5\n3,4.5</textarea>'+
+    '<div class="out"><div class="k">평점 평균(GPA)</div><div class="v" id="v">0</div><div class="s" id="s"></div></div>'+
+    '<p class="note">예: 3학점 과목에서 4.5 → "3,4.5". 4.5 만점 기준.</p>';
+    function calc(){var tc=0,tp=0;el.querySelector("#t").value.split(/\n/).forEach(function(r){var m=r.split(","),c=Number(m[0]),g=Number(m[1]);if(!isNaN(c)&&!isNaN(g)){tc+=c;tp+=c*g;}});
+      el.querySelector("#v").textContent=tc?(tp/tc).toFixed(2):"0";el.querySelector("#s").textContent="총 "+tc+"학점";}
+    el.querySelector("#t").addEventListener("input",calc);calc();}},
+
+  {id:"radix",cat:"변환·기타",icon:"",name:"진법 변환",desc:"2·8·10·16진",render:function(el){
+    el.innerHTML='<div class="r2"><div><label>값</label><input id="v" value="255" style="text-align:left"></div><div><label>입력 진법</label><select id="b"><option value="10">10진</option><option value="2">2진</option><option value="8">8진</option><option value="16">16진</option></select></div></div>'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div>';
+    function calc(){var raw=el.querySelector("#v").value.trim(),b=+el.querySelector("#b").value,n=parseInt(raw,b);
+      if(isNaN(n)){el.querySelector("#rows").innerHTML='<p class="note">유효한 값을 입력하세요.</p>';return;}
+      el.querySelector("#rows").innerHTML=[["2진",n.toString(2)],["8진",n.toString(8)],["10진",n.toString(10)],["16진",n.toString(16).toUpperCase()]]
+        .map(function(x){return '<div class="li"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>';}).join("");}
+    el.querySelector("#v").addEventListener("input",calc);el.querySelector("#b").addEventListener("change",calc);calc();}},
+
+  {id:"dice",cat:"재미·운세",icon:"",name:"동전·주사위",desc:"던지기",render:function(el){
+    el.innerHTML='<div class="out"><div class="k" id="k">결과</div><div class="v" id="v" style="font-size:34px">-</div></div>'+
+    '<div class="r2" style="margin-top:14px"><button id="c" style="padding:13px;border:none;font:inherit;font-weight:800">동전 던지기</button><button id="d" style="padding:13px;border:none;font:inherit;font-weight:800">주사위 굴리기</button></div>';
+    el.querySelector("#c").addEventListener("click",function(){el.querySelector("#k").textContent="동전";el.querySelector("#v").textContent=Math.random()<.5?"앞면":"뒷면";});
+    el.querySelector("#d").addEventListener("click",function(){el.querySelector("#k").textContent="주사위";el.querySelector("#v").textContent=String(Math.floor(Math.random()*6)+1);});}}
   ];
 window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};
 })();
