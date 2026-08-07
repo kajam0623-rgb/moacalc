@@ -288,9 +288,10 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">
 <link rel="stylesheet" href="style.css">${headExtra}
 </head><body><div class="wrap">
-<header class="masthead"><div><div class="brand">모아계산기</div><div class="mh-sub">물어보면 다 답하는 만능 계산 콘솔</div></div>
-<div class="meta">2026 KR<br>${meta.length} TOOLS</div></header>
-<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"><div class="mh-sub" style="margin-top:8px">숫자로 답하는 거의 모든 것. 실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지.</div></div>
+<header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="var(--accent)">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="var(--fun)"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="var(--fun)"/></svg><span class="brand">모아계산기</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
+<h1 class="hero-h">뭐든 물어보세요.<br><b>숫자로 답합니다.</b></h1>
+<div class="hero-sub">실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지, 한 곳에서.</div>
+<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"></div></header>
 ${rows}
 ${adSlot()}
 <div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
