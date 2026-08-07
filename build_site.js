@@ -10,6 +10,7 @@ const DOMAIN = "https://gyesangi.vercel.app"; // 배포 도메인
 const GSC_VERIFY = "";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
 const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890123456)
 const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
+const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 
 // --- 원본에서 CSS / 헬퍼 / TOOLS 추출 (재작성 없이 재사용) ---
@@ -187,7 +188,8 @@ dice:[["결과가 정말 무작위인가요?","브라우저 난수를 사용해 
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-const headExtra = (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
+const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232a44c6'/><text x='16' y='23' font-size='19' fill='%23ffffff' text-anchor='middle' font-family='monospace' font-weight='bold'>%3D</text></svg>">`;
+const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
 const adSlot = () => ADSENSE_CLIENT
   ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
@@ -258,11 +260,14 @@ function indexPage(){
 </head><body><div class="wrap">
 <header class="masthead"><div><div class="brand">모아계산기</div><div class="mh-sub">물어보면 다 답하는 만능 계산 콘솔</div></div>
 <div class="meta">2026 KR<br>${meta.length} TOOLS</div></header>
-<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><div class="mh-sub" style="margin-top:8px">숫자로 답하는 거의 모든 것. 실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지.</div></div>
+<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"><div class="mh-sub" style="margin-top:8px">숫자로 답하는 거의 모든 것. 실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지.</div></div>
 ${rows}
 ${adSlot()}
 <div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
-</div></body></html>`;
+</div>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"모아계산기","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
+<script>var q=document.getElementById("q");if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});</script>
+</body></html>`;
 }
 
 // app.js (공유 로직): 헬퍼 + TOOLS + mountTool
@@ -290,6 +295,7 @@ meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
+fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
 
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
