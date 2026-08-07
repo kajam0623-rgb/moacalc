@@ -508,7 +508,94 @@ var TOOLS=[
     el.innerHTML='<div class="out"><div class="k" id="k">결과</div><div class="v" id="v" style="font-size:34px">-</div></div>'+
     '<div class="r2" style="margin-top:14px"><button id="c" style="padding:13px;border:none;font:inherit;font-weight:800">동전 던지기</button><button id="d" style="padding:13px;border:none;font:inherit;font-weight:800">주사위 굴리기</button></div>';
     el.querySelector("#c").addEventListener("click",function(){el.querySelector("#k").textContent="동전";el.querySelector("#v").textContent=Math.random()<.5?"앞면":"뒷면";});
-    el.querySelector("#d").addEventListener("click",function(){el.querySelector("#k").textContent="주사위";el.querySelector("#v").textContent=String(Math.floor(Math.random()*6)+1);});}}
+    el.querySelector("#d").addEventListener("click",function(){el.querySelector("#k").textContent="주사위";el.querySelector("#v").textContent=String(Math.floor(Math.random()*6)+1);});}},
+
+  {id:"fx",cat:"금융",icon:"",name:"환율 계산기",desc:"수동 환율 변환",render:function(el){
+    el.innerHTML='<label>외화 금액</label><div class="field"><input class="money" id="a" value="100"></div>'+
+    '<label>환율 (1단위 = ? 원)</label><div class="field"><input class="money" id="r" value="1,380"><span class="suf">원</span></div>'+
+    '<div class="out"><div class="k">원화 환산</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">실시간 환율은 은행·포털에서 확인해 입력하세요.</p>';
+    function calc(){var a=num(el.querySelector("#a").value),r=num(el.querySelector("#r").value);
+      el.querySelector("#v").innerHTML=won(a*r)+'<small>원</small>';el.querySelector("#s").textContent="1원 = "+(r?(1/r).toFixed(4):0)+" 외화";}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"simpleinterest",cat:"금융",icon:"",name:"단리 이자 계산기",desc:"원금·이율·기간",render:function(el){
+    el.innerHTML='<label>원금</label><div class="field"><input class="money" id="p" value="10,000,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>연이율(%)</label><input class="money" id="r" value="4"></div><div><label>기간(년)</label><input class="money" id="y" value="3"></div></div>'+
+    '<div class="out"><div class="k">이자 + 원금</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">단리 = 원금 × 이율 × 기간.</p>';
+    function calc(){var p=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100,y=num(el.querySelector("#y").value),i=p*r*y;
+      el.querySelector("#v").innerHTML=won(p+i)+'<small>원</small>';el.querySelector("#s").textContent="이자 "+won(i)+"원";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>원금</span><b>'+won(p)+'원</b></div><div class="li"><span>이자</span><b>'+won(i)+'원</b></div>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"caffeine",cat:"생활",icon:"",name:"카페인 계산기",desc:"하루 섭취량",render:function(el){
+    el.innerHTML='<label>음료</label><select id="d"><option value="150">아메리카노(150mg)</option><option value="75">에스프레소 1샷(75mg)</option><option value="74">캔커피(74mg)</option><option value="100">에너지드링크(100mg)</option><option value="34">콜라(34mg)</option><option value="30">녹차(30mg)</option></select>'+
+    '<label>잔 수</label><div class="field"><input class="money" id="n" value="3"><span class="suf">잔</span></div>'+
+    '<div class="out"><div class="k">하루 카페인</div><div class="v" id="v">0<small>mg</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">성인 권장 한도 하루 400mg, 임산부 200mg.</p>';
+    function calc(){var d=+el.querySelector("#d").value,n=num(el.querySelector("#n").value),mg=d*n;
+      el.querySelector("#v").innerHTML=mg+'<small>mg</small>';el.querySelector("#s").textContent=mg>400?"권장 한도(400mg) 초과":"권장 한도 이내";}
+    bindMoney(el);el.querySelector("#n")._cb=calc;el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"sleep",cat:"생활",icon:"",name:"수면 시간 계산기",desc:"기상 시각 역산",render:function(el){
+    el.innerHTML='<label>기상 시각</label><input type="time" id="t" value="07:00">'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div><p class="note">수면주기 90분 + 입면 14분 기준 추천 취침시각.</p>';
+    function calc(){var p=el.querySelector("#t").value.split(":"),wake=(+p[0]*60+ +p[1]);
+      el.querySelector("#rows").innerHTML=[6,5,4].map(function(c){var m=((wake-(c*90+14))%1440+1440)%1440,h=Math.floor(m/60),mm=m%60;
+        return '<div class="li"><span>'+c+'주기('+(c*1.5)+'시간)</span><b>'+String(h).padStart(2,"0")+":"+String(mm).padStart(2,"0")+'</b></div>';}).join("");}
+    el.querySelector("#t").addEventListener("change",calc);calc();}},
+
+  {id:"datasize",cat:"변환·기타",icon:"",name:"데이터 용량 변환",desc:"KB·MB·GB·TB",render:function(el){
+    el.innerHTML='<label>값</label><div class="field"><input class="money" id="v" value="1024"></div>'+
+    '<label>단위</label><select id="u"><option value="1">KB</option><option value="1024">MB</option><option value="1048576">GB</option><option value="1073741824">TB</option></select>'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div><p class="note">1024 기준(2진).</p>';
+    function calc(){var kb=num(el.querySelector("#v").value)*(+el.querySelector("#u").value);
+      el.querySelector("#rows").innerHTML=[["KB",kb],["MB",kb/1024],["GB",kb/1048576],["TB",kb/1073741824]]
+        .map(function(x){return '<div class="li"><span>'+x[0]+'</span><b>'+(Math.round(x[1]*1000)/1000).toLocaleString()+'</b></div>';}).join("");}
+    bindMoney(el);el.querySelector("#v")._cb=calc;el.querySelector("#u").addEventListener("change",calc);calc();}},
+
+  {id:"roman",cat:"변환·기타",icon:"",name:"로마 숫자 변환",desc:"아라비아→로마",render:function(el){
+    el.innerHTML='<label>숫자 (1~3999)</label><div class="field"><input class="money" id="n" value="2026"></div>'+
+    '<div class="out"><div class="k">로마 숫자</div><div class="v" id="v" style="font-size:30px">-</div></div>';
+    function calc(){var n=num(el.querySelector("#n").value);if(n<1||n>3999){el.querySelector("#v").textContent="1~3999";return;}
+      var map=[[1000,"M"],[900,"CM"],[500,"D"],[400,"CD"],[100,"C"],[90,"XC"],[50,"L"],[40,"XL"],[10,"X"],[9,"IX"],[5,"V"],[4,"IV"],[1,"I"]],s="";
+      map.forEach(function(m){while(n>=m[0]){s+=m[1];n-=m[0];}});el.querySelector("#v").textContent=s;}
+    bindMoney(el);el.querySelector("#n")._cb=calc;calc();}},
+
+  {id:"agekind",cat:"생활",icon:"",name:"나이 종류 변환",desc:"만·세는·연 나이",render:function(el){
+    el.innerHTML='<label>생년월일</label><input type="date" id="d" value="1995-05-05">'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div><p class="note">2023년 6월부터 법적 나이는 만 나이입니다.</p>';
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;var now=new Date(),Y=now.getFullYear(),y=d.getFullYear();
+      var man=Y-y-((now.getMonth()<d.getMonth()||(now.getMonth()===d.getMonth()&&now.getDate()<d.getDate()))?1:0);
+      el.querySelector("#rows").innerHTML='<div class="li"><span>만 나이</span><b>'+man+'세</b></div><div class="li"><span>세는 나이</span><b>'+(Y-y+1)+'세</b></div><div class="li"><span>연 나이</span><b>'+(Y-y)+'세</b></div>';}
+    el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"calorie",cat:"생활",icon:"",name:"운동 칼로리 소모",desc:"운동·시간·체중",render:function(el){
+    el.innerHTML='<label>운동</label><select id="m"><option value="3.5">걷기</option><option value="8">달리기</option><option value="6">자전거</option><option value="7">수영</option><option value="6">등산</option><option value="5">웨이트</option></select>'+
+    '<div class="r2"><div><label>체중(kg)</label><input class="money" id="w" value="65"></div><div><label>시간(분)</label><input class="money" id="t" value="30"></div></div>'+
+    '<div class="out"><div class="k">소모 칼로리</div><div class="v" id="v">0<small>kcal</small></div><div class="s">MET × 체중 × 시간(근사)</div></div>';
+    function calc(){var met=+el.querySelector("#m").value,w=num(el.querySelector("#w").value),t=num(el.querySelector("#t").value)/60;
+      el.querySelector("#v").innerHTML=Math.round(met*w*t*1.05)+'<small>kcal</small>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});el.querySelector("#m").addEventListener("change",calc);calc();}},
+
+  {id:"bmr",cat:"생활",icon:"",name:"기초대사량(BMR)",desc:"하루 소모 칼로리",render:function(el){
+    el.innerHTML='<div class="r2"><div><label>성별</label><select id="g"><option value="m">남</option><option value="f">여</option></select></div><div><label>나이</label><input class="money" id="a" value="30"></div></div>'+
+    '<div class="r2"><div><label>키(cm)</label><input class="money" id="h" value="170"></div><div><label>몸무게(kg)</label><input class="money" id="w" value="65"></div></div>'+
+    '<div class="out"><div class="k">기초대사량</div><div class="v" id="v">0<small>kcal</small></div><div class="s" id="s"></div></div>'+
+    '<p class="note">Mifflin-St Jeor 공식. 활동대사량은 BMR×1.4~1.7.</p>';
+    function calc(){var g=el.querySelector("#g").value,a=num(el.querySelector("#a").value),h=num(el.querySelector("#h").value),w=num(el.querySelector("#w").value);
+      var bmr=10*w+6.25*h-5*a+(g==="m"?5:-161);el.querySelector("#v").innerHTML=Math.round(bmr)+'<small>kcal</small>';el.querySelector("#s").textContent="활동 보통 시 약 "+Math.round(bmr*1.55)+"kcal/일";}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});el.querySelector("#g").addEventListener("change",calc);calc();}},
+
+  {id:"randnum",cat:"재미·운세",icon:"",name:"랜덤 숫자",desc:"범위 지정 추첨",render:function(el){
+    el.innerHTML='<div class="r2"><div><label>최소</label><input class="money" id="a" value="1"></div><div><label>최대</label><input class="money" id="b" value="100"></div></div>'+
+    '<label>뽑을 개수</label><div class="field"><input class="money" id="n" value="1"></div>'+
+    '<button id="btn" style="margin-top:12px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">뽑기</button>'+
+    '<div class="out" style="margin-top:14px"><div class="k">결과</div><div class="v" id="v" style="font-size:26px">-</div></div>';
+    function go(){var a=num(el.querySelector("#a").value),b=num(el.querySelector("#b").value),n=Math.max(1,num(el.querySelector("#n").value)),r=[];
+      for(var i=0;i<n;i++)r.push(Math.floor(Math.random()*(b-a+1))+a);el.querySelector("#v").textContent=r.join(", ");}
+    bindMoney(el);el.querySelector("#btn").addEventListener("click",go);go();}}
   ];
 window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};
 })();
