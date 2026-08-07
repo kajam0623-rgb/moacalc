@@ -1,3 +1,3 @@
 User-agent: *
 Allow: /
-Sitemap: https://moacalc.vercel.app/sitemap.xml
+Sitemap: https://gyesangi.vercel.app/sitemap.xml

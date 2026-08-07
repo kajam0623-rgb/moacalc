@@ -5,7 +5,7 @@ const fs = require("fs"), path = require("path");
 const DIR = __dirname, OUT = path.join(DIR, "site");
 fs.mkdirSync(OUT, { recursive: true });
 
-const DOMAIN = "https://moacalc.vercel.app"; // 배포 도메인
+const DOMAIN = "https://gyesangi.vercel.app"; // 배포 도메인
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 
 // --- 원본에서 CSS / 헬퍼 / TOOLS 추출 (재작성 없이 재사용) ---

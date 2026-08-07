@@ -2,3 +2,5 @@ node_modules/
 .vercel/
 *.zip
 _*.png
+
+.vercel
