@@ -179,14 +179,14 @@ var TOOLS=[
       el.querySelector("#v").innerHTML=won(f)+'<small>원</small>';el.querySelector("#s").textContent=won(p*r/100)+"원 할인";}
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
-  {id:"lotto",cat:"재미",icon:"🍀",name:"로또 번호 생성기",desc:"행운의 6자리",render:function(el){
+  {id:"lotto",cat:"재미·운세",icon:"🍀",name:"로또 번호 생성기",desc:"행운의 6자리",render:function(el){
     el.innerHTML='<div class="out"><div class="k">이번 주 행운 번호</div><div class="chips" id="c" style="justify-content:center"></div></div>'+
     '<button id="b" style="margin-top:14px;width:100%;padding:14px;border:none;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer">다시 뽑기</button>';
     function gen(){var s=new Set();while(s.size<6)s.add(Math.floor(Math.random()*45)+1);
       el.querySelector("#c").innerHTML=[...s].sort(function(a,b){return a-b;}).map(function(n){return '<span class="chip" style="min-width:42px;text-align:center">'+n+'</span>';}).join("");}
     el.querySelector("#b").addEventListener("click",gen);gen();}},
 
-  {id:"draw",cat:"재미",icon:"🎲",name:"랜덤 뽑기",desc:"추첨·순서 정하기",render:function(el){
+  {id:"draw",cat:"재미·운세",icon:"🎲",name:"랜덤 뽑기",desc:"추첨·순서 정하기",render:function(el){
     el.innerHTML='<label>후보(줄바꿈 또는 쉼표로 구분)</label><textarea id="t" style="min-height:100px">철수\n영희\n민수\n지영</textarea>'+
     '<div class="r2" style="margin-top:12px"><div><label>몇 명 뽑기</label><input class="money" id="n" value="1"></div><div style="display:flex;align-items:flex-end"><button id="b" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--accent);color:#fff;font:inherit;font-weight:800;cursor:pointer">뽑기</button></div></div>'+
     '<div class="out" id="o" style="display:none"><div class="k">당첨</div><div class="v" id="v" style="font-size:26px"></div></div>';
@@ -350,7 +350,72 @@ var TOOLS=[
     function calc(){var c=num(el.querySelector("#c").value),p=num(el.querySelector("#p").value),day=c/20*p;
       el.querySelector("#v").innerHTML=won(day*3650)+'<small>원</small>';el.querySelector("#s").textContent="하루 "+won(day)+"원";
       el.querySelector("#rows").innerHTML='<div class="li"><span>월</span><b>'+won(day*30)+'원</b></div><div class="li"><span>1년</span><b>'+won(day*365)+'원</b></div>';}
-    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"ladder",cat:"재미·운세",icon:"",name:"사다리타기",desc:"공평하게 정하기",render:function(el){
+    el.innerHTML='<label>참가자 (줄바꿈)</label><textarea id="p" style="min-height:78px">철수\n영희\n민수\n지영</textarea>'+
+    '<label>결과 (줄바꿈·같은 개수)</label><textarea id="r" style="min-height:78px">청소\n설거지\n빨래\n꽝</textarea>'+
+    '<button id="b" style="margin-top:12px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">사다리 타기</button>'+
+    '<div id="out" style="margin-top:16px"></div>';
+    function go(){
+      var P=el.querySelector("#p").value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean);
+      var R=el.querySelector("#r").value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean);
+      var n=P.length;if(n<2||R.length<n){el.querySelector("#out").innerHTML='<p class="note">참가자·결과를 2개 이상, 같은 수로 입력하세요.</p>';return;}
+      var rows=Math.max(6,n*2),W=Math.min(70,320/n),H=26,rungs=[];
+      for(var y=1;y<rows;y++){var used={};for(var x=0;x<n-1;x++){if(Math.random()<0.4&&!used[x-1]){rungs.push([x,y]);used[x]=1;}}}
+      var end=[];for(var i=0;i<n;i++){var c=i;for(var y2=1;y2<rows;y2++){
+        if(rungs.some(function(g){return g[1]===y2&&g[0]===c-1;}))c--;
+        else if(rungs.some(function(g){return g[1]===y2&&g[0]===c;}))c++;}end.push(c);}
+      var sw=(n-1)*W+40,sh=(rows-1)*H+20,s='<svg viewBox="0 0 '+sw+' '+sh+'" style="width:100%;max-width:'+sw+'px" stroke="currentColor" fill="none">';
+      for(var x2=0;x2<n;x2++)s+='<line x1="'+(20+x2*W)+'" y1="10" x2="'+(20+x2*W)+'" y2="'+(sh-10)+'" stroke-opacity=".35"/>';
+      rungs.forEach(function(g){var yy=10+g[1]*H;s+='<line x1="'+(20+g[0]*W)+'" y1="'+yy+'" x2="'+(20+(g[0]+1)*W)+'" y2="'+yy+'" stroke="#e6b25a" stroke-width="2.5"/>';});
+      s+='</svg>';
+      el.querySelector("#out").innerHTML=s+'<div class="rows">'+P.map(function(name,i){return '<div class="li"><span>'+name+'</span><b>'+R[end[i]]+'</b></div>';}).join("")+'</div>';}
+    el.querySelector("#b").addEventListener("click",go);go();}},
+
+  {id:"anniversary",cat:"생활",icon:"",name:"기념일 계산기",desc:"사귄 날부터 D일",render:function(el){
+    el.innerHTML='<label>시작일 (사귄 날 등)</label><input type="date" id="d">'+
+    '<div class="out"><div class="k">오늘로</div><div class="v" id="v">0<small>일째</small></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">시작일을 1일째로 계산합니다.</p>';
+    el.querySelector("#d").value=new Date(Date.now()-100*864e5).toISOString().slice(0,10);
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
+      var days=Math.floor((Date.now()-d)/864e5)+1;el.querySelector("#v").innerHTML=days.toLocaleString()+'<small>일째</small>';
+      el.querySelector("#rows").innerHTML=[100,200,300,365,500,1000,2000].map(function(m){var t=new Date(d.getTime()+(m-1)*864e5);
+        return '<div class="li"><span>'+(m===365?"1주년":m+"일")+'</span><b>'+t.toISOString().slice(0,10)+'</b></div>';}).join("");}
+    el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"fire",cat:"금융",icon:"",name:"FIRE 은퇴 계산기",desc:"경제적 자유까지",render:function(el){
+    el.innerHTML='<label>연 지출</label><div class="field"><input class="money" id="e" value="30,000,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>현재 자산</label><div class="field"><input class="money" id="a" value="50,000,000"></div></div><div><label>연 저축액</label><div class="field"><input class="money" id="sv" value="20,000,000"></div></div></div>'+
+    '<label>연 수익률(%)</label><div class="field"><input class="money" id="r" value="6"><span class="suf">%</span></div>'+
+    '<div class="out"><div class="k">경제적 자유까지</div><div class="v" id="v">-</div><div class="s" id="ss"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">목표=연지출×25 (4% 인출률). 매년 저축+수익 재투자 가정.</p>';
+    function calc(){var ex=num(el.querySelector("#e").value),a=num(el.querySelector("#a").value),sv=num(el.querySelector("#sv").value),r=num(el.querySelector("#r").value)/100;
+      var goal=ex*25,y=0,bal=a;while(bal<goal&&y<80){bal=bal*(1+r)+sv;y++;}
+      el.querySelector("#v").innerHTML=bal>=goal?(y+'<small>년 뒤</small>'):'80년+';
+      el.querySelector("#ss").textContent=bal>=goal?("약 "+(new Date().getFullYear()+y)+"년 달성"):"저축·수익률을 높여보세요";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>목표 자산(연지출×25)</span><b>'+won(goal)+'원</b></div>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(x){x._cb=calc;});calc();}},
+
+  {id:"lottoodds",cat:"재미·운세",icon:"",name:"로또 당첨 확률",desc:"1등 확률·기대값",render:function(el){
+    el.innerHTML='<label>구매 게임 수 (1게임 1,000원)</label><div class="field"><input class="money" id="n" value="5"><span class="suf">게임</span></div>'+
+    '<div class="out"><div class="k">1등 당첨 확률</div><div class="v" id="v" style="font-size:22px">-</div><div class="s" id="s"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">1등 조합 8,145,060분의 1(45C6). 재미로만 보세요.</p>';
+    function calc(){var n=Math.max(1,num(el.querySelector("#n").value)),total=8145060;
+      el.querySelector("#v").textContent="1 / "+Math.round(total/n).toLocaleString();
+      el.querySelector("#s").textContent=(n/total*100).toFixed(6)+"%";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>구매 비용</span><b>'+won(n*1000)+'원</b></div><div class="li"><span>벼락 맞을 확률(약)</span><b>1 / 1,000,000</b></div>';}
+    bindMoney(el);el.querySelector("#n")._cb=calc;calc();}},
+
+  {id:"zodiac",cat:"재미·운세",icon:"",name:"띠·별자리",desc:"생년월일로 확인",render:function(el){
+    el.innerHTML='<label>생년월일</label><input type="date" id="d" value="1995-05-05">'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div>';
+    var tti=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
+    var cut=[[20,"물병"],[19,"물고기"],[21,"양"],[20,"황소"],[21,"쌍둥이"],[22,"게"],[23,"사자"],[23,"처녀"],[23,"천칭"],[23,"전갈"],[22,"사수"],[22,"염소"]];
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
+      var y=d.getFullYear(),ti=tti[((y-4)%12+12)%12],idx=d.getMonth(),st=d.getDate()<cut[idx][0]?cut[(idx+11)%12][1]:cut[idx][1];
+      el.querySelector("#rows").innerHTML='<div class="li"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
+    el.querySelector("#d").addEventListener("change",calc);calc();}}
   ];
 window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};
 })();

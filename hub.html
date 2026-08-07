@@ -1,13 +1,15 @@
 <style>
   :root{
-    --bg:#e6e7ea;--surface:#ffffff;--surface-2:#f1f2f5;--ink:#171a1f;--muted:#6b7178;
-    --line:#d8dce1;--line-2:#b6bdc5;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
+    --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;
+    --line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
+    --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;
     --mono:ui-monospace,"SF Mono","Menlo",Consolas,"Roboto Mono",monospace;
   }
-  @media (prefers-color-scheme:dark){:root{--bg:#121418;--surface:#191c21;--surface-2:#20242b;--ink:#e9ebef;
-    --muted:#8a9199;--line:#282d34;--line-2:#3b424a;--accent:#8ea0ff;--accent-weak:#181e2f;--accent-ink:#a3b0ff;--deduct:#e0776d;}}
-  :root[data-theme="light"]{--bg:#e6e7ea;--surface:#fff;--surface-2:#f1f2f5;--ink:#171a1f;--muted:#6b7178;--line:#d8dce1;--line-2:#b6bdc5;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;}
-  :root[data-theme="dark"]{--bg:#121418;--surface:#191c21;--surface-2:#20242b;--ink:#e9ebef;--muted:#8a9199;--line:#282d34;--line-2:#3b424a;--accent:#8ea0ff;--accent-weak:#181e2f;--accent-ink:#a3b0ff;--deduct:#e0776d;}
+  @media (prefers-color-scheme:dark){:root{--bg:#171a21;--surface:#1f232c;--surface-2:#2a2f3a;--ink:#eff2f7;
+    --muted:#9aa4b0;--line:#333a45;--line-2:#4c5461;--accent:#93a4ff;--accent-weak:#1c2436;--accent-ink:#b6bfff;--deduct:#ef8b7d;
+    --fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}}
+  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
+  :root[data-theme="dark"]{--bg:#171a21;--surface:#1f232c;--surface-2:#2a2f3a;--ink:#eff2f7;--muted:#9aa4b0;--line:#333a45;--line-2:#4c5461;--accent:#93a4ff;--accent-weak:#1c2436;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}
   *{margin:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;}
   .wrap{max-width:640px;margin:0 auto;padding:30px 20px 60px;}
@@ -48,7 +50,33 @@
   .tool select{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:11px 12px;text-align:left;font-family:inherit;font-weight:600;font-size:15px;appearance:none;}
   .tool textarea{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:12px;text-align:left;font-family:inherit;font-weight:500;font-size:15px;min-height:140px;resize:vertical;}
   .tool select:focus,.tool textarea:focus{outline:none;border-color:var(--accent);}
-  .tool button{border-radius:3px !important;font-family:inherit !important;letter-spacing:.02em;}
+  .tool button{border-radius:4px !important;font-family:inherit !important;letter-spacing:.02em;color:var(--on-accent) !important;background:var(--accent) !important;cursor:pointer;}
+  .tool button:hover{filter:brightness(1.06);}
+  /* 콘솔 히어로 (컨셉) */
+  .console{border:1.5px solid var(--ink);border-radius:6px;background:var(--surface);padding:18px 18px 20px;margin:18px 0 6px;box-shadow:5px 5px 0 var(--line-2);}
+  .console .prompt{font-family:var(--mono);font-size:13px;color:var(--accent-ink);margin-bottom:10px;}
+  .console .prompt b{color:var(--fun-ink);}
+  .console .cur{display:inline-block;width:8px;height:15px;background:var(--fun);vertical-align:-2px;margin-left:2px;animation:blink 1.1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.console .cur{animation:none;}}
+  .console .search{margin:0;border-bottom-color:var(--line-2);font-family:var(--mono);}
+  /* 운세·재미 카테고리 강조 */
+  .grp.fun .cat span{color:var(--fun-ink);}
+  .grp.fun .cat::after{background:var(--fun);opacity:.5;}
+  .grp.fun .idxrow:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
+  .grp.fun .idxrow:hover .ix-n,.grp.fun .idxrow:hover .ix-a{color:var(--fun-ink);}
+  /* SEO 본문: 가이드 + FAQ */
+  .guide{margin-top:20px;padding-top:18px;border-top:1px solid var(--line);}
+  .guide h2,.faq h2{font-size:15px;font-weight:800;letter-spacing:-.3px;margin-bottom:10px;}
+  .guide ul{list-style:none;padding:0;}
+  .guide li{position:relative;padding:6px 0 6px 18px;font-size:13.5px;color:var(--ink);line-height:1.7;}
+  .guide li::before{content:"—";position:absolute;left:0;color:var(--accent);}
+  .faq{margin-top:22px;}
+  .faq details{border-bottom:1px dotted var(--line-2);padding:12px 2px;}
+  .faq summary{font-weight:700;font-size:14px;cursor:pointer;list-style:none;color:var(--ink);}
+  .faq summary::-webkit-details-marker{display:none;}
+  .faq summary::before{content:"Q  ";font-family:var(--mono);color:var(--accent-ink);font-weight:700;}
+  .faq p{font-size:13.5px;color:var(--muted);line-height:1.75;margin-top:8px;padding-left:20px;}
   .r2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   .out{border-top:2px solid var(--ink);border-bottom:3px double var(--ink);padding:13px 2px;margin-top:22px;}
   .out .k{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
@@ -250,14 +278,14 @@
       el.querySelector("#v").innerHTML=won(f)+'<small>원</small>';el.querySelector("#s").textContent=won(p*r/100)+"원 할인";}
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
-  {id:"lotto",cat:"재미",icon:"🍀",name:"로또 번호 생성기",desc:"행운의 6자리",render:function(el){
+  {id:"lotto",cat:"재미·운세",icon:"🍀",name:"로또 번호 생성기",desc:"행운의 6자리",render:function(el){
     el.innerHTML='<div class="out"><div class="k">이번 주 행운 번호</div><div class="chips" id="c" style="justify-content:center"></div></div>'+
     '<button id="b" style="margin-top:14px;width:100%;padding:14px;border:none;border-radius:12px;background:var(--accent);color:#fff;font:inherit;font-weight:800;font-size:16px;cursor:pointer">다시 뽑기</button>';
     function gen(){var s=new Set();while(s.size<6)s.add(Math.floor(Math.random()*45)+1);
       el.querySelector("#c").innerHTML=[...s].sort(function(a,b){return a-b;}).map(function(n){return '<span class="chip" style="min-width:42px;text-align:center">'+n+'</span>';}).join("");}
     el.querySelector("#b").addEventListener("click",gen);gen();}},
 
-  {id:"draw",cat:"재미",icon:"🎲",name:"랜덤 뽑기",desc:"추첨·순서 정하기",render:function(el){
+  {id:"draw",cat:"재미·운세",icon:"🎲",name:"랜덤 뽑기",desc:"추첨·순서 정하기",render:function(el){
     el.innerHTML='<label>후보(줄바꿈 또는 쉼표로 구분)</label><textarea id="t" style="min-height:100px">철수\n영희\n민수\n지영</textarea>'+
     '<div class="r2" style="margin-top:12px"><div><label>몇 명 뽑기</label><input class="money" id="n" value="1"></div><div style="display:flex;align-items:flex-end"><button id="b" style="width:100%;padding:13px;border:none;border-radius:11px;background:var(--accent);color:#fff;font:inherit;font-weight:800;cursor:pointer">뽑기</button></div></div>'+
     '<div class="out" id="o" style="display:none"><div class="k">당첨</div><div class="v" id="v" style="font-size:26px"></div></div>';
@@ -421,17 +449,83 @@
     function calc(){var c=num(el.querySelector("#c").value),p=num(el.querySelector("#p").value),day=c/20*p;
       el.querySelector("#v").innerHTML=won(day*3650)+'<small>원</small>';el.querySelector("#s").textContent="하루 "+won(day)+"원";
       el.querySelector("#rows").innerHTML='<div class="li"><span>월</span><b>'+won(day*30)+'원</b></div><div class="li"><span>1년</span><b>'+won(day*365)+'원</b></div>';}
-    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
+
+  {id:"ladder",cat:"재미·운세",icon:"",name:"사다리타기",desc:"공평하게 정하기",render:function(el){
+    el.innerHTML='<label>참가자 (줄바꿈)</label><textarea id="p" style="min-height:78px">철수\n영희\n민수\n지영</textarea>'+
+    '<label>결과 (줄바꿈·같은 개수)</label><textarea id="r" style="min-height:78px">청소\n설거지\n빨래\n꽝</textarea>'+
+    '<button id="b" style="margin-top:12px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">사다리 타기</button>'+
+    '<div id="out" style="margin-top:16px"></div>';
+    function go(){
+      var P=el.querySelector("#p").value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean);
+      var R=el.querySelector("#r").value.split(/\n/).map(function(s){return s.trim();}).filter(Boolean);
+      var n=P.length;if(n<2||R.length<n){el.querySelector("#out").innerHTML='<p class="note">참가자·결과를 2개 이상, 같은 수로 입력하세요.</p>';return;}
+      var rows=Math.max(6,n*2),W=Math.min(70,320/n),H=26,rungs=[];
+      for(var y=1;y<rows;y++){var used={};for(var x=0;x<n-1;x++){if(Math.random()<0.4&&!used[x-1]){rungs.push([x,y]);used[x]=1;}}}
+      var end=[];for(var i=0;i<n;i++){var c=i;for(var y2=1;y2<rows;y2++){
+        if(rungs.some(function(g){return g[1]===y2&&g[0]===c-1;}))c--;
+        else if(rungs.some(function(g){return g[1]===y2&&g[0]===c;}))c++;}end.push(c);}
+      var sw=(n-1)*W+40,sh=(rows-1)*H+20,s='<svg viewBox="0 0 '+sw+' '+sh+'" style="width:100%;max-width:'+sw+'px" stroke="currentColor" fill="none">';
+      for(var x2=0;x2<n;x2++)s+='<line x1="'+(20+x2*W)+'" y1="10" x2="'+(20+x2*W)+'" y2="'+(sh-10)+'" stroke-opacity=".35"/>';
+      rungs.forEach(function(g){var yy=10+g[1]*H;s+='<line x1="'+(20+g[0]*W)+'" y1="'+yy+'" x2="'+(20+(g[0]+1)*W)+'" y2="'+yy+'" stroke="#e6b25a" stroke-width="2.5"/>';});
+      s+='</svg>';
+      el.querySelector("#out").innerHTML=s+'<div class="rows">'+P.map(function(name,i){return '<div class="li"><span>'+name+'</span><b>'+R[end[i]]+'</b></div>';}).join("")+'</div>';}
+    el.querySelector("#b").addEventListener("click",go);go();}},
+
+  {id:"anniversary",cat:"생활",icon:"",name:"기념일 계산기",desc:"사귄 날부터 D일",render:function(el){
+    el.innerHTML='<label>시작일 (사귄 날 등)</label><input type="date" id="d">'+
+    '<div class="out"><div class="k">오늘로</div><div class="v" id="v">0<small>일째</small></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">시작일을 1일째로 계산합니다.</p>';
+    el.querySelector("#d").value=new Date(Date.now()-100*864e5).toISOString().slice(0,10);
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
+      var days=Math.floor((Date.now()-d)/864e5)+1;el.querySelector("#v").innerHTML=days.toLocaleString()+'<small>일째</small>';
+      el.querySelector("#rows").innerHTML=[100,200,300,365,500,1000,2000].map(function(m){var t=new Date(d.getTime()+(m-1)*864e5);
+        return '<div class="li"><span>'+(m===365?"1주년":m+"일")+'</span><b>'+t.toISOString().slice(0,10)+'</b></div>';}).join("");}
+    el.querySelector("#d").addEventListener("change",calc);calc();}},
+
+  {id:"fire",cat:"금융",icon:"",name:"FIRE 은퇴 계산기",desc:"경제적 자유까지",render:function(el){
+    el.innerHTML='<label>연 지출</label><div class="field"><input class="money" id="e" value="30,000,000"><span class="suf">원</span></div>'+
+    '<div class="r2"><div><label>현재 자산</label><div class="field"><input class="money" id="a" value="50,000,000"></div></div><div><label>연 저축액</label><div class="field"><input class="money" id="sv" value="20,000,000"></div></div></div>'+
+    '<label>연 수익률(%)</label><div class="field"><input class="money" id="r" value="6"><span class="suf">%</span></div>'+
+    '<div class="out"><div class="k">경제적 자유까지</div><div class="v" id="v">-</div><div class="s" id="ss"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">목표=연지출×25 (4% 인출률). 매년 저축+수익 재투자 가정.</p>';
+    function calc(){var ex=num(el.querySelector("#e").value),a=num(el.querySelector("#a").value),sv=num(el.querySelector("#sv").value),r=num(el.querySelector("#r").value)/100;
+      var goal=ex*25,y=0,bal=a;while(bal<goal&&y<80){bal=bal*(1+r)+sv;y++;}
+      el.querySelector("#v").innerHTML=bal>=goal?(y+'<small>년 뒤</small>'):'80년+';
+      el.querySelector("#ss").textContent=bal>=goal?("약 "+(new Date().getFullYear()+y)+"년 달성"):"저축·수익률을 높여보세요";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>목표 자산(연지출×25)</span><b>'+won(goal)+'원</b></div>';}
+    bindMoney(el);el.querySelectorAll("input.money").forEach(function(x){x._cb=calc;});calc();}},
+
+  {id:"lottoodds",cat:"재미·운세",icon:"",name:"로또 당첨 확률",desc:"1등 확률·기대값",render:function(el){
+    el.innerHTML='<label>구매 게임 수 (1게임 1,000원)</label><div class="field"><input class="money" id="n" value="5"><span class="suf">게임</span></div>'+
+    '<div class="out"><div class="k">1등 당첨 확률</div><div class="v" id="v" style="font-size:22px">-</div><div class="s" id="s"></div></div>'+
+    '<div class="rows" id="rows"></div><p class="note">1등 조합 8,145,060분의 1(45C6). 재미로만 보세요.</p>';
+    function calc(){var n=Math.max(1,num(el.querySelector("#n").value)),total=8145060;
+      el.querySelector("#v").textContent="1 / "+Math.round(total/n).toLocaleString();
+      el.querySelector("#s").textContent=(n/total*100).toFixed(6)+"%";
+      el.querySelector("#rows").innerHTML='<div class="li"><span>구매 비용</span><b>'+won(n*1000)+'원</b></div><div class="li"><span>벼락 맞을 확률(약)</span><b>1 / 1,000,000</b></div>';}
+    bindMoney(el);el.querySelector("#n")._cb=calc;calc();}},
+
+  {id:"zodiac",cat:"재미·운세",icon:"",name:"띠·별자리",desc:"생년월일로 확인",render:function(el){
+    el.innerHTML='<label>생년월일</label><input type="date" id="d" value="1995-05-05">'+
+    '<div class="rows" id="rows" style="margin-top:16px"></div>';
+    var tti=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
+    var cut=[[20,"물병"],[19,"물고기"],[21,"양"],[20,"황소"],[21,"쌍둥이"],[22,"게"],[23,"사자"],[23,"처녀"],[23,"천칭"],[23,"전갈"],[22,"사수"],[22,"염소"]];
+    function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
+      var y=d.getFullYear(),ti=tti[((y-4)%12+12)%12],idx=d.getMonth(),st=d.getDate()<cut[idx][0]?cut[(idx+11)%12][1]:cut[idx][1];
+      el.querySelector("#rows").innerHTML='<div class="li"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
+    el.querySelector("#d").addEventListener("change",calc);calc();}}
   ];
 
   // ---------- router / render ----------
-  var CATS=["급여·노동","금융","부동산·세금","생활","변환·기타","재미"];
+  var CATS=["급여·노동","금융","부동산·세금","생활","변환·기타","재미·운세"];
   function home(){
-    var h='<header class="masthead"><div><div class="brand">모아계산기</div><div class="mh-sub">필요한 계산, 한 장에서 끝냅니다</div></div>'+
-      '<div class="meta">2026 KR<br>34 TOOLS</div></header>'+
-      '<input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만나이…">';
+    var h='<header class="masthead"><div><div class="brand">모아계산기</div><div class="mh-sub">물어보면 다 답하는 만능 계산 콘솔</div></div>'+
+      '<div class="meta">2026 KR<br>'+TOOLS.length+' TOOLS</div></header>'+
+      '<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div>'+
+      '<input class="search" id="q" placeholder="연봉 실수령, 퇴직금, 대출이자, 만 나이…"></div>';
     CATS.forEach(function(c){var items=TOOLS.filter(function(t){return t.cat===c;});
-      h+='<section class="grp" data-cat="'+c+'"><div class="cat"><span>'+c+'</span></div>'+items.map(function(t){
+      h+='<section class="grp'+(c==="재미·운세"?" fun":"")+'" data-cat="'+c+'"><div class="cat"><span>'+c+'</span></div>'+items.map(function(t){
         return '<a class="idxrow" href="#'+t.id+'" data-name="'+t.name+'"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';}).join("")+'</section>';});
     h+='<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>'+
       '<div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>';
