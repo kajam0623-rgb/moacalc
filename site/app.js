@@ -6,6 +6,47 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     el.addEventListener("input",function(){var v=num(this.value);this.value=v?v.toLocaleString("ko-KR"):"";if(this._cb)this._cb();});});}
   function on(root,sel,cb){root.querySelectorAll(sel).forEach(function(el){el.addEventListener("input",cb);el.addEventListener("change",cb);el._cb=cb;});}
 
+  // ---------- 만세력 엔진 (태양황경 기반: 절기·연/월/일/시주) ----------
+  var SJ_S=["갑","을","병","정","무","기","경","신","임","계"],SJ_SH="甲乙丙丁戊己庚辛壬癸";
+  var SJ_B=["자","축","인","묘","진","사","오","미","신","유","술","해"],SJ_BH="子丑寅卯辰巳午未申酉戌亥";
+  var SJ_TTI=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
+  var SJ_ES=[0,0,1,1,2,2,3,3,4,4]; // 천간 오행(목화토금수=01234)
+  var SJ_EB=[4,2,0,0,2,1,1,2,3,3,2,4]; // 지지 오행
+  var SJ_BMAIN=[9,5,0,1,4,2,3,5,6,7,4,8]; // 지지 본기 천간 idx
+  var SJ_EL=["목","화","토","금","수"];
+  function sjJdn(y,m,d){var a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;
+    return d+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045;}
+  function sjSunLong(jd){ // 태양 시황경(도) — Meeus 근사, 오차 <0.01°
+    var T=(jd-2451545)/36525,L0=280.46646+36000.76983*T+0.0003032*T*T,
+        M=(357.52911+35999.05029*T-0.0001537*T*T)*Math.PI/180,
+        C=(1.914602-0.004817*T)*Math.sin(M)+(0.019993-0.000101*T)*Math.sin(2*M)+0.000289*Math.sin(3*M);
+    return ((L0+C)%360+360)%360;}
+  function sjJdKST(y,mo,d,h,mi){return sjJdn(y,mo,d)-0.5+((h||0)+(mi||0)/60-9)/24;} // KST→UT 포함 JD
+  function sjIpchun(y){ // y년 입춘(황경 315°) KST JD
+    var lo=sjJdKST(y,2,2,0,0),hi=sjJdKST(y,2,7,0,0);
+    for(var i=0;i<40;i++){var mid=(lo+hi)/2,L=sjSunLong(mid);
+      (L>=315&&L<330)?hi=mid:lo=mid;}
+    return (lo+hi)/2;}
+  function sjPillars(y,mo,d,h,mi,tCorr){
+    var jd=sjJdKST(y,mo,d,h,mi);
+    var yy=(jd<sjIpchun(y))?y-1:y;
+    var ys=((yy-4)%10+10)%10,yb=((yy-4)%12+12)%12;
+    var L=sjSunLong(jd),mIdx=Math.floor((((L-315)%360)+360)%360/30); // 0=인월
+    var ms=((ys%5)*2+2+mIdx)%10,mb=(mIdx+2)%12;
+    var dayN=sjJdn(y,mo,d),di=(((dayN-2451545)+54)%60+60)%60,ds=di%10,db=di%12;
+    var hp=null;
+    if(h!=null&&h!==""){var t=(+h)*60+(+mi||0)-(tCorr?30:0),t2=((t%1440)+1440)%1440;
+      var hIdx=Math.floor(((t2+60)%1440)/120);
+      // 23시 이후 야자시: 일주는 당일 유지(만세력 표준), 시지=자
+      hp={s:((ds%5)*2+hIdx)%10,b:hIdx};}
+    return {y:{s:ys,b:yb},m:{s:ms,b:mb},d:{s:ds,b:db},h:hp,tti:SJ_TTI[yb]};}
+  function sjTenGod(dayS,otherS){ // 십성
+    var de=SJ_ES[dayS],oe=SJ_ES[otherS],same=(dayS%2)===(otherS%2);
+    if(de===oe)return same?"비견":"겁재";
+    if((de+1)%5===oe)return same?"식신":"상관";
+    if((de+2)%5===oe)return same?"편재":"정재";
+    if((oe+2)%5===de)return same?"편관":"정관";
+    return same?"편인":"정인";}
   // ---------- shared: 소득세(간이 연 결정세액 근사) ----------
   function earnedDed(g){if(g<=5e6)return g*0.7;if(g<=15e6)return 3.5e6+(g-5e6)*0.4;if(g<=45e6)return 7.5e6+(g-15e6)*0.15;if(g<=1e8)return 12e6+(g-45e6)*0.05;return 14.75e6+(g-1e8)*0.02;}
   function progressive(b){if(b<=14e6)return b*0.06;if(b<=50e6)return .84e6+(b-14e6)*.15;if(b<=88e6)return 6.24e6+(b-50e6)*.24;if(b<=15e7)return 15.36e6+(b-88e6)*.35;if(b<=3e8)return 37.06e6+(b-15e7)*.38;if(b<=5e8)return 94.06e6+(b-3e8)*.4;if(b<=1e9)return 174.06e6+(b-5e8)*.42;return 384.06e6+(b-1e9)*.45;}
@@ -595,7 +636,106 @@ var TOOLS=[
     '<div class="out" style="margin-top:14px"><div class="k">결과</div><div class="v" id="v" style="font-size:26px">-</div></div>';
     function go(){var a=num(el.querySelector("#a").value),b=num(el.querySelector("#b").value),n=Math.max(1,num(el.querySelector("#n").value)),r=[];
       for(var i=0;i<n;i++)r.push(Math.floor(Math.random()*(b-a+1))+a);el.querySelector("#v").textContent=r.join(", ");}
-    bindMoney(el);el.querySelector("#btn").addEventListener("click",go);go();}}
+    bindMoney(el);el.querySelector("#btn").addEventListener("click",go);go();}},
+
+  {id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력",desc:"오행·십성·대운",render:function(el){
+    var ILGAN=["큰 나무처럼 곧고 리더십이 있으며, 한번 정한 방향은 쉽게 꺾지 않습니다. 명분과 원칙을 중시해 주변의 신뢰를 얻지만, 융통성이 부족하다는 말을 들을 수 있습니다.",
+    "덩굴과 화초처럼 유연하고 섬세하며, 환경 적응력이 뛰어납니다. 부드러워 보여도 생존력이 강하고, 실속을 챙기는 현실 감각이 좋습니다.",
+    "태양처럼 밝고 정열적이며 숨김이 없습니다. 사람을 모으는 힘이 있고 표현력이 뛰어나지만, 감정 기복이 드러나기 쉽습니다.",
+    "촛불·달빛처럼 따뜻하고 헌신적이며 관찰력이 섬세합니다. 겉은 온화하지만 속에는 강한 집념이 있습니다.",
+    "큰 산처럼 묵직하고 신용을 중시합니다. 쉽게 흔들리지 않는 중심이 있어 사람들이 기대지만, 변화에는 느린 편입니다.",
+    "밭의 흙처럼 포용력이 있고 성실합니다. 남을 돌보고 기르는 힘이 좋으며, 실무와 관리에 강합니다.",
+    "무쇠·바위처럼 결단력 있고 의리를 중시합니다. 맺고 끊음이 분명해 승부처에 강하지만, 직설적인 말로 오해를 살 수 있습니다.",
+    "보석·바늘처럼 예리하고 완벽주의적입니다. 미적 감각과 분석력이 뛰어나며, 세련된 것을 추구합니다.",
+    "바다·큰 강처럼 스케일이 크고 지혜롭습니다. 자유를 사랑하고 포용력이 있지만, 한곳에 매이는 것을 싫어합니다.",
+    "이슬비·시냇물처럼 총명하고 감수성이 풍부합니다. 스며드는 힘으로 사람의 마음을 읽어내며, 아이디어가 많습니다."];
+    var ELDESC={목:"성장·시작·인정",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·저장"};
+    var today=new Date();
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    '<div><label>태어난 시각</label><select id="t"><option value="">모름 (시주 제외)</option>'+
+    Array.from({length:24},function(_,i){return '<option value="'+i+'"'+(i===12?' selected':'')+'>'+String(i).padStart(2,"0")+"시</option>";}).join("")+'</select></div></div>'+
+    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m">남</option><option value="f">여</option></select></div>'+
+    '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">명식 뽑기</button>'+
+    '<div id="out"></div>';
+    function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
+    function cell(s,b,ds){var tg1=s===null?"":sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
+      return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
+      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div></div>';}
+    function go(){
+      var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
+      var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
+      if(!y){return;}
+      var p=sjPillars(y,mo,d,h,0,corr),ds=p.d.s;
+      // 오행 카운트
+      var cnt=[0,0,0,0,0],chars=[p.y,p.m,p.d];if(p.h)chars.push(p.h);
+      chars.forEach(function(c){cnt[SJ_ES[c.s]]++;cnt[SJ_EB[c.b]]++;});
+      var tot=cnt.reduce(function(a,b){return a+b;},0);
+      var mx=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],mn=SJ_EL[cnt.indexOf(Math.min.apply(null,cnt))];
+      // 대운
+      var fwd=(p.y.s%2===0)===male,jd0=sjJdKST(y,mo,d,h==null?12:h,0);
+      function mIdxOf(jd){return Math.floor((((sjSunLong(jd)-315)%360)+360)%360/30);}
+      var base=mIdxOf(jd0),days=30;
+      for(var t=0.25;t<=32;t+=0.25){if(mIdxOf(jd0+(fwd?t:-t))!==base){days=t;break;}}
+      var su=Math.max(1,Math.min(10,Math.round(days/3)));
+      var m60=0;for(var k=0;k<60;k++)if(k%10===p.m.s&&k%12===p.m.b){m60=k;break;}
+      var duHtml="";for(var i2=1;i2<=8;i2++){var kk=((m60+(fwd?i2:-i2))%60+60)%60;
+        duHtml+='<div class="sj-du"><div class="a">'+(su+10*(i2-1))+'세</div><div class="g">'+SJ_SH[kk%10]+SJ_BH[kk%12]+'</div></div>';}
+      // 십성 카운트
+      var tgc={};chars.forEach(function(c,ci){if(!(ci===2)){var g1=sjTenGod(ds,c.s);tgc[g1]=(tgc[g1]||0)+1;}var g2=sjTenGod(ds,SJ_BMAIN[c.b]);tgc[g2]=(tgc[g2]||0)+1;});
+      var tgTop=Object.entries(tgc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0]+" "+x[1];}).join(" · ");
+      var cols=[["시주",p.h?cell(p.h.s,p.h.b,ds):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
+                ["일주(나)",cell(p.d.s,p.d.b,ds)],["월주",cell(p.m.s,p.m.b,ds)],["연주",cell(p.y.s,p.y.b,ds)]];
+      el.querySelector("#out").innerHTML=
+        '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>'+
+        '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
+        '<div class="sj-sec"><h3>일간 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'</p></div>'+
+        '<div class="sj-sec"><h3>오행 균형</h3><p>'+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고, '+mn+'('+ELDESC[mn]+')이 상대적으로 약합니다. 강한 기운은 재능이자 과할 때의 그림자이니, 부족한 '+mn+'의 영역을 의식적으로 채우면 균형이 좋아집니다.</p></div>'+
+        '<div class="sj-sec"><h3>십성 분포</h3><p>'+tgTop+' — 일간('+SJ_S[ds]+') 기준 상위 십성입니다. 비견·겁재는 자립심, 식신·상관은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</p></div>'+
+        '<div class="sj-sec"><h3>대운 (10년 주기 · '+(fwd?"순행":"역행")+')</h3><div class="sj-daeun">'+duHtml+'</div></div>'+
+        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';}
+    el.querySelector("#go").addEventListener("click",go);go();}},
+
+  {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"과거·현재·미래 3장",render:function(el){
+    var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
+    ["I","마법사","🎩","의지와 재능이 갖춰진 때. 원하는 것을 현실로 만들 도구가 이미 손안에 있습니다.","재주를 속임수에 쓰거나, 시작만 하고 마무리를 못 하는 산만함."],
+    ["II","여사제","🌙","직관과 내면의 지혜. 서두르지 말고 마음의 소리를 들을 때입니다.","감을 무시한 선택, 혹은 비밀이 드러나며 생기는 혼란."],
+    ["III","여황제","🌾","풍요와 결실, 돌봄의 에너지. 애정과 창조가 무르익습니다.","과보호나 나태함. 편안함에 안주해 성장이 멈출 수 있습니다."],
+    ["IV","황제","👑","질서와 책임, 안정된 기반. 원칙을 세우면 성과가 따라옵니다.","고집과 통제욕. 권위가 소통을 막고 있지 않은지 돌아보세요."],
+    ["V","교황","📜","조언자와 전통의 도움. 검증된 길을 따르는 것이 유리합니다.","형식에 갇힘. 낡은 규칙이 오히려 발목을 잡을 수 있습니다."],
+    ["VI","연인","💞","사랑과 선택의 갈림길. 마음이 향하는 쪽에 답이 있습니다.","가치관의 충돌, 망설임 끝의 후회. 선택을 미루면 더 꼬입니다."],
+    ["VII","전차","🏇","추진력과 승리. 방향만 맞다면 밀어붙일 때입니다.","폭주 또는 방향 상실. 속도보다 핸들을 먼저 잡으세요."],
+    ["VIII","힘","🦁","부드러운 용기와 인내. 힘이 아니라 다정함이 사자를 길들입니다.","자신감 상실이나 감정 폭발. 자기 안의 두려움부터 달래야 합니다."],
+    ["IX","은둔자","🏮","성찰과 내면 탐구의 시간. 잠시 물러나 등불을 밝힐 때입니다.","고립과 단절. 혼자만의 동굴에 너무 오래 머물렀는지도 모릅니다."],
+    ["X","운명의 수레바퀴","🎡","흐름이 바뀌는 전환점. 우연처럼 보이는 기회가 찾아옵니다.","예상 밖의 변수. 흐름에 저항하기보다 유연하게 타는 것이 낫습니다."],
+    ["XI","정의","⚖️","공정한 결과와 균형. 뿌린 대로 거두는 시기입니다.","불공정하거나 치우친 판단. 자기 몫의 책임을 회피하고 있진 않나요."],
+    ["XII","매달린 사람","🙃","관점의 전환과 기다림. 멈춘 것이 아니라 숙성되는 중입니다.","희생만 하는 정체. 의미 없는 버티기라면 내려올 용기도 필요합니다."],
+    ["XIII","죽음","🦋","끝과 새 시작. 낡은 것을 보내야 새것이 들어옵니다.","변화에 대한 저항. 붙잡을수록 이별은 길어집니다."],
+    ["XIV","절제","🕊️","조화와 중용. 서로 다른 것을 섞어 더 나은 것을 만드는 연금술.","과유불급. 어느 한쪽으로 쏠린 생활의 균형을 점검하세요."],
+    ["XV","악마","⛓️","강한 유혹과 집착. 끊어야 할 것이 무엇인지 이미 알고 있습니다.","속박에서 벗어날 기회. 사슬은 생각보다 느슨합니다."],
+    ["XVI","탑","🌩️","갑작스러운 붕괴와 충격. 무너진 자리가 진짜 기초를 보여줍니다.","위기의 예감 또는 아슬아슬한 회피. 근본 문제를 미루지 마세요."],
+    ["XVII","별","⭐","희망과 치유. 어둠 뒤에 뜨는 별처럼 조용한 회복이 시작됩니다.","희망을 잃은 상태. 별은 사라진 게 아니라 구름에 가려졌을 뿐입니다."],
+    ["XVIII","달","🌕","불안과 모호함. 확실해질 때까지 큰 결정은 미루는 것이 좋습니다.","안개가 걷히며 진실이 드러납니다. 오해가 풀리는 시기."],
+    ["XIX","태양","☀️","성공과 기쁨, 명료함. 있는 그대로 빛나도 되는 시기입니다.","일시적 구름. 성과가 늦어질 뿐 방향은 틀리지 않았습니다."],
+    ["XX","심판","🎺","부활과 소명. 과거를 정리하고 한 단계 올라설 부름이 옵니다.","과거에 매인 자책. 용서(특히 자신에 대한)가 열쇠입니다."],
+    ["XXI","세계","🌍","완성과 성취. 하나의 사이클이 아름답게 닫힙니다.","마무리 직전의 지연. 마지막 조각 하나만 채우면 됩니다."]];
+    var POS=["과거","현재","미래"];
+    el.innerHTML='<p class="note" style="margin-top:0">마음속으로 질문 하나를 떠올리고, 카드를 차례로 눌러 뒤집으세요.</p>'+
+    '<div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>'+
+    '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">다시 뽑기</button>';
+    var picks;
+    function deal(){
+      var idx=[];while(idx.length<3){var n=Math.floor(Math.random()*22);if(idx.indexOf(n)<0)idx.push(n);}
+      picks=idx.map(function(n){return {c:M[n],rev:Math.random()<0.4};});
+      el.querySelector("#r").innerHTML="";
+      el.querySelector("#b").innerHTML=POS.map(function(p,i){
+        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'"><div class="tr-b">✦</div>'+
+        '<div class="tr-f"><span class="no">'+picks[i].c[0]+'</span><span class="sym" style="display:inline-block'+(picks[i].rev?';transform:rotate(180deg)':'')+'">'+picks[i].c[2]+'</span><span class="nm">'+picks[i].c[1]+'</span>'+(picks[i].rev?'<span class="rv">역방향</span>':'')+'</div></div></div>';}).join("");
+      el.querySelectorAll(".tr-card").forEach(function(card){card.addEventListener("click",function(){
+        if(card.classList.contains("flip"))return;card.classList.add("flip");
+        var i=+card.dataset.i,pk=picks[i];
+        el.querySelector("#r").innerHTML+='<div class="one"><b>'+POS[i]+' — '+pk.c[1]+(pk.rev?" (역방향)":"")+'</b><p>'+(pk.rev?pk.c[4]:pk.c[3])+'</p></div>';});});}
+    el.querySelector("#re").addEventListener("click",deal);deal();}}
   ];
 window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};
 })();
