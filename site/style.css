@@ -32,13 +32,20 @@
   .hero-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center;}
   .hero-wrap.noart{grid-template-columns:1fr;}
   .hero-art{width:100%;display:block;border:1.5px solid var(--ink);border-radius:12px;box-shadow:7px 7px 0 var(--line-2);}
-  @media (max-width:600px){.hero-wrap{grid-template-columns:1fr;}.hero-art{max-height:200px;object-fit:cover;}}
+  @media (max-width:600px){.hero-wrap{grid-template-columns:1fr;}.hero-art{max-height:210px;object-fit:cover;object-position:left center;}}
+  @keyframes heroFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
+  .hero-wrap:not(.noart) .hero-art{animation:rise .55s cubic-bezier(.2,.7,.3,1) .18s both, heroFloat 7s ease-in-out 1.2s infinite;}
+  @media (prefers-reduced-motion:reduce){.hero-wrap .hero-art{animation:none;}}
   .pop{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
   .pop a{border:1px solid var(--line-2);border-radius:100px;padding:7px 15px;font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);background:var(--surface);}
   .pop a:hover{border-color:var(--accent);color:var(--accent-ink);}
   .pop a.f{border-color:var(--fun);color:var(--fun-ink);}
   .pop a.f:hover{background:color-mix(in srgb,var(--fun) 10%,transparent);}
-  .cat-art{width:30px;height:30px;border-radius:8px;border:1px solid var(--line-2);object-fit:cover;flex:0 0 auto;}
+  .cat-art{width:42px;height:42px;border-radius:10px;border:1px solid var(--line-2);object-fit:cover;flex:0 0 auto;transition:transform .25s cubic-bezier(.2,.7,.3,1);}
+  .grp:hover .cat-art{transform:scale(1.12) rotate(-3deg);}
+  .grp.reveal{opacity:0;transform:translateY(14px);}
+  .grp.reveal.in{opacity:1;transform:none;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.7,.3,1);}
+  @media (prefers-reduced-motion:reduce){.grp.reveal{opacity:1;transform:none;}}
   @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
   .hero>*, .hero-wrap>*{animation:rise .55s cubic-bezier(.2,.7,.3,1) both;}
   .hero>*:nth-child(2){animation-delay:.07s;} .hero>*:nth-child(3){animation-delay:.14s;} .hero>*:nth-child(4){animation-delay:.21s;}

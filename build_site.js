@@ -334,7 +334,8 @@ ${adSlot()}
 ${footer}
 </div>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"모아계산기","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
-<script>var q=document.getElementById("q");if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});</script>
+<script>var q=document.getElementById("q");if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;
 }
 
