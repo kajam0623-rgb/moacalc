@@ -239,6 +239,19 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;
 const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232a44c6'/><text x='16' y='23' font-size='19' fill='%23ffffff' text-anchor='middle' font-family='monospace' font-weight='bold'>%3D</text></svg>">`;
 const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
+// 이미지: 리포 루트 img/ → site/img/ 복사. 파일 없으면 onerror로 조용히 숨김.
+const IMG_SRC = path.join(DIR,"img");
+const CAT_IMG = {"급여·노동":"cat-pay","금융":"cat-fin","부동산·세금":"cat-estate","생활":"cat-life","변환·기타":"cat-conv","재미·운세":"cat-fortune"};
+const OG_IMG_TAG = fs.existsSync(path.join(IMG_SRC,"og.png")) ? `<meta property="og:image" content="${DOMAIN}/img/og.png">` : "";
+
+const footer = `<footer class="sfoot">
+<div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="#2A44C6">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="#E6B25A"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="#E6B25A"/></svg>모아계산기</div>
+<p>물어보면 다 답하는 만능 계산 콘솔. 모든 계산과 풀이는 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<div><h4>많이 찾는 도구</h4><a href="salary.html">실수령액 계산기</a><a href="severance.html">퇴직금 계산기</a><a href="loan.html">대출 이자 계산기</a><a href="charcount.html">글자수 세기</a></div>
+<div><h4>운세</h4><a href="saju.html">사주팔자 만세력</a><a href="todayfortune.html">오늘의 운세</a><a href="gunghap.html">궁합 보기</a><a href="tarot.html">타로 카드</a></div>
+</footer>
+<div class="foot">© 2026 모아계산기</div>`;
+
 const adSlot = () => ADSENSE_CLIENT
   ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
   : `<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>`;
@@ -270,7 +283,7 @@ function toolPage(t){
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
+<meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
 </head><body><div class="wrap">
@@ -282,7 +295,7 @@ function toolPage(t){
 ${guideHtml}${faqHtml}
 ${adSlot()}
 ${siteNav(t.id)}
-<div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
+${footer}
 </div>
 <script src="app.js"></script>
 <script>mountTool("${t.id}","tool");</script>
@@ -292,7 +305,7 @@ ${siteNav(t.id)}
 function indexPage(){
   const rows = CATS.map(function(c){
     var items=meta.filter(function(t){return t.cat===c;});
-    return '<section class="grp'+(c==="재미·운세"?" fun":"")+'"><div class="cat"><span>'+c+'</span></div>'+items.map(function(t){
+    return '<section class="grp'+(c==="재미·운세"?" fun":"")+'"><div class="cat"><img class="cat-art" src="img/'+CAT_IMG[c]+'.webp" alt="" loading="lazy" onerror="this.remove()"><span>'+c+'</span></div>'+items.map(function(t){
       return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
     }).join("")+'</section>';
   }).join("");
@@ -303,16 +316,22 @@ function indexPage(){
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${DOMAIN}/">
 <meta property="og:title" content="모아계산기 — 무료 계산기 모음">
-<meta property="og:description" content="${esc(desc)}">
+<meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css">${headExtra}
 </head><body><div class="wrap">
 <header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="var(--accent)">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="var(--fun)"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="var(--fun)"/></svg><span class="brand">모아계산기</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
+<div class="hero-wrap">
+<div>
 <h1 class="hero-h">뭐든 물어보세요.<br><b>숫자로 답합니다.</b></h1>
-<div class="hero-sub">실수령액·퇴직금·대출부터 사다리타기까지 ${meta.length}가지, 한 곳에서.</div>
-<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"></div></header>
+<div class="hero-sub">실수령액·퇴직금·대출부터 사주·타로까지 ${meta.length}가지, 한 곳에서.</div>
+<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"></div>
+<nav class="pop"><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a><a href="charcount.html">글자수</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="todayfortune.html">✦ 오늘운세</a><a class="f" href="tarot.html">✦ 타로</a></nav>
+</div>
+<img class="hero-art" src="img/hero.webp" alt="모아계산기 — 콘솔에 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
+</div></header>
 ${rows}
 ${adSlot()}
-<div class="foot">© 2026 모아계산기 · 모든 계산은 참고용입니다</div>
+${footer}
 </div>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"모아계산기","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
 <script>var q=document.getElementById("q");if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});</script>
@@ -345,6 +364,12 @@ fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
 fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
+// img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)
+if (fs.existsSync(IMG_SRC)) {
+  fs.mkdirSync(path.join(OUT,"img"), { recursive: true });
+  fs.readdirSync(IMG_SRC).forEach(f => fs.copyFileSync(path.join(IMG_SRC,f), path.join(OUT,"img",f)));
+  console.log("   이미지 복사:", fs.readdirSync(IMG_SRC).length, "개");
+}
 
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
