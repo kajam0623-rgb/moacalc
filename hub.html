@@ -971,6 +971,74 @@
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';}
+    el.querySelector("#go").addEventListener("click",go);go();}},
+
+  {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
+    var YR=2026,YS=2,YB=6; // 병오년
+    var TXT={ // 병(丙)이 내 일간에 대해 갖는 십성 → 올해의 큰 흐름
+    "비견":["동료와 경쟁의 해","같은 불이 하나 더 켜지는 해. 내 힘이 커지는 만큼 경쟁자도 선명해집니다. 동업·협업은 역할을 문서로 나누면 길하고, 뭉뚱그리면 다툼이 됩니다.","독립·창업의 기운이 강한 해. 단, 자금은 내 몫을 명확히."],
+    "겁재":["지출 관리의 해","기운은 왕성하나 재물이 새기 쉬운 해. 보증·동업 자금·큰 선심은 상반기엔 특히 신중하게. 대신 사람은 많이 얻습니다.","버는 해가 아니라 지키는 해로 설계하면 연말이 편안합니다."],
+    "식신":["결실과 표현의 해","재능이 수입으로 연결되는 해. 만들고, 쓰고, 발표하는 모든 일에 볕이 듭니다. 건강운도 양호합니다.","미뤄둔 창작·콘텐츠·부업을 시작하기 최적의 해입니다."],
+    "상관":["도전과 변화의 해","틀을 깨는 기운이 강한 해. 이직·전업·새 시도에 유리하나 윗사람·규정과의 마찰은 조심. 말이 재산도 되고 화근도 됩니다.","불만을 기획서로 바꾸면 올해 최고의 무기가 됩니다."],
+    "편재":["큰 기회와 유동성의 해","돈이 크게 들고나는 해. 투자·확장·영업엔 기회가 많지만 욕심의 크기만큼 변동성도 큽니다. 현금 흐름표를 곁에 두세요.","기회는 상반기, 정리는 하반기로 리듬을 타면 좋습니다."],
+    "정재":["안정과 축적의 해","성실이 그대로 쌓이는 해. 연봉·계약·저축 등 확실한 재물에 볕이 듭니다. 한탕보다 복리를 택하세요.","재테크의 기본기를 다지기 가장 좋은 해입니다."],
+    "편관":["시험과 승부의 해","부담스러운 과제가 오지만 통과하면 급이 오르는 해. 건강·과로 관리가 최우선 과제입니다.","피할 수 없는 승부라면 상반기에 정면으로 치르는 편이 낫습니다."],
+    "정관":["명예와 자리의 해","승진·합격·공식 인정운이 밝은 해. 원칙대로 움직일수록 평판이 자산이 됩니다.","이력서·자격·직함 등 공적인 것을 정비하기 좋은 해입니다."],
+    "편인":["공부와 전환의 해","겉보다 속이 자라는 해. 자격증·공부·기획에 유리하고, 결정은 숙성 후에 내리는 게 좋습니다.","혼자 파고드는 시간이 하반기의 반전을 만듭니다."],
+    "정인":["귀인과 문서의 해","어른·스승·기관의 도움이 오는 해. 계약·합격·승인 등 문서운이 밝습니다.","배움에 쓰는 돈이 올해 가장 수익률 높은 투자입니다."]};
+    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">2026 병오년 운세 보기</button>'+
+    '<div id="out"></div>';
+    function go(){
+      var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
+      var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
+      var rel=sjTenGod(me.d.s,YS),T=TXT[rel];
+      var yb=me.y.b,db=me.d.b,notes=[];
+      function relB(b,label){
+        if(b%4===YB%4&&b!==YB)notes.push(label+"가 태세(오화)와 삼합 — 귀인과 협력의 흐름이 힘을 보탭니다.");
+        else if(b+YB===13)notes.push(label+"가 태세와 육합 — 관계운이 유난히 부드러운 해입니다.");
+        else if(Math.abs(b-YB)===6)notes.push(label+"가 태세와 충 — 이동·변동수가 있으니 이사·이직 등 변화를 계획 안으로 끌어오세요.");}
+      relB(yb,"내 띠(연지)");relB(db,"내 일지");
+      var score={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[rel];
+      notes.forEach(function(n){if(n.indexOf("충")>=0)score-=6;else score+=5;});
+      score=Math.max(40,Math.min(97,score));
+      el.querySelector("#out").innerHTML=
+      '<div class="out" style="margin-top:16px"><div class="k">2026 병오년(丙午年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
+      '<div class="v">'+score+'<small>점</small></div><div class="s">올해는 나에게 <b>'+rel+'</b>의 해 — '+T[0]+'</div></div>'+
+      '<div class="sj-sec"><h3>한 해의 큰 흐름</h3><p>'+T[1]+'</p></div>'+
+      '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
+      (notes.length?'<div class="sj-sec"><h3>합·충 포인트</h3><p>'+notes.join(" ")+'</p></div>':"")+
+      '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충으로 푸는 정통 명리 신년운세입니다. 참고용.</p>';}
+    el.querySelector("#go").addEventListener("click",go);go();}},
+
+  {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
+    var CHO=[1,2,2,3,3,4,4,6,2,4,4,6,4,6,3,2,3,4,3];   // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ 근사 획수
+    var CHOs="ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+    var JUNG=[2,3,3,4,2,3,3,4,2,4,5,4,3,2,4,5,4,3,1,2,1]; // ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ
+    var JONG=[0,1,2,3,2,3,4,3,3,5,7,9,9,7,9,10,7,2,4,2,4,1,2,3,3,4,3,4];
+    function strokes(ch){var c=ch.charCodeAt(0);
+      if(c<0xAC00||c>0xD7A3)return 3;
+      var s=c-0xAC00,cho=Math.floor(s/588),jung=Math.floor((s%588)/28),jong=s%28;
+      return CHO[cho]+JUNG[jung]+JONG[jong];}
+    el.innerHTML='<div class="r2"><div><label>이름 1</label><input id="a" value="김철수" style="text-align:left;font-family:inherit"></div>'+
+    '<div><label>이름 2</label><input id="b" value="이영희" style="text-align:left;font-family:inherit"></div></div>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">궁합 계산</button>'+
+    '<div id="out"></div>';
+    function go(){
+      var A=el.querySelector("#a").value.replace(/\s/g,""),B=el.querySelector("#b").value.replace(/\s/g,"");
+      if(!A||!B)return;
+      var mix=[],L=Math.max(A.length,B.length);
+      for(var i=0;i<L;i++){if(A[i])mix.push(strokes(A[i]));if(B[i])mix.push(strokes(B[i]));}
+      var steps=[mix.map(function(x){return x%10;})],cur=steps[0];
+      while(cur.length>2){var nx=[];for(var j=0;j<cur.length-1;j++)nx.push((cur[j]+cur[j+1])%10);steps.push(nx);cur=nx;}
+      var score=cur.length===2?cur[0]*10+cur[1]:cur[0];if(score===0)score=100;
+      var msg=score>=90?"운명이라 불러도 될 점수! 오늘 바로 연락하세요.":score>=75?"아주 잘 어울리는 짝. 함께 있으면 웃음이 끊이지 않습니다.":score>=55?"노력하면 무르익는 궁합. 반은 하늘이, 반은 두 사람이 만듭니다.":score>=35?"밀당이 필요한 사이. 다름이 매력이 될 수도 있어요.":"불꽃 튀는 상극?! 그래서 더 끌리는 법이죠.";
+      var pyramid=steps.map(function(row,ri){return '<div style="text-align:center;font-family:var(--mono);font-size:'+(ri===steps.length-1?'22px;font-weight:800;color:var(--fun)':'14px;color:var(--muted)')+';letter-spacing:8px;margin:4px 0">'+row.join("")+'</div>';}).join("");
+      el.querySelector("#out").innerHTML=
+      '<div class="out" style="margin-top:16px"><div class="k">'+A+' ♥ '+B+'</div><div class="v">'+score+'<small>점</small></div></div>'+
+      '<div class="sj-sec"><h3>획수 피라미드</h3>'+pyramid+'</div>'+
+      '<div class="sj-sec"><h3>풀이</h3><p>'+msg+'</p></div>'+
+      '<p class="note">이름 글자의 획수를 번갈아 놓고 이웃끼리 더하는 전통 이름궁합 놀이입니다. 재미로만 보세요. 진지한 궁합은 사주 궁합 보기를 이용하세요.</p>';}
     el.querySelector("#go").addEventListener("click",go);go();}}
   ];
 
