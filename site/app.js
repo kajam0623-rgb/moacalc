@@ -13,10 +13,37 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var ZO_TRAIT=["재치와 기민함으로 기회를 먼저 잡는 기질","묵묵히 쌓아 끝내 이루는 뚝심","두려움 없이 앞장서는 용기와 카리스마","섬세한 배려와 부드러운 지혜","큰 그림을 그리는 스케일과 존재감","깊이 통찰하고 조용히 움직이는 영민함","자유롭고 활동적인 추진력","온화한 감성과 예술적 감각","영리한 임기응변과 재주","분명한 기준과 성실한 자기관리","의리와 신의로 사람을 얻는 힘","넉넉한 인심과 복을 부르는 여유"];
   function zoCard(b,label){return '<div class="sj-char"><img src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
     '<div class="cap"><div class="t">'+(label||"나의 띠")+'</div><div class="n">'+SJ_TTI[b]+'띠</div><p>'+ZO_TRAIT[b]+'</p></div></div>';}
+  // ── 서양 점성술(태양 별자리) ──
+  var ST_KO=["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","궁수자리","염소자리","물병자리","물고기자리"];
+  var ST_EN=["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
+  var ST_SYM=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
+  var ST_RANGE=["3.21~4.19","4.20~5.20","5.21~6.21","6.22~7.22","7.23~8.22","8.23~9.22","9.23~10.22","10.23~11.21","11.22~12.21","12.22~1.19","1.20~2.18","2.19~3.20"];
+  var ST_ELE=["불","흙","공기","물"]; // 별자리 index%4
+  var ST_RULER=["화성","금성","수성","달","태양","수성","금성","화성","목성","토성","토성","목성"]; // 전통 지배성
+  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자. 속도가 곧 무기입니다.","한번 정하면 끝까지 지키는 뚝심. 감각과 실속을 함께 챙깁니다.","호기심과 언어 감각이 살아 있는 전달자. 사람과 정보가 늘 모입니다.","마음의 온도를 먼저 읽는 보호자. 내 사람에게는 한없이 깊습니다.","존재만으로 무대를 만드는 사람. 인정받을 때 가장 빛납니다.","작은 어긋남을 먼저 보는 정밀한 눈. 완성도가 곧 자존심입니다.","균형과 관계의 조율자. 아름다움과 공정함을 동시에 봅니다.","한 번 파고들면 끝을 보는 집중력. 겉과 속의 깊이가 다릅니다.","시야가 넓고 낙천적인 탐험가. 갇히는 순간 답답해집니다.","시간을 자기 편으로 만드는 전략가. 늦어도 결국 올라섭니다.","남과 다른 각도로 보는 혁신가. 규칙보다 이유를 묻습니다.","경계 없이 스며드는 공감력. 예술과 직관이 강점입니다."];
+  var ST_ELE_RULERS={"불":["태양","화성","목성"],"흙":["금성","수성","토성"],"공기":["수성","금성","토성"],"물":["달","화성","목성"]};
+  var WD_KO=["일","월","화","수","목","금","토"];
+  var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
+  function stOf(y,m,d){return Math.floor(sjSunLong(sjJdKST(y,m,d,12,0))/30);} // 태양황경으로 별자리 판정
+  function stCard(i,label){return '<div class="sj-char"><img src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+    '<div class="cap"><div class="t">'+(label||"나의 별자리")+'</div><div class="n">'+ST_SYM[i]+' '+ST_KO[i]+'</div><p>'+ST_TRAIT[i]+'</p></div></div>';}
+  // 태양의 각도 관계(어스펙트) — 거리 0~6, [기본점수, 이름, 총운, 애정, 재물·일, 조언, [애정·재물·일·건강 보정]]
+  var ST_ASP=[
+   [88,"합(0°)","태양이 내 별자리 위를 지나는 시기입니다. 존재감이 커지고, 내가 먼저 움직일수록 일이 풀립니다.","먼저 다가가는 쪽이 유리합니다. 표현을 아끼면 기회가 지나갑니다.","새로 시작하는 일에 힘이 실립니다. 다만 혼자 다 하려다 지칠 수 있습니다.","올해의 방향을 다시 세우기 좋은 때입니다. 하고 싶은 것을 문장으로 적어두세요.",[6,2,4,-2]],
+   [72,"세미섹스타일(30°)","크게 흔들리지 않는 잔잔한 흐름입니다. 무리하지 않으면 손해도 없습니다.","익숙한 사이에서 편안함을 느낍니다. 새 인연은 서두르지 마세요.","작은 정리와 마무리에 좋은 날입니다.","오늘은 확장보다 정돈입니다. 미뤄둔 일 하나만 끝내세요.",[0,2,4,2]],
+   [84,"섹스타일(60°)","기회가 손 닿는 곳에 놓입니다. 다만 스스로 손을 뻗어야 잡히는 종류입니다.","소개·모임·연락에서 좋은 흐름이 옵니다.","제안·협업·부수입에 유리합니다. 연락을 미루지 마세요.","오늘 온 연락은 흘려보내지 마세요. 답장 하나가 흐름을 바꿉니다.",[8,6,6,0]],
+   [58,"스퀘어(90°)","마찰이 있는 대신 성장이 있는 날입니다. 부딪히는 지점이 곧 내 약한 고리입니다.","말투 하나로 오해가 생기기 쉽습니다. 한 박자 늦게 답하세요.","일정이 밀리거나 예산이 어긋날 수 있습니다. 여유분을 두세요.","오늘의 짜증은 방향이 아니라 속도의 문제입니다. 잠시 멈추면 보입니다.",[-8,-6,-4,-6]],
+   [90,"트라인(120°)","같은 원소끼리 흐르는 순풍입니다. 애쓰지 않아도 일이 매끄럽게 이어집니다.","자연스러운 만남과 화해에 좋습니다. 오래된 인연이 다시 닿습니다.","하던 일에서 결실이 보입니다. 큰 결정을 내리기에도 무난합니다.","순풍일수록 방심하기 쉽습니다. 오늘 얻은 것을 기록해두세요.",[8,6,8,4]],
+   [62,"퀸컹스(150°)","서로 결이 다른 기운이 겹칩니다. 조정과 타협이 필요한 하루입니다.","상대의 방식이 낯설게 느껴집니다. 고치려 들지 마세요.","계획과 현실의 간격이 드러납니다. 일정부터 다시 짜세요.","오늘은 정답보다 조율입니다. 한 가지는 양보하세요.",[-4,0,-4,-6]],
+   [66,"오포지션(180°)","태양이 정반대에 섭니다. 관계와 균형이 하루의 주제가 됩니다.","상대를 통해 나를 봅니다. 갈등이 있다면 오늘이 풀 기회입니다.","혼자보다 둘이 낫습니다. 계약·협상은 조건을 문서로 남기세요.","맞은편에 있는 사람이 오늘의 거울입니다. 반발보다 관찰을.",[4,2,2,0]]];
   var SJ_ES=[0,0,1,1,2,2,3,3,4,4]; // 천간 오행(목화토금수=01234)
   var SJ_EB=[4,2,0,0,2,1,1,2,3,3,2,4]; // 지지 오행
   var SJ_BMAIN=[9,5,0,1,4,2,3,5,6,7,4,8]; // 지지 본기 천간 idx
   var SJ_EL=["목","화","토","금","수"];
+  // 오행별 전통 상징 — [행운색, 방위, 행운숫자]
+  var SJ_LUCK=[["청록·초록","동쪽","3·8"],["빨강·자주","남쪽","2·7"],["노랑·베이지","중앙","5·10"],["흰색·은색","서쪽","4·9"],["검정·남색","북쪽","1·6"]];
+  var SJ_HOUR=["23~01시","01~03시","03~05시","05~07시","07~09시","09~11시","11~13시","13~15시","15~17시","17~19시","19~21시","21~23시"];
+  function sjYukhap(b){return (b===0)?1:(b===1)?0:13-b;} // 육합 짝 지지(자축·인해·묘술·진유·사신·오미)
   function sjJdn(y,m,d){var a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;
     return d+Math.floor((153*M+2)/5)+365*Y+Math.floor(Y/4)-Math.floor(Y/100)+Math.floor(Y/400)-32045;}
   function sjSunLong(jd){ // 태양 시황경(도) — Meeus 근사, 오차 <0.01°
@@ -769,20 +796,23 @@ var TOOLS=[
     el.querySelector("#re").addEventListener("click",deal);deal();}},
 
   {id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운세",desc:"일진×일간 명리 풀이",render:function(el){
-    var TXT={ // 오늘 일진 천간이 내 일간에 대해 갖는 십성 → 오늘의 흐름
-    "비견":[78,"나와 같은 기운이 들어오는 날. 내 페이스대로 밀고 가면 힘이 배가됩니다.","협업·동료운이 좋으나 돈 관리는 각자 명확히.","경쟁자가 곧 아군이 되는 날. 자존심 싸움만 피하세요."],
-    "겁재":[62,"기운은 넘치는데 새어 나가기 쉬운 날. 지갑과 감정 모두 단속이 필요합니다.","충동구매·보증·즉흥 약속은 미루는 게 상책.","베풀되 한도를 정하세요. 오늘의 선심은 내일의 부담이 됩니다."],
-    "식신":[85,"먹을 복과 표현력이 살아나는 날. 아이디어를 입 밖으로 꺼내면 일이 풀립니다.","실적·창작·요리·발표 모두 유리. 재물은 자연스럽게 따라옵니다.","즐기는 마음이 최고의 전략인 하루."],
-    "상관":[68,"재기가 번뜩이지만 말이 앞서기 쉬운 날. 아이디어는 최고, 표현은 한 템포 늦게.","윗사람·규칙과의 마찰 주의. 창의적인 일엔 오히려 대길.","오늘 떠오른 발상은 메모해두면 나중에 돈이 됩니다."],
-    "편재":[80,"큰돈이 움직이는 날. 기회는 빠르게 오고 빠르게 지나갑니다.","투자·거래·협상에 유리하나 욕심의 크기만큼 리스크도 커집니다.","계산기를 먼저 두드리고 움직이면 승산이 있습니다."],
-    "정재":[83,"성실함이 그대로 돈이 되는 날. 꾸준히 하던 일에서 결실이 보입니다.","저축·계약·꼼꼼한 정산에 좋은 날. 한탕보다 확실한 것.","오늘 뿌린 신용은 이자가 붙어 돌아옵니다."],
-    "편관":[58,"압박과 도전이 함께 오는 날. 부담스럽지만 이겨내면 급이 올라갑니다.","무리한 일정·과로·언쟁 주의. 운동으로 기운을 빼면 좋습니다.","피하지 말고 정면으로. 단, 서류와 말은 두 번 확인."],
-    "정관":[82,"질서와 인정의 날. 원칙대로 처리하면 윗사람의 신임을 얻습니다.","승진·시험·계약·공식 업무에 유리합니다.","오늘은 정도(正道)가 지름길입니다."],
-    "편인":[65,"생각이 깊어지는 날. 직감은 예리하나 실행이 늦어질 수 있습니다.","공부·연구·기획엔 좋고, 계약·확답은 하루 미루세요.","혼자만의 시간이 답을 가져다줍니다."],
-    "정인":[84,"귀인과 배움의 날. 어른·스승·문서에서 도움이 옵니다.","합격·승인·소식운이 좋습니다. 배우는 만큼 쌓입니다.","도움을 받으면 감사를 표현하세요. 운이 두 배가 됩니다."]};
+    // 오늘 일진 천간이 내 일간에 대해 갖는 십성 → [기본점수, 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정]]
+    var TXT={
+    "비견":[78,"나와 같은 기운이 들어오는 날. 내 페이스대로 밀고 가면 힘이 배가됩니다.","협업·동료운이 좋으나 돈 관리는 각자 명확히.","경쟁자가 곧 아군이 되는 날. 자존심 싸움만 피하세요.","친구·동료와 돈이 섞이는 일. 빌려주거나 함께 계산하는 자리는 오늘 만들지 마세요.",[2,-4,4,6]],
+    "겁재":[62,"기운은 넘치는데 새어 나가기 쉬운 날. 지갑과 감정 모두 단속이 필요합니다.","충동구매·보증·즉흥 약속은 미루는 게 상책.","베풀되 한도를 정하세요. 오늘의 선심은 내일의 부담이 됩니다.","보증·대여·큰 결제. 오늘 지른 것은 내일 후회할 확률이 높습니다.",[-2,-12,2,4]],
+    "식신":[85,"먹을 복과 표현력이 살아나는 날. 아이디어를 입 밖으로 꺼내면 일이 풀립니다.","실적·창작·요리·발표 모두 유리. 재물은 자연스럽게 따라옵니다.","즐기는 마음이 최고의 전략인 하루.","과식과 과음. 먹을 복이 좋은 날일수록 몸이 먼저 신호를 보냅니다.",[6,6,4,-4]],
+    "상관":[68,"재기가 번뜩이지만 말이 앞서기 쉬운 날. 아이디어는 최고, 표현은 한 템포 늦게.","윗사람·규칙과의 마찰 주의. 창의적인 일엔 오히려 대길.","오늘 떠오른 발상은 메모해두면 나중에 돈이 됩니다.","윗사람 앞에서의 한마디. 옳은 말이라도 오늘은 절반만 하세요.",[-6,4,-10,2]],
+    "편재":[80,"큰돈이 움직이는 날. 기회는 빠르게 오고 빠르게 지나갑니다.","투자·거래·협상에 유리하나 욕심의 크기만큼 리스크도 커집니다.","계산기를 먼저 두드리고 움직이면 승산이 있습니다.","한 방을 노리는 판단. 오늘의 큰 기회는 큰 손실과 같은 문으로 들어옵니다.",[6,10,2,-2]],
+    "정재":[83,"성실함이 그대로 돈이 되는 날. 꾸준히 하던 일에서 결실이 보입니다.","저축·계약·꼼꼼한 정산에 좋은 날. 한탕보다 확실한 것.","오늘 뿌린 신용은 이자가 붙어 돌아옵니다.","지나친 인색함. 아껴야 할 자리와 써야 할 자리를 구분하세요.",[4,10,4,2]],
+    "편관":[58,"압박과 도전이 함께 오는 날. 부담스럽지만 이겨내면 급이 올라갑니다.","무리한 일정·과로·언쟁 주의. 운동으로 기운을 빼면 좋습니다.","피하지 말고 정면으로. 단, 서류와 말은 두 번 확인.","과로와 언쟁. 오늘 몸을 몰아붙이면 이번 주 내내 대가를 치릅니다.",[-8,0,6,-12]],
+    "정관":[82,"질서와 인정의 날. 원칙대로 처리하면 윗사람의 신임을 얻습니다.","승진·시험·계약·공식 업무에 유리합니다.","오늘은 정도(正道)가 지름길입니다.","편법과 지각. 오늘만큼은 절차를 건너뛰지 마세요.",[4,2,10,0]],
+    "편인":[65,"생각이 깊어지는 날. 직감은 예리하나 실행이 늦어질 수 있습니다.","공부·연구·기획엔 좋고, 계약·확답은 하루 미루세요.","혼자만의 시간이 답을 가져다줍니다.","즉답과 확답. 오늘 내린 결론은 내일 다시 보면 달라 보입니다.",[-6,-2,0,4]],
+    "정인":[84,"귀인과 배움의 날. 어른·스승·문서에서 도움이 옵니다.","합격·승인·소식운이 좋습니다. 배우는 만큼 쌓입니다.","도움을 받으면 감사를 표현하세요. 운이 두 배가 됩니다.","혼자 끙끙 앓기. 오늘은 도움을 청하면 대부분 열립니다.",[2,0,6,6]]};
     el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">오늘 운세 보기</button>'+
     '<div id="out"></div>';
+    function bar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
+      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
@@ -792,18 +822,130 @@ var TOOLS=[
       var myB=me.d.b,tB=today.d.b,bonus="",diff=Math.abs(myB-tB);
       if(myB%4===tB%4&&myB!==tB){score+=8;bonus="내 일지와 오늘 지지가 삼합 — 사람이 나를 돕는 흐름이 더해집니다.";}
       else if(diff===6){score-=10;bonus="내 일지와 오늘 지지가 충(沖) — 계획이 흔들릴 수 있으니 변수 하나는 예약해두세요.";}
-      else if((myB+tB===13)||(myB===0&&tB===1)||(myB===1&&tB===0)){score+=6;bonus="내 일지와 오늘 지지가 육합 — 관계운이 부드럽게 풀립니다.";}
+      else if(sjYukhap(myB)===tB){score+=6;bonus="내 일지와 오늘 지지가 육합 — 관계운이 부드럽게 풀립니다.";}
       score=Math.max(35,Math.min(98,score));
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
+      var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      // 행운 정보: 나를 생하는 오행(인성)이 오늘의 보완 기운, 시간은 오늘 일지의 육합 시간대
+      var myEl=SJ_ES[me.d.s],luckEl=(myEl+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tB);
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">내 일간 '+SJ_S[me.d.s]+' 기준 오늘은 <b>'+rel+'</b>의 날</div></div>'+
+      '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
       '<div class="sj-sec"><h3>총운</h3><p>'+T[1]+'</p></div>'+
       '<div class="sj-sec"><h3>재물·일</h3><p>'+T[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>오늘 피해야 할 것</h3><p>'+T[4]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+(bonus?" "+bonus:"")+'</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
+      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">내 일간 '+SJ_S[me.d.s]+'('+SJ_EL[myEl]+')을 생해 주는 '+SJ_EL[luckEl]+' 기운이 오늘의 보완입니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시로, 사람과 일이 맞물리기 쉬운 구간입니다.</p></div>'+
       '<p class="note">오늘의 일진(일 간지)과 내 일간의 십성 관계로 푸는 정통 명리 방식입니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';}
     el.querySelector("#go").addEventListener("click",go);go();}},
+
+  {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
+    '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
+    ST_KO.map(function(n,i){return '<option value="'+i+'">'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">별자리 운세 보기</button>'+
+    '<div id="out"></div>';
+    function hbar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
+      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+    function go(){
+      var sel=+el.querySelector("#s").value,mine;
+      if(sel>=0)mine=sel;
+      else{var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;mine=stOf(+dv[0],+dv[1],+dv[2]);}
+      var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
+      var sun=stOf(ty,tm,td),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+      var ele=ST_ELE[mine%4],ruler=ST_RULER[mine],fri=ST_ELE_RULERS[ele];
+      var score=A[0],wd=now.getDay(),wdr=WD_RULER[wd],rnote="";
+      if(wdr===ruler){score+=7;rnote="오늘은 "+WD_KO[wd]+"요일 — 내 수호성 "+ruler+"이 다스리는 날입니다. 하루 중 가장 나다운 판단이 나옵니다.";}
+      else if(fri.indexOf(wdr)>=0){score+=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
+      else{score-=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
+      score=Math.max(35,Math.min(98,score));
+      var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
+      var sub=A[6].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var week="";
+      for(var i=0;i<7;i++){var dt=new Date(ty,tm-1,td+i),r=WD_RULER[dt.getDay()],
+        g=(r===ruler)?"대길":(fri.indexOf(r)>=0?"길":"평");
+        week+='<div class="sj-du"><div class="a">'+(dt.getMonth()+1)+'.'+dt.getDate()+' '+WD_KO[dt.getDay()]+'</div>'+
+          '<div class="g" style="font-size:14px;color:'+(g==="대길"?"var(--fun-ink)":g==="길"?"var(--accent)":"var(--muted)")+'">'+g+'</div><div class="a">'+r+'</div></div>';}
+      var best=WD_KO[WD_RULER.indexOf(ruler)];
+      el.querySelector("#out").innerHTML=
+      '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 태양은 '+ST_SYM[sun]+' '+ST_KO[sun]+'</div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 기준 '+A[1]+' 관계</div></div>'+
+      '<div class="sj-bars">'+hbar("애정",sub[0])+hbar("재물",sub[1])+hbar("직장",sub[2])+hbar("건강",sub[3])+'</div>'+
+      stCard(mine)+
+      '<div class="chips"><span class="chip">원소 '+ele+'</span><span class="chip">수호성 '+ruler+'</span><span class="chip">기간 '+ST_RANGE[mine]+'</span><span class="chip">행운의 요일 '+best+'요일</span></div>'+
+      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+A[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>애정운</h3><p>'+A[3]+'</p></div>'+
+      '<div class="sj-sec"><h3>재물·일</h3><p>'+A[4]+'</p></div>'+
+      '<div class="sj-sec"><h3>조언</h3><p>'+A[5]+' '+rnote+'</p></div>'+
+      '<div class="sj-sec"><h3>이번주 흐름</h3><div class="sj-daeun">'+week+'</div>'+
+      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">요일마다 다스리는 행성(칠요)이 다릅니다. 내 별자리 수호성 '+ruler+'이 맡은 '+best+'요일이 한 주의 중심이고, '+ele+' 원소와 결이 맞는 행성의 날이 그다음입니다.</p></div>'+
+      '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';}
+    el.querySelector("#go").addEventListener("click",go);
+    el.querySelector("#s").addEventListener("change",go);go();}},
+
+  {id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세",desc:"12띠 오늘의 운세",render:function(el){
+    // 오늘 일지와 내 띠(연지)의 관계 → [기본점수, 총운, 재물·일, 애정, 조언, [애정·재물·직장·건강]]
+    var ZR={
+    "삼합":[88,"내 띠와 오늘 지지가 삼합을 이룹니다. 혼자 애쓰던 일에 사람이 붙는 날입니다.","협업·소개·계약에 유리합니다. 부탁하면 대체로 열립니다.","만남과 화해에 좋습니다. 먼저 연락하는 쪽이 유리합니다.","오늘 도와준 사람의 이름을 기억해두세요. 이 인연은 한 번으로 끝나지 않습니다.",[8,6,8,2]],
+    "육합":[84,"내 띠와 오늘 지지가 육합입니다. 마찰 없이 부드럽게 맞물리는 하루입니다.","조율·정산·마무리가 술술 풀립니다.","오래 미뤄둔 대화를 꺼내기 좋은 날입니다.","무리하지 않아도 되는 날입니다. 흐름에 맡기고 한 가지만 확실히 끝내세요.",[8,4,4,4]],
+    "복음":[74,"오늘 지지가 내 띠와 같습니다. 기운이 두 배로 진해지는 만큼 좋고 나쁨도 선명해집니다.","익숙한 분야에서는 강하지만 새 영역은 오늘 손대지 마세요.","같은 성향의 사람에게 끌립니다. 닮은 만큼 부딪히기도 쉽습니다.","오늘은 나를 다시 확인하는 날입니다. 과하면 고집이 됩니다.",[0,0,4,-2]],
+    "평":[72,"큰 굴곡 없는 평이한 하루입니다. 눈에 띄는 일은 없지만 손해도 없습니다.","하던 일을 그대로 유지하기 좋습니다.","무난합니다. 서두르지 않으면 어긋날 일도 없습니다.","오늘은 새로 벌이기보다 정리하기 좋은 날입니다.",[0,2,2,2]],
+    "해":[60,"내 띠와 오늘 지지가 해(害)로 만납니다. 사소한 어긋남이 감정을 건드리기 쉽습니다.","약속 시간·금액 같은 작은 숫자에서 착오가 납니다. 두 번 확인하세요.","말투 때문에 오해가 생깁니다. 문자보다 통화가 낫습니다.","오늘의 서운함은 대개 사실 확인 한 번으로 풀립니다.",[-8,-4,-4,-2]],
+    "형":[56,"내 띠와 오늘 지지가 형(刑)입니다. 밀어붙일수록 마찰이 커지는 날입니다.","서류·계약·법적인 문제에서 다툼이 생기기 쉽습니다. 도장은 내일.","날 선 말이 오갑니다. 이기려 하지 마세요.","오늘 참으면 내일 유리해집니다. 정면충돌은 오늘의 방식이 아닙니다.",[-8,-6,-8,-8]],
+    "충":[52,"내 띠와 오늘 지지가 충(沖)입니다. 예정이 흔들리고 변수가 튀어나오는 날입니다.","이동·변경·취소가 잦습니다. 여유 시간을 미리 빼두세요.","감정 기복이 큽니다. 중요한 대화는 하루 미루세요.","충은 나쁜 것이 아니라 움직이는 기운입니다. 어차피 움직일 거라면 내가 먼저 정하세요.",[-10,-8,-6,-10]]};
+    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
+    '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
+    SJ_TTI.map(function(n,i){return '<option value="'+i+'">'+n+'띠</option>';}).join("")+'</select></div></div>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">띠별 운세 보기</button>'+
+    '<div id="out"></div>';
+    function zrel(b,t){
+      if(Math.abs(b-t)===6)return"충";
+      var H=[[0,3],[2,5],[5,8],[8,2],[1,10],[10,7],[7,1]],i;
+      for(i=0;i<H.length;i++)if((H[i][0]===b&&H[i][1]===t)||(H[i][0]===t&&H[i][1]===b))return"형";
+      var Y=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+      for(i=0;i<Y.length;i++)if((Y[i][0]===b&&Y[i][1]===t)||(Y[i][0]===t&&Y[i][1]===b))return"해";
+      if(b===t)return"복음";
+      if(b%4===t%4)return"삼합";
+      if(sjYukhap(b)===t)return"육합";
+      return"평";}
+    function zbar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
+      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+    function go(){
+      var sel=+el.querySelector("#s").value,b;
+      if(sel>=0)b=sel;else{var y=+el.querySelector("#y").value;if(!y)return;b=((y-4)%12+12)%12;}
+      var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
+      var today=sjPillars(ty,tm,td,null,0,false),tb=today.d.b;
+      var rel=zrel(b,tb),Z=ZR[rel],score=Z[0];
+      // 오늘 천간이 내 띠 본기 천간에 대해 갖는 십성 — 하루의 성격을 한 겹 더한다
+      var tg=sjTenGod(SJ_BMAIN[b],today.d.s);
+      var TG={"비견":"내 힘으로 밀고 가는","겁재":"지출이 새기 쉬운","식신":"표현과 먹을 복이 좋은","상관":"말이 앞서기 쉬운","편재":"큰돈이 움직이는","정재":"성실함이 돈이 되는","편관":"압박과 도전이 따르는","정관":"원칙이 통하는","편인":"생각이 깊어지는","정인":"귀인과 문서의"}[tg];
+      score=Math.max(35,Math.min(98,score+({"식신":4,"정재":4,"정관":3,"정인":4,"편재":2,"비견":0,"상관":-3,"편인":-2,"겁재":-5,"편관":-5}[tg]||0)));
+      var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
+      var sub=Z[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var luckEl=(SJ_EB[b]+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tb);
+      var y26=(b===6)?"2026 병오년은 태세와 같은 말띠 해입니다. 존재감이 커지는 대신 과열도 쉬우니 속도 조절이 관건입니다."
+        :(b===0)?"2026 병오년 태세 오(午)와 자오충입니다. 이동·이직·이사 같은 변화가 예고된 해이니 수동적으로 겪기보다 먼저 계획에 넣으세요."
+        :(b===2||b===10)?"2026 병오년 태세 오(午)와 인오술 삼합입니다. 사람과 기회가 붙는 한 해입니다."
+        :(b===7)?"2026 병오년 태세 오(午)와 오미 육합입니다. 관계와 계약이 부드럽게 풀리는 한 해입니다."
+        :(b===1)?"2026 병오년 태세 오(午)와 축오 해(害)입니다. 작은 어긋남이 쌓이지 않도록 그때그때 정리하세요."
+        :"2026 병오년 태세 오(午)와 특별한 합충이 없습니다. 큰 변동 없이 내 페이스대로 갈 수 있는 한 해입니다.";
+      el.querySelector("#out").innerHTML=
+      '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[tb]+'('+SJ_S[today.d.s]+SJ_B[tb]+')</div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
+      '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
+      zoCard(b)+
+      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+Z[1]+' 오늘 천간은 '+SJ_TTI[b]+'띠에게 '+tg+'에 해당해 '+TG+' 하루이기도 합니다.</p></div>'+
+      '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
+      '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div></div>'+
+      '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
+      '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';}
+    el.querySelector("#go").addEventListener("click",go);
+    el.querySelector("#s").addEventListener("change",go);go();}},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+

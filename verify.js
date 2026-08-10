@@ -66,6 +66,24 @@ t("육합 인해(2+11=13)", 2+11===13, true);
 t("충 자오(|0-6|=6)", Math.abs(0-6)===6, true);
 t("충 묘유(|3-9|=6)", Math.abs(3-9)===6, true);
 
+// ── 육합 짝 (자축·인해·묘술·진유·사신·오미) ──
+t("육합 자(子)→축(丑)", sjYukhap(0), 1);
+t("육합 축(丑)→자(子)", sjYukhap(1), 0);
+t("육합 인(寅)→해(亥)", sjYukhap(2), 11);
+t("육합 오(午)→미(未)", sjYukhap(6), 7);
+t("육합은 대칭", [0,1,2,3,4,5,6,7,8,9,10,11].every(b => sjYukhap(sjYukhap(b)) === b), true);
+
+// ── 서양 별자리: 태양황경 기반 판정 ──
+t("별자리 춘분 다음날(3/21)=양자리", ST_KO[stOf(2026,3,21)], "양자리");
+t("별자리 8/15=사자자리", ST_KO[stOf(2026,8,15)], "사자자리");
+t("별자리 12/25=염소자리", ST_KO[stOf(2026,12,25)], "염소자리");
+t("별자리 1/30=물병자리", ST_KO[stOf(2026,1,30)], "물병자리");
+t("별자리 배열 12개 정합", ST_KO.length===12 && ST_EN.length===12 && ST_RULER.length===12 && ST_RANGE.length===12, true);
+t("어스펙트 표 7단계(0~180°)", ST_ASP.length===7 && ST_ASP.every(a=>a[6].length===4), true);
+t("수호성은 칠요 안에 있음", ST_RULER.every(r => WD_RULER.indexOf(r) >= 0), true);
+t("원소별 지배성 집합에 자기 수호성 포함", ST_KO.every((_,i)=>ST_ELE_RULERS[ST_ELE[i%4]].indexOf(ST_RULER[i])>=0), true);
+t("오행 행운표 5개", SJ_LUCK.length===5 && SJ_HOUR.length===12, true);
+
 // ── 세금·공식: 공식 세율표 대조 ──
 t("소득세 1400만(6%)", progressive(14e6), 840000);
 t("소득세 5000만(경계)", progressive(50e6), 6240000);
@@ -84,7 +102,7 @@ t("국민연금 300만", Math.round(3e6*0.0475), 142500);
 t("건강보험 300만", Math.round(3e6*0.03595), 107850);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","zoCard"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
