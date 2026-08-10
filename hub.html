@@ -863,10 +863,15 @@
     '<div class="rows" id="rows" style="margin-top:16px"></div>';
     var tti=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
     var cut=[[20,"물병"],[19,"물고기"],[21,"양"],[20,"황소"],[21,"쌍둥이"],[22,"게"],[23,"사자"],[23,"처녀"],[23,"천칭"],[23,"전갈"],[22,"사수"],[22,"염소"]];
+    var ST_EN={"양":"aries","황소":"taurus","쌍둥이":"gemini","게":"cancer","사자":"leo","처녀":"virgo","천칭":"libra","전갈":"scorpio","사수":"sagittarius","염소":"capricorn","물병":"aquarius","물고기":"pisces"};
+    var ST_TRAIT={"양":"먼저 뛰어드는 개척자, 결단이 빠릅니다","황소":"흔들리지 않는 안정감과 풍요의 감각","쌍둥이":"호기심과 소통 능력이 뛰어난 재치","게":"품어주고 지켜주는 깊은 정","사자":"타고난 주인공, 당당한 존재감","처녀":"섬세한 분석력과 완성도에 대한 고집","천칭":"균형과 조화를 아는 세련된 감각","전갈":"끝까지 파고드는 집중과 통찰","사수":"넓은 세상을 향한 자유와 낙천","염소":"목표를 향해 오르는 인내와 책임","물병":"틀을 깨는 독창성과 자유로운 사고","물고기":"경계 없는 공감과 예술적 상상력"};
     function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
       var y=d.getFullYear(),ti=tti[((y-4)%12+12)%12],idx=d.getMonth(),st=d.getDate()<cut[idx][0]?cut[(idx+11)%12][1]:cut[idx][1];
       var tiIdx=((y-4)%12+12)%12;
-      el.querySelector("#rows").innerHTML=zoCard(tiIdx)+'<div class="li" style="margin-top:14px"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
+      var stCard='<div class="sj-char"><img src="img/char/st-'+ST_EN[st]+'.webp" alt="'+st+'자리" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+        '<div class="cap"><div class="t">나의 별자리</div><div class="n">'+st+'자리</div><p>'+ST_TRAIT[st]+'</p></div></div>';
+      el.querySelector("#rows").innerHTML='<div class="gh-pair">'+zoCard(tiIdx)+stCard+'</div>'+
+        '<div class="li" style="margin-top:14px"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
     el.querySelector("#d").addEventListener("change",calc);calc();}},
 
   {id:"installment",cat:"금융",icon:"",name:"카드 할부 수수료",desc:"할부 이자 계산",render:function(el){
