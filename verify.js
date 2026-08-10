@@ -101,6 +101,21 @@ t("로또 45C6", C(45,6), 8145060);
 t("국민연금 300만", Math.round(3e6*0.0475), 142500);
 t("건강보험 300만", Math.round(3e6*0.03595), 107850);
 
+// ── 타로: 카드 데이터와 분야별 해석 배열의 길이가 어긋나면 undefined가 화면에 뜬다 ──
+const tarotSrc = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"todayfortune"'));
+const mArr = tarotSrc.slice(tarotSrc.indexOf("var M="), tarotSrc.indexOf("// 분야별 해석"));
+const fArr = tarotSrc.slice(tarotSrc.indexOf("var FLD="), tarotSrc.indexOf("var POS="));
+const countRows = s => (s.match(/\["/g) || []).length; // 각 행은 ["로 시작하고 행 안에는 다시 나오지 않는다
+t("타로 메이저 아르카나 22장", countRows(mArr), 22);
+t("타로 분야별 해석 22장 (M과 동일)", countRows(fArr), 22);
+t("타로 아트 매핑 22장", (tarotSrc.slice(tarotSrc.indexOf("var ART=")).match(/tarot-\d\d-/g) || []).length, 22);
+
+// ── 오늘의 운세: 십성 10종 모두 9개 필드(총운·애정·직장·건강 포함)를 갖는가 ──
+const tfSrc = inner.slice(inner.indexOf('id:"todayfortune"'), inner.indexOf('id:"horoscope"'));
+const tfKeys = [...tfSrc.matchAll(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\[/g)].map(m => m[1]);
+t("오늘의 운세 십성 10종 정의", new Set(tfKeys).size, 10);
+t("오늘의 운세 항목별 해설(애정·직장·건강) 존재", /애정운 <span|T\[6\]/.test(tfSrc) && /T\[7\]/.test(tfSrc) && /T\[8\]/.test(tfSrc), true);
+
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
 const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
