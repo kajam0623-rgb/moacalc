@@ -98,21 +98,6 @@
   .kpi .kd{font-size:11.5px;color:var(--muted);margin-top:5px;text-wrap:balance;}
   .kpi .kd b{color:var(--accent-ink);font-weight:700;}
   .kpi.f .kd b{color:var(--fun-ink);}
-  /* 벤또 그리드 — 타일 크기를 다르게 */
-  .bento{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px;}
-  @media (min-width:640px){.bento{grid-template-columns:repeat(6,1fr);}
-    .bento>*{grid-column:span 3;}
-    .bento>.b-wide{grid-column:span 6;}}
-  @media (min-width:1000px){.bento{grid-template-columns:repeat(12,1fr);gap:16px;}
-    .bento>*{grid-column:span 4;}
-    .bento>.b-wide{grid-column:span 6;}
-    .bento>.b-full{grid-column:span 12;}
-    .b-wide .thumb{aspect-ratio:2/1;}
-    .b-full{flex-direction:row;align-items:stretch;}
-    .b-full .thumb{aspect-ratio:auto;width:42%;border-bottom:none;border-right:1px solid var(--line);}
-    .b-full .body{display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;align-content:center;padding:14px 20px;}
-    .b-full .more{border-top:none;border-left:1px solid var(--line);display:flex;align-items:center;padding:0 20px;white-space:nowrap;}}
-  @media (min-width:640px) and (max-width:999px){.bento>.b-full{grid-column:span 6;}}
   /* 태그 (SEO·탐색) */
   .tags{display:flex;flex-wrap:wrap;gap:7px;margin:16px 0 2px;}
   .tags a,.tags span{font-size:12px;font-weight:700;color:var(--muted);background:var(--surface-2);
@@ -152,6 +137,20 @@
   .ccard .more:hover{background:var(--accent-weak);}
   .ccard.f .thumb b{color:#fff;} .ccard.f .more{color:var(--fun-ink);}
   .ccard.f:hover{border-color:var(--fun);}
+  /* 벤또 그리드 — 타일 크기를 다르게. .ccard 기본값보다 뒤·높은 특이도여야 덮어쓴다 */
+  .bento{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px;}
+  @media (min-width:640px){.bento{grid-template-columns:repeat(6,1fr);}
+    .bento>*{grid-column:span 3;}
+    .bento>.b-wide,.bento>.b-full{grid-column:span 6;}
+    .bento>.b-wide .thumb,.bento>.b-full .thumb{aspect-ratio:16/9;}}
+  @media (min-width:1000px){.bento{grid-template-columns:repeat(12,1fr);gap:16px;}
+    .bento>*{grid-column:span 4;}
+    .bento>.b-wide{grid-column:span 6;}
+    .bento>.b-full{grid-column:span 12;flex-direction:row;align-items:stretch;}
+    .bento>.b-wide .thumb{aspect-ratio:2/1;}
+    .bento>.b-full .thumb{aspect-ratio:auto;width:40%;min-height:250px;border-bottom:none;border-right:1px solid var(--line);}
+    .bento>.b-full .body{display:grid;grid-template-columns:repeat(2,1fr);gap:0 24px;align-content:center;padding:14px 22px;}
+    .bento>.b-full .more{border-top:none;border-left:1px solid var(--line);display:flex;align-items:center;padding:0 20px;white-space:nowrap;}}
   /* 전체 목록 (하단, 다단) */
   .grp{margin-top:14px;padding:16px 16px 6px;}
   .alllist{columns:1;column-gap:26px;margin-top:6px;}
