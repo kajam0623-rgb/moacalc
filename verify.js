@@ -67,5 +67,16 @@ t("로또 45C6", C(45,6), 8145060);
 t("국민연금 300만", Math.round(3e6*0.0475), 142500);
 t("건강보험 300만", Math.round(3e6*0.03595), 107850);
 
+// ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun"];
+const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
+// 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
+const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
+const called = [...codeOnly.matchAll(/(?:^|[^\w.$])([a-zA-Z_$][\w$]*)\s*\(/g)].map(m => m[1]);
+const known = new Set([...HELPERS, "function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
+const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/.test(n) && !toolsSrc.includes("function "+n) && !toolsSrc.includes("var "+n+"=") && !toolsSrc.includes(n+"=function"));
+t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
+if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
+
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

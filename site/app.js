@@ -4,7 +4,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var comma=function(n){return num(n).toLocaleString("ko-KR");};
   function bindMoney(root){root.querySelectorAll("input.money").forEach(function(el){
     el.addEventListener("input",function(){var v=num(this.value);this.value=v?v.toLocaleString("ko-KR"):"";if(this._cb)this._cb();});});}
-  function on(root,sel,cb){root.querySelectorAll(sel).forEach(function(el){el.addEventListener("input",cb);el.addEventListener("change",cb);el._cb=cb;});}
 
   // ---------- 만세력 엔진 (태양황경 기반: 절기·연/월/일/시주) ----------
   var SJ_S=["갑","을","병","정","무","기","경","신","임","계"],SJ_SH="甲乙丙丁戊己庚辛壬癸";
@@ -87,7 +86,7 @@ var TOOLS=[
       var da=w*3/91.3,pay=da*30*(d/365),ok=d>=365;
       el.querySelector("#r").innerHTML=(ok?won(pay):"0")+'<small>원</small>';
       el.querySelector("#s").textContent="재직 "+Math.floor(d/365)+"년 "+(d%365)+"일"+(ok?"":" · 1년 미만");}
-    bindMoney(el);on(el,"#j,#l","",calc);el.querySelectorAll("#j,#l").forEach(function(e){e.addEventListener("change",calc);});el.querySelector("#w")._cb=calc;calc();}},
+    bindMoney(el);el.querySelectorAll("#j,#l").forEach(function(e){e.addEventListener("change",calc);});el.querySelector("#w")._cb=calc;calc();}},
 
   {id:"annual",cat:"급여·노동",icon:"🌴",name:"연차수당 계산기",desc:"미사용 연차 수당",render:function(el){
     el.innerHTML='<label>월 통상임금(세전)</label><div class="field"><input class="money" id="w" value="3,000,000"><span class="suf">원</span></div>'+
