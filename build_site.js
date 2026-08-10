@@ -881,7 +881,7 @@ function toolPage(t){
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${ogTag(t.id)}
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=${styleV}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
 </head><body><div class="wrap">
 <a class="back" href="index.html">← 전체 도구</a>
@@ -907,8 +907,8 @@ ${["todayfortune","horoscope","zodiacfortune","saju","salary","severance","loan"
 ${siteNav(t.id)}
 ${footer}
 </div>
-<script src="core.js"></script>
-<script src="t-${t.id}.js"></script>
+<script src="core.js?v=${coreV}"></script>
+<script src="t-${t.id}.js?v=${chunks.find(c=>c.id===t.id).v}"></script>
 <script>mountTool("${t.id}","tool");</script>
 </body></html>`;
 }
@@ -953,7 +953,7 @@ function indexPage(){
 <link rel="canonical" href="${DOMAIN}/">
 <meta property="og:title" content="무료 사주는 동네보살">
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
-<link rel="stylesheet" href="style.css">${headExtra}
+<link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
 <header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><defs><mask id="dnbs"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="var(--fun)" mask="url(#dnbs)"/><circle cx="25.5" cy="24.5" r="1.7" fill="var(--accent)"/></svg><span class="brand">동네보살</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
 <div class="hero-wrap">
@@ -1000,6 +1000,10 @@ const coreJs = `${helpers}\nvar TOOLS=[];\n`+
 // 구문 파손 즉시 빌드 실패 (파싱만, 실행 안 함)
 new Function(coreJs);
 chunks.forEach(c => { try { new Function("TOOLS.push(" + c.src + ");"); } catch (e) { throw new Error("도구 청크 구문 오류: " + c.id + " — " + e.message); } });
+// 캐시 무효화: js/css는 장기 캐시되므로 내용 해시를 쿼리로 붙인다 (파일명 고정 + ?v=해시)
+const hash8 = s => require("crypto").createHash("md5").update(s).digest("hex").slice(0, 8);
+const coreV = hash8(coreJs);
+chunks.forEach(c => c.v = hash8(c.src));
 
 // 사이트맵 + robots
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
@@ -1020,6 +1024,7 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`;
 
 // 쓰기
+const styleV = hash8(css+extraCss);
 fs.writeFileSync(path.join(OUT,"style.css"), css+extraCss);
 fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
 chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"), "TOOLS.push("+c.src+");"));
