@@ -2,7 +2,7 @@
   "name": "moacalc",
   "version": "1.0.0",
   "private": true,
-  "description": "모아계산기 — 34가지 무료 계산기 모음 (2026)",
+  "description": "동네보살 — 무료 사주·운세와 계산기 56가지 (2026)",
   "scripts": {
     "build": "node build_site.js"
   }

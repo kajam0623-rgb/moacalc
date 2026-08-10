@@ -788,12 +788,12 @@ const CAT_IMG = {"급여·노동":"cat-pay","금융":"cat-fin","부동산·세�
 const OG_IMG_TAG = fs.existsSync(path.join(IMG_SRC,"og.png")) ? `<meta property="og:image" content="${DOMAIN}/img/og.png">` : "";
 
 const footer = `<footer class="sfoot">
-<div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="#2A44C6">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="#E6B25A"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="#E6B25A"/></svg>모아계산기</div>
-<p>물어보면 다 답하는 만능 계산 콘솔. 모든 계산과 풀이는 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
+<p>무엇이든 물어보면 답이 나오는 동네 보살. 모든 운세 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>많이 찾는 도구</h4><a href="salary.html">실수령액 계산기</a><a href="severance.html">퇴직금 계산기</a><a href="loan.html">대출 이자 계산기</a><a href="charcount.html">글자수 세기</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="tarot.html">타로 카드</a></div>
 </footer>
-<div class="foot">© 2026 모아계산기</div>`;
+<div class="foot">© 2026 동네보살</div>`;
 
 const adSlot = () => ADSENSE_CLIENT
   ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
@@ -814,7 +814,7 @@ const titleOverride = {
 todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
 horoscope:"별자리 운세 — 오늘·이번주 12별자리 운세 무료",
 zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
-saju:"사주팔자 무료 — 만세력·오행·십성·대운 풀이",
+saju:"무료 사주 — 사주팔자 만세력·오행·십성·대운 풀이",
 gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
 newyear:"2026 신년운세 — 병오년 무료 운세",
 tarot:"타로 카드 — 무료 온라인 타로점 3카드",
@@ -822,11 +822,15 @@ namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
 lotto:"로또 번호 생성기 — 무료 행운번호 6자리",
 };
 function toolPage(t){
-  const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 모아계산기";
+  const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 동네보살";
   const desc = (intro[t.id]||t.desc).slice(0,155);
   const url = DOMAIN+"/"+t.id+".html";
+  // 운세 도구를 FinanceApplication으로 표기하면 스키마가 실제 내용과 어긋난다
+  const appCat = t.cat==="재미·운세" ? "LifestyleApplication"
+    : (t.cat==="급여·노동"||t.cat==="금융"||t.cat==="부동산·세금") ? "FinanceApplication" : "UtilitiesApplication";
   const ld = {"@context":"https://schema.org","@type":"WebApplication",name:t.name,description:desc,
-    applicationCategory:"FinanceApplication",operatingSystem:"All",url:url,
+    applicationCategory:appCat,operatingSystem:"All",url:url,inLanguage:"ko",
+    isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"},
     offers:{"@type":"Offer",price:"0",priceCurrency:"KRW"}};
   const g=guide[t.id], f=faq[t.id], d=deep[t.id], tg=tags[t.id]||[];
   const tagHtml = tg.length ? '<div class="tags">'+tg.map(x=>'<span>#'+esc(x)+'</span>').join("")+'</div>' : '';
@@ -851,7 +855,7 @@ function toolPage(t){
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
 </head><body><div class="wrap">
-<a class="back" href="index.html">← 전체 계산기</a>
+<a class="back" href="index.html">← 전체 도구</a>
 <div class="shell">
 <main>
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
@@ -910,26 +914,26 @@ function indexPage(){
 <div class="kpi wash"><div class="kl"><i></i>가입</div><div class="kv">0</div><div class="kd">로그인 없이 <b>바로 사용</b></div></div>
 <div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
 </div>`;
-  const desc="오늘의 운세·별자리 운세·띠별 운세·사주팔자부터 실수령액·퇴직금·대출 계산기까지 "+meta.length+"가지를 한 곳에. 2026년 기준, 가입 없이 무료.";
+  const desc="무료 사주팔자 만세력부터 오늘의 운세·별자리 운세·띠별 운세·궁합·타로까지. 실수령액·퇴직금·대출 계산기도 함께 "+meta.length+"가지. 2026년 기준, 가입 없이 무료.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>모아계산기 — 오늘의 운세·별자리 운세·무료 계산기 ${meta.length}가지 (2026)</title>
+<title>무료 사주는 동네보살 — 오늘의 운세·별자리 운세·띠별 운세</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${DOMAIN}/">
-<meta property="og:title" content="모아계산기 — 무료 계산기 모음">
+<meta property="og:title" content="무료 사주는 동네보살">
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css">${headExtra}
 </head><body><div class="wrap">
-<header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="var(--accent)">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="var(--fun)"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="var(--fun)"/></svg><span class="brand">모아계산기</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
+<header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><defs><mask id="dnbs"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="var(--fun)" mask="url(#dnbs)"/><circle cx="25.5" cy="24.5" r="1.7" fill="var(--accent)"/></svg><span class="brand">동네보살</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
 <div class="hero-wrap">
 <div>
-<h1 class="hero-h">뭐든 물어보세요.<br><b>숫자로 답합니다.</b></h1>
-<div class="hero-sub">오늘의 운세·별자리·띠별 운세부터 실수령액·퇴직금·대출까지 ${meta.length}가지, 한 곳에서.</div>
-<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div>
-<div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="퇴직금, 부가세, 만 나이…"><kbd>⌘K</kbd></div></div>
+<h1 class="hero-h">뭐든 물어보세요.<br><b>동네 보살이 답합니다.</b></h1>
+<div class="hero-sub">무료 사주·오늘의 운세·별자리 운세부터 실수령액·퇴직금·대출까지 ${meta.length}가지, 한 곳에서.</div>
+<div class="console"><div class="prompt">&gt; 무엇이 궁금하세요<span class="cur"></span></div>
+<div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a class="f" href="todayfortune.html">✦ 오늘의 운세</a><a class="f" href="horoscope.html">✦ 별자리운세</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="tarot.html">✦ 타로</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
-<img class="hero-art" src="img/hero.webp" alt="모아계산기 — 콘솔에 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
+<img class="hero-art" src="img/hero.webp" alt="동네보살 — 밤하늘 아래 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div></header>
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
@@ -939,7 +943,7 @@ ${kpis}
 ${adSlot()}
 ${footer}
 </div>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"모아계산기","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
 <script>var q=document.getElementById("q");
 if(q)addEventListener("keydown",function(e){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();q.focus();q.select();}else if(e.key==="/"&&document.activeElement!==q){e.preventDefault();q.focus();}});
 if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});
