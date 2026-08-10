@@ -802,7 +802,7 @@ const adSlot = () => ADSENSE_CLIENT
 // 전체 도구 내부링크 네비 (모든 페이지에 삽입 → SEO 링크)
 function siteNav(currentId){
   return '<nav class="sitenav">'+CATS.map(function(c){
-    var items=meta.filter(function(t){return t.cat===c;});
+    var items=catItems(c);
     return '<h2>'+c+'</h2>'+items.map(function(t){
       return t.id===currentId ? '<span class="cur">'+t.name+'</span>' : '<a href="'+t.id+'.html">'+t.name+'</a>';
     }).join("");
@@ -878,20 +878,26 @@ ${footer}
 </body></html>`;
 }
 
+const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap"]; // 검색량 높은 순
+const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다
+  const items = meta.filter(t => t.cat===c);
+  if (c !== "재미·운세") return items;
+  return items.slice().sort((a,b) => {
+    const ia = FUN_TOP.indexOf(a.id), ib = FUN_TOP.indexOf(b.id);
+    return (ia<0?99:ia) - (ib<0?99:ib);
+  });
+};
 function indexPage(){
   const rows = CATS.map(function(c){
-    var items=meta.filter(function(t){return t.cat===c;});
+    var items=catItems(c);
     return '<section class="grp wash'+(c==="재미·운세"?" fun":"")+'" id="c-'+CAT_IMG[c]+'"><div class="cat" data-n="'+items.length+'"><span>'+c+'</span></div>'+items.map(function(t){
       return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
     }).join("")+'</section>';
   }).join("");
   const BENTO=["b-full","b-wide","b-wide","","",""];
-  const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap"]; // 검색량 높은 순
   const catCards = CATS.map(function(c,ci){
-    var items=meta.filter(function(t){return t.cat===c;});
-    var top=(c==="재미·운세")
-      ? FUN_TOP.map(function(id){return items.filter(function(x){return x.id===id;})[0];}).filter(Boolean)
-      : items.slice(0,4);
+    var items=catItems(c);
+    var top=items.slice(0,c==="재미·운세"?6:4);
     return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
       '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" alt="'+c+' 계산기" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
       '<div class="body">'+top.map(function(t){
