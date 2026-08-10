@@ -15,6 +15,14 @@ const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 
+// 빌드 게이트: verify를 실제로 돌려 통과 수를 카피에 주입한다. 실패하면 빌드 중단.
+let VERIFY_PASS = 0;
+try {
+  const vout = require("child_process").execSync("node verify.js", { cwd: DIR, encoding: "utf8" });
+  VERIFY_PASS = +((vout.match(/결과: (\d+) 통과 \/ 0 실패/) || [])[1] || 0);
+} catch (e) { /* 실패 출력은 아래에서 처리 */ }
+if (!VERIFY_PASS) { console.error("❌ verify.js 실패 — 빌드를 중단합니다. node verify.js로 확인하세요."); process.exit(1); }
+
 // --- 원본에서 CSS / 헬퍼 / TOOLS 추출 (재작성 없이 재사용) ---
 const css = src.match(/<style>([\s\S]*?)<\/style>/)[1].trim();
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
@@ -789,7 +797,7 @@ const OG_IMG_TAG = fs.existsSync(path.join(IMG_SRC,"og.png")) ? `<meta property=
 
 const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
-<p>무엇이든 물어보면 답이 나오는 동네 보살. 모든 운세 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<p>무엇이든 물어보면 답이 나오는 동네 보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>많이 찾는 도구</h4><a href="salary.html">실수령액 계산기</a><a href="severance.html">퇴직금 계산기</a><a href="loan.html">대출 이자 계산기</a><a href="charcount.html">글자수 세기</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="tarot.html">타로 카드</a></div>
 </footer>
@@ -861,6 +869,7 @@ function toolPage(t){
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
  ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
  : `<h1 class="th">${t.name}</h1>\n<div class="tl">${t.desc}</div>`}
+${t.cat==="재미·운세" ? `<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
 ${introHtml}
@@ -929,6 +938,7 @@ function indexPage(){
 <div>
 <h1 class="hero-h">뭐든 물어보세요.<br><b>동네 보살이 답합니다.</b></h1>
 <div class="hero-sub">무료 사주·오늘의 운세·별자리 운세부터 실수령액·퇴직금·대출까지 ${meta.length}가지, 한 곳에서.</div>
+<div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
 <div class="console"><div class="prompt">&gt; 무엇이 궁금하세요<span class="cur"></span></div>
 <div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a class="f" href="todayfortune.html">✦ 오늘의 운세</a><a class="f" href="horoscope.html">✦ 별자리운세</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="tarot.html">✦ 타로</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
@@ -962,6 +972,11 @@ const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
+  `\n.trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}`+
+  `\n.trust span{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fun-ink);`+
+  `background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}`+
+  `\n.hero-trust{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px;max-width:520px;`+
+  `border-left:2px solid var(--fun);padding-left:10px;}`+
   `\n.sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}`+
   `\n.sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}`+
   `\n.sitenav a{display:inline-block;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 7px 0;}`+
