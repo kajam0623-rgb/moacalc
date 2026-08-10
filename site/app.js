@@ -838,7 +838,9 @@ var TOOLS=[
       el.querySelectorAll(".tr-card").forEach(function(card){card.addEventListener("click",function(){
         if(card.classList.contains("flip"))return;card.classList.add("flip");
         var i=+card.dataset.i,pk=picks[i],fi=el.querySelector("#f").value;
-        var ext=(fi==="2")?"":" <b style=\"color:var(--fun-ink)\">"+FLDN[fi]+"</b> — "+FLD[pk.i][+fi];
+        // FLD는 카드의 정방향 주제다. 역방향이면 그 흐름이 지연·반전된다고 덧붙여야 해석이 어긋나지 않는다
+        var ext=(fi==="2")?"":" <b style=\"color:var(--fun-ink)\">"+FLDN[fi]+"</b> — 이 카드가 가리키는 자리는 “"+FLD[pk.i][+fi]+"”"+
+          (pk.rev?" 다만 역방향이라 이 흐름이 지연되거나 반대 방향으로 나타납니다.":"");
         el.querySelector("#r").innerHTML+='<div class="one"><b>'+POS[i]+' — '+pk.c[1]+(pk.rev?" (역방향)":"")+'</b><p>'+(pk.rev?pk.c[4]:pk.c[3])+ext+'</p></div>';
         if(++opened===3)el.querySelector("#r").innerHTML+=summary(picks,fi);});});}
     el.querySelector("#re").addEventListener("click",deal);
