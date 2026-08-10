@@ -301,6 +301,13 @@
   .sj-char .t{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fun);font-weight:800;}
   .sj-char .n{font-size:30px;font-weight:900;margin:6px 0 6px;letter-spacing:-1px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.8);}
   .sj-char p{font-size:14px;color:#cfd6e0;line-height:1.7;}
+  .gh-pair{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media (min-width:640px){.gh-pair{grid-template-columns:1fr 1fr;}
+    .gh-pair .sj-char{display:block;}
+    .gh-pair .sj-char img{aspect-ratio:1/1;min-height:0;}
+    .gh-pair .sj-char .cap{position:absolute;padding:60px 16px 16px;background:linear-gradient(transparent,rgba(8,11,16,.94) 62%);}
+    .gh-pair .sj-char .n{font-size:24px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.8);}
+    .gh-pair .sj-char p{color:#cfd6e0;font-size:13px;}}
   @media (min-width:760px){.sj-char{display:grid;grid-template-columns:340px 1fr;align-items:stretch;}
     .sj-char img{aspect-ratio:auto;height:100%;min-height:340px;}
     .sj-char .cap{position:static;padding:30px 28px;background:none;display:flex;flex-direction:column;justify-content:center;}
@@ -327,6 +334,10 @@
   var SJ_S=["갑","을","병","정","무","기","경","신","임","계"],SJ_SH="甲乙丙丁戊己庚辛壬癸";
   var SJ_B=["자","축","인","묘","진","사","오","미","신","유","술","해"],SJ_BH="子丑寅卯辰巳午未申酉戌亥";
   var SJ_TTI=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
+  var ZO_EN=["rat","ox","tiger","rabbit","dragon","snake","horse","goat","monkey","rooster","dog","pig"];
+  var ZO_TRAIT=["재치와 기민함으로 기회를 먼저 잡는 기질","묵묵히 쌓아 끝내 이루는 뚝심","두려움 없이 앞장서는 용기와 카리스마","섬세한 배려와 부드러운 지혜","큰 그림을 그리는 스케일과 존재감","깊이 통찰하고 조용히 움직이는 영민함","자유롭고 활동적인 추진력","온화한 감성과 예술적 감각","영리한 임기응변과 재주","분명한 기준과 성실한 자기관리","의리와 신의로 사람을 얻는 힘","넉넉한 인심과 복을 부르는 여유"];
+  function zoCard(b,label){return '<div class="sj-char"><img src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+    '<div class="cap"><div class="t">'+(label||"나의 띠")+'</div><div class="n">'+SJ_TTI[b]+'띠</div><p>'+ZO_TRAIT[b]+'</p></div></div>';}
   var SJ_ES=[0,0,1,1,2,2,3,3,4,4]; // 천간 오행(목화토금수=01234)
   var SJ_EB=[4,2,0,0,2,1,1,2,3,3,2,4]; // 지지 오행
   var SJ_BMAIN=[9,5,0,1,4,2,3,5,6,7,4,8]; // 지지 본기 천간 idx
@@ -854,7 +865,8 @@
     var cut=[[20,"물병"],[19,"물고기"],[21,"양"],[20,"황소"],[21,"쌍둥이"],[22,"게"],[23,"사자"],[23,"처녀"],[23,"천칭"],[23,"전갈"],[22,"사수"],[22,"염소"]];
     function calc(){var d=new Date(el.querySelector("#d").value);if(isNaN(d))return;
       var y=d.getFullYear(),ti=tti[((y-4)%12+12)%12],idx=d.getMonth(),st=d.getDate()<cut[idx][0]?cut[(idx+11)%12][1]:cut[idx][1];
-      el.querySelector("#rows").innerHTML='<div class="li"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
+      var tiIdx=((y-4)%12+12)%12;
+      el.querySelector("#rows").innerHTML=zoCard(tiIdx)+'<div class="li" style="margin-top:14px"><span>띠</span><b>'+ti+'띠</b></div><div class="li"><span>별자리</span><b>'+st+'자리</b></div><div class="li"><span>세는 나이</span><b>'+(new Date().getFullYear()-y+1)+'세</b></div>';}
     el.querySelector("#d").addEventListener("change",calc);calc();}},
 
   {id:"installment",cat:"금융",icon:"",name:"카드 할부 수수료",desc:"할부 이자 계산",render:function(el){
@@ -1218,6 +1230,7 @@
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">내 일간 '+SJ_S[me.d.s]+' 기준 오늘은 <b>'+rel+'</b>의 날</div></div>'+
+      zoCard(me.y.b)+
       '<div class="sj-sec"><h3>총운</h3><p>'+T[1]+'</p></div>'+
       '<div class="sj-sec"><h3>재물·일</h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+(bonus?" "+bonus:"")+'</p></div>'+
@@ -1269,6 +1282,7 @@
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
+      '<div class="gh-pair">'+zoCard(A.y.b,"나")+zoCard(B.y.b,"상대")+'</div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';}
     el.querySelector("#go").addEventListener("click",go);go();}},
@@ -1305,6 +1319,7 @@
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">2026 병오년(丙午年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
       '<div class="v">'+score+'<small>점</small></div><div class="s">올해는 나에게 <b>'+rel+'</b>의 해 — '+T[0]+'</div></div>'+
+      zoCard(me.y.b)+
       '<div class="sj-sec"><h3>한 해의 큰 흐름</h3><p>'+T[1]+'</p></div>'+
       '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
       (notes.length?'<div class="sj-sec"><h3>합·충 포인트</h3><p>'+notes.join(" ")+'</p></div>':"")+
