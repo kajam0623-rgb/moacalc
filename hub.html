@@ -175,6 +175,13 @@
   /* tool view */
   .back{display:inline-block;font-family:var(--mono);color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:16px;}
   .back:hover{color:var(--accent);}
+  .toolhero{position:relative;overflow:hidden;border:1px solid var(--line-2);border-radius:18px;margin-bottom:20px;}
+  .toolhero img{width:100%;display:block;aspect-ratio:16/7;object-fit:cover;}
+  .toolhero .cap{position:absolute;left:0;right:0;bottom:0;padding:64px 22px 20px;
+    background:linear-gradient(transparent,rgba(8,11,16,.93) 60%);}
+  .toolhero .cap h1{font-size:30px;font-weight:900;letter-spacing:-1px;color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.85);margin:0;}
+  .toolhero .cap .tl{color:#cfd6e0;font-size:13.5px;border:0;padding:0;margin:5px 0 0;}
+  @media (min-width:760px){.toolhero .cap h1{font-size:38px;}}
   .th{font-size:25px;font-weight:800;letter-spacing:-.7px;margin-bottom:3px;text-wrap:balance;}
   .tl{color:var(--muted);font-size:13.5px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line);}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;}

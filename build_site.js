@@ -598,8 +598,9 @@ function toolPage(t){
 <a class="back" href="index.html">← 전체 계산기</a>
 <div class="shell">
 <main>
-<h1 class="th">${t.name}</h1>
-<div class="tl">${t.desc}</div>
+${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
+ ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
+ : `<h1 class="th">${t.name}</h1>\n<div class="tl">${t.desc}</div>`}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
 ${introHtml}
