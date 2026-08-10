@@ -91,6 +91,7 @@ tarot:"마음속 질문을 떠올리고 3장의 타로 카드를 뒤집어 과�
 todayfortune:"생년월일만 넣으면 오늘의 일진(일 간지)과 내 일간의 십성 관계로 오늘의 총운·애정·재물·직장·건강운과 행운의 색·방위·숫자·시간까지 풀이합니다. 매일 자정 일진이 바뀌는 정통 명리 방식 무료 운세.",
 horoscope:"생년월일을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐름을 봅니다. 무료 별자리 운세.",
 zodiacfortune:"띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 12띠 오늘의 운세를 풀이합니다. 총운·재물·애정·조언과 행운의 색·방위·숫자, 2026 병오년 한 해 흐름까지 무료로 확인하세요.",
+stargunghap:"두 사람의 별자리를 고르면 원소(불·흙·공기·물) 관계, 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합해 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다. 무료 별자리 궁합.",
 gunghap:"두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합한 무료 사주 궁합을 봅니다.",
 newyear:"생년월일만 넣으면 2026 병오년 연간(丙)과 내 일간의 십성 관계, 태세(午)와 내 띠·일지의 합충으로 한 해의 흐름과 전략을 풀이하는 무료 신년운세입니다.",
 namematch:"두 사람의 이름 획수를 번갈아 더해가는 전통 이름궁합 놀이입니다. 획수 피라미드와 점수, 풀이까지 무료로 확인하세요.",
@@ -147,6 +148,7 @@ saju:["무료 사주","사주팔자","만세력","신강 신약","용신 찾기"
 todayfortune:["오늘의 운세","오늘운세","무료 운세","일진 운세","오늘의 행운 색깔","무료 오늘의 운세"],
 horoscope:["별자리 운세","오늘의 별자리 운세","별자리 궁합 기간","12별자리","이번주 별자리 운세","무료 별자리 운세"],
 zodiacfortune:["띠별 운세","오늘의 띠별 운세","12띠 운세","2026 띠별 운세","무료 띠 운세"],
+stargunghap:["별자리 궁합","별자리 커플 궁합","12별자리 궁합","별자리 궁합표","무료 별자리 궁합"],
 gunghap:["궁합 보기","사주 궁합","무료 궁합","띠 궁합"],
 newyear:["2026 신년운세","병오년 운세","새해 운세","무료 신년운세"],
 tarot:["타로 카드","무료 타로","타로점","타로 해석"],
@@ -214,6 +216,15 @@ horoscope:{
  "<b>태양 별자리는 성격의 전부가 아닙니다.</b> 본격적인 점성술은 달·상승궁과 행성 배치를 함께 봅니다. 태양 별자리는 그중 가장 큰 축 하나입니다.",
  "<b>사주의 띠와는 다른 체계입니다.</b> 별자리는 태양의 위치, 띠는 동양 간지의 연지입니다. 둘을 섞어 해석하지 마세요.",
  "<b>점수가 낮은 각도가 나쁜 각은 아닙니다.</b> 스퀘어는 전통적으로 성장을 만드는 각으로 봅니다. 마찰이 생기는 지점을 미리 아는 데 쓰세요."]},
+stargunghap:{
+ intro:`별자리 궁합의 첫 번째 축은 <b>원소</b>입니다. 12별자리는 불(양자리·사자·궁수), 흙(황소·처녀·염소), 공기(쌍둥이·천칭·물병), 물(게·전갈·물고기) 네 원소로 나뉩니다. 같은 원소끼리는 말이 통하고, 불-공기·흙-물처럼 서로를 키워주는 조합은 다른 방식으로 같은 방향을 봅니다. 반대로 불-물, 흙-공기는 기질의 전제가 달라 조율이 필요합니다.
+ 두 번째 축은 <b>황도 위의 각도</b>입니다. 두 별자리가 120° 떨어진 트라인이면 같은 원소의 순풍이고, 60° 섹스타일은 친구 같은 편안함, 90° 스퀘어는 마찰을 통해 성장하는 관계, 180° 오포지션은 서로의 거울이 되는 관계입니다.
+ 세 번째 축은 <b>수호성</b>입니다. 각 별자리를 다스리는 행성(화성·금성·수성·달·태양·목성·토성)이 상대 원소와 결이 맞으면, 시간이 지날수록 편해지는 조합으로 봅니다. 이 계산기는 세 축을 40:40:20으로 종합해 점수를 냅니다.`,
+ example:{t:"사자자리 × 궁수자리 예시",rows:[["원소","불 × 불 — 같은 원소"],["각도","120° 트라인"],["수호성","태양 × 목성 — 둘 다 불과 친화"],["끌림·대화","높음"]],res:["종합","천생연분 급"]},
+ caution:["<b>태양 별자리 기준입니다.</b> 본격 점성술 궁합(시나스트리)은 달·금성·상승궁까지 함께 봅니다. 여기서는 가장 큰 축인 태양만 봅니다.",
+ "<b>긴장 조합이 나쁜 궁합은 아닙니다.</b> 스퀘어와 오포지션은 전통적으로 성장과 보완의 각으로도 읽습니다. 부딪히는 지점을 미리 아는 지도로 쓰세요.",
+ "<b>경계일 출생이면 별자리부터 확인하세요.</b> 별자리 운세 페이지에서 생년월일로 정확한 별자리를 판정할 수 있습니다.",
+ "<b>사주 궁합과는 다른 체계입니다.</b> 동양 명리 궁합은 궁합 보기에서 따로 확인하세요."]},
 zodiacfortune:{
  intro:`띠별 운세는 내 <b>띠(연지)</b>와 <b>오늘 일진의 지지</b>가 어떤 관계로 만나는지로 봅니다. 십이지는 서로 끌어당기거나 부딪히는 정해진 짝이 있고, 그 짝이 하루의 결을 만듭니다.
  가장 좋은 관계는 <b>삼합</b>입니다. 신자진(水)·인오술(火)·사유축(金)·해묘미(木) 네 조로, 셋이 모여 하나의 기운을 완성합니다. 지지 번호를 4로 나눈 나머지가 같으면 삼합입니다. 그다음이 <b>육합</b>으로 자축·인해·묘술·진유·사신·오미 여섯 짝이며, 마찰 없이 맞물리는 관계입니다.
@@ -721,6 +732,7 @@ tarot:["타로는 정해진 답이 아니라 지금 상황을 비추는 거울�
 todayfortune:["매일의 날짜에도 간지(일진)가 있습니다. 오늘의 일진과 내 일간의 관계(십성)가 그날의 기운입니다.","재성의 날은 재물이, 관성의 날은 일과 책임이, 인성의 날은 배움과 귀인이 움직입니다.","내 일지와 오늘 지지의 합·충에 따라 흐름이 더해지거나 흔들립니다.","행운의 색·방위·숫자는 내 일간을 생해 주는 오행에서 뽑습니다.","행운의 시간대는 오늘 일지와 육합이 되는 지지의 시각입니다."],
 horoscope:["태어난 날 태양이 있던 황도 30도 구간이 내 별자리입니다.","오늘 태양의 위치와 내 별자리가 이루는 각도(0·60·90·120·180도)가 그날의 흐름입니다.","트라인·섹스타일은 순한 각, 스퀘어는 마찰과 성장의 각, 오포지션은 관계의 각입니다.","요일마다 다스리는 행성이 다르고, 내 수호성의 요일이 한 주의 중심입니다."],
 zodiacfortune:["내 띠(연지)와 오늘 일진 지지의 관계가 하루의 결을 정합니다.","삼합(4로 나눈 나머지가 같음)과 육합은 순한 관계, 충·형·해는 마찰이 있는 관계입니다.","오늘 천간이 내 띠 본기에 갖는 십성으로 점수를 한 번 더 조정합니다.","2026 병오년은 태세 오(午)와의 관계로 한 해 흐름을 봅니다."],
+stargunghap:["12별자리는 불·흙·공기·물 네 원소로 나뉘고, 원소 관계가 궁합의 첫 축입니다.","두 별자리의 황도 각도(합·60·90·120·180도)가 두 번째 축입니다.","서로의 수호성이 상대 원소와 결이 맞는지가 세 번째 축입니다.","세 축을 40:40:20으로 종합해 점수를 냅니다."],
 gunghap:["일간 천간합(갑기·을경·병신·정임·무계)은 명리에서 가장 강한 끌림으로 봅니다.","띠의 삼합·육합은 조화를, 충은 강한 자극과 충돌을 뜻합니다.","서로 없는 오행을 채워주는 관계는 함께 있을 때 완성되는 보완형입니다."],
 newyear:["신년운세는 그 해의 간지(2026=병오)와 내 사주의 관계로 봅니다.","연간 병(丙)이 내 일간에 어떤 십성인지가 한 해의 큰 주제입니다.","태세 지지 오(午)와 내 띠·일지의 삼합·육합·충이 세부 흐름을 만듭니다."],
 namematch:["이름 글자의 획수를 번갈아 한 줄로 놓습니다.","이웃한 숫자끼리 더해 일의 자리만 남기며 줄여갑니다.","마지막 두 자리가 궁합 점수입니다. 학창 시절 그 방식 그대로예요."],
@@ -779,6 +791,7 @@ saju:[["태어난 시각을 모르면 어떻게 하나요?","시주를 제외한
 tarot:[["카드는 어떻게 뽑히나요?","메이저 아르카나 22장에서 중복 없이 3장을 무작위로 뽑습니다."],["역방향은 나쁜 건가요?","아니요, 같은 카드의 에너지가 막히거나 다른 방식으로 나타남을 뜻합니다."],["같은 질문을 여러 번 봐도 되나요?","전통적으로는 한 질문에 한 번을 권합니다. 질문을 바꿔 다시 보세요."]],
 todayfortune:[["매일 내용이 바뀌나요?","네, 일진(날의 간지)이 자정에 바뀌므로 운세도 매일 달라집니다."],["무작위로 뽑는 건가요?","아니요, 오늘 일진과 내 일간의 십성 관계라는 명리 규칙으로 계산합니다. 같은 날 같은 생일이면 같은 결과가 나옵니다."],["점수가 낮으면 나쁜 날인가요?","주의 신호일 뿐입니다. 조언대로 움직이면 오히려 실수를 줄이는 날이 됩니다."],["행운의 색은 어떻게 정해지나요?","내 일간(태어난 날의 천간)을 생해 주는 오행에서 뽑습니다. 목은 청록·동쪽, 화는 빨강·남쪽, 토는 노랑·중앙, 금은 흰색·서쪽, 수는 검정·북쪽입니다."],["애정·재물·직장·건강 점수는 어떻게 나오나요?","총점에 십성별 성향 보정을 더합니다. 예를 들어 정재의 날은 재물이 올라가고 편관의 날은 건강이 내려갑니다."],["띠별 운세와 뭐가 다른가요?","오늘의 운세는 생년월일 전체로 일간을 뽑아 봅니다. 띠별 운세는 태어난 해(띠) 하나만으로 보므로 열두 갈래로 나뉩니다."]],
 horoscope:[["별자리는 무슨 기준인가요?","태어난 날 태양이 있던 황도 30도 구간입니다. 이 계산기는 날짜표가 아니라 태양 황경을 직접 계산해 판정합니다."],["경계일에 태어났는데 표와 다르게 나옵니다.","태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎 달라집니다. 황경 계산 결과가 더 정확합니다."],["매일 결과가 바뀌나요?","태양이 하루 약 1도씩 움직이므로 각도 관계가 바뀌고, 요일 지배성도 매일 달라져 결과가 달라집니다."],["이번주 흐름은 어떻게 보나요?","일곱 요일은 각각 태양·달·화성·수성·목성·금성·토성이 다스립니다. 내 별자리 수호성의 요일이 대길, 원소와 결이 맞는 행성의 날이 길입니다."],["별자리와 띠 중 뭐가 맞나요?","서로 다른 체계입니다. 별자리는 태양의 위치, 띠는 동양 간지의 연지이므로 둘 다 참고용으로 따로 보세요."]],
+stargunghap:[["별자리 궁합은 뭘 기준으로 보나요?","원소 관계(40%), 황도 각도(40%), 수호성 친화(20%)를 종합합니다. 태양 별자리 기준입니다."],["잘 맞는 별자리 조합은요?","같은 원소끼리(불-불 등), 그리고 불-공기·흙-물 상생 조합이 전통적으로 순한 궁합입니다. 각도로는 트라인(120°)과 섹스타일(60°)이 순풍입니다."],["점수가 낮으면 헤어져야 하나요?","아니요. 스퀘어·오포지션은 성장과 보완의 각으로도 읽습니다. 부딪히기 쉬운 지점을 미리 아는 용도입니다."],["내 별자리를 정확히 모르면요?","경계일(간절기) 출생이면 별자리 운세 페이지에서 생년월일로 판정한 뒤 다시 보세요."]],
 zodiacfortune:[["내 띠는 어떻게 정해지나요?","태어난 해의 지지입니다. 다만 사주에서는 입춘(2월 4일경)에 바뀌므로 1~2월 초 출생이면 앞 해의 띠일 수 있습니다."],["같은 띠면 다 같은 운세인가요?","띠만으로 보면 열두 갈래로 나뉩니다. 더 정밀하게 보려면 생년월일을 모두 넣는 오늘의 운세를 이용하세요."],["삼합·육합·충이 뭔가요?","십이지가 서로 끌어당기거나 부딪히는 정해진 짝입니다. 삼합·육합은 순하게 맞물리고, 충은 변동, 형·해는 마찰을 뜻합니다."],["충이 든 날은 나가지 말아야 하나요?","아니요. 충은 움직이는 기운이라 변동이 잦다는 뜻입니다. 여유 시간을 미리 빼두면 오히려 유리한 날이 됩니다."],["2026년 띠별 운세는요?","2026년은 병오년입니다. 태세 오(午)와 쥐띠는 충, 호랑이·개띠는 삼합, 양띠는 육합, 소띠는 해에 해당합니다."]],
 gunghap:[["생년월일만으로 충분한가요?","연·월·일 여섯 글자로 핵심 합·충·오행을 봅니다. 시각까지 넣으면 더 정밀해지므로 만세력에서 확인해보세요."],["점수가 낮으면 헤어져야 하나요?","아니요, 부딪히기 쉬운 지점을 알려주는 지도일 뿐입니다. 아는 만큼 조율할 수 있습니다."],["띠 충이면 결혼하면 안 되나요?","전통적 경계일 뿐 절대 규칙이 아닙니다. 실제로는 일간·일지 관계가 더 중요합니다."]],
 newyear:[["2026년은 무슨 해인가요?","병오년(丙午年), 붉은 말의 해입니다."],["왜 사람마다 신년운세가 다른가요?","같은 병오년이라도 내 일간과의 십성 관계, 내 띠와의 합충이 달라서입니다."],["운세가 나쁘면 한 해를 망치나요?","아니요, 주의 구간을 미리 아는 지도일 뿐입니다. 전략 항목을 참고하세요."]],
@@ -793,13 +806,20 @@ const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" con
 // 이미지: 리포 루트 img/ → site/img/ 복사. 파일 없으면 onerror로 조용히 숨김.
 const IMG_SRC = path.join(DIR,"img");
 const CAT_IMG = {"급여·노동":"cat-pay","금융":"cat-fin","부동산·세금":"cat-estate","생활":"cat-life","변환·기타":"cat-conv","재미·운세":"cat-fortune"};
-const OG_IMG_TAG = fs.existsSync(path.join(IMG_SRC,"og.png")) ? `<meta property="og:image" content="${DOMAIN}/img/og.png">` : "";
+// 페이지별 OG: 운세 도구는 자기 히어로 배너, 나머지는 공통 og.jpg
+function ogTag(id){
+  const heroP = id && fs.existsSync(path.join(IMG_SRC,"tool","h-"+id+".webp"));
+  return heroP
+    ? `<meta property="og:image" content="${DOMAIN}/img/tool/h-${id}.webp">`
+    : `<meta property="og:image" content="${DOMAIN}/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
+}
+const OG_IMG_TAG = ogTag(null);
 
 const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네 보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>많이 찾는 도구</h4><a href="salary.html">실수령액 계산기</a><a href="severance.html">퇴직금 계산기</a><a href="loan.html">대출 이자 계산기</a><a href="charcount.html">글자수 세기</a></div>
-<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="tarot.html">타로 카드</a></div>
+<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
 </footer>
 <div class="foot">© 2026 동네보살</div>`;
 
@@ -822,6 +842,7 @@ const titleOverride = {
 todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
 horoscope:"별자리 운세 — 오늘·이번주 12별자리 운세 무료",
 zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
+stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
 saju:"무료 사주 — 사주팔자 만세력·오행·십성·대운 풀이",
 gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
 newyear:"2026 신년운세 — 병오년 무료 운세",
@@ -859,7 +880,7 @@ function toolPage(t){
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
-<meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${OG_IMG_TAG}
+<meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${ogTag(t.id)}
 <link rel="stylesheet" href="style.css">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
 </head><body><div class="wrap">
@@ -877,7 +898,7 @@ ${guideHtml}${exHtml}${cauHtml}${faqHtml}
 ${adSlot()}
 </main>
 <aside class="rail">
-<div class="rcard"><img class="rart" src="img/${CAT_IMG[t.cat]}.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · ${t.cat}</h4>
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/${CAT_IMG[t.cat]}.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · ${t.cat}</h4>
 ${meta.filter(x=>x.cat===t.cat&&x.id!==t.id).slice(0,6).map(x=>`<a href="${x.id}.html">${x.name}<span>→</span></a>`).join("")}</div>
 <div class="rcard"><h4>많이 찾는 도구</h4>
 ${["todayfortune","horoscope","zodiacfortune","saju","salary","severance","loan"].filter(id=>id!==t.id).slice(0,6).map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
@@ -886,12 +907,13 @@ ${["todayfortune","horoscope","zodiacfortune","saju","salary","severance","loan"
 ${siteNav(t.id)}
 ${footer}
 </div>
-<script src="app.js"></script>
+<script src="core.js"></script>
+<script src="t-${t.id}.js"></script>
 <script>mountTool("${t.id}","tool");</script>
 </body></html>`;
 }
 
-const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap"]; // 검색량 높은 순
+const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","stargunghap"]; // 검색량 높은 순
 const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다
   const items = meta.filter(t => t.cat===c);
   if (c !== "재미·운세") return items;
@@ -912,7 +934,7 @@ function indexPage(){
     var items=catItems(c);
     var top=items.slice(0,c==="재미·운세"?6:4);
     return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
-      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" alt="'+c+' 계산기" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
+      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" width="1200" height="800" alt="'+c+' 계산기" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
       '<div class="body">'+top.map(function(t){
         return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-a">→</span></a>';}).join("")+'</div>'+
       '<a class="more" href="#c-'+CAT_IMG[c]+'">'+c+' '+items.length+'개 전체 보기 →</a></article>';
@@ -943,7 +965,7 @@ function indexPage(){
 <div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a class="f" href="todayfortune.html">✦ 오늘의 운세</a><a class="f" href="horoscope.html">✦ 별자리운세</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="tarot.html">✦ 타로</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
-<img class="hero-art" src="img/hero.webp" alt="동네보살 — 밤하늘 아래 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
+<img class="hero-art" width="1200" height="800" fetchpriority="high" src="img/hero.webp" alt="동네보살 — 밤하늘 아래 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div></header>
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
@@ -961,9 +983,23 @@ if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserve
 </body></html>`;
 }
 
-// app.js (공유 로직): 헬퍼 + TOOLS + mountTool
-const appJs = `(function(){\n${helpers}\n${toolsArr}\n`+
-  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};\n})();`;
+// 코드 분할: core.js(헬퍼+엔진) + 도구별 t-<id>.js — 페이지가 자기 도구 코드만 받는다
+const toolBody = toolsArr.slice(toolsArr.indexOf("[")+1, toolsArr.lastIndexOf("]")); // TOOLS=[ ... ] 내부
+const markers = [];
+{ let i = 0; const re = /\n  \{id:"([^"]+)"/g; let m;
+  while ((m = re.exec(toolBody))) markers.push({ id: m[1], at: m.index }); }
+if (markers.length !== meta.length)
+  throw new Error(`도구 분할 실패: 마커 ${markers.length} ≠ 메타 ${meta.length}`);
+const chunks = markers.map((mk, i) => {
+  let src = toolBody.slice(mk.at, i + 1 < markers.length ? markers[i + 1].at : undefined).trim();
+  if (src.endsWith(",")) src = src.slice(0, -1);
+  return { id: mk.id, src };
+});
+const coreJs = `${helpers}\nvar TOOLS=[];\n`+
+  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};`;
+// 구문 파손 즉시 빌드 실패 (파싱만, 실행 안 함)
+new Function(coreJs);
+chunks.forEach(c => { try { new Function("TOOLS.push(" + c.src + ");"); } catch (e) { throw new Error("도구 청크 구문 오류: " + c.id + " — " + e.message); } });
 
 // 사이트맵 + robots
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
@@ -985,7 +1021,8 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
 
 // 쓰기
 fs.writeFileSync(path.join(OUT,"style.css"), css+extraCss);
-fs.writeFileSync(path.join(OUT,"app.js"), appJs);
+fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
+chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"), "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);

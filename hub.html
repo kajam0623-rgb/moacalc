@@ -249,6 +249,9 @@
   .li:last-child{border-bottom:none;} .li b{font-weight:600;font-family:var(--mono);}
   .neg b{color:var(--deduct);}
   .note{font-size:11.5px;color:var(--muted);margin-top:16px;line-height:1.7;}
+  .share-btn{margin-top:14px;width:100%;padding:12px;border:1px solid var(--fun);border-radius:10px;background:transparent;
+    color:var(--fun-ink);font:inherit;font-weight:800;cursor:pointer;}
+  .share-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
@@ -342,7 +345,7 @@
   var SJ_TTI=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
   var ZO_EN=["rat","ox","tiger","rabbit","dragon","snake","horse","goat","monkey","rooster","dog","pig"];
   var ZO_TRAIT=["재치와 기민함으로 기회를 먼저 잡는 기질","묵묵히 쌓아 끝내 이루는 뚝심","두려움 없이 앞장서는 용기와 카리스마","섬세한 배려와 부드러운 지혜","큰 그림을 그리는 스케일과 존재감","깊이 통찰하고 조용히 움직이는 영민함","자유롭고 활동적인 추진력","온화한 감성과 예술적 감각","영리한 임기응변과 재주","분명한 기준과 성실한 자기관리","의리와 신의로 사람을 얻는 힘","넉넉한 인심과 복을 부르는 여유"];
-  function zoCard(b,label){return '<div class="sj-char"><img src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+  function zoCard(b,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
     '<div class="cap"><div class="t">'+(label||"나의 띠")+'</div><div class="n">'+SJ_TTI[b]+'띠</div><p>'+ZO_TRAIT[b]+'</p></div></div>';}
   // ── 서양 점성술(태양 별자리) ──
   var ST_KO=["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","궁수자리","염소자리","물병자리","물고기자리"];
@@ -356,7 +359,7 @@
   var WD_KO=["일","월","화","수","목","금","토"];
   var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
   function stOf(y,m,d){return Math.floor(sjSunLong(sjJdKST(y,m,d,12,0))/30);} // 태양황경으로 별자리 판정
-  function stCard(i,label){return '<div class="sj-char"><img src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+  function stCard(i,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
     '<div class="cap"><div class="t">'+(label||"나의 별자리")+'</div><div class="n">'+ST_SYM[i]+' '+ST_KO[i]+'</div><p>'+ST_TRAIT[i]+'</p></div></div>';}
   // 태양의 각도 관계(어스펙트) — 거리 0~6, [기본점수, 이름, 총운, 애정, 재물·일, 조언, [애정·재물·일·건강 보정]]
   var ST_ASP=[
@@ -498,6 +501,21 @@
     var g=taxableMonthly*12,earned=g-earnedDed(g),base=Math.max(earned-np*12-(hi+ltc+ei)*12-family*15e5,0);
     var c=progressive(base),cr=c<=13e5?c*.55:715000+(c-13e5)*.3,lim=g<=33e6?74e4:g<=7e7?66e4:g<=12e7?5e5:2e5;
     return Math.max(c-Math.min(cr,lim),0)/12;}
+  function escH(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
+  function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
+  function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}}
+  if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
+  function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
+    return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+  function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>';}
+  function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
+    b.addEventListener("click",function(){
+      track("share_click",{tool:location.pathname});
+      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]};
+      if(navigator.share){navigator.share(d).catch(function(){});}
+      else if(navigator.clipboard){navigator.clipboard.writeText(d.text+" "+d.url).then(function(){
+        b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);});}});}
 
   // ---------- TOOLS ----------
   var TOOLS=[
@@ -989,10 +1007,10 @@
     var EL_EN={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"};
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
     '<div><label>태어난 시각</label><select id="t"><option value="">모름 (시주 제외)</option>'+
-    Array.from({length:24},function(_,i){return '<option value="'+i+'"'+(i===12?' selected':'')+'>'+String(i).padStart(2,"0")+"시</option>";}).join("")+'</select></div></div>'+
-    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m">남</option><option value="f">여</option></select></div>'+
+    Array.from({length:24},function(_,i){var sv=loadPrefs().birthHour!=null?+loadPrefs().birthHour:12;return '<option value="'+i+'"'+(i===sv?' selected':'')+'>'+String(i).padStart(2,"0")+"시</option>";}).join("")+'</select></div></div>'+
+    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m"'+(loadPrefs().gender==="f"?"":" selected")+'>남</option><option value="f"'+(loadPrefs().gender==="f"?" selected":"")+'>여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">명식 뽑기</button>'+
     '<div id="out"></div>';
@@ -1003,6 +1021,8 @@
       '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
+      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value});
+      track("fortune_view",{tool:"saju"});
       var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       if(!y){return;}
       var p=sjPillars(y,mo,d,h,0,corr),ds=p.d.s;
@@ -1163,9 +1183,11 @@
         var face=art
           ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+pk.c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
           : '<div class="tr-f"><span class="no">'+pk.c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+pk.c[2]+'</span><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
-        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'"><div class="tr-b">✦</div>'+face+'</div></div>';}).join("");
+        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'" tabindex="0" role="button" aria-label="'+p+' 카드 뒤집기"><div class="tr-b">✦</div>'+face+'</div></div>';}).join("");
       var opened=0;
-      el.querySelectorAll(".tr-card").forEach(function(card){card.addEventListener("click",function(){
+      el.querySelectorAll(".tr-card").forEach(function(card){
+        card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
+        card.addEventListener("click",function(){
         if(card.classList.contains("flip"))return;card.classList.add("flip");
         var i=+card.dataset.i,pk=picks[i],fi=el.querySelector("#f").value;
         // FLD는 카드의 정방향 주제다. 역방향이면 그 흐름이 지연·반전된다고 덧붙여야 해석이 어긋나지 않는다
@@ -1200,13 +1222,13 @@
      "혼자 있고 싶은 마음이 커집니다. 상대는 이걸 거리 두기로 오해할 수 있으니, 말없이 사라지지 말고 한마디만 남기세요.","자료를 파고들거나 구조를 다시 짜는 일에 최적입니다. 반대로 즉답이 필요한 회의나 협상은 오늘 잡지 않는 게 좋습니다.","머리는 바쁜데 몸은 처지는 날입니다. 잠들기 전 생각이 꼬리를 물지 않게 화면을 일찍 끄세요."],
     "정인":[84,"귀인과 배움의 날. 어른·스승·문서에서 도움이 옵니다.","합격·승인·소식운이 좋습니다. 배우는 만큼 쌓입니다.","도움을 받으면 감사를 표현하세요. 운이 두 배가 됩니다.","혼자 끙끙 앓기. 오늘은 도움을 청하면 대부분 열립니다.",[2,0,6,6],
      "보살핌을 주고받는 날입니다. 상대의 힘든 이야기를 들어주는 것만으로 관계가 깊어집니다. 윗사람의 소개로 인연이 닿기도 합니다.","배움과 문서에 볕이 듭니다. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람에게 물으면 바로 풀립니다.","회복이 잘 되는 날입니다. 미뤄둔 검진이나 치료를 시작하기에도 좋습니다."]};
-    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">오늘 운세 보기</button>'+
     '<div id="out"></div>';
-    function bar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
-      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+    function bar(n,v){return rateBar(n,v);}
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
+      savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"todayfortune"});
       var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var today=sjPillars(ty,tm,td,null,0,false);
@@ -1222,6 +1244,11 @@
       var myEl=SJ_ES[me.d.s],luckEl=(myEl+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tB);
       // 오늘 지지가 내 일간에 대해 갖는 십이운성 — 하루의 체감 컨디션
       var un=sjUnseong(me.d.s,tB);
+      // 이달의 운세: 이번 달 월간(月干)이 내 일간에 갖는 십성 + 월지-일지 합충
+      var mRel=sjTenGod(me.d.s,today.m.s),mB=today.m.b,mNote="";
+      if(myB%4===mB%4&&myB!==mB)mNote=" 내 일지와 이달 월지가 삼합이라 사람의 도움이 이 달 내내 힘을 보탭니다.";
+      else if(Math.abs(myB-mB)===6)mNote=" 내 일지와 이달 월지가 충이라 달 전체에 변동수가 깔려 있습니다. 일정에 여유분을 두세요.";
+      else if(sjYukhap(myB)===mB)mNote=" 내 일지와 이달 월지가 육합이라 관계가 부드럽게 풀리는 달입니다.";
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">내 일간 '+SJ_S[me.d.s]+' 기준 오늘은 <b>'+rel+'</b>의 날</div></div>'+
@@ -1233,25 +1260,29 @@
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+
       '<div class="sj-sec"><h3>건강운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[3]+'점</span></h3><p>'+T[8]+'</p></div>'+
       '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
+      '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 내 일간에게 '+mRel+'입니다. '+TXT[mRel][1]+mNote+' 절기가 바뀌면 월주도 바뀌므로 달의 흐름은 매달 초(절입일)에 다시 확인하세요.</p></div>'+
       '<div class="sj-sec"><h3>오늘 피해야 할 것</h3><p>'+T[4]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">내 일간 '+SJ_S[me.d.s]+'('+SJ_EL[myEl]+')을 생해 주는 '+SJ_EL[luckEl]+' 기운이 오늘의 보완입니다. 그래서 '+L[0]+' 계열 소지품과 '+L[1]+' 방향이 유리합니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시로, 사람과 일이 맞물리기 쉬운 구간입니다.</p></div>'+
-      '<p class="note">오늘의 일진(일 간지)과 내 일간의 십성 관계, 일지의 삼합·육합·충, 십이운성을 함께 보는 정통 명리 방식입니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';}
+      shareBtn()+
+      '<p class="note">오늘의 일진(일 간지)과 내 일간의 십성 관계, 일지의 삼합·육합·충, 십이운성을 함께 보는 정통 명리 방식입니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
+      bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);go();}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
     ST_KO.map(function(n,i){return '<option value="'+i+'">'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">별자리 운세 보기</button>'+
     '<div id="out"></div>';
-    function hbar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
-      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+    function hbar(n,v){return rateBar(n,v);}
     function go(){
       var sel=+el.querySelector("#s").value,mine;
       if(sel>=0)mine=sel;
-      else{var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;mine=stOf(+dv[0],+dv[1],+dv[2]);}
+      else{var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;mine=stOf(+dv[0],+dv[1],+dv[2]);
+        savePrefs({birth:el.querySelector("#d").value});}
+      track("fortune_view",{tool:"horoscope"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var sun=stOf(ty,tm,td),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
       var ele=ST_ELE[mine%4],ruler=ST_RULER[mine],fri=ST_ELE_RULERS[ele];
@@ -1280,9 +1311,60 @@
       '<div class="sj-sec"><h3>조언</h3><p>'+A[5]+' '+rnote+'</p></div>'+
       '<div class="sj-sec"><h3>이번주 흐름</h3><div class="sj-daeun">'+week+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">요일마다 다스리는 행성(칠요)이 다릅니다. 내 별자리 수호성 '+ruler+'이 맡은 '+best+'요일이 한 주의 중심이고, '+ele+' 원소와 결이 맞는 행성의 날이 그다음입니다.</p></div>'+
-      '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';}
+      shareBtn()+
+      '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';
+      bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
     el.querySelector("#s").addEventListener("change",go);go();}},
+
+  {id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합",desc:"12별자리 커플 궁합",render:function(el){
+    // 원소 관계 [점수, 이름, 해설]
+    var ELREL={
+    same:[86,"같은 원소","서로를 설명할 필요가 없는 조합입니다. 같은 언어로 말하고 같은 것에 웃습니다. 다만 약점도 똑같이 겹쳐서, 둘 다 피하는 문제는 아무도 해결하지 않습니다."],
+    friend:[82,"상생 원소","불에 바람이 붙듯, 흙에 물이 스미듯 서로를 키워주는 조합입니다. 다른 방식으로 움직이지만 방향이 맞아, 함께 있을 때 각자보다 커집니다."],
+    tense:[58,"긴장 원소","물과 불처럼 기질의 전제가 다른 조합입니다. 처음엔 그 다름이 신선하지만 일상에서는 속도와 온도 차이로 부딪힙니다. 서로를 고치려 들지 않는 것이 관건입니다."]};
+    function elRel(a,b){var ea=a%4,eb=b%4;
+      if(ea===eb)return "same";
+      if((ea===0&&eb===2)||(ea===2&&eb===0)||(ea===1&&eb===3)||(ea===3&&eb===1))return "friend"; // 불-공기, 흙-물
+      return "tense";}
+    el.innerHTML='<div class="r2"><div><label>내 별자리</label><select id="a">'+
+    ST_KO.map(function(n,i){return '<option value="'+i+'"'+(i===4?' selected':'')+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div>'+
+    '<div><label>상대 별자리</label><select id="b">'+
+    ST_KO.map(function(n,i){return '<option value="'+i+'"'+(i===8?' selected':'')+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">별자리 궁합 보기</button>'+
+    '<div id="out"></div>';
+    function go(){
+      var a=+el.querySelector("#a").value,b=+el.querySelector("#b").value;
+      track("fortune_view",{tool:"stargunghap"});
+      var er=elRel(a,b),E=ELREL[er];
+      var k=(b-a+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+      // 수호성 친화: 서로의 수호성이 상대 원소의 지배성 목록에 있으면 가점
+      var rA=ST_RULER[a],rB=ST_RULER[b];
+      var rFit=(ST_ELE_RULERS[ST_ELE[b%4]].indexOf(rA)>=0?1:0)+(ST_ELE_RULERS[ST_ELE[a%4]].indexOf(rB)>=0?1:0);
+      var sc=Math.round(E[0]*0.4+A[0]*0.4+(60+rFit*16)*0.2);
+      sc=Math.max(35,Math.min(99,sc));
+      var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
+      var subs=[["끌림",sc+(dist===0||dist===4?6:dist===3?-4:2)],["대화",sc+(er==="same"?6:er==="friend"?4:-6)],
+        ["일상",sc+(er==="tense"?-6:4)],["롱런",sc+(rFit===2?8:rFit===1?4:-2)]].map(function(x){
+        return [x[0],Math.max(30,Math.min(99,x[1]))];});
+      var rNote=rFit===2?"두 사람의 수호성("+rA+"·"+rB+")이 서로의 원소와 결이 맞아, 오래 갈수록 편해지는 조합입니다."
+        :rFit===1?"한쪽 수호성은 상대 원소와 결이 맞고 한쪽은 다릅니다. 맞춰주는 쪽이 지치지 않게 표현을 아끼지 마세요."
+        :"수호성("+rA+"·"+rB+")의 결이 서로 달라, 연애 초반보다 시간이 지나며 이해가 쌓이는 형태입니다.";
+      el.querySelector("#out").innerHTML=
+      '<div class="out" style="margin-top:16px"><div class="k">'+ST_SYM[a]+' '+ST_KO[a]+' ♥ '+ST_SYM[b]+' '+ST_KO[b]+'</div>'+
+      '<div class="v">'+sc+'<small>점 · '+grade+'</small></div><div class="s">'+E[1]+' · '+A[1]+' 관계</div></div>'+
+      '<div class="sj-bars">'+subs.map(function(x){return rateBar(x[0],x[1]);}).join("")+'</div>'+
+      '<div class="gh-pair">'+stCard(a,"나")+stCard(b,"상대")+'</div>'+
+      '<div class="sj-sec"><h3>원소 궁합 — '+ST_ELE[a%4]+' × '+ST_ELE[b%4]+'</h3><p>'+E[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>각도 관계 — '+A[1]+'</h3><p>두 별자리는 황도에서 '+(dist*30)+'° 떨어져 있습니다. '+A[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>수호성 궁합</h3><p>'+ST_KO[a]+'는 '+rA+', '+ST_KO[b]+'는 '+rB+'가 다스립니다. '+rNote+'</p></div>'+
+      '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
+      shareBtn()+
+      '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
+      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");}
+    el.querySelector("#go").addEventListener("click",go);
+    el.querySelector("#a").addEventListener("change",go);
+    el.querySelector("#b").addEventListener("change",go);go();}},
 
   {id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세",desc:"12띠 오늘의 운세",render:function(el){
     // 오늘 일지와 내 띠(연지)의 관계 → [기본점수, 총운, 재물·일, 애정, 조언, [애정·재물·직장·건강]]
@@ -1294,7 +1376,7 @@
     "해":[60,"내 띠와 오늘 지지가 해(害)로 만납니다. 사소한 어긋남이 감정을 건드리기 쉽습니다.","약속 시간·금액 같은 작은 숫자에서 착오가 납니다. 두 번 확인하세요.","말투 때문에 오해가 생깁니다. 문자보다 통화가 낫습니다.","오늘의 서운함은 대개 사실 확인 한 번으로 풀립니다.",[-8,-4,-4,-2]],
     "형":[56,"내 띠와 오늘 지지가 형(刑)입니다. 밀어붙일수록 마찰이 커지는 날입니다.","서류·계약·법적인 문제에서 다툼이 생기기 쉽습니다. 도장은 내일.","날 선 말이 오갑니다. 이기려 하지 마세요.","오늘 참으면 내일 유리해집니다. 정면충돌은 오늘의 방식이 아닙니다.",[-8,-6,-8,-8]],
     "충":[52,"내 띠와 오늘 지지가 충(沖)입니다. 예정이 흔들리고 변수가 튀어나오는 날입니다.","이동·변경·취소가 잦습니다. 여유 시간을 미리 빼두세요.","감정 기복이 큽니다. 중요한 대화는 하루 미루세요.","충은 나쁜 것이 아니라 움직이는 기운입니다. 어차피 움직일 거라면 내가 먼저 정하세요.",[-10,-8,-6,-10]]};
-    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
+    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="'+((loadPrefs().birth||"1990-03-15").split("-")[0])+'" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
     SJ_TTI.map(function(n,i){return '<option value="'+i+'">'+n+'띠</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">띠별 운세 보기</button>'+
@@ -1309,11 +1391,11 @@
       if(b%4===t%4)return"삼합";
       if(sjYukhap(b)===t)return"육합";
       return"평";}
-    function zbar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
-      return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+    function zbar(n,v){return rateBar(n,v);}
     function go(){
       var sel=+el.querySelector("#s").value,b;
       if(sel>=0)b=sel;else{var y=+el.querySelector("#y").value;if(!y)return;b=((y-4)%12+12)%12;}
+      track("fortune_view",{tool:"zodiacfortune"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var today=sjPillars(ty,tm,td,null,0,false),tb=today.d.b;
       var rel=zrel(b,tb),Z=ZR[rel],score=Z[0];
@@ -1344,13 +1426,15 @@
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운입니다. 이를 생해 주는 '+SJ_EL[luckEl]+'이 오늘의 보완이라 '+L[0]+' 계열과 '+L[1]+' 방향이 유리합니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시입니다.</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
-      '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';}
+      shareBtn()+
+      '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
+      bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
     el.querySelector("#s").addEventListener("change",go);go();}},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
-    '<div><label>상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
+    '<div><label>상대 생년월일</label><input type="date" id="b" value="'+(loadPrefs().partnerBirth||"1992-07-20")+'"></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">궁합 보기</button>'+
     '<div id="out"></div>';
     function pts(a,b){ // [점수증감, 설명] 목록
@@ -1387,6 +1471,8 @@
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||bv.length<3)return;
+      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value});
+      track("fortune_view",{tool:"gunghap"});
       var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
       var r=pts(A,B),sc=r[0],rows=r[1];
       var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
@@ -1398,8 +1484,7 @@
       var life=sc+(has("배우자궁 삼합")||has("배우자궁 육합")?10:0)-(has("배우자궁 충")?12:0); // 생활: 일지
       var subs=[["끌림",attract],["안정",stable],["소통",talk],["생활",life]].map(function(x){
         return [x[0],Math.max(30,Math.min(99,x[1]))];});
-      function gbar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
-        return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+      function gbar(n,v){return rateBar(n,v);}
       var advice=sc>=85
         ? "합이 여러 겹으로 걸린 조합입니다. 서로 애쓰지 않아도 흐름이 맞는 편이라, 오히려 당연하게 여기다 소홀해지는 게 유일한 위험입니다. 잘 맞는 이유를 가끔 말로 확인해 주세요."
         : sc>=72
@@ -1421,7 +1506,9 @@
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
-      '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';}
+      shareBtn()+
+      '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
+      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);go();}},
 
   {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
@@ -1437,11 +1524,12 @@
     "정관":["명예와 자리의 해","승진·합격·공식 인정운이 밝은 해. 원칙대로 움직일수록 평판이 자산이 됩니다.","이력서·자격·직함 등 공적인 것을 정비하기 좋은 해입니다."],
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해. 자격증·공부·기획에 유리하고, 결정은 숙성 후에 내리는 게 좋습니다.","혼자 파고드는 시간이 하반기의 반전을 만듭니다."],
     "정인":["귀인과 문서의 해","어른·스승·기관의 도움이 오는 해. 계약·합격·승인 등 문서운이 밝습니다.","배움에 쓰는 돈이 올해 가장 수익률 높은 투자입니다."]};
-    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">2026 병오년 운세 보기</button>'+
     '<div id="out"></div>';
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
+      savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"newyear"});
       var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
       var rel=sjTenGod(me.d.s,YS),T=TXT[rel];
       var yb=me.y.b,db=me.d.b,notes=[];
@@ -1467,8 +1555,7 @@
       "정인":[[0,8,2,6],"상반기에 귀인과 문서가 움직입니다. 합격·승인·계약 소식이 오기 쉽습니다.","하반기에는 배운 것이 쓰이기 시작합니다. 사람을 통해 다음 기회가 옵니다.","혼자 해결하려는 습관. 도움을 청하면 열리는 해인데 그걸 안 합니다."]};
       var E=EXT[rel],sub=[["재물",E[0][0]],["직장",E[0][1]],["애정",E[0][2]],["건강",E[0][3]]].map(function(x){
         return [x[0],Math.max(30,Math.min(99,score+x[1]))];});
-      function ybar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
-        return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+      function ybar(n,v){return rateBar(n,v);}
       var un=sjUnseong(me.d.s,YB); // 태세 오(午)가 내 일간에 갖는 십이운성
       el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">2026 병오년(丙午年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
@@ -1482,7 +1569,9 @@
       '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
       (notes.length?'<div class="sj-sec"><h3>합·충 포인트</h3><p>'+notes.join(" ")+'</p></div>':"")+
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 태세 지지 오(午)가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 2026년 한 해 동안 밑바탕에 깔리는 기운이 이렇습니다.</p></div>'+
-      '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';}
+      shareBtn()+
+      '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
+      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);go();}},
 
   {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
@@ -1522,7 +1611,7 @@
         ? "두 이름의 글자 수가 달라, 짧은 쪽이 먼저 끝나고 남은 글자가 이어 붙습니다. 그래서 순서를 바꾸면 점수가 달라질 수 있어요."
         : "두 이름의 글자 수가 같아 획수가 나란히 번갈아 놓입니다. 가장 정석적인 배열이에요.";
       el.querySelector("#out").innerHTML=
-      '<div class="out" style="margin-top:16px"><div class="k">'+A+' ♥ '+B+'</div><div class="v">'+score+'<small>점 · '+BAND[0]+'</small></div></div>'+
+      '<div class="out" style="margin-top:16px"><div class="k">'+escH(A)+' ♥ '+escH(B)+'</div><div class="v">'+score+'<small>점 · '+BAND[0]+'</small></div></div>'+
       '<div class="sj-sec"><h3>획수 피라미드</h3>'+pyramid+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.7">맨 윗줄이 두 이름의 획수를 번갈아 놓은 것이고, 이웃한 두 수를 더해 일의 자리만 남기며 줄여 내려갑니다. 마지막 두 자리가 점수예요. '+lenNote+'</p></div>'+
       '<div class="sj-sec"><h3>풀이</h3><p>'+msg+'</p></div>'+
