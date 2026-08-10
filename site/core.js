@@ -177,10 +177,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});
-      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]};
+      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]},full=d.text+" "+d.url;
+      function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);}
+      function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
+        var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";
+        document.body.appendChild(ta);ta.select();
+        try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
+        document.body.removeChild(ta);}
       if(navigator.share){navigator.share(d).catch(function(){});}
-      else if(navigator.clipboard){navigator.clipboard.writeText(d.text+" "+d.url).then(function(){
-        b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);});}});}
+      else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
+      else legacy();});}
 
   // ---------- TOOLS ----------
   
