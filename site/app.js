@@ -850,7 +850,7 @@ var TOOLS=[
     ["XX","심판","🎺","부활과 소명. 과거를 정리하고 한 단계 올라설 부름이 옵니다.","과거에 매인 자책. 용서(특히 자신에 대한)가 열쇠입니다."],
     ["XXI","세계","🌍","완성과 성취. 하나의 사이클이 아름답게 닫힙니다.","마무리 직전의 지연. 마지막 조각 하나만 채우면 됩니다."]];
     var POS=["과거","현재","미래"];
-    var ART={0:"tarot-00-fool",1:"tarot-01-magician",2:"tarot-02-priestess",3:"tarot-03-empress",4:"tarot-04-emperor",6:"tarot-06-lovers",8:"tarot-08-strength",9:"tarot-09-hermit",17:"tarot-17-star",19:"tarot-19-sun"};
+    var ART={0:"tarot-00-fool",1:"tarot-01-magician",2:"tarot-02-priestess",3:"tarot-03-empress",4:"tarot-04-emperor",5:"tarot-05-hierophant",6:"tarot-06-lovers",7:"tarot-07-chariot",8:"tarot-08-strength",9:"tarot-09-hermit",10:"tarot-10-wheel",11:"tarot-11-justice",12:"tarot-12-hanged",13:"tarot-13-death",14:"tarot-14-temperance",15:"tarot-15-devil",16:"tarot-16-tower",17:"tarot-17-star",18:"tarot-18-moon",19:"tarot-19-sun",20:"tarot-20-judgement",21:"tarot-21-world"};
     el.innerHTML='<p class="note" style="margin-top:0">마음속으로 질문 하나를 떠올리고, 카드를 차례로 눌러 뒤집으세요.</p>'+
     '<div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>'+
     '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">다시 뽑기</button>';
