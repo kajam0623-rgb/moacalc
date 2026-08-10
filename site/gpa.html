@@ -14,8 +14,8 @@
 <div class="toolhero"><img src="img/tool/h-gpa.webp" alt="학점 계산기" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>학점 계산기</h1><div class="tl">평점(GPA)</div></div></div>
 <div class="card tool" id="tool"></div>
 <div class="tags"><span>#학점 계산기</span><span>#평점 평균</span><span>#GPA 계산</span></div>
-<p class="intro">과목별 학점과 평점을 입력해 평점 평균(GPA)을 계산합니다.</p>
-<section class="guide"><h2>이렇게 계산해요</h2><ul><li>GPA = Σ(학점×평점) ÷ Σ학점.</li><li>학점이 큰 과목의 평점이 GPA에 더 크게 반영됩니다.</li></ul></section><section class="faq"><h2>자주 묻는 질문</h2><details><summary>4.5 만점만 되나요?</summary><p>입력한 평점을 그대로 가중평균하므로 4.3·4.0 만점도 됩니다.</p></details><details><summary>학점은 어떻게 넣나요?</summary><p>한 줄에 '학점,평점' 형식으로 과목마다 입력합니다.</p></details></section>
+<div class="intro"><p style="margin-bottom:10px">평점 평균(GPA)은 단순히 성적의 평균이 아닙니다. <b>학점(이수 단위)이 가중치</b>로 들어갑니다. 3학점 과목의 A와 1학점 과목의 A가 GPA에 미치는 영향이 다르다는 뜻입니다.</p><p style="margin-bottom:10px">계산식은 Σ(학점 × 평점) ÷ Σ학점입니다. 예를 들어 3학점 4.5, 3학점 4.0, 2학점 3.5를 들었다면 (13.5 + 12 + 7) ÷ 8 = 4.06이 됩니다.</p><p style="margin-bottom:10px">그래서 학점이 큰 전공 과목의 성적이 GPA를 크게 좌우합니다. 학점 관리를 할 때는 3학점짜리 주요 과목에 우선순위를 두는 것이 효율적입니다.</p></div>
+<section class="guide"><h2>이렇게 계산해요</h2><ul><li>GPA = Σ(학점×평점) ÷ Σ학점.</li><li>학점이 큰 과목의 평점이 GPA에 더 크게 반영됩니다.</li></ul></section><div class="exbox"><h3>예시로 보기 — 3학점 4.5 / 3학점 4.0 / 2학점 3.5 / 3학점 4.5</h3><div class="row"><span>Σ(학점×평점)</span><b>46.0</b></div><div class="row"><span>Σ학점</span><b>11학점</b></div><div class="res"><span>평점 평균</span><b>4.18</b></div></div><section class="guide"><h2>이것만은 확인하세요</h2><ul class="warns"><li><b>만점 기준을 확인하세요.</b> 4.5 만점과 4.3, 4.0 만점 학교가 다릅니다.</li><li><b>P/F 과목은 보통 제외됩니다.</b> GPA 계산에 포함되지 않는 과목이 있습니다.</li><li><b>재수강 반영 방식이 학교마다 다릅니다.</b> 최종 성적만 반영하는 곳과 평균 내는 곳이 있습니다.</li><li><b>전공 평점을 따로 보는 곳도 많습니다.</b> 대학원·취업에서는 전공 GPA를 요구하기도 합니다.</li></ul></section><section class="faq"><h2>자주 묻는 질문</h2><details><summary>4.5 만점만 되나요?</summary><p>입력한 평점을 그대로 가중평균하므로 4.3·4.0 만점도 됩니다.</p></details><details><summary>학점은 어떻게 넣나요?</summary><p>한 줄에 '학점,평점' 형식으로 과목마다 입력합니다.</p></details></section>
 <div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>
 </main>
 <aside class="rail">
