@@ -286,6 +286,20 @@
   .tr-f .sym{font-size:34px;margin:6px 0;}
   .tr-f .nm{font-size:12.5px;font-weight:800;line-height:1.3;}
   .tr-f .rv{font-size:10px;color:var(--deduct);margin-top:3px;}
+  .tr-f.art{padding:0;overflow:hidden;}
+  .tr-f.art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .tr-f.art img.rev{transform:rotate(180deg);}
+  .tr-f.art .cap{position:absolute;left:0;right:0;bottom:0;padding:20px 6px 7px;
+    background:linear-gradient(transparent,rgba(8,11,16,.92));text-align:center;}
+  .tr-f.art .nm{color:#eff2f7;text-shadow:0 1px 6px #000;}
+  /* 사주 오행 캐릭터 */
+  .sj-char{display:flex;gap:16px;align-items:center;background:var(--surface-2);border:1px solid var(--line-2);
+    border-radius:14px;padding:14px;margin-top:18px;}
+  .sj-char img{width:118px;height:118px;border-radius:12px;object-fit:cover;flex:0 0 auto;border:1px solid var(--line);}
+  .sj-char .t{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+  .sj-char .n{font-size:19px;font-weight:800;margin:4px 0 5px;letter-spacing:-.4px;}
+  .sj-char p{font-size:13px;color:var(--muted);line-height:1.7;}
+  @media (max-width:480px){.sj-char img{width:88px;height:88px;}}
   .tr-read{margin-top:16px;}
   .tr-read .one{border-left:3px solid var(--fun);padding:2px 0 2px 12px;margin:12px 0;}
   .tr-read .one b{font-size:13.5px;}
@@ -1029,6 +1043,8 @@
     "바다·큰 강처럼 스케일이 크고 지혜롭습니다. 자유를 사랑하고 포용력이 있지만, 한곳에 매이는 것을 싫어합니다.",
     "이슬비·시냇물처럼 총명하고 감수성이 풍부합니다. 스며드는 힘으로 사람의 마음을 읽어내며, 아이디어가 많습니다."];
     var ELDESC={목:"성장·시작·인정",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·저장"};
+    var EL_EN={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"};
+    var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
     '<div><label>태어난 시각</label><select id="t"><option value="">모름 (시주 제외)</option>'+
@@ -1097,6 +1113,9 @@
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
         '<div class="s">돕는 기운 '+Math.round(st.ratio*100)+'% · 보조용신 '+y2El+'</div></div>'+
+        '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+        '<div><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
+        '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났습니다.</p></div></div>'+
         '<div class="sj-sec"><h3>일간 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'</p></div>'+
         '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+SJ_GYEOK_DESC[gyeok]+'<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
         (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
@@ -1142,17 +1161,21 @@
     ["XX","심판","🎺","부활과 소명. 과거를 정리하고 한 단계 올라설 부름이 옵니다.","과거에 매인 자책. 용서(특히 자신에 대한)가 열쇠입니다."],
     ["XXI","세계","🌍","완성과 성취. 하나의 사이클이 아름답게 닫힙니다.","마무리 직전의 지연. 마지막 조각 하나만 채우면 됩니다."]];
     var POS=["과거","현재","미래"];
+    var ART={0:"tarot-00-fool",1:"tarot-01-magician",2:"tarot-02-priestess",3:"tarot-03-empress",4:"tarot-04-emperor",6:"tarot-06-lovers",8:"tarot-08-strength",9:"tarot-09-hermit",17:"tarot-17-star",19:"tarot-19-sun"};
     el.innerHTML='<p class="note" style="margin-top:0">마음속으로 질문 하나를 떠올리고, 카드를 차례로 눌러 뒤집으세요.</p>'+
     '<div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>'+
     '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">다시 뽑기</button>';
     var picks;
     function deal(){
       var idx=[];while(idx.length<3){var n=Math.floor(Math.random()*22);if(idx.indexOf(n)<0)idx.push(n);}
-      picks=idx.map(function(n){return {c:M[n],rev:Math.random()<0.4};});
+      picks=idx.map(function(n){return {c:M[n],i:n,rev:Math.random()<0.4};});
       el.querySelector("#r").innerHTML="";
       el.querySelector("#b").innerHTML=POS.map(function(p,i){
-        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'"><div class="tr-b">✦</div>'+
-        '<div class="tr-f"><span class="no">'+picks[i].c[0]+'</span><span class="sym" style="display:inline-block'+(picks[i].rev?';transform:rotate(180deg)':'')+'">'+picks[i].c[2]+'</span><span class="nm">'+picks[i].c[1]+'</span>'+(picks[i].rev?'<span class="rv">역방향</span>':'')+'</div></div></div>';}).join("");
+        var pk=picks[i],art=ART[pk.i];
+        var face=art
+          ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+pk.c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
+          : '<div class="tr-f"><span class="no">'+pk.c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+pk.c[2]+'</span><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
+        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'"><div class="tr-b">✦</div>'+face+'</div></div>';}).join("");
       el.querySelectorAll(".tr-card").forEach(function(card){card.addEventListener("click",function(){
         if(card.classList.contains("flip"))return;card.classList.add("flip");
         var i=+card.dataset.i,pk=picks[i];
@@ -1314,7 +1337,7 @@
   ];
 
   // ---------- router / render ----------
-  var CATS=["급여·노동","금융","부동산·세금","생활","변환·기타","재미·운세"];
+  var CATS=["재미·운세","급여·노동","금융","부동산·세금","생활","변환·기타"];
   function home(){
     var LOGO='<svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><text x="8" y="25" font-family="ui-monospace,monospace" font-size="17" font-weight="800" fill="var(--accent)">&gt;</text><rect x="19" y="14" width="9" height="2.6" rx="1.3" fill="var(--fun)"/><rect x="19" y="19.4" width="9" height="2.6" rx="1.3" fill="var(--fun)"/></svg>';
     var h='<header class="hero"><div class="logo-row">'+LOGO+'<span class="brand">모아계산기</span><span class="meta">2026 · '+TOOLS.length+' TOOLS</span></div>'+

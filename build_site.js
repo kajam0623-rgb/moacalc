@@ -21,7 +21,7 @@ const tStart = inner.indexOf("var TOOLS=");
 const toolsArr = inner.slice(tStart, inner.indexOf("\n  ];", tStart) + "\n  ];".length);
 
 // 도구 메타 파싱
-const CATS = ["급여·노동","금융","부동산·세금","생활","변환·기타","재미·운세"];
+const CATS = ["재미·운세","급여·노동","금융","부동산·세금","생활","변환·기타"];
 const meta = [];
 const re = /\{id:"([^"]+)",cat:"([^"]+)",icon:"[^"]*",name:"([^"]+)",desc:"([^"]+)"/g;
 let m; while ((m = re.exec(toolsArr))) meta.push({ id:m[1], cat:m[2], name:m[3], desc:m[4] });
@@ -628,10 +628,10 @@ function indexPage(){
       return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
     }).join("")+'</section>';
   }).join("");
-  const BENTO=["b-wide","b-wide","","","","b-full"];
+  const BENTO=["b-full","b-wide","b-wide","","",""];
   const catCards = CATS.map(function(c,ci){
     var items=meta.filter(function(t){return t.cat===c;});
-    var top=items.slice(0,ci===5?6:4);
+    var top=items.slice(0,ci===0?6:4);
     return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
       '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" alt="'+c+' 계산기" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
       '<div class="body">'+top.map(function(t){
@@ -709,9 +709,15 @@ fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSEN
 fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
 // img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)
 if (fs.existsSync(IMG_SRC)) {
-  fs.mkdirSync(path.join(OUT,"img"), { recursive: true });
-  fs.readdirSync(IMG_SRC).forEach(f => fs.copyFileSync(path.join(IMG_SRC,f), path.join(OUT,"img",f)));
-  console.log("   이미지 복사:", fs.readdirSync(IMG_SRC).length, "개");
+  let n = 0;
+  (function copyDir(src, dst){
+    fs.mkdirSync(dst, { recursive: true });
+    for (const f of fs.readdirSync(src, { withFileTypes: true })) {
+      const s = path.join(src, f.name), d = path.join(dst, f.name);
+      if (f.isDirectory()) copyDir(s, d); else { fs.copyFileSync(s, d); n++; }
+    }
+  })(IMG_SRC, path.join(OUT,"img"));
+  console.log("   이미지 복사:", n, "개");
 }
 
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
