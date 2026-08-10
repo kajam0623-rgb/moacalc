@@ -305,10 +305,16 @@ ${footer}
 function indexPage(){
   const rows = CATS.map(function(c){
     var items=meta.filter(function(t){return t.cat===c;});
-    return '<section class="grp'+(c==="재미·운세"?" fun":"")+'"><div class="cat"><img class="cat-art" src="img/'+CAT_IMG[c]+'.webp" alt="" loading="lazy" onerror="this.remove()"><span>'+c+'</span></div>'+items.map(function(t){
+    return '<section class="grp wash'+(c==="재미·운세"?" fun":"")+'"><div class="cat" data-n="'+items.length+'"><img class="cat-art" src="img/'+CAT_IMG[c]+'.webp" alt="" loading="lazy" onerror="this.remove()"><span>'+c+'</span></div>'+items.map(function(t){
       return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
     }).join("")+'</section>';
   }).join("");
+  const kpis = `<div class="kpis">
+<div class="kpi wash"><div class="kl"><i></i>도구</div><div class="kv">${meta.length}</div><div class="kd">계산기 · 운세 <b>전부 무료</b></div></div>
+<div class="kpi wash"><div class="kl"><i></i>기준연도</div><div class="kv">2026</div><div class="kd">세율 <b>최신 반영</b></div></div>
+<div class="kpi wash"><div class="kl"><i></i>가입</div><div class="kv">0</div><div class="kd">로그인 없이 <b>바로 사용</b></div></div>
+<div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
+</div>`;
   const desc="실수령액·퇴직금·대출·부가세·글자수 등 자주 쓰는 계산기 "+meta.length+"개를 한 곳에. 2026년 기준, 무료.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -324,17 +330,21 @@ function indexPage(){
 <div>
 <h1 class="hero-h">뭐든 물어보세요.<br><b>숫자로 답합니다.</b></h1>
 <div class="hero-sub">실수령액·퇴직금·대출부터 사주·타로까지 ${meta.length}가지, 한 곳에서.</div>
-<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div><input class="search" id="q" placeholder="계산기 검색 — 퇴직금, 부가세, 만 나이…" style="margin-top:8px"></div>
+<div class="console"><div class="prompt">&gt; 무엇을 계산할까요<span class="cur"></span></div>
+<div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="퇴직금, 부가세, 만 나이…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a><a href="charcount.html">글자수</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="todayfortune.html">✦ 오늘운세</a><a class="f" href="tarot.html">✦ 타로</a></nav>
 </div>
 <img class="hero-art" src="img/hero.webp" alt="모아계산기 — 콘솔에 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div></header>
+${kpis}
 ${rows}
 ${adSlot()}
 ${footer}
 </div>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"모아계산기","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
-<script>var q=document.getElementById("q");if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});
+<script>var q=document.getElementById("q");
+if(q)addEventListener("keydown",function(e){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();q.focus();q.select();}else if(e.key==="/"&&document.activeElement!==q){e.preventDefault();q.focus();}});
+if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});
 if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;
 }
