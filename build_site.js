@@ -809,8 +809,20 @@ function siteNav(currentId){
   }).join("")+'</nav>';
 }
 
+// 운세 페이지는 "계산기" 대신 검색어에 맞는 타이틀을 쓴다
+const titleOverride = {
+todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
+horoscope:"별자리 운세 — 오늘·이번주 12별자리 운세 무료",
+zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
+saju:"사주팔자 무료 — 만세력·오행·십성·대운 풀이",
+gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
+newyear:"2026 신년운세 — 병오년 무료 운세",
+tarot:"타로 카드 — 무료 온라인 타로점 3카드",
+namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
+lotto:"로또 번호 생성기 — 무료 행운번호 6자리",
+};
 function toolPage(t){
-  const title = t.name+" — 무료 온라인 계산기 | 모아계산기";
+  const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 모아계산기";
   const desc = (intro[t.id]||t.desc).slice(0,155);
   const url = DOMAIN+"/"+t.id+".html";
   const ld = {"@context":"https://schema.org","@type":"WebApplication",name:t.name,description:desc,
