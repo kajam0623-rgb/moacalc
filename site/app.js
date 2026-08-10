@@ -62,6 +62,66 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    토:{color:"노랑·갈색",dir:"중앙",season:"환절기",job:"부동산·건축·중개·관리·농업 등 중심을 잡는 일",act:"신뢰를 쌓고 관계를 중재하는 활동"},
    금:{color:"흰색·금색",dir:"서쪽",season:"가을",job:"금융·법률·기계·의료기기·군경 등 정리하는 일",act:"규칙을 세우고 결단하는 활동"},
    수:{color:"검정·남색",dir:"북쪽",season:"겨울",job:"연구·유통·무역·수산·IT 등 흐르게 하는 일",act:"정보를 모으고 유연하게 움직이는 활동"}};
+  // 십이운성 — 일간이 각 지지에서 갖는 기운의 단계 (양간 순행 / 음간 역행)
+  var SJ_UN=["장생","목욕","관대","건록","제왕","쇠","병","사","묘","절","태","양"];
+  var SJ_UN_DESC={
+   "장생":"갓 태어난 기운으로 순수하고 성장 가능성이 큽니다. 사람들의 도움을 자연스럽게 받습니다.",
+   "목욕":"멋을 부리고 감정이 풍부한 자리입니다. 매력이 있지만 마음이 흔들리기도 쉽습니다.",
+   "관대":"사회에 나서는 청년의 기운입니다. 자신감과 의욕이 넘치나 다소 성급할 수 있습니다.",
+   "건록":"스스로 벌어 자립하는 가장 단단한 자리입니다. 실속이 있고 책임감이 강합니다.",
+   "제왕":"기운이 가장 왕성한 정점입니다. 주도력이 뛰어나지만 고집으로 흐르지 않게 조절이 필요합니다.",
+   "쇠":"정점을 지나 안정으로 접어든 자리입니다. 무리하지 않고 내실을 다지는 데 강합니다.",
+   "병":"기운이 약해지며 예민해지는 자리입니다. 감수성과 배려심이 깊어 사람을 잘 살핍니다.",
+   "사":"활동보다 사색이 깊어지는 자리입니다. 연구·기획처럼 안으로 파고드는 일에 어울립니다.",
+   "묘":"거두어 저장하는 자리입니다. 모으고 지키는 힘이 있어 관리와 축적에 강합니다.",
+   "절":"끊어졌다 다시 이어지는 자리입니다. 변화가 많지만 새 출발의 기운도 함께 있습니다.",
+   "태":"새 생명이 잉태되는 자리입니다. 아이디어와 가능성이 씨앗처럼 자리 잡습니다.",
+   "양":"태어나기 전 길러지는 자리입니다. 보호받으며 준비하는 시기로 온화한 기질을 줍니다."};
+  var SJ_JS=[11,6,2,9,2,9,5,0,8,3]; // 천간별 장생 지지
+  function sjUnseong(s,b){var js=SJ_JS[s];return SJ_UN[(s%2===0)?((b-js+12)%12):((js-b+12)%12)];}
+  // 신살 — 룩업 테이블 (일간·삼합 기준)
+  var SJ_CHEONEUL={0:[1,7],4:[1,7],6:[1,7],1:[0,8],5:[0,8],2:[11,9],3:[11,9],8:[5,3],9:[5,3],7:[6,2]};
+  var SJ_MUNCHANG=[5,6,8,9,8,9,11,0,2,3];
+  var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
+  function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
+  var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
+  var SJ_BAEKHO=["갑진","을미","병술","정축","무진","임술","계축"],SJ_GWAEGANG=["경진","경술","임진","무술"];
+  var SJ_SINSAL_DESC={
+   "천을귀인":"사주에서 가장 좋은 길신입니다. 어려울 때 도와주는 사람이 나타나고, 큰 위기를 넘기게 하는 힘이 있습니다.",
+   "문창귀인":"학문과 글재주의 별입니다. 공부·시험·글쓰기·기획 등 머리를 쓰는 일에서 두각을 나타냅니다.",
+   "도화살":"매력과 인기의 별입니다. 사람을 끄는 힘이 강해 예술·연예·서비스·영업 분야에서 강점이 됩니다.",
+   "역마살":"이동과 변화의 별입니다. 해외·출장·이사·유통처럼 움직이는 일에서 기회가 열립니다.",
+   "화개살":"고독과 예술의 별입니다. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울립니다.",
+   "양인살":"강한 칼의 기운입니다. 결단력과 추진력이 뛰어나지만 과하면 다툼이 되니 조절이 필요합니다.",
+   "백호대살":"강렬한 기운의 별입니다. 승부처에서 힘을 발휘하나 건강과 안전을 특히 챙겨야 합니다.",
+   "괴강살":"우두머리의 기운입니다. 카리스마와 리더십이 강하며 극단으로 흐르기 쉬운 면도 있습니다."};
+  function sjSinsal(p){
+    var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
+    var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
+    if(bs.indexOf(SJ_MUNCHANG[ds])>=0)found.push("문창귀인");
+    var base=sjSamhap(p.y.b),base2=sjSamhap(p.d.b);
+    if(bs.indexOf(SJ_DOHWA[base])>=0||bs.indexOf(SJ_DOHWA[base2])>=0)found.push("도화살");
+    if(bs.indexOf(SJ_YEOKMA[base])>=0||bs.indexOf(SJ_YEOKMA[base2])>=0)found.push("역마살");
+    if(bs.indexOf(SJ_HWAGAE[base])>=0||bs.indexOf(SJ_HWAGAE[base2])>=0)found.push("화개살");
+    if(SJ_YANGIN[ds]!==undefined&&bs.indexOf(SJ_YANGIN[ds])>=0)found.push("양인살");
+    var dj=SJ_S[p.d.s]+SJ_B[p.d.b];
+    if(SJ_BAEKHO.indexOf(dj)>=0)found.push("백호대살");
+    if(SJ_GWAEGANG.indexOf(dj)>=0)found.push("괴강살");
+    return found;
+  }
+  // 격국 — 월지 본기의 십성으로 판정
+  var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
+  var SJ_GYEOK_DESC={
+   "건록격":"스스로 벌어 스스로 서는 자수성가형입니다. 남에게 기대기보다 내 힘으로 기반을 만드는 구조라 독립·전문직·자기 사업이 잘 맞습니다.",
+   "양인격":"강한 추진력과 승부 기질을 타고났습니다. 극한의 상황에서 오히려 힘을 내지만, 평상시엔 그 기운을 운동이나 전문 기술로 풀어야 합니다.",
+   "식신격":"먹을 복과 표현력의 구조입니다. 만들고 창작하고 가르치는 일에서 결실이 나며 성격도 여유로운 편입니다.",
+   "상관격":"재능이 밖으로 뻗는 구조입니다. 기존 틀을 깨는 아이디어가 강점이나, 조직의 규율과는 부딪히기 쉬워 자율성이 있는 환경이 좋습니다.",
+   "편재격":"큰 판을 보는 사업가형 구조입니다. 돈의 흐름을 읽는 감각이 뛰어나며, 유통·영업·투자처럼 규모가 움직이는 분야에 어울립니다.",
+   "정재격":"성실하게 쌓아 올리는 구조입니다. 정해진 수입을 꾸준히 관리해 자산을 만드는 데 강하며 신용이 곧 재산이 됩니다.",
+   "편관격":"압박을 이겨내며 성장하는 구조입니다. 경쟁이 치열한 분야, 위기 관리가 필요한 자리에서 능력이 드러납니다.",
+   "정관격":"질서와 명예를 중시하는 구조입니다. 원칙대로 일할 때 인정받으며 공직·대기업·전문 자격 분야가 잘 맞습니다.",
+   "편인격":"독특한 관점과 직관의 구조입니다. 남들이 안 보는 것을 보며, 전문 연구·기술·예술 등 깊이 파는 분야에서 빛납니다.",
+   "정인격":"배우고 품는 구조입니다. 학문·교육·상담처럼 지식을 쌓아 나누는 일에서 인정받고 귀인의 도움도 따릅니다."};
   function sjTenGod(dayS,otherS){ // 십성
     var de=SJ_ES[dayS],oe=SJ_ES[otherS],same=(dayS%2)===(otherS%2);
     if(de===oe)return same?"비견":"겁재";
@@ -683,7 +743,8 @@ var TOOLS=[
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
     function cell(s,b,ds){var tg1=s===null?"":sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
       return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
-      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div></div>';}
+      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div>'+
+      '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
@@ -710,8 +771,9 @@ var TOOLS=[
       var tgTop=Object.entries(tgc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0]+" "+x[1];}).join(" · ");
       var cols=[["시주",p.h?cell(p.h.s,p.h.b,ds):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
                 ["일주(나)",cell(p.d.s,p.d.b,ds)],["월주",cell(p.m.s,p.m.b,ds)],["연주",cell(p.y.s,p.y.b,ds)]];
-      // 신강·신약 / 용신
+      // 신강·신약 / 용신 / 격국 / 신살 / 십이운성
       var st=sjStrength(p),yEl=SJ_EL[st.yong],y2El=SJ_EL[st.yong2],Y=SJ_YONG[yEl];
+      var wolTg=sjTenGod(ds,SJ_BMAIN[p.m.b]),gyeok=SJ_GYEOK[wolTg],sinsal=sjSinsal(p),ilUn=sjUnseong(ds,p.d.b);
       // 십성 그룹 집계 (재성·관성·식상·인성·비겁)
       function grp(n){return {"비견":"비겁","겁재":"비겁","식신":"식상","상관":"식상","편재":"재성","정재":"재성","편관":"관성","정관":"관성","편인":"인성","정인":"인성"}[n];}
       var G={비겁:0,식상:0,재성:0,관성:0,인성:0};
@@ -739,6 +801,10 @@ var TOOLS=[
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
         '<div class="s">돕는 기운 '+Math.round(st.ratio*100)+'% · 보조용신 '+y2El+'</div></div>'+
         '<div class="sj-sec"><h3>일간 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'</p></div>'+
+        '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+SJ_GYEOK_DESC[gyeok]+'<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
+        (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+          :'<div class="sj-sec"><h3>신살</h3><p>두드러진 신살이 없는 담백한 구조입니다. 특별한 기복 없이 자기 페이스를 지키는 편이며, 오행과 십성의 흐름이 그대로 드러납니다.</p></div>')+
+        '<div class="sj-sec"><h3>십이운성 — 일지 '+ilUn+'</h3><p>일간 '+SJ_S[ds]+'가 일지 '+SJ_B[p.d.b]+'에서 <b>'+ilUn+'</b> 자리에 있습니다. '+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">십이운성은 일간의 기운이 각 자리에서 어느 단계에 있는지를 사람의 일생에 빗대어 본 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
         '<div class="sj-sec"><h3>신강·신약과 용신</h3><p>일간을 돕는 기운이 '+Math.round(st.ratio*100)+'%로 <b>'+(st.strong?"신강":"신약")+'</b>한 사주입니다. '+
         (st.strong?"힘이 넘치므로 그 기운을 <b>밖으로 써서 덜어내는</b> 것이 좋습니다.":"힘이 부족하므로 <b>나를 도와 채워주는</b> 기운이 필요합니다.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+'을 씁니다. 이 기운을 가까이 둘수록 일이 순조롭게 풀립니다.</p></div>'+

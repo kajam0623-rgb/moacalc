@@ -49,6 +49,16 @@ t("신강신약 판정 반환", typeof stA.strong === "boolean" && stA.yong >= 0
 t("용신 규칙: 신강→식상 / 신약→인성", stA.yong === (stA.strong ? (stA.de+1)%5 : (stA.de+4)%5), true);
 t("돕는 기운 비율 0~1", stA.ratio >= 0 && stA.ratio <= 1, true);
 
+// ── 십이운성 / 신살 / 격국 ──
+t("십이운성 갑목 亥=장생", sjUnseong(0,11), "장생");
+t("십이운성 갑목 寅=건록", sjUnseong(0,2), "건록");
+t("십이운성 병화 寅=장생", sjUnseong(2,2), "장생");
+t("십이운성 을목(음간 역행) 午=장생", sjUnseong(1,6), "장생");
+t("십이운성 경금 巳=장생", sjUnseong(6,5), "장생");
+const pS = sjPillars(1990,3,15,12,0,false);
+t("신살 배열 반환", Array.isArray(sjSinsal(pS)), true);
+t("격국: 월지 본기 십성으로 판정", !!SJ_GYEOK[sjTenGod(pS.d.s, SJ_BMAIN[pS.m.b])], true);
+
 // ── 궁합·운세 합충 산술 ──
 t("천간합 갑기(|0-5|=5)", Math.abs(0-5)===5, true);
 t("삼합 신자진(8,0,4 → %4 동일)", (8%4===0%4)&&(0%4===4%4), true);
@@ -74,7 +84,7 @@ t("국민연금 300만", Math.round(3e6*0.0475), 142500);
 t("건강보험 300만", Math.round(3e6*0.03595), 107850);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
