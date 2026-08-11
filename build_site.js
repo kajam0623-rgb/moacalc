@@ -952,7 +952,7 @@ function seoPage(o){
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
 <main>
-<div class="toolhero"><img src="${o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+<div class="toolhero"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
 <div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>
 <div class="card tool" id="tool"></div>
 <div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
@@ -984,7 +984,8 @@ function starPage(s, i){
   return seoPage({
     title:`${s.ko} 운세·성격·궁합 — 오늘의 ${s.ko} | 동네보살`,
     desc:`${s.ko}(${s.range}) 성격과 강점·약점, 연애 스타일, 잘 맞는 별자리와 어려운 별자리, 2026년 흐름까지. 태양황경으로 판정하는 오늘의 ${s.ko} 운세를 바로 확인하세요.`,
-    url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`,
+    // img=OG용 캐릭터(정사각), hero=배너용 가로 이미지. 정사각을 16:7 배너에 넣으면 얼굴이 잘린다
+    url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`, hero:"img/tool/h-horoscope.webp",
     h1:`${s.sym} ${s.ko} — 성격·연애·궁합·오늘의 운세`,
     sub:`${s.range} · ${s.ele} 원소 · ${s.mode} · 수호성 ${s.ruler}`,
     parent:"horoscope.html", parentName:"별자리 운세",
@@ -1013,7 +1014,7 @@ function zodiacPage(z, i){
   return seoPage({
     title:`${z.ko}띠 운세·성격·궁합 — 2026 ${z.ko}띠 | 동네보살`,
     desc:`${z.ko}띠(${z.ji}) 성격과 강점·약점, 연애와 직업 적성, 삼합·육합·충으로 보는 띠 궁합, 2026 병오년 흐름까지. 오늘의 ${z.ko}띠 운세를 바로 확인하세요.`,
-    url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`,
+    url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
     h1:`${z.ko}띠 — 성격·연애·궁합·오늘의 운세`,
     sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
     parent:"zodiacfortune.html", parentName:"띠별 운세",

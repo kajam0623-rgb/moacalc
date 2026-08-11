@@ -182,6 +182,12 @@ const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
 
+// 이미지 비율: CLS용 width/height 속성을 붙인 이미지는 CSS에 height:auto가 있어야
+// aspect-ratio가 살아난다. 없으면 height 속성이 이겨 그림이 늘어난 틀에 갇히고 좌우가 잘린다.
+const cssAll = src.match(/<style>([\s\S]*?)<\/style>/)[1];
+const imgRule = (cssAll.match(/\.sj-char img\{([^}]*)\}/) || [])[1] || "";
+t("정사각 캐릭터 이미지에 height:auto (aspect-ratio 보호)", /height:\s*auto/.test(imgRule) && /aspect-ratio:\s*1\/1/.test(imgRule), true);
+
 // 조립 변수 뒤에 조사를 붙일 때 josa()를 안 쓰면 "화이/수이/사은" 같은 오류가 화면에 나온다.
 // 오행·십이운성처럼 받침이 섞인 값을 담는 표현식 바로 뒤에 조사 리터럴이 오는지 소스에서 잡는다.
 const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel)";
