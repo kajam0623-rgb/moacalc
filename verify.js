@@ -139,6 +139,24 @@ t("용신 보정 후 클램프 상한", Math.max(35,Math.min(98,85+8+5)), 98);
 t("용신 보정 후 클램프 하한", Math.max(35,Math.min(98,35-10-3)), 35);
 t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-id')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-hl')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-id')>0, true);
 
+// ── T3 프로그래매틱 SEO: 별자리 12 + 띠 12 원고 ──
+const STAR_PAGES = require("./content_star.js"), ZODIAC_PAGES = require("./content_zodiac.js");
+const bodyLen = o => (o.intro+o.love+o.work+o.match.why+o.match.hardWhy+o.y2026).replace(/\s/g,"").length;
+t("별자리 원고 12개 · ST_EN 순서 일치", STAR_PAGES.length===12 && STAR_PAGES.every((s,i)=>s.en===ST_EN[i]), true);
+t("띠 원고 12개 · 십이지 순서 일치", ZODIAC_PAGES.length===12 && ZODIAC_PAGES.every((z,i)=>z.en===ZO_EN[i]), true);
+t("별자리 원고 본문 1,300자+ (전 항목)", STAR_PAGES.every(s=>bodyLen(s)>=1300), true);
+t("띠 원고 본문 1,300자+ (전 항목)", ZODIAC_PAGES.every(z=>bodyLen(z)>=1300), true);
+t("별자리 기간 표기는 ST_RANGE와 동일", STAR_PAGES.every((s,i)=>s.range===ST_RANGE[i]), true);
+t("별자리 원소는 ST_ELE 규칙(index%4)과 일치", STAR_PAGES.every((s,i)=>s.ele===ST_ELE[i%4]), true);
+t("별자리 수호성은 ST_RULER와 일치", STAR_PAGES.every((s,i)=>s.ruler===ST_RULER[i]), true);
+t("띠 오행은 엔진 SJ_EB와 일치", ZODIAC_PAGES.every((z,i)=>z.ele===SJ_EL[SJ_EB[i]]), true);
+t("띠 이름은 엔진 SJ_TTI와 일치", ZODIAC_PAGES.every((z,i)=>z.ko===SJ_TTI[i]), true);
+// 충은 여섯 칸 건너, 삼합은 지지 index%4가 같은 조 — 원고의 궁합 서술이 엔진 규칙과 어긋나면 안 된다
+t("띠 충 상대는 자기 지지의 6칸 반대", ZODIAC_PAGES.every((z,i)=>z.match.hard[0]===SJ_TTI[(i+6)%12]+"띠"), true);
+t("띠 삼합 상대는 index%4 동일 조", ZODIAC_PAGES.every((z,i)=>z.match.best.every(b=>{
+  const j = SJ_TTI.indexOf(b.replace("띠","")); return j%4===i%4 && j!==i; })), true);
+t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap===SJ_TTI[sjYukhap(i)]+"띠"), true);
+
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
 const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));

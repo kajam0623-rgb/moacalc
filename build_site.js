@@ -16,6 +16,9 @@ const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890
 const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
+// 프로그래매틱 SEO 원고 — 별자리 12 + 띠 12 개별 페이지
+const STAR_PAGES = require("./content_star.js");
+const ZODIAC_PAGES = require("./content_zodiac.js");
 
 // 빌드 게이트: verify를 실제로 돌려 통과 수를 카피에 주입한다. 실패하면 빌드 중단.
 let VERIFY_PASS = 0;
@@ -898,6 +901,8 @@ ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
 ${t.cat==="재미·운세" ? `<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
+${t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
+ : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>' : ""}
 ${introHtml}
 ${guideHtml}${exHtml}${cauHtml}${faqHtml}
 ${adSlot()}
@@ -916,6 +921,122 @@ ${footer}
 <script src="t-${t.id}.js?v=${chunks.find(c=>c.id===t.id).v}"></script>
 <script>mountTool("${t.id}","tool");</script>
 </body></html>`;
+}
+
+// ── 프로그래매틱 SEO: 별자리 12 + 띠 12 개별 페이지 ──
+// 형제 페이지 칩 (12개 내부링크). cur는 현재 페이지 en (없으면 전부 링크)
+const starChips = cur => '<div class="sibs">'+STAR_PAGES.map(s=>s.en===cur
+  ? `<span class="cur">${s.sym} ${s.ko}</span>` : `<a href="star-${s.en}.html">${s.sym} ${s.ko}</a>`).join("")+'</div>';
+const zodiacChips = cur => '<div class="sibs">'+ZODIAC_PAGES.map(z=>z.en===cur
+  ? `<span class="cur">${z.ko}띠</span>` : `<a href="zodiac-${z.en}.html">${z.ko}띠</a>`).join("")+'</div>';
+
+// 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
+function seoPage(o){
+  const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
+    mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
+  const ld = {"@context":"https://schema.org","@type":"Article",headline:o.title,description:o.desc,
+    inLanguage:"ko",url:o.url,image:DOMAIN+"/"+o.img,
+    publisher:{"@type":"Organization",name:"동네보살",url:DOMAIN+"/"},
+    isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"}};
+  return `<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(o.title)}</title>
+<meta name="description" content="${esc(o.desc)}">
+<link rel="canonical" href="${o.url}">
+<meta property="og:type" content="article"><meta property="og:title" content="${esc(o.title)}">
+<meta property="og:description" content="${esc(o.desc)}"><meta property="og:url" content="${o.url}">
+<meta property="og:image" content="${DOMAIN}/${o.img}">
+<link rel="stylesheet" href="style.css?v=${styleV}">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
+</head><body><div class="wrap">
+<a class="back" href="${o.parent}">← ${o.parentName}</a>
+<div class="shell">
+<main>
+<div class="toolhero"><img src="${o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>
+<div class="card tool" id="tool"></div>
+<div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
+${o.body}
+<section class="faq"><h2>자주 묻는 질문</h2>${o.faq.map(x=>'<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")}</section>
+<section class="guide"><h2>${o.sibTitle}</h2>${o.sibs}</section>
+${adSlot()}
+</main>
+<aside class="rail">
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><h4>함께 보면 좋은 운세</h4>
+${o.related.map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
+<div class="rcard"><h4>많이 찾는 도구</h4>
+${["todayfortune","saju","gunghap","salary","severance"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
+</aside>
+</div>
+${siteNav(null)}
+${footer}
+</div>
+<script src="core.js?v=${coreV}"></script>
+<script src="t-${o.tool}.js?v=${chunks.find(c=>c.id===o.tool).v}"></script>
+<script>mountTool("${o.tool}","tool");
+(function(){var s=document.querySelector("#tool #s");if(s){s.value="${o.preset}";s.dispatchEvent(new Event("change"));}})();</script>
+</body></html>`;
+}
+
+const para = t => t.trim().split(/\n\s*/).map(p=>'<p style="margin-bottom:10px">'+p+'</p>').join("");
+
+function starPage(s, i){
+  return seoPage({
+    title:`${s.ko} 운세·성격·궁합 — 오늘의 ${s.ko} | 동네보살`,
+    desc:`${s.ko}(${s.range}) 성격과 강점·약점, 연애 스타일, 잘 맞는 별자리와 어려운 별자리, 2026년 흐름까지. 태양황경으로 판정하는 오늘의 ${s.ko} 운세를 바로 확인하세요.`,
+    url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`,
+    h1:`${s.sym} ${s.ko} — 성격·연애·궁합·오늘의 운세`,
+    sub:`${s.range} · ${s.ele} 원소 · ${s.mode} · 수호성 ${s.ruler}`,
+    parent:"horoscope.html", parentName:"별자리 운세",
+    tool:"horoscope", preset:String(i),
+    tags:[`${s.ko} 성격`,`${s.ko} 궁합`,`오늘의 ${s.ko} 운세`,`${s.ko} 연애`,`${s.ko} 기간`],
+    body:`<div class="exbox"><h3>${s.ko} 한눈에 보기</h3>`+
+      [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>어려운 별자리</span><b>${esc(s.match.hard.join(" · "))}</b></div></div>`+
+      `<div class="intro">${para(s.intro)}</div>`+
+      `<section class="guide"><h2>${s.ko}의 연애</h2><div class="intro" style="margin-top:0">${para(s.love)}</div></section>`+
+      `<section class="guide"><h2>${s.ko}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(s.work)}</div></section>`+
+      `<section class="guide"><h2>${s.ko} 궁합</h2>`+
+      `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>잘 맞는 별자리 — ${esc(s.match.best.join(", "))}</b><br>${s.match.why}</p>`+
+      `<p style="margin-bottom:10px"><b>조율이 필요한 별자리 — ${esc(s.match.hard.join(", "))}</b><br>${s.match.hardWhy}</p></div></section>`+
+      `<section class="guide"><h2>${s.ko}의 2026년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
+    faq:[
+      [`${s.ko}는 몇 월생인가요?`,`${s.range} 사이에 태어난 사람이 ${s.ko}입니다. 다만 태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎으로 달라지므로, 경계일 출생이면 날짜표 대신 별자리 운세 페이지에서 생년월일로 판정하는 편이 정확합니다.`],
+      [`${s.ko}와 잘 맞는 별자리는?`,`${s.match.best.join("와 ")}가 대표적입니다. ${s.match.why} 반대로 ${s.match.hard.join("와 ")}는 조율이 필요한 조합입니다.`],
+      [`${s.ko} 성격의 핵심은 무엇인가요?`,`${s.ele} 원소, ${s.mode}, 수호성 ${s.ruler}의 조합으로 봅니다. 이 셋이 겹치는 지점이 ${s.ko}의 성격을 만듭니다. 자세한 내용은 위 본문에서 확인하세요.`]],
+    sibTitle:"다른 별자리도 보기", sibs:starChips(s.en),
+    related:["horoscope","stargunghap","todayfortune","saju"]});
+}
+
+function zodiacPage(z, i){
+  return seoPage({
+    title:`${z.ko}띠 운세·성격·궁합 — 2026 ${z.ko}띠 | 동네보살`,
+    desc:`${z.ko}띠(${z.ji}) 성격과 강점·약점, 연애와 직업 적성, 삼합·육합·충으로 보는 띠 궁합, 2026 병오년 흐름까지. 오늘의 ${z.ko}띠 운세를 바로 확인하세요.`,
+    url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`,
+    h1:`${z.ko}띠 — 성격·연애·궁합·오늘의 운세`,
+    sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
+    parent:"zodiacfortune.html", parentName:"띠별 운세",
+    tool:"zodiacfortune", preset:String(i),
+    tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
+    body:`<div class="exbox"><h3>${z.ko}띠 한눈에 보기</h3>`+
+      [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
+      `<div class="intro">${para(z.intro)}</div>`+
+      `<section class="guide"><h2>${z.ko}띠의 연애</h2><div class="intro" style="margin-top:0">${para(z.love)}</div></section>`+
+      `<section class="guide"><h2>${z.ko}띠의 일과 적성</h2><div class="intro" style="margin-top:0">${para(z.work)}</div></section>`+
+      `<section class="guide"><h2>${z.ko}띠 궁합 — 삼합·육합·충</h2>`+
+      `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>삼합 — ${esc(z.match.best.join(", "))}</b><br>${z.match.why}</p>`+
+      `<p style="margin-bottom:10px"><b>육합 — ${esc(z.match.hap)}</b><br>${z.match.hapWhy}</p>`+
+      `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p></div></section>`+
+      `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
+    faq:[
+      [`${z.ko}띠와 잘 맞는 띠는?`,`삼합인 ${z.match.best.join("와 ")}, 육합인 ${z.match.hap}가 대표적입니다. ${z.match.why}`],
+      [`${z.ko}띠가 조심할 띠는?`,`충 관계인 ${z.match.hard.join("와 ")}입니다. ${z.match.hardWhy}`],
+      [`띠는 언제 바뀌나요?`,`사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.`]],
+    sibTitle:"다른 띠도 보기", sibs:zodiacChips(z.en),
+    related:["zodiacfortune","gunghap","todayfortune","newyear"]});
 }
 
 const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","stargunghap"]; // 검색량 높은 순
@@ -1012,7 +1133,9 @@ chunks.forEach(c => c.v = hash8(c.src));
 
 // 사이트맵 + robots
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
-  `<url><loc>${DOMAIN}/</loc></url>\n`+meta.map(t=>`<url><loc>${DOMAIN}/${t.id}.html</loc></url>`).join("\n")+`\n</urlset>`;
+  `<url><loc>${DOMAIN}/</loc></url>\n`+meta.map(t=>`<url><loc>${DOMAIN}/${t.id}.html</loc></url>`).join("\n")+"\n"+
+  STAR_PAGES.map(s=>`<url><loc>${DOMAIN}/star-${s.en}.html</loc></url>`).join("\n")+"\n"+
+  ZODIAC_PAGES.map(z=>`<url><loc>${DOMAIN}/zodiac-${z.en}.html</loc></url>`).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
 // CSS + 페이지 전용 추가 스타일
@@ -1026,7 +1149,12 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `\n.sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}`+
   `\n.sitenav a{display:inline-block;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 7px 0;}`+
   `\n.sitenav a:hover{color:var(--accent);}`+
-  `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`;
+  `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`+
+  `\n.sibs{display:flex;flex-wrap:wrap;gap:7px;}`+
+  `\n.sibs a,.sibs .cur{display:inline-block;font-size:13px;text-decoration:none;border:1px solid var(--line-2);`+
+  `border-radius:100px;padding:6px 12px;color:var(--muted);}`+
+  `\n.sibs a:hover{border-color:var(--accent);color:var(--accent);}`+
+  `\n.sibs .cur{background:color-mix(in srgb,var(--fun) 12%,transparent);border-color:color-mix(in srgb,var(--fun) 40%,transparent);color:var(--fun-ink);font-weight:700;}`;
 
 // 쓰기
 const styleV = hash8(css+extraCss);
@@ -1035,6 +1163,8 @@ fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
 chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"), "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
+STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
+ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
@@ -1052,5 +1182,6 @@ if (fs.existsSync(IMG_SRC)) {
   console.log("   이미지 복사:", n, "개");
 }
 
+console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠");
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
