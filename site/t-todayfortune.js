@@ -46,6 +46,11 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
       // 행운 정보: 억부용신 오행이 오늘의 보완 기운, 시간은 오늘 일지의 육합 시간대
       var myEl=SJ_ES[me.d.s],luckEl=st.yong,L=SJ_LUCK[luckEl],hb=sjYukhap(tB);
+      // 내 사주의 신살 — 오늘 하루에 어떻게 쓰이는지 (없으면 오행 균형으로 대체)
+      var mySin=sjSinsal(me),sinLine;
+      if(mySin.length){var s1=mySin[0];
+        sinLine="내 명식에는 <b>"+s1+"</b>이 있습니다. "+SJ_SINSAL_DESC[s1]+" 오늘처럼 "+rel+"의 기운이 도는 날에는 이 성질이 특히 겉으로 드러나기 쉬우니, 의식해서 쓰면 하루의 방향이 달라집니다.";}
+      else sinLine="내 명식에는 두드러진 신살이 없습니다. 특정한 기운에 휘둘리지 않는 담백한 구조라, 오늘 같은 날에는 외부 변수보다 내 선택이 결과를 더 크게 좌우합니다.";
       var yongLine=yongHit?("오늘 일진 천간이 바로 그 "+SJ_EL[st.yong]+" — 용신이 들어오는 날입니다. 평소보다 판단이 선명하고 몸이 가볍습니다. 미뤄둔 결정은 오늘 내리세요."):
         yongClash?("오늘 일진 천간의 "+SJ_EL[todayEl]+" 기운이 용신 "+SJ_EL[st.yong]+"을 극하는 날입니다. 판단이 평소보다 무겁게 느껴질 수 있으니 큰 결정은 하루 미루는 편이 낫습니다."):
         ("오늘 일진의 "+SJ_EL[todayEl]+" 기운은 용신과 직접 부딪히지도, 돕지도 않는 중립입니다. 평소 페이스면 충분합니다.");
@@ -56,6 +61,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       if(myB%4===mB%4&&myB!==mB)mNote=" 내 일지와 이달 월지가 삼합이라 사람의 도움이 이 달 내내 힘을 보탭니다.";
       else if(Math.abs(myB-mB)===6)mNote=" 내 일지와 이달 월지가 충이라 달 전체에 변동수가 깔려 있습니다. 일정에 여유분을 두세요.";
       else if(sjYukhap(myB)===mB)mNote=" 내 일지와 이달 월지가 육합이라 관계가 부드럽게 풀리는 달입니다.";
+      else mNote=" 내 일지와 이달 월지 사이에는 뚜렷한 합충이 없어, 이 달은 외부 변수보다 내가 정한 계획이 그대로 결과가 되는 구간입니다.";
       // 내일 미리보기 — 재방문 훅
       var tmr=new Date(ty,tm-1,td+1),tp=sjPillars(tmr.getFullYear(),tmr.getMonth()+1,tmr.getDate(),null,0,false);
       var tRel=sjTenGod(me.d.s,tp.d.s);
@@ -71,11 +77,12 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="sj-sec"><h3>재물운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[1]+'점</span></h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+
       '<div class="sj-sec"><h3>건강운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[3]+'점</span></h3><p>'+T[8]+'</p></div>'+
-      '<div class="sj-sec"><h3>용신으로 보는 오늘</h3><p>당신의 사주는 '+(st.strong?"신강":"신약")+' — 억부법으로 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')이 용신입니다. '+yongLine+' 용신 '+SJ_EL[st.yong]+'은 '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻는 기운이라, 오늘 하루 중 이런 성격의 일에 시간을 쓰면 기운의 균형이 잡힙니다.</p></div>'+
-      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
+      '<div class="sj-sec"><h3>용신으로 보는 오늘</h3><p>당신의 사주는 '+(st.strong?"신강":"신약")+' — 억부법으로 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')이 용신입니다. '+yongLine+' 용신 '+SJ_EL[st.yong]+'은 '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻는 기운이라, 오늘 하루 중 이런 성격의 일에 시간을 쓰면 기운의 균형이 잡힙니다. 방향으로는 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 나를 돕고, 일로는 '+SJ_YONG[SJ_EL[st.yong]].job+'과 결이 맞습니다.</p></div>'+
+      '<div class="sj-sec"><h3>내 명식이 오늘 쓰는 힘</h3><p>'+sinLine+'</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다. 십이운성은 장생에서 시작해 제왕에서 정점을 찍고 절·태·양으로 돌아가는 열두 단계인데, '+un+'은 그중 '+(SJ_UN.indexOf(un)+1)+'번째 자리로 '+(SJ_UN.indexOf(un)<=4?"기운이 차오르는 상승 국면":SJ_UN.indexOf(un)<=8?"정점을 지나 힘을 거두는 하강 국면":"비우고 다시 준비하는 재생 국면")+'에 해당합니다.</p></div>'+
       '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 내 일간에게 '+mRel+'입니다. '+TXT[mRel][1]+mNote+' 절기가 바뀌면 월주도 바뀌므로 달의 흐름은 매달 초(절입일)에 다시 확인하세요.</p></div>'+
       '<div class="sj-sec"><h3>오늘 피해야 할 것</h3><p>'+T[4]+'</p></div>'+
-      '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'</p></div>'+
+      '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+' 오늘 점수 '+score+'점은 십성 '+rel+'의 기본값에 일지 관계와 용신 판정을 더해 나온 값입니다. 점수 자체보다, 어떤 요소가 점수를 올리고 내렸는지를 보고 하루를 배치하는 편이 실제로 도움이 됩니다.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">내 사주의 억부용신인 '+SJ_EL[luckEl]+' 기운이 오늘의 보완입니다. 그래서 '+L[0]+' 계열 소지품과 '+L[1]+' 방향이 유리합니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시로, 사람과 일이 맞물리기 쉬운 구간입니다.</p></div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>내일은 당신에게 <b>'+tRel+'</b>의 날. "'+TXT[tRel][9]+'" '+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+' 자세한 풀이는 내일 자정에 일진이 바뀐 뒤 다시 확인하세요.</p></div>'+
