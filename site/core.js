@@ -119,6 +119,15 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "절":"끊어졌다 다시 이어지는 자리입니다. 변화가 많지만 새 출발의 기운도 함께 있습니다.",
    "태":"새 생명이 잉태되는 자리입니다. 아이디어와 가능성이 씨앗처럼 자리 잡습니다.",
    "양":"태어나기 전 길러지는 자리입니다. 보호받으며 준비하는 시기로 온화한 기질을 줍니다."};
+  // 개념 삽화 파일명 매핑 — 한글 개념명을 이미지 파일명으로 연결한다
+  var ART_UN={"장생":"un-jangsaeng","목욕":"un-mogyok","관대":"un-gwandae","건록":"un-geollok","제왕":"un-jewang","쇠":"un-soe","병":"un-byeong","사":"un-sa","묘":"un-myo","절":"un-jeol","태":"un-tae","양":"un-yang"};
+  var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
+  var ART_GYEOK={"건록격":"gyeok-geollok","양인격":"gyeok-yangin","식신격":"gyeok-siksin","상관격":"gyeok-sanggwan","편재격":"gyeok-pyeonjae","정재격":"gyeok-jeongjae","편관격":"gyeok-pyeongwan","정관격":"gyeok-jeonggwan","편인격":"gyeok-pyeonin","정인격":"gyeok-jeongin"};
+  var ART_ILGAN=["ilgan-gap","ilgan-eul","ilgan-byeong","ilgan-jeong","ilgan-mu","ilgan-gi","ilgan-gyeong","ilgan-sin","ilgan-im","ilgan-gye"];
+  // 개념 삽화 한 장. 파일이 없으면 스스로 사라져 레이아웃이 깨지지 않는다
+  function conceptArt(file,alt){
+    if(!file)return "";
+    return '<img class="sj-art" width="520" height="520" src="img/char/'+file+'.webp" alt="'+escH(alt||"")+'" loading="lazy" onerror="this.remove()">';}
   // 십이운성 무드 — 하루의 '온도'를 총운에 접합 (오늘의 운세 총운 조립용, SJ_UN_DESC와 별개)
   var UN_MOOD={
    "장생":"몸이 가볍게 시작되는 날이라, 새로 여는 일에 힘이 붙습니다.",

@@ -54,7 +54,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
       '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+
-      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 본기 '+SJ_S[SJ_BMAIN[b]]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 본기 '+SJ_S[SJ_BMAIN[b]]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운입니다. 이를 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라 '+L[0]+' 계열과 '+L[1]+' 방향이 유리합니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시입니다.</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+

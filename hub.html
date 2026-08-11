@@ -300,6 +300,10 @@
   .sj-bar .c{width:22px;text-align:right;font-family:var(--mono);}
   .bg-목{background:#3d9960;} .bg-화{background:#d05548;} .bg-토{background:#b8862d;} .bg-금{background:#8a8f98;} .bg-수{background:#3f7ec2;}
   .sj-sec{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);}
+  /* 개념 삽화 — 본문 옆에 흘려 배치. height:auto가 없으면 height 속성이 살아 비율이 깨진다 */
+  .sj-art{float:right;width:118px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:12px;
+    margin:0 0 10px 14px;border:1px solid var(--line-2);}
+  @media (max-width:480px){.sj-art{width:92px;margin-left:10px;}}
   .tf-id{margin-top:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);letter-spacing:.08em;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
@@ -485,6 +489,15 @@
    "절":"끊어졌다 다시 이어지는 자리입니다. 변화가 많지만 새 출발의 기운도 함께 있습니다.",
    "태":"새 생명이 잉태되는 자리입니다. 아이디어와 가능성이 씨앗처럼 자리 잡습니다.",
    "양":"태어나기 전 길러지는 자리입니다. 보호받으며 준비하는 시기로 온화한 기질을 줍니다."};
+  // 개념 삽화 파일명 매핑 — 한글 개념명을 이미지 파일명으로 연결한다
+  var ART_UN={"장생":"un-jangsaeng","목욕":"un-mogyok","관대":"un-gwandae","건록":"un-geollok","제왕":"un-jewang","쇠":"un-soe","병":"un-byeong","사":"un-sa","묘":"un-myo","절":"un-jeol","태":"un-tae","양":"un-yang"};
+  var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
+  var ART_GYEOK={"건록격":"gyeok-geollok","양인격":"gyeok-yangin","식신격":"gyeok-siksin","상관격":"gyeok-sanggwan","편재격":"gyeok-pyeonjae","정재격":"gyeok-jeongjae","편관격":"gyeok-pyeongwan","정관격":"gyeok-jeonggwan","편인격":"gyeok-pyeonin","정인격":"gyeok-jeongin"};
+  var ART_ILGAN=["ilgan-gap","ilgan-eul","ilgan-byeong","ilgan-jeong","ilgan-mu","ilgan-gi","ilgan-gyeong","ilgan-sin","ilgan-im","ilgan-gye"];
+  // 개념 삽화 한 장. 파일이 없으면 스스로 사라져 레이아웃이 깨지지 않는다
+  function conceptArt(file,alt){
+    if(!file)return "";
+    return '<img class="sj-art" width="520" height="520" src="img/char/'+file+'.webp" alt="'+escH(alt||"")+'" loading="lazy" onerror="this.remove()">';}
   // 십이운성 무드 — 하루의 '온도'를 총운에 접합 (오늘의 운세 총운 조립용, SJ_UN_DESC와 별개)
   var UN_MOOD={
    "장생":"몸이 가볍게 시작되는 날이라, 새로 여는 일에 힘이 붙습니다.",
@@ -1262,8 +1275,8 @@
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났습니다.</p></div></div>'+
         '<div class="sj-sec"><h3>일간 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'</p></div>'+
-        '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+SJ_GYEOK_DESC[gyeok]+'<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
-        (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+        '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
+        (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>신살</h3><p>두드러진 신살이 없는 담백한 구조입니다. 특별한 기복 없이 자기 페이스를 지키는 편이며, 오행과 십성의 흐름이 그대로 드러납니다.</p></div>')+
         '<div class="sj-sec"><h3>십이운성 — 일지 '+ilUn+'</h3><p>일간 '+SJ_S[ds]+'가 일지 '+SJ_B[p.d.b]+'에서 <b>'+ilUn+'</b> 자리에 있습니다. '+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">십이운성은 일간의 기운이 각 자리에서 어느 단계에 있는지를 사람의 일생에 빗대어 본 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
         '<div class="sj-sec"><h3>신강·신약과 용신</h3><p>일간을 돕는 기운이 '+Math.round(st.ratio*100)+'%로 <b>'+(st.strong?"신강":"신약")+'</b>한 사주입니다. '+
@@ -1528,7 +1541,7 @@
       '<div class="sj-sec"><h3>건강운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[3]+'점</span></h3><p>'+T[8]+'</p></div>'+
       '<div class="sj-sec"><h3>용신으로 보는 오늘</h3><p>당신의 사주는 '+(st.strong?"신강":"신약")+' — 억부법으로 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')'+josa(SJ_EL[st.yong],"가/이")+' 용신입니다. '+yongLine+' 용신 '+SJ_EL[st.yong]+josa(SJ_EL[st.yong],"는/은")+' '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻는 기운이라, 오늘 하루 중 이런 성격의 일에 시간을 쓰면 기운의 균형이 잡힙니다. 방향으로는 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 나를 돕고, 일로는 '+SJ_YONG[SJ_EL[st.yong]].job+'과 결이 맞습니다.</p></div>'+
       '<div class="sj-sec"><h3>내 명식이 오늘 쓰는 힘</h3><p>'+sinLine+'</p></div>'+
-      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다. 십이운성은 장생에서 시작해 제왕에서 정점을 찍고 절·태·양으로 돌아가는 열두 단계인데, '+un+josa(un,"는/은")+' 그중 '+(SJ_UN.indexOf(un)+1)+'번째 자리로 '+(SJ_UN.indexOf(un)<=4?"기운이 차오르는 상승 국면":SJ_UN.indexOf(un)<=8?"정점을 지나 힘을 거두는 하강 국면":"비우고 다시 준비하는 재생 국면")+'에 해당합니다.</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 내 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다. 십이운성은 장생에서 시작해 제왕에서 정점을 찍고 절·태·양으로 돌아가는 열두 단계인데, '+un+josa(un,"는/은")+' 그중 '+(SJ_UN.indexOf(un)+1)+'번째 자리로 '+(SJ_UN.indexOf(un)<=4?"기운이 차오르는 상승 국면":SJ_UN.indexOf(un)<=8?"정점을 지나 힘을 거두는 하강 국면":"비우고 다시 준비하는 재생 국면")+'에 해당합니다.</p></div>'+
       '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 내 일간에게 '+mRel+'입니다. '+TXT[mRel][1]+mNote+' 절기가 바뀌면 월주도 바뀌므로 달의 흐름은 매달 초(절입일)에 다시 확인하세요.</p></div>'+
       '<div class="sj-sec"><h3>오늘 피해야 할 것</h3><p>'+T[4]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+' 오늘 점수 '+score+'점은 십성 '+rel+'의 기본값에 일지 관계와 용신 판정을 더해 나온 값입니다. 점수 자체보다, 어떤 요소가 점수를 올리고 내렸는지를 보고 하루를 배치하는 편이 실제로 도움이 됩니다.</p></div>'+
@@ -1696,7 +1709,7 @@
       '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
       '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+
-      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 본기 '+SJ_S[SJ_BMAIN[b]]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 기운 — 십이운성 '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+SJ_UN_DESC[un]+' 오늘 지지 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 본기 '+SJ_S[SJ_BMAIN[b]]+'에게 '+un+'의 자리라, 하루 동안 체감하는 기운의 결이 이렇습니다.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운입니다. 이를 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라 '+L[0]+' 계열과 '+L[1]+' 방향이 유리합니다. 시간대는 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시입니다.</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
