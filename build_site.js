@@ -19,6 +19,7 @@ const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 // 프로그래매틱 SEO 원고 — 별자리 12 + 띠 12 개별 페이지
 const STAR_PAGES = require("./content_star.js");
 const ZODIAC_PAGES = require("./content_zodiac.js");
+const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
 
 // 빌드 게이트: verify를 실제로 돌려 통과 수를 카피에 주입한다. 실패하면 빌드 중단.
 let VERIFY_PASS = 0;
@@ -784,6 +785,15 @@ function ogTag(id){
 }
 const OG_IMG_TAG = ogTag(null);
 
+// 브랜드 인식용 Organization — 전 페이지 공통. 검색엔진·AI가 사이트 주체를 식별한다
+const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
+  "@context":"https://schema.org","@type":"Organization",
+  name:"동네보살", alternateName:"무료 사주는 동네보살", url:DOMAIN+"/",
+  logo:DOMAIN+"/img/og.png",
+  description:"태양황경을 직접 계산하는 만세력 엔진으로 사주·오늘의 운세·별자리 운세를 무료로 풀이합니다. 무작위 문구가 아니라 계산된 결과입니다.",
+  knowsAbout:["사주팔자","만세력","오늘의 운세","별자리 운세","띠별 운세","궁합","타로","십성","용신","십이운성"]
+})+'</script>';
+
 const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네 보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
@@ -939,6 +949,44 @@ ${footer}
 }
 
 const para = t => t.trim().split(/\n\s*/).map(p=>'<p style="margin-bottom:10px">'+p+'</p>').join("");
+
+// 신뢰 페이지(About·개인정보·약관). 도구 임베드 없이 원고만 있는 정적 페이지
+function sitePage(o){
+  const url = `${DOMAIN}/${o.id}.html`;
+  const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
+    mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
+  const crumb = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",
+    itemListElement:[{"@type":"ListItem",position:1,name:"홈",item:DOMAIN+"/"},
+                     {"@type":"ListItem",position:2,name:o.h1,item:url}]})+'</script>';
+  const body = o.body.map(([h,t])=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("");
+  const faqHtml = `<section class="guide"><h2>자주 묻는 질문</h2>`+
+    o.faq.map(x=>`<details class="faq"><summary>${esc(x[0])}</summary><p>${esc(x[1])}</p></details>`).join("")+`</section>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(o.title)} | 동네보살</title>
+<meta name="description" content="${esc(o.desc)}">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="${esc(o.title)}">
+<meta property="og:description" content="${esc(o.desc)}">
+<meta property="og:url" content="${url}">
+<meta property="og:site_name" content="동네보살">
+${OG_IMG_TAG}
+<link rel="stylesheet" href="style.css?v=${styleV}">
+${headExtra}
+${ORG_LD}
+${crumb}
+${faqLd}</head><body>
+<div class="wrap">
+<a class="back" href="./">← 전체 도구</a>
+<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">${esc(o.h1)}</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:22px">${esc(o.sub)}</p>
+${body}
+${faqHtml}
+${siteNav("")}
+${footer}
+</div></body></html>`;
+}
 
 function starPage(s, i){
   return seoPage({
@@ -1096,8 +1144,47 @@ chunks.forEach(c => c.v = hash8(c.src));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
   `<url><loc>${DOMAIN}/</loc></url>\n`+meta.map(t=>`<url><loc>${DOMAIN}/${t.id}.html</loc></url>`).join("\n")+"\n"+
   STAR_PAGES.map(s=>`<url><loc>${DOMAIN}/star-${s.en}.html</loc></url>`).join("\n")+"\n"+
-  ZODIAC_PAGES.map(z=>`<url><loc>${DOMAIN}/zodiac-${z.en}.html</loc></url>`).join("\n")+`\n</urlset>`;
+  ZODIAC_PAGES.map(z=>`<url><loc>${DOMAIN}/zodiac-${z.en}.html</loc></url>`).join("\n")+"\n"+
+  SITE_PAGES.map(p=>`<url><loc>${DOMAIN}/${p.id}.html</loc></url>`).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
+
+// llms.txt — 생성형 검색(ChatGPT·Perplexity 등)이 사이트를 정확히 인용하도록 돕는 안내 파일
+const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tarot","namematch"];
+const llmsTxt = `# 동네보살 (dongnebosal)
+
+> 무료 사주·운세 사이트. 태양황경을 직접 계산하는 만세력 엔진으로 사주팔자·오늘의 운세·별자리 운세·궁합을 풀이한다. 문구를 무작위로 뽑지 않고 계산 결과로 조립하므로, 같은 생일에 같은 날이면 언제 조회해도 같은 결과가 나온다.
+
+## 계산 방식 (인용 시 참고)
+
+- 연주는 1월 1일이 아니라 입춘에 바뀌고, 월주는 절기에 따라 바뀐다. 날짜표가 아니라 태양 황경을 직접 계산해 판정하므로 경계일에도 정확하다.
+- 시주에는 동경 135도 표준시와 실제 태양시의 차이를 보정하는 진태양시 보정을 적용할 수 있다.
+- 오늘의 운세는 내 일간과 오늘 일진 천간의 십성 관계, 일지와 오늘 지지의 삼합·육합·충, 십이운성, 억부용신을 함께 계산한다.
+- 별자리는 날짜표가 아니라 태양 황경으로 판정하므로 경계일(예: 8월 22~23일생)에도 정확하다.
+- 문헌 검증값과 대조하는 자동 테스트를 매 배포마다 실행하며, 하나라도 실패하면 배포가 중단된다.
+
+## 운세 도구
+
+${fortuneIds.filter(id=>intro[id]).map(id=>{
+  const t = meta.find(m=>m.id===id);
+  return `- [${t?t.name:id}](${DOMAIN}/${id}.html): ${intro[id].slice(0,110)}`;
+}).join("\n")}
+
+## 별자리별 상세 (12)
+
+${STAR_PAGES.map(s=>`- [${s.ko}](${DOMAIN}/star-${s.en}.html): ${s.range} · ${s.ele} 원소 · 수호성 ${s.ruler}`).join("\n")}
+
+## 띠별 상세 (12)
+
+${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`).join("\n")}
+
+## 사이트 정보
+
+${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`).join("\n")}
+
+## 주의
+
+운세 풀이는 참고 자료다. 건강·투자·법률 판단의 근거로 사용하지 말 것. 계산기 결과는 공개 요율 기준 추정치이며 실제 금액과 다를 수 있다.
+`;
 
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
@@ -1126,6 +1213,8 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
+SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
+fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");

@@ -204,6 +204,22 @@ t("이미지 저장 버튼 마크업", /save-btn/.test(shareSrc), true);
 // 한글 줄바꿈: 캔버스에는 자동 줄바꿈이 없어 직접 끊어야 카드 밖으로 넘치지 않는다
 t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(shareSrc), true);
 
+// ── E-E-A-T 신뢰 페이지 + GEO ──
+const SITE_PAGES = require("./content_site.js");
+t("신뢰 페이지 3종(About·개인정보·약관) 원고", SITE_PAGES.map(p=>p.id).sort().join(","), "about,privacy,terms");
+t("신뢰 페이지 각각 본문·FAQ 보유", SITE_PAGES.every(p=>p.body.length>=5 && p.faq.length>=3 && p.desc.length>=40), true);
+t("신뢰 페이지 파일 출력 배선", /SITE_PAGES\.forEach[\s\S]{0,80}sitePage/.test(bs), true);
+t("llms.txt(AI 검색 안내) 생성", /llms\.txt/.test(bs), true);
+// 템플릿에서 없는 필드를 참조하면 undefined가 그대로 박힌다(과거 z.years 사고)
+const ZP = require("./content_zodiac.js"), SP = require("./content_star.js");
+const llmsFields = [...bs.matchAll(/\$\{(?:ZODIAC_PAGES|STAR_PAGES)\.map\(([a-z])=>`[^`]*`/g)]
+  .flatMap(m => [...m[0].matchAll(new RegExp("\\$\\{" + m[1] + "\\.([a-zA-Z]+)", "g"))].map(x => x[1]));
+const pageFields = new Set([...Object.keys(ZP[0]), ...Object.keys(SP[0])]);
+t("llms.txt 템플릿이 실제 필드만 참조", llmsFields.filter(f => !pageFields.has(f)).join(",") || "(없음)", "(없음)");
+t("Organization 스키마", /"@type":"Organization"/.test(bs), true);
+t("BreadcrumbList 스키마", /BreadcrumbList/.test(bs), true);
+t("신뢰 페이지도 sitemap에 포함", /about\.html[\s\S]{0,200}sitemap|SITE_PAGES/.test(bs), true);
+
 // ── 모바일 최적화 ──
 const cssM = src.match(/<style>([\s\S]*?)<\/style>/)[1];
 t("사이드바 링크 터치 타겟 44px", /\.rail a\{[^}]*min-height:44px/.test(cssM), true);
