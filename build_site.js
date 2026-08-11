@@ -7,7 +7,7 @@ const DIR = __dirname, OUT = path.join(DIR, "site");
 if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
-const DOMAIN = "https://gyesangi.vercel.app"; // 배포 도메인
+const DOMAIN = "https://dongnebosal.vercel.app"; // 배포 도메인(브랜드명과 일치). 구 gyesangi는 canonical로 통합
 // ↓ 승인/발급 후 값만 채우고 `node build_site.js` 재실행하면 전 페이지에 자동 적용됩니다.
 const GSC_VERIFY = "";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
 const NAVER_VERIFY = "";    // 네이버 서치어드바이저 소유확인 메타의 content 값

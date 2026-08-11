@@ -15,6 +15,9 @@ function t(name, got, want) {
 }
 const G = i => SJ_S[i.s] + SJ_B[i.b];
 
+// 도메인이 어긋나면 canonical·OG·sitemap이 전부 엉뚱한 곳을 가리킨다
+t("DOMAIN 상수는 프로토콜 포함·끝 슬래시 없음", /const DOMAIN = "https:\/\/[a-z0-9.-]+"/.test(bs) && !/const DOMAIN = "[^"]*\/";/.test(bs), true);
+
 // ── 만세력: 문헌 검증값 ──
 let p = sjPillars(2000, 1, 1, 12, 0, false);
 t("2000-01-01 연주(기묘)", G(p.y), "기묘");
