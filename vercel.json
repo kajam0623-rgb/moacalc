@@ -1,6 +1,11 @@
 {
   "buildCommand": "node build_site.js",
   "outputDirectory": "site",
+  "redirects": [
+    { "source": "/lotto.html", "destination": "/", "permanent": true },
+    { "source": "/draw.html", "destination": "/", "permanent": true },
+    { "source": "/ladder.html", "destination": "/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/img/(.*)",
