@@ -83,7 +83,7 @@ function bindShare(el){el.querySelectorAll(".share-btn").forEach(function(b){b.a
 
 **작업량:** 소~중 (2~3시간)
 
-### [ ] P0-3. 애널리틱스 (Plausible 또는 GA4)
+### [x] P0-3. 애널리틱스 (GA4) — 코드 완료, ID 대기
 
 **목적:** 현재 어떤 도구에 트래픽이 오는지 전혀 모름. 광고 배치·콘텐츠 우선순위 판단 불가.
 
@@ -283,7 +283,7 @@ namematch의 `'+A+'` → `'+escH(A)+'` 전부 치환. HELPERS 등록. draw(랜�
 |---|---|---|
 | 커스텀 도메인 | `dongnebosal.com` 등 구매 → Vercel 연결 | `build_site.js` DOMAIN 상수 → 재빌드·재배포 → 301은 Vercel이 처리 |
 | 구글 서치콘솔 | 속성 등록, HTML 태그 인증 선택 | `GSC_VERIFY`에 content 값 → 재빌드 |
-| 네이버 서치어드바이저 | 사이트 등록 + 소유확인 | `build_site.js` headExtra에 `<meta name="naver-site-verification" content="...">` 추가 (상수 `NAVER_VERIFY` 신설) |
+| 네이버 서치어드바이저 | 사이트 등록 + 소유확인 | `NAVER_VERIFY` 상수 (구현 완료) |
 | GA4 | 속성 생성 → 측정 ID | P0-3의 `ANALYTICS_ID` |
 | 애드센스 | 승인 신청 (도메인 후 권장) | `ADSENSE_CLIENT`/`ADSENSE_SLOT` → ads.txt 자동 생성 |
 

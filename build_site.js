@@ -10,6 +10,8 @@ fs.mkdirSync(OUT, { recursive: true });
 const DOMAIN = "https://gyesangi.vercel.app"; // 배포 도메인
 // ↓ 승인/발급 후 값만 채우고 `node build_site.js` 재실행하면 전 페이지에 자동 적용됩니다.
 const GSC_VERIFY = "";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
+const NAVER_VERIFY = "";    // 네이버 서치어드바이저 소유확인 메타의 content 값
+const ANALYTICS_ID = "";    // GA4 측정 ID (예: G-XXXXXXXXXX). 채우면 전 페이지에 gtag 로더 삽입
 const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890123456)
 const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
@@ -802,6 +804,9 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;
 
 const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232a44c6'/><text x='16' y='23' font-size='19' fill='%23ffffff' text-anchor='middle' font-family='monospace' font-weight='bold'>%3D</text></svg>">`;
 const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
+  (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
+  (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
+    `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');</script>`:"")+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
 // 이미지: 리포 루트 img/ → site/img/ 복사. 파일 없으면 onerror로 조용히 숨김.
 const IMG_SRC = path.join(DIR,"img");

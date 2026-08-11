@@ -89,8 +89,8 @@ node -e 'const key="9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c",h="gyesangi.vercel.app",b=
 |---|---|
 | 커스텀 도메인 | `build_site.js`의 `DOMAIN` 상수 |
 | 구글 서치콘솔 | `GSC_VERIFY` |
-| 네이버 서치어드바이저 | `headExtra`에 `naver-site-verification` 메타 (상수 신설 필요) |
-| GA4 | `ANALYTICS_ID` (track() 배선은 이미 완료) |
+| 네이버 서치어드바이저 | `NAVER_VERIFY` |
+| GA4 | `ANALYTICS_ID` (gtag 로더 + track() 이벤트 배선 완료) |
 | 애드센스 | `ADSENSE_CLIENT`/`ADSENSE_SLOT` → ads.txt 자동 생성 |
 
 ---
