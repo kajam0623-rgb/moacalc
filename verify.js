@@ -109,6 +109,17 @@ const countRows = s => (s.match(/\["/g) || []).length; // 각 행은 ["로 시�
 t("타로 메이저 아르카나 22장", countRows(mArr), 22);
 t("타로 분야별 해석 22장 (M과 동일)", countRows(fArr), 22);
 t("타로 아트 매핑 22장", (tarotSrc.slice(tarotSrc.indexOf("var ART=")).match(/tarot-\d\d-/g) || []).length, 22);
+// T2: 포지션별 해석 66문장 + 상징 스토리 22개
+const posmCode = tarotSrc.slice(tarotSrc.indexOf("var POSM="), tarotSrc.indexOf("// 카드 상징 스토리"));
+const storyCode = tarotSrc.slice(tarotSrc.indexOf("var STORY="), tarotSrc.indexOf("var ART="));
+const POSM = new Function(posmCode + "; return POSM;")();
+const STORY = new Function(storyCode + "; return STORY;")();
+t("타로 포지션 해석 22장 × 3포지션", POSM.length === 22 && POSM.every(r => r.length === 3 && r.every(s => typeof s === "string" && s.length >= 20)), true);
+t("타로 포지션 문장은 카드 안에서 서로 다름", POSM.every(r => new Set(r).size === 3), true);
+t("타로 상징 스토리 22개", STORY.length === 22 && STORY.every(s => s.length >= 25), true);
+t("타로 출력에 스토리·포지션 조립", tarotSrc.includes("STORY[pk.i]") && tarotSrc.includes("POSM[pk.i][i]"), true);
+const guideCode = tarotSrc.slice(tarotSrc.indexOf("var POS_GUIDE="), tarotSrc.indexOf("// 포지션별 해석"));
+t("타로 포지션 안내 3종", new Function(guideCode + "; return POS_GUIDE;")().length, 3);
 
 // ── 오늘의 운세: 십성 10종 모두 9개 필드(총운·애정·직장·건강 포함)를 갖는가 ──
 const tfSrc = inner.slice(inner.indexOf('id:"todayfortune"'), inner.indexOf('id:"horoscope"'));
