@@ -45,6 +45,8 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",d
       function ybar(n,v){return rateBar(n,v);}
       var un=sjUnseong(me.d.s,YB); // 태세 오(午)가 내 일간에 갖는 십이운성
       el.querySelector("#out").innerHTML=
+      '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
+      '<div class="tf-hl">병오년, 당신에게 '+rel+'의 해.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">2026 병오년(丙午年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
       '<div class="v">'+score+'<small>점</small></div><div class="s">올해는 나에게 <b>'+rel+'</b>의 해 — '+T[0]+'</div></div>'+
       '<div class="sj-bars">'+sub.map(function(x){return ybar(x[0],x[1]);}).join("")+'</div>'+

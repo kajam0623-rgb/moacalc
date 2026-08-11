@@ -139,6 +139,12 @@ t("용신 보정 후 클램프 상한", Math.max(35,Math.min(98,85+8+5)), 98);
 t("용신 보정 후 클램프 하한", Math.max(35,Math.min(98,35-10-3)), 35);
 t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-id')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-hl')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-id')>0, true);
 
+// ── T4: 궁합·신년·별자리궁합 첫 화면 헤드라인 ──
+[["gunghap","newyear"],["newyear","namematch"],["stargunghap","gunghap"]].forEach(([id,next])=>{
+  const s = inner.slice(inner.indexOf(`id:"${id}"`), inner.indexOf(`id:"${next}"`));
+  t(`${id} 헤드라인이 점수 카드 위에 렌더`, s.indexOf("tf-hl")>0 && s.indexOf("tf-hl") < s.indexOf('class="out"'), true);
+});
+
 // ── T3 프로그래매틱 SEO: 별자리 12 + 띠 12 원고 ──
 const STAR_PAGES = require("./content_star.js"), ZODIAC_PAGES = require("./content_zodiac.js");
 const bodyLen = o => (o.intro+o.love+o.work+o.match.why+o.match.hardWhy+o.y2026).replace(/\s/g,"").length;
