@@ -143,6 +143,9 @@ t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-i
 t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
 t("조사 받침 없음 → 와/가", josa("공기","와/과")+josa("공기","가/이"), "와가");
 t("네 원소 전부 조사 처리", ST_ELE.every(e=>["와","과"].indexOf(josa(e,"와/과"))>=0), true);
+// 오행 이름 뒤 조사: 목·금은 받침 있고 화·토·수는 없다 (용신 문장에서 "화(火)이" 같은 오류 방지)
+t("오행 조사: 목→이/은/을, 화→가/는/를", SJ_EL.map(e=>e+josa(e,"가/이")).join(" "), "목이 화가 토가 금이 수가");
+t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'\)이|SJ_EL\[st\.yong\]\+'은 |SJ_EL\[st\.yong\]\+"을 극/.test(tfSrc), true);
 
 // ── T4: 궁합·신년·별자리궁합 첫 화면 헤드라인 ──
 [["gunghap","newyear"],["newyear","namematch"],["stargunghap","gunghap"]].forEach(([id,next])=>{
