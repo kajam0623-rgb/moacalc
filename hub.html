@@ -1264,8 +1264,7 @@
         '<p style="margin-top:12px">현재 대운은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> — '+DUTXT[duNow.tg]+'</p></div>'+
         '<div class="sj-sec"><h3>대운 흐름 요약</h3><p>'+duList.slice(0,5).map(function(d){return '<b>'+d.age+'세~</b> '+d.tg+' — '+DUTXT[d.tg].split(".")[0]+'.';}).join("<br>")+'</p></div>'+
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';}
-    el.querySelector("#go").addEventListener("click",go);go();}
-    birthDial(el,"#d");}},
+    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"과거·현재·미래 3장",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
@@ -1525,8 +1524,7 @@
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});}
-    el.querySelector("#go").addEventListener("click",go);go();}
-    birthDial(el,"#d");}},
+    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
@@ -1573,8 +1571,7 @@
       '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';
       bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();}
-    birthDial(el,"#d");}},
+    el.querySelector("#s").addEventListener("change",go);go();birthDial(el,"#d");}},
 
   {id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합",desc:"12별자리 커플 궁합",render:function(el){
     // 원소 관계 [점수, 이름, 해설]
@@ -1691,8 +1688,7 @@
       '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();}
-    birthDial(el,"#d");}},
+    el.querySelector("#s").addEventListener("change",go);go();birthDial(el,"#d");}},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
@@ -1775,8 +1771,7 @@
       shareBtn()+
       '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();}
-    birthDial(el,"#a");birthDial(el,"#b");}},
+    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#a");birthDial(el,"#b");}},
 
   {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
     var YR=2026,YS=2,YB=6; // 병오년
@@ -1841,8 +1836,7 @@
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();}
-    birthDial(el,"#d");}},
+    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
 
   {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
     var CHO=[1,2,2,3,3,4,4,6,2,4,4,6,4,6,3,2,3,4,3];   // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ 근사 획수
