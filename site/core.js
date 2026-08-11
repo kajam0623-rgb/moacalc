@@ -215,6 +215,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function birthDial(el,sel,onChange){
     if(typeof document==="undefined")return null;
     var inp=el.querySelector(sel);if(!inp)return null;
+    var host=inp.parentNode;if(!host)return null; // 검증 하네스의 mock DOM 대비
     var base=(inp.value||"1990-03-15").split("-");
     var Y=+base[0]||1990,M=+base[1]||3,D=+base[2]||15;
     var nowY=new Date().getFullYear();
@@ -236,8 +237,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     wrap.appendChild(cols.y);wrap.appendChild(cols.m);wrap.appendChild(cols.d);
     var selBar=document.createElement("div");selBar.className="dial-sel";wrap.appendChild(selBar);
     inp.style.display="none";
-    inp.parentNode.insertBefore(wrap,inp.nextSibling);
-    inp.parentNode.insertBefore(gan,wrap.nextSibling);
+    host.insertBefore(wrap,inp.nextSibling);
+    host.insertBefore(gan,wrap.nextSibling);
     function center(col){ // 스크롤 위치로 가운데 항목을 판정한다
       var items=col.querySelectorAll(".dial-item");
       var idx=Math.round(col.scrollTop/44);
