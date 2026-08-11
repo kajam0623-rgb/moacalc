@@ -175,7 +175,8 @@
   .idxrow:hover .ix-a{opacity:1;transform:none;} .idxrow:hover .ix-n{color:var(--accent-ink);}
   /* tool view */
   /* 모바일 터치 타겟 44px 확보 — 시각 크기는 그대로 두고 여백으로 누를 면적만 넓힌다 */
-  .back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-family:var(--mono);color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:6px;}
+  /* 한글에 monospace를 쓰면 글자폭이 고정돼 자간이 벌어져 보인다. 한글 UI 텍스트는 본문 폰트로 둔다 */
+  .back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:6px;}
   .back:hover{color:var(--accent);}
   .toolhero{position:relative;overflow:hidden;border:1px solid var(--line-2);border-radius:18px;margin-bottom:20px;}
   .toolhero img{width:100%;display:block;aspect-ratio:16/7;object-fit:cover;}
@@ -209,17 +210,17 @@
   .console>*{position:relative;}
   .sbar{display:flex;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:0 12px;margin-top:10px;}
   .sbar svg{flex:0 0 auto;opacity:.55;}
-  .sbar .search{border:0;margin:0;padding:12px 0;font-family:var(--mono);font-size:15px;}
+  .sbar .search{border:0;margin:0;padding:12px 0;font-size:15px;}
   .sbar .search:focus{border:0;outline:none;}
   .sbar kbd{flex:0 0 auto;font-family:var(--mono);font-size:10.5px;color:var(--muted);border:1px solid var(--line-2);
     border-radius:6px;padding:3px 7px;background:var(--surface);}
   .sbar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent);}
-  .console .prompt{font-family:var(--mono);font-size:13px;color:var(--accent-ink);margin-bottom:10px;}
+  .console .prompt{font-size:13px;color:var(--accent-ink);margin-bottom:10px;}
   .console .prompt b{color:var(--fun-ink);}
   .console .cur{display:inline-block;width:8px;height:15px;background:var(--fun);vertical-align:-2px;margin-left:2px;animation:blink 1.1s steps(1) infinite;}
   @keyframes blink{50%{opacity:0;}}
   @media (prefers-reduced-motion:reduce){.console .cur{animation:none;}}
-  .console .search{margin:0;border-bottom-color:var(--line-2);font-family:var(--mono);}
+  .console .search{margin:0;border-bottom-color:var(--line-2);}
   /* 운세·재미 카테고리 강조 */
   .grp.fun .cat span{color:var(--fun-ink);}
   .grp.fun .cat::after{background:var(--fun);opacity:.5;}
@@ -246,7 +247,7 @@
   .out .k::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:0 0 auto;}
   .out .v{font-family:var(--mono);font-size:36px;font-weight:800;letter-spacing:-1.8px;text-align:right;line-height:1.08;margin-top:8px;}
   .out .v small{font-size:16px;font-weight:600;letter-spacing:0;margin-left:1px;}
-  .out .s{font-size:12px;color:var(--muted);text-align:right;margin-top:5px;font-family:var(--mono);}
+  .out .s{font-size:12px;color:var(--muted);text-align:right;margin-top:5px;}
   .rows{margin-top:16px;}
   .li{display:flex;justify-content:space-between;align-items:baseline;padding:9px 2px;border-bottom:1px dotted var(--line-2);font-size:14px;}
   .li:last-child{border-bottom:none;} .li b{font-weight:600;font-family:var(--mono);}
@@ -278,7 +279,7 @@
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
-  .chip{font-family:var(--mono);background:var(--surface-2);border:1px solid var(--line);border-radius:2px;padding:7px 11px;font-size:13px;font-weight:600;}
+  .chip{background:var(--surface-2);border:1px solid var(--line);border-radius:2px;padding:7px 11px;font-size:13px;font-weight:600;}
   /* ── 사주 명식 ── */
   .sj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px;}
   .sj-col{border:1px solid var(--line-2);border-radius:4px;overflow:hidden;text-align:center;}
@@ -357,7 +358,7 @@
   .tr-read .one p{font-size:13px;color:var(--muted);line-height:1.75;margin-top:3px;}
 .intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}
 .trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}
-.trust span{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fun-ink);background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}
+.trust span{font-size:11.5px;font-weight:700;letter-spacing:0;color:var(--fun-ink);background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}
 .hero-trust{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px;max-width:520px;border-left:2px solid var(--fun);padding-left:10px;}
 .sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}
 .sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}

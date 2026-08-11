@@ -1102,7 +1102,7 @@ const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
   `\n.trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}`+
-  `\n.trust span{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.02em;color:var(--fun-ink);`+
+  `\n.trust span{font-size:11.5px;font-weight:700;letter-spacing:0;color:var(--fun-ink);`+
   `background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}`+
   `\n.hero-trust{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px;max-width:520px;`+
   `border-left:2px solid var(--fun);padding-left:10px;}`+
