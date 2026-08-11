@@ -204,6 +204,15 @@ t("이미지 저장 버튼 마크업", /save-btn/.test(shareSrc), true);
 // 한글 줄바꿈: 캔버스에는 자동 줄바꿈이 없어 직접 끊어야 카드 밖으로 넘치지 않는다
 t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(shareSrc), true);
 
+// ── 모바일 최적화 ──
+const cssM = src.match(/<style>([\s\S]*?)<\/style>/)[1];
+t("사이드바 링크 터치 타겟 44px", /\.rail a\{[^}]*min-height:44px/.test(cssM), true);
+t("뒤로가기 링크 터치 타겟 44px", /\.back\{[^}]*min-height:44px/.test(cssM), true);
+t("모바일 본문 폰트 15px 이상", /@media \(max-width:600px\)\{\.sj-sec p\{font-size:15px/.test(cssM), true);
+t("다이얼 항목 44px(손가락 기준)", /\.dial-item\{height:44px/.test(cssM), true);
+// max-width는 반응형이라 정상. 고정 width만 가로 스크롤을 만든다
+t("본문 컨테이너는 고정폭이 아니라 max-width", /\.wrap\{[^}]*max-width:\s*\d+px/.test(cssM) && !/\.wrap\{[^}]*[^-]width:\s*\d{3,}px/.test(cssM), true);
+
 // 이미지 비율: CLS용 width/height 속성을 붙인 이미지는 CSS에 height:auto가 있어야
 // aspect-ratio가 살아난다. 없으면 height 속성이 이겨 그림이 늘어난 틀에 갇히고 좌우가 잘린다.
 const cssAll = src.match(/<style>([\s\S]*?)<\/style>/)[1];

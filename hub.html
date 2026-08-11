@@ -22,7 +22,7 @@
     .rail{position:sticky;top:24px;}}
   .rail h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700;}
   .rail .rcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 6px;margin-bottom:14px;}
-  .rail a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);
+  .rail a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;min-height:44px;border-bottom:1px solid var(--line);
     text-decoration:none;color:var(--ink);font-size:13.5px;font-weight:600;}
   .rail a:last-child{border-bottom:none;}
   .rail a span{color:var(--muted);font-size:11.5px;font-weight:500;}
@@ -173,7 +173,8 @@
   .ix-a{font-family:var(--mono);color:var(--accent);font-size:14px;opacity:0;transform:translateX(-4px);transition:.18s;}
   .idxrow:hover .ix-a{opacity:1;transform:none;} .idxrow:hover .ix-n{color:var(--accent-ink);}
   /* tool view */
-  .back{display:inline-block;font-family:var(--mono);color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:16px;}
+  /* 모바일 터치 타겟 44px 확보 — 시각 크기는 그대로 두고 여백으로 누를 면적만 넓힌다 */
+  .back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-family:var(--mono);color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:6px;}
   .back:hover{color:var(--accent);}
   .toolhero{position:relative;overflow:hidden;border:1px solid var(--line-2);border-radius:18px;margin-bottom:20px;}
   .toolhero img{width:100%;display:block;aspect-ratio:16/7;object-fit:cover;}
@@ -300,6 +301,9 @@
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
+  /* 모바일에선 13.5px 한글 본문이 작다. 운세는 읽는 분량이 많아 한 단계 키운다 */
+  @media (max-width:600px){.sj-sec p{font-size:15px;line-height:1.75;}
+    .sj-sec h3{font-size:14px;}}
   .sj-daeun{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
   .sj-du{flex:0 0 auto;min-width:52px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:7px 4px;}
   .sj-du .a{font-size:10px;color:var(--muted);}
