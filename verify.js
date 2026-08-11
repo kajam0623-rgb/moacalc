@@ -139,6 +139,11 @@ t("용신 보정 후 클램프 상한", Math.max(35,Math.min(98,85+8+5)), 98);
 t("용신 보정 후 클램프 하한", Math.max(35,Math.min(98,35-10-3)), 35);
 t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-id')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-hl')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-id')>0, true);
 
+// ── 한글 조사 자동 선택 (받침 유무) ──
+t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
+t("조사 받침 없음 → 와/가", josa("공기","와/과")+josa("공기","가/이"), "와가");
+t("네 원소 전부 조사 처리", ST_ELE.every(e=>["와","과"].indexOf(josa(e,"와/과"))>=0), true);
+
 // ── T4: 궁합·신년·별자리궁합 첫 화면 헤드라인 ──
 [["gunghap","newyear"],["newyear","namematch"],["stargunghap","gunghap"]].forEach(([id,next])=>{
   const s = inner.slice(inner.indexOf(`id:"${id}"`), inner.indexOf(`id:"${next}"`));
@@ -164,7 +169,7 @@ t("띠 삼합 상대는 index%4 동일 조", ZODIAC_PAGES.every((z,i)=>z.match.b
 t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap===SJ_TTI[sjYukhap(i)]+"띠"), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

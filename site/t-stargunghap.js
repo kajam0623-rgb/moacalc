@@ -32,8 +32,8 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
         :rFit===1?"한쪽 수호성은 상대 원소와 결이 맞고 한쪽은 다릅니다. 맞춰주는 쪽이 지치지 않게 표현을 아끼지 마세요."
         :"수호성("+rA+"·"+rB+")의 결이 서로 달라, 연애 초반보다 시간이 지나며 이해가 쌓이는 형태입니다.";
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+ST_ELE[a%4]+' 원소 × '+ST_ELE[b%4]+' 원소 · 황도 '+(dist*30)+'° '+A[1]+'</div>'+
-      '<div class="tf-hl">'+ST_ELE[a%4]+'와 '+ST_ELE[b%4]+'가 만나면 — '+grade+'.</div>'+
+      '<div class="tf-id">'+ST_ELE[a%4]+' 원소 × '+ST_ELE[b%4]+' 원소 · 황도 '+A[1]+'</div>'+
+      '<div class="tf-hl">'+ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+' '+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+' 만나면 — '+grade+'.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+ST_SYM[a]+' '+ST_KO[a]+' ♥ '+ST_SYM[b]+' '+ST_KO[b]+'</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div><div class="s">'+E[1]+' · '+A[1]+' 관계</div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return rateBar(x[0],x[1]);}).join("")+'</div>'+

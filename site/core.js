@@ -193,6 +193,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var c=progressive(base),cr=c<=13e5?c*.55:715000+(c-13e5)*.3,lim=g<=33e6?74e4:g<=7e7?66e4:g<=12e7?5e5:2e5;
     return Math.max(c-Math.min(cr,lim),0)/12;}
   function escH(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  // 한글 조사 자동 선택 — 앞 글자의 받침 유무로 고른다. josa("불","와/과")="과"
+  function josa(w,pair){
+    var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);
+    var hasJong=(c>=0xAC00&&c<=0xD7A3)&&((c-0xAC00)%28!==0);
+    return hasJong?p[1]:p[0];}
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}}

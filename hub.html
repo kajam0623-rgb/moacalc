@@ -530,6 +530,11 @@
     var c=progressive(base),cr=c<=13e5?c*.55:715000+(c-13e5)*.3,lim=g<=33e6?74e4:g<=7e7?66e4:g<=12e7?5e5:2e5;
     return Math.max(c-Math.min(cr,lim),0)/12;}
   function escH(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  // 한글 조사 자동 선택 — 앞 글자의 받침 유무로 고른다. josa("불","와/과")="과"
+  function josa(w,pair){
+    var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);
+    var hasJong=(c>=0xAC00&&c<=0xD7A3)&&((c-0xAC00)%28!==0);
+    return hasJong?p[1]:p[0];}
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}}
@@ -1473,8 +1478,8 @@
         :rFit===1?"한쪽 수호성은 상대 원소와 결이 맞고 한쪽은 다릅니다. 맞춰주는 쪽이 지치지 않게 표현을 아끼지 마세요."
         :"수호성("+rA+"·"+rB+")의 결이 서로 달라, 연애 초반보다 시간이 지나며 이해가 쌓이는 형태입니다.";
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+ST_ELE[a%4]+' 원소 × '+ST_ELE[b%4]+' 원소 · 황도 '+(dist*30)+'° '+A[1]+'</div>'+
-      '<div class="tf-hl">'+ST_ELE[a%4]+'와 '+ST_ELE[b%4]+'가 만나면 — '+grade+'.</div>'+
+      '<div class="tf-id">'+ST_ELE[a%4]+' 원소 × '+ST_ELE[b%4]+' 원소 · 황도 '+A[1]+'</div>'+
+      '<div class="tf-hl">'+ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+' '+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+' 만나면 — '+grade+'.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+ST_SYM[a]+' '+ST_KO[a]+' ♥ '+ST_SYM[b]+' '+ST_KO[b]+'</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div><div class="s">'+E[1]+' · '+A[1]+' 관계</div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return rateBar(x[0],x[1]);}).join("")+'</div>'+
