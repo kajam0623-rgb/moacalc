@@ -285,8 +285,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
           var n=items[Math.max(0,Math.min(items.length-1,i+d))];
           scrollTo(col,+n.dataset.v,true);return;}});}
     bind(cols.y);bind(cols.m);bind(cols.d);
-    requestAnimationFrame(function(){
-      scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();});
+    // rAF는 백그라운드 탭에서 실행되지 않아 휠이 0(1930년)에 머문 채 값과 어긋난다.
+    // 타이머로도 한 번 더 맞춰 초기 위치를 보장한다.
+    function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
+    requestAnimationFrame(settle);setTimeout(settle,0);setTimeout(settle,180);
     return wrap;}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
