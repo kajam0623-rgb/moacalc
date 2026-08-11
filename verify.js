@@ -116,6 +116,18 @@ const tfKeys = [...tfSrc.matchAll(/"(비견|겁재|식신|상관|편재|정재|�
 t("오늘의 운세 십성 10종 정의", new Set(tfKeys).size, 10);
 t("오늘의 운세 항목별 해설(애정·직장·건강) 존재", /애정운 <span|T\[6\]/.test(tfSrc) && /T\[7\]/.test(tfSrc) && /T\[8\]/.test(tfSrc), true);
 
+// ── T1 콘텐츠 대개편: 정체성·무드·헤드라인·용신 ──
+t("일간 정체성 SJ_ILGAN_ID 10문장", SJ_ILGAN_ID.length===10 && SJ_ILGAN_ID.every(s=>s.indexOf("—")>0), true);
+t("십이운성 무드 UN_MOOD 12문장", Object.keys(UN_MOOD).length===12 && SJ_UN.every(u=>typeof UN_MOOD[u]==="string" && UN_MOOD[u].length>=20), true);
+const txtCode = tfSrc.slice(tfSrc.indexOf("var TXT={"), tfSrc.indexOf("]};")+3);
+const TFTXT = new Function(txtCode + "; return TXT;")();
+t("오늘의 운세 TXT 10종 × 10필드(hl 포함)", Object.keys(TFTXT).length===10 && Object.values(TFTXT).every(a=>a.length===10 && typeof a[9]==="string" && a[9].length>=8), true);
+t("총운 3계층 조립(UN_MOOD 접합)", tfSrc.includes("UN_MOOD[un]") && tfSrc.includes("합충 없이"), true);
+t("용신 섹션·내일 미리보기 렌더", tfSrc.includes("용신으로 보는 오늘") && tfSrc.includes("내일 미리보기"), true);
+t("용신 보정 후 클램프 상한", Math.max(35,Math.min(98,85+8+5)), 98);
+t("용신 보정 후 클램프 하한", Math.max(35,Math.min(98,35-10-3)), 35);
+t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-id')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-hl')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-id')>0, true);
+
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
 const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
