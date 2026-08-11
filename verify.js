@@ -182,5 +182,12 @@ const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
 
+// 조립 변수 뒤에 조사를 붙일 때 josa()를 안 쓰면 "화이/수이/사은" 같은 오류가 화면에 나온다.
+// 오행·십이운성처럼 받침이 섞인 값을 담는 표현식 바로 뒤에 조사 리터럴이 오는지 소스에서 잡는다.
+const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel)";
+const hardJosa = [...toolsSrc.matchAll(new RegExp(JVAR + "\\s*\\+\\s*[\"'](?:이|은|을|과|가|는|를|와)(?=[\\s\"'])", "g"))].map(m => m[0].replace(/\s+/g, ""));
+t("조립 변수 뒤 하드코딩 조사 없음 (josa 사용)", hardJosa.length, 0);
+if (hardJosa.length) console.log("   ⚠ 조사 하드코딩:", hardJosa.join(" | "));
+
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
