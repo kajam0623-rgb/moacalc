@@ -1267,7 +1267,8 @@
         :"세 장의 번호가 적당한 간격으로 놓여 있습니다. 흐름이 한 방향으로 천천히 이동하는 중이라, 급하게 바꾸기보다 지금 속도를 유지하는 편이 낫습니다.";
       return '<div class="sj-sec"><h3>세 장을 함께 보면</h3><p>'+flow+' '+stage+'</p>'+
         '<p style="margin-top:10px">'+spread+'</p>'+
-        '<p style="margin-top:10px">'+fut+' '+end+'</p></div>';}
+        '<p style="margin-top:10px">'+fut+' '+end+'</p>'+
+        '<p style="margin-top:10px">이 스프레드는 메이저 아르카나 22장 중 세 장을 뽑아 과거·현재·미래 자리에 놓은 결과입니다. 같은 카드라도 어느 자리에 놓이느냐에 따라 뜻이 달라지므로, 카드 이름의 인상보다 자리와 방향을 함께 읽어야 합니다. 오늘 답이 흐릿하게 느껴진다면 카드가 아니라 질문이 넓어서일 가능성이 큽니다. 질문을 한 문장으로 좁혀 다시 뽑아보세요.</p></div>';}
     var picks;
     function deal(){
       var idx=[];while(idx.length<3){var n=Math.floor(Math.random()*22);if(idx.indexOf(n)<0)idx.push(n);}
