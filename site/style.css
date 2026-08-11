@@ -251,6 +251,9 @@
   .share-btn{margin-top:14px;width:100%;padding:12px;border:1px solid var(--fun);border-radius:10px;background:transparent;
     color:var(--fun-ink);font:inherit;font-weight:800;cursor:pointer;}
   .share-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
+  .save-btn{margin-top:8px;width:100%;padding:12px;border:1px solid var(--line-2);border-radius:10px;background:transparent;
+    color:var(--muted);font:inherit;font-weight:700;cursor:pointer;}
+  .save-btn:hover{border-color:var(--fun);color:var(--fun-ink);}
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}

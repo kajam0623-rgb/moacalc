@@ -201,10 +201,75 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}}
+  // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
+  if(typeof window!=="undefined"){
+    window.addEventListener("error",function(e){
+      track("js_error",{m:String(e.message||"").slice(0,100),f:String(e.filename||"").split("/").pop()});});
+    window.addEventListener("unhandledrejection",function(e){
+      track("js_error",{m:("promise: "+(e.reason&&e.reason.message||e.reason||"")).slice(0,100)});});}
   if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
   function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
     return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
-  function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>';}
+  function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
+    '<button type="button" class="save-btn">이미지로 저장</button>';}
+  // 캔버스는 자동 줄바꿈이 없다. 폭을 넘기기 직전 어절에서 끊어 줄 배열로 돌려준다
+  function wrapText(ctx,text,maxW){
+    var words=String(text).split(" "),lines=[],cur="";
+    for(var i=0;i<words.length;i++){
+      var test=cur?cur+" "+words[i]:words[i];
+      if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=test;}
+    if(cur)lines.push(cur);return lines;}
+  // 결과 카드 1080×1350 PNG. 외부 라이브러리 없이 Canvas만 사용
+  function fortuneCard(o){
+    if(typeof document==="undefined")return null;
+    var W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;
+    var x=c.getContext("2d");
+    var g=x.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,"#0d1424");g.addColorStop(.55,"#131c30");g.addColorStop(1,"#0a0f1a");
+    x.fillStyle=g;x.fillRect(0,0,W,H);
+    // 별: 좌표는 결정적이어야 같은 결과가 같은 그림을 낸다
+    x.fillStyle="rgba(255,255,255,.55)";
+    for(var i=0;i<90;i++){var sx=(i*137.5)%W,sy=(i*89.3)%(H*.62),r=(i%3)*.7+.6;
+      x.beginPath();x.arc(sx,sy,r,0,6.283);x.fill();}
+    x.strokeStyle="rgba(212,175,110,.5)";x.lineWidth=2;x.strokeRect(48,48,W-96,H-96);
+    var F='"Noto Sans KR","Malgun Gothic",sans-serif';
+    x.textAlign="center";
+    x.fillStyle="#d4af6e";x.font="600 34px "+F;
+    x.fillText(o.tool||"오늘의 운세",W/2,168);
+    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,224);}
+    if(o.score!=null){
+      x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470);
+      x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556);}
+    x.fillStyle="#fff";x.font="800 54px "+F;
+    var hl=wrapText(x,o.headline||"",W-200),hy=o.score!=null?700:520;
+    for(var j=0;j<hl.length&&j<3;j++){x.fillText(hl[j],W/2,hy+j*74);}
+    if(o.body){
+      x.fillStyle="#c3ccd9";x.font="400 38px "+F;
+      var bl=wrapText(x,o.body,W-220),by=hy+hl.length*74+56;
+      for(var k=0;k<bl.length&&k<6;k++){x.fillText(bl[k],W/2,by+k*60);}}
+    x.fillStyle="#d4af6e";x.font="700 42px "+F;x.fillText("동네보살",W/2,H-136);
+    x.fillStyle="#8b95a6";x.font="400 32px "+F;x.fillText("gyesangi.vercel.app",W/2,H-84);
+    return c;}
+  function bindSave(el,opts){
+    var b=el.querySelector(".save-btn");if(!b)return;
+    b.addEventListener("click",function(){
+      track("image_save",{tool:location.pathname});
+      var c=fortuneCard(typeof opts==="function"?opts():opts);if(!c)return;
+      var name=(opts&&opts.file||"dongnebosal")+".png";
+      b.textContent="만드는 중...";
+      c.toBlob(function(blob){
+        if(!blob){b.textContent="저장 실패";return;}
+        var f=null;
+        try{f=new File([blob],name,{type:"image/png"});}catch(e){}
+        if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
+          navigator.share({files:[f]}).catch(function(){}).then(reset);
+        }else{
+          var u=URL.createObjectURL(blob),a=document.createElement("a");
+          a.href=u;a.download=name;document.body.appendChild(a);a.click();
+          document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);
+          reset();}
+        function reset(){b.textContent="이미지로 저장";}
+      },"image/png");});}
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});

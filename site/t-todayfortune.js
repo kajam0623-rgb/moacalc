@@ -88,5 +88,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>내일은 당신에게 <b>'+tRel+'</b>의 날. "'+TXT[tRel][9]+'" '+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+' 자세한 풀이는 내일 자정에 일진이 바뀐 뒤 다시 확인하세요.</p></div>'+
       shareBtn()+
       '<p class="note">오늘의 일진(일 간지)과 내 일간의 십성 관계, 일지의 삼합·육합·충, 십이운성, 억부용신을 함께 보는 정통 명리 방식입니다. 용신은 신강한 사주면 기운을 덜어내는 오행, 신약한 사주면 돕는 오행을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
-      bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");}
+      bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
+      bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
+        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});}
     el.querySelector("#go").addEventListener("click",go);go();}});
