@@ -185,6 +185,9 @@ t("다이얼은 hidden input의 값을 갱신(기존 로직 보존)", /\.value\s
 t("다이얼 DOM은 typeof document 가드", /typeof document/.test(inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function birthDial")+400)), true);
 t("연·월·일 3열 구성", /data-unit="y"|dial-col/.test(inner), true);
 t("돌릴 때 간지 미리보기 갱신", /dial-ganji/.test(inner), true);
+// 값만 바꾸고 재계산을 안 걸면 화면의 명식이 옛 날짜로 남는다
+t("다이얼 조작 시 결과 재계산 트리거", /ready\)\{var g=el\.querySelector\("#go"\);if\(g\)g\.click\(\)/.test(inner), true);
+t("초기 배치 중에는 재계산 안 걸림(ready 플래그)", /var ready=false/.test(inner) && /ready=true/.test(inner), true);
 t("키보드 접근성(role=listbox + tabindex + 화살표 키)", /"role","listbox"/.test(inner) && /tabIndex\s*=\s*0/.test(inner) && /ArrowDown/.test(inner), true);
 
 // ── P2-3 결과 이미지 저장(카드 캡처) ──

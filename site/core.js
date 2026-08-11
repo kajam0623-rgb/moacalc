@@ -263,7 +263,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         gan.innerHTML='이 날의 일진 <b>'+SJ_SH[p.d.s]+SJ_BH[p.d.b]+'</b> ('+SJ_S[p.d.s]+SJ_B[p.d.b]+') · '+SJ_TTI[p.y.b]+'띠';
       }catch(e){gan.textContent="";}
       inp.dispatchEvent(new Event("change",{bubbles:true}));
-      if(typeof onChange==="function")onChange(v);}
+      if(typeof onChange==="function")onChange(v);
+      // 각 도구의 go()는 대개 버튼 클릭에만 묶여 있다. 초기 배치가 끝난 뒤의
+      // 사용자 조작에서만 재계산을 걸어 준다(초기엔 도구가 이미 한 번 계산했다).
+      else if(ready){var g=el.querySelector("#go");if(g)g.click();}}
+    var ready=false;
     var timer=null;
     function bind(col){
       col.addEventListener("scroll",function(){
@@ -288,7 +292,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     // rAF는 백그라운드 탭에서 실행되지 않아 휠이 0(1930년)에 머문 채 값과 어긋난다.
     // 타이머로도 한 번 더 맞춰 초기 위치를 보장한다.
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
-    requestAnimationFrame(settle);setTimeout(settle,0);setTimeout(settle,180);
+    requestAnimationFrame(settle);setTimeout(settle,0);
+    setTimeout(function(){settle();ready=true;},180);
     return wrap;}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
