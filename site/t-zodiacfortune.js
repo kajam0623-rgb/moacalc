@@ -62,4 +62,4 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();birthDial(el,"#d");}});
+    el.querySelector("#s").addEventListener("change",go);go();}});
