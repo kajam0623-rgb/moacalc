@@ -1112,8 +1112,8 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `\n.sitenav a:hover{color:var(--accent);}`+
   `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`+
   `\n.sibs{display:flex;flex-wrap:wrap;gap:7px;}`+
-  `\n.sibs a,.sibs .cur{display:inline-block;font-size:13px;text-decoration:none;border:1px solid var(--line-2);`+
-  `border-radius:100px;padding:6px 12px;color:var(--muted);}`+
+  `\n.sibs a,.sibs .cur{display:inline-flex;align-items:center;min-height:44px;font-size:13px;text-decoration:none;border:1px solid var(--line-2);`+
+  `border-radius:100px;padding:0 12px;color:var(--muted);}`+
   `\n.sibs a:hover{border-color:var(--accent);color:var(--accent);}`+
   `\n.sibs .cur{background:color-mix(in srgb,var(--fun) 12%,transparent);border-color:color-mix(in srgb,var(--fun) 40%,transparent);color:var(--fun-ink);font-weight:700;}`;
 
