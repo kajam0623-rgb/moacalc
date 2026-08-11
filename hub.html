@@ -3,7 +3,9 @@
     --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;
     --line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
     --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;
-    --mono:ui-monospace,"SF Mono","Menlo",Consolas,"Roboto Mono",monospace;
+    /* 한글 폴백을 명시하지 않으면 monospace가 굴림 계열로 떨어져 자간이 벌어진다.
+       영문·숫자만 모노로 두고 한글은 시스템 산세리프로 받는다. */
+    --mono:ui-monospace,"SF Mono","Menlo",Consolas,"Roboto Mono","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
   }
   @media (prefers-color-scheme:dark){:root{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;
     --muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;
