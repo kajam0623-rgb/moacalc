@@ -169,7 +169,7 @@ t("띠 삼합 상대는 index%4 동일 조", ZODIAC_PAGES.every((z,i)=>z.match.b
 t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap===SJ_TTI[sjYukhap(i)]+"띠"), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -178,6 +178,14 @@ const known = new Set([...HELPERS, "function","if","for","while","switch","catch
 const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/.test(n) && !toolsSrc.includes("function "+n) && !toolsSrc.includes("var "+n+"=") && !toolsSrc.includes(n+"=function"));
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
+
+// ── 생년월일 다이얼 ──
+t("다이얼 헬퍼 birthDial 정의", /function birthDial\(/.test(inner), true);
+t("다이얼은 hidden input의 값을 갱신(기존 로직 보존)", /\.value\s*=\s*(pad|ymd|v)/.test(inner) && /dispatchEvent/.test(inner.slice(inner.indexOf("function birthDial"))), true);
+t("다이얼 DOM은 typeof document 가드", /typeof document/.test(inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function birthDial")+400)), true);
+t("연·월·일 3열 구성", /data-unit="y"|dial-col/.test(inner), true);
+t("돌릴 때 간지 미리보기 갱신", /dial-ganji/.test(inner), true);
+t("키보드 접근성(role=listbox + tabindex + 화살표 키)", /"role","listbox"/.test(inner) && /tabIndex\s*=\s*0/.test(inner) && /ArrowDown/.test(inner), true);
 
 // ── P2-3 결과 이미지 저장(카드 캡처) ──
 const shareSrc = inner.slice(inner.indexOf("function shareBtn"), inner.indexOf("// ---------- TOOLS"));

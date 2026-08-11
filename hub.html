@@ -252,6 +252,23 @@
   .share-btn{margin-top:14px;width:100%;padding:12px;border:1px solid var(--fun);border-radius:10px;background:transparent;
     color:var(--fun-ink);font:inherit;font-weight:800;cursor:pointer;}
   .share-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
+  /* 생년월일 다이얼 — 한지·먹 톤의 회전 휠 */
+  .dial{position:relative;display:grid;grid-template-columns:1.35fr 1fr 1fr;gap:6px;
+    border:1px solid var(--line-2);border-radius:14px;padding:6px;background:var(--surface-2);overflow:hidden;}
+  .dial-col{height:132px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;
+    text-align:center;position:relative;outline:none;}
+  .dial-col::-webkit-scrollbar{display:none;}
+  .dial-col:focus-visible{box-shadow:inset 0 0 0 2px var(--fun);border-radius:8px;}
+  .dial-pad{height:44px;}
+  .dial-item{height:44px;line-height:44px;scroll-snap-align:center;font-size:16px;color:var(--muted);
+    font-variant-numeric:tabular-nums;transition:color .15s,font-size .15s;cursor:pointer;}
+  .dial-item.on{color:var(--fun-ink);font-size:21px;font-weight:800;}
+  /* 가운데 선택 창 — 스크롤 위에 겹쳐 그리되 클릭은 통과시킨다 */
+  .dial-sel{position:absolute;left:6px;right:6px;top:50%;height:44px;transform:translateY(-50%);
+    border-top:1px solid var(--fun);border-bottom:1px solid var(--fun);pointer-events:none;
+    background:color-mix(in srgb,var(--fun) 7%,transparent);}
+  .dial-ganji{margin-top:8px;text-align:center;font-size:12.5px;color:var(--muted);letter-spacing:.04em;}
+  .dial-ganji b{color:var(--fun-ink);font-weight:800;}
   .save-btn{margin-top:8px;width:100%;padding:12px;border:1px solid var(--line-2);border-radius:10px;background:transparent;
     color:var(--muted);font:inherit;font-weight:700;cursor:pointer;}
   .save-btn:hover{border-color:var(--fun);color:var(--fun-ink);}
@@ -551,6 +568,84 @@
   if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
   function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
     return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+  // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
+  // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
+  function birthDial(el,sel,onChange){
+    if(typeof document==="undefined")return null;
+    var inp=el.querySelector(sel);if(!inp)return null;
+    var base=(inp.value||"1990-03-15").split("-");
+    var Y=+base[0]||1990,M=+base[1]||3,D=+base[2]||15;
+    var nowY=new Date().getFullYear();
+    var wrap=document.createElement("div");wrap.className="dial";
+    var gan=document.createElement("div");gan.className="dial-ganji";
+    function pad(n){return n<10?"0"+n:""+n;}
+    function daysIn(y,m){return new Date(y,m,0).getDate();}
+    function build(unit,from,to,cur,suffix){
+      var c=document.createElement("div");c.className="dial-col";c.dataset.unit=unit;
+      c.tabIndex=0;c.setAttribute("role","listbox");c.setAttribute("aria-label",suffix);
+      c.appendChild(Object.assign(document.createElement("div"),{className:"dial-pad"}));
+      for(var v=from;v<=to;v++){
+        var i=document.createElement("div");i.className="dial-item"+(v===cur?" on":"");
+        i.textContent=v+suffix;i.dataset.v=v;i.setAttribute("role","option");
+        c.appendChild(i);}
+      c.appendChild(Object.assign(document.createElement("div"),{className:"dial-pad"}));
+      return c;}
+    var cols={y:build("y",1930,nowY,Y,"년"),m:build("m",1,12,M,"월"),d:build("d",1,daysIn(Y,M),D,"일")};
+    wrap.appendChild(cols.y);wrap.appendChild(cols.m);wrap.appendChild(cols.d);
+    var selBar=document.createElement("div");selBar.className="dial-sel";wrap.appendChild(selBar);
+    inp.style.display="none";
+    inp.parentNode.insertBefore(wrap,inp.nextSibling);
+    inp.parentNode.insertBefore(gan,wrap.nextSibling);
+    function center(col){ // 스크롤 위치로 가운데 항목을 판정한다
+      var items=col.querySelectorAll(".dial-item");
+      var idx=Math.round(col.scrollTop/44);
+      return items[Math.max(0,Math.min(items.length-1,idx))];}
+    function mark(col){
+      var it=center(col);if(!it)return;
+      col.querySelectorAll(".dial-item").forEach(function(x){x.classList.toggle("on",x===it);});
+      return +it.dataset.v;}
+    function scrollTo(col,v,smooth){
+      var items=col.querySelectorAll(".dial-item");
+      for(var i=0;i<items.length;i++)if(+items[i].dataset.v===v){
+        col.scrollTo({top:i*44,behavior:smooth?"smooth":"auto"});return;}}
+    function rebuildDays(){ // 2월 30일 같은 값이 남지 않도록 일 목록을 다시 만든다
+      var max=daysIn(Y,M);if(D>max)D=max;
+      var fresh=build("d",1,max,D,"일");
+      wrap.replaceChild(fresh,cols.d);cols.d=fresh;bind(fresh);scrollTo(fresh,D,false);}
+    function commit(){
+      var v=Y+"-"+pad(M)+"-"+pad(D);
+      inp.value=v;
+      try{ // 간지 미리보기 — 만세력 엔진 재사용
+        var p=sjPillars(Y,M,D,null,0,false);
+        gan.innerHTML='이 날의 일진 <b>'+SJ_SH[p.d.s]+SJ_BH[p.d.b]+'</b> ('+SJ_S[p.d.s]+SJ_B[p.d.b]+') · '+SJ_TTI[p.y.b]+'띠';
+      }catch(e){gan.textContent="";}
+      inp.dispatchEvent(new Event("change",{bubbles:true}));
+      if(typeof onChange==="function")onChange(v);}
+    var timer=null;
+    function bind(col){
+      col.addEventListener("scroll",function(){
+        var v=mark(col);if(v==null)return;
+        clearTimeout(timer);
+        timer=setTimeout(function(){
+          if(col.dataset.unit==="y"){Y=v;rebuildDays();}
+          else if(col.dataset.unit==="m"){M=v;rebuildDays();}
+          else D=v;
+          commit();},120);});
+      col.addEventListener("click",function(e){
+        var it=e.target.closest(".dial-item");if(!it)return;
+        scrollTo(col,+it.dataset.v,true);});
+      col.addEventListener("keydown",function(e){
+        var d=e.key==="ArrowDown"?1:e.key==="ArrowUp"?-1:0;if(!d)return;
+        e.preventDefault();
+        var items=col.querySelectorAll(".dial-item"),cur=center(col);
+        for(var i=0;i<items.length;i++)if(items[i]===cur){
+          var n=items[Math.max(0,Math.min(items.length-1,i+d))];
+          scrollTo(col,+n.dataset.v,true);return;}});}
+    bind(cols.y);bind(cols.m);bind(cols.d);
+    requestAnimationFrame(function(){
+      scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();});
+    return wrap;}
+
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
     '<button type="button" class="save-btn">이미지로 저장</button>';}
   // 캔버스는 자동 줄바꿈이 없다. 폭을 넘기기 직전 어절에서 끊어 줄 배열로 돌려준다
@@ -1169,7 +1264,8 @@
         '<p style="margin-top:12px">현재 대운은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> — '+DUTXT[duNow.tg]+'</p></div>'+
         '<div class="sj-sec"><h3>대운 흐름 요약</h3><p>'+duList.slice(0,5).map(function(d){return '<b>'+d.age+'세~</b> '+d.tg+' — '+DUTXT[d.tg].split(".")[0]+'.';}).join("<br>")+'</p></div>'+
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';}
-    el.querySelector("#go").addEventListener("click",go);go();}},
+    el.querySelector("#go").addEventListener("click",go);go();}
+    birthDial(el,"#d");}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"과거·현재·미래 3장",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
@@ -1429,7 +1525,8 @@
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});}
-    el.querySelector("#go").addEventListener("click",go);go();}},
+    el.querySelector("#go").addEventListener("click",go);go();}
+    birthDial(el,"#d");}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
@@ -1476,7 +1573,8 @@
       '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';
       bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();}},
+    el.querySelector("#s").addEventListener("change",go);go();}
+    birthDial(el,"#d");}},
 
   {id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합",desc:"12별자리 커플 궁합",render:function(el){
     // 원소 관계 [점수, 이름, 해설]
@@ -1593,7 +1691,8 @@
       '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");}
     el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();}},
+    el.querySelector("#s").addEventListener("change",go);go();}
+    birthDial(el,"#d");}},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
@@ -1676,7 +1775,8 @@
       shareBtn()+
       '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();}},
+    el.querySelector("#go").addEventListener("click",go);go();}
+    birthDial(el,"#a");birthDial(el,"#b");}},
 
   {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
     var YR=2026,YS=2,YB=6; // 병오년
@@ -1741,7 +1841,8 @@
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();}},
+    el.querySelector("#go").addEventListener("click",go);go();}
+    birthDial(el,"#d");}},
 
   {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
     var CHO=[1,2,2,3,3,4,4,6,2,4,4,6,4,6,3,2,3,4,3];   // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ 근사 획수

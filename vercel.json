@@ -2,9 +2,9 @@
   "buildCommand": "node build_site.js",
   "outputDirectory": "site",
   "redirects": [
-    { "source": "/lotto.html", "destination": "/", "permanent": true },
-    { "source": "/draw.html", "destination": "/", "permanent": true },
-    { "source": "/ladder.html", "destination": "/", "permanent": true }
+    { "source": "/lotto.html", "destination": "/", "statusCode": 301 },
+    { "source": "/draw.html", "destination": "/", "statusCode": 301 },
+    { "source": "/ladder.html", "destination": "/", "statusCode": 301 }
   ],
   "headers": [
     {
