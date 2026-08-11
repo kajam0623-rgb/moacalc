@@ -26,7 +26,8 @@
   .rail a:last-child{border-bottom:none;}
   .rail a span{color:var(--muted);font-size:11.5px;font-weight:500;}
   .rail a:hover{color:var(--accent-ink);}
-  .rail .rart{width:100%;border-radius:10px;display:block;margin-bottom:12px;border:1px solid var(--line);}
+  /* height:auto가 없으면 HTML의 height="800" 속성이 살아남아 가로 이미지가 세로로 늘어난다 */
+  .rail .rart{width:100%;height:auto;aspect-ratio:3/2;object-fit:cover;border-radius:10px;display:block;margin-bottom:12px;border:1px solid var(--line);}
   /* home masthead */
   .masthead{display:flex;justify-content:space-between;align-items:flex-end;padding-bottom:14px;border-bottom:2px solid var(--ink);margin-bottom:22px;}
   .brand{font-size:27px;font-weight:800;letter-spacing:-1.2px;}
@@ -52,7 +53,7 @@
   @media (min-width:900px){.hero-h{font-size:44px;letter-spacing:-2.2px;}.hero-sub{font-size:15.5px;}}
   .hero-wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:center;}
   .hero-wrap.noart{grid-template-columns:1fr;}
-  .hero-art{width:100%;display:block;border:1.5px solid var(--ink);border-radius:12px;box-shadow:7px 7px 0 var(--line-2);}
+  .hero-art{width:100%;height:auto;display:block;border:1.5px solid var(--ink);border-radius:12px;box-shadow:7px 7px 0 var(--line-2);}
   @media (max-width:600px){.hero-wrap{grid-template-columns:1fr;}.hero-art{max-height:210px;object-fit:cover;object-position:left center;}}
   @keyframes heroFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-9px);}}
   .hero-wrap:not(.noart) .hero-art{animation:rise .55s cubic-bezier(.2,.7,.3,1) .18s both, heroFloat 7s ease-in-out 1.2s infinite;}

@@ -1,6 +1,7 @@
 /* 정확성 검증: 만세력 엔진(문헌 검증값 대조) + 세금·공식 스팟체크. 실행: node verify.js */
 const fs = require("fs");
 const src = fs.readFileSync("hub.html", "utf8");
+const bs = fs.readFileSync("build_site.js", "utf8"); // 페이지 마크업(사이드바 이미지 등) 검사용
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
 const engine = inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared"));
 const shared = inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS"));
@@ -205,6 +206,18 @@ t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(sh
 const cssAll = src.match(/<style>([\s\S]*?)<\/style>/)[1];
 const imgRule = (cssAll.match(/\.sj-char img\{([^}]*)\}/) || [])[1] || "";
 t("정사각 캐릭터 이미지에 height:auto (aspect-ratio 보호)", /height:\s*auto/.test(imgRule) && /aspect-ratio:\s*1\/1/.test(imgRule), true);
+
+// CLS용 width/height 속성을 붙인 이미지 클래스는 CSS에 height:auto가 있어야 한다.
+// 없으면 height 속성이 그대로 살아 이미지가 늘어나거나 잘린다(과거 rart 75% 왜곡 사고).
+const sized = new Set();
+[...src.matchAll(/<img class="([a-z-]+)"[^>]*height="\d+"/g)].forEach(m => sized.add(m[1]));
+[...bs.matchAll(/<img class="([a-z-]+)"[^>]*height="\$?\{?[\d]/g)].forEach(m => sized.add(m[1]));
+const missing = [...sized].filter(cls => {
+  const rule = (cssAll.match(new RegExp("\\.(?:[a-z-]+ )?" + cls + "\\{([^}]*)\\}")) || [])[1];
+  return rule !== undefined && !/height:\s*auto/.test(rule);
+});
+t("height 속성 쓰는 이미지 클래스에 height:auto 존재", missing.length, 0);
+if (missing.length) console.log("   ⚠ height:auto 누락:", missing.join(", "));
 
 // 조립 변수 뒤에 조사를 붙일 때 josa()를 안 쓰면 "화이/수이/사은" 같은 오류가 화면에 나온다.
 // 오행·십이운성처럼 받침이 섞인 값을 담는 표현식 바로 뒤에 조사 리터럴이 오는지 소스에서 잡는다.
