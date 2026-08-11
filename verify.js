@@ -208,6 +208,7 @@ t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(sh
 const cssM = src.match(/<style>([\s\S]*?)<\/style>/)[1];
 t("사이드바 링크 터치 타겟 44px", /\.rail a\{[^}]*min-height:44px/.test(cssM), true);
 t("뒤로가기 링크 터치 타겟 44px", /\.back\{[^}]*min-height:44px/.test(cssM), true);
+t("푸터 링크 터치 타겟 44px (sfoot·sitenav)", /\.sfoot a\{[^}]*min-height:44px/.test(cssM) && /\.sitenav a\{[^}]*min-height:44px/.test(bs), true);
 t("모바일 본문 폰트 15px 이상", /@media \(max-width:600px\)\{\.sj-sec p\{font-size:15px/.test(cssM), true);
 t("다이얼 항목 44px(손가락 기준)", /\.dial-item\{height:44px/.test(cssM), true);
 // max-width는 반응형이라 정상. 고정 width만 가로 스크롤을 만든다

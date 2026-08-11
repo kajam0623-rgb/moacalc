@@ -1108,7 +1108,7 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `border-left:2px solid var(--fun);padding-left:10px;}`+
   `\n.sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}`+
   `\n.sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}`+
-  `\n.sitenav a{display:inline-block;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 7px 0;}`+
+  `\n.sitenav a{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 2px 0;}`+
   `\n.sitenav a:hover{color:var(--accent);}`+
   `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`+
   `\n.sibs{display:flex;flex-wrap:wrap;gap:7px;}`+
