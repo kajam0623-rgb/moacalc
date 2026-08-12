@@ -307,6 +307,10 @@ t("캔버스 API는 typeof 가드 (노드 하네스 보호)", /typeof document/.
 t("이미지 저장 버튼 마크업", /save-btn/.test(shareSrc), true);
 // 한글 줄바꿈: 캔버스에는 자동 줄바꿈이 없어 직접 끊어야 카드 밖으로 넘치지 않는다
 t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(shareSrc), true);
+// 저장 이미지는 출처를 달고 퍼진다. 구 도메인이 박혀 있으면 유입이 엉뚱한 데로 간다
+t("저장 이미지 도메인은 상수(BRAND_URL)", /var BRAND_URL="[a-z0-9.-]+"/.test(inner) && /fillText\(BRAND_URL/.test(inner), true);
+t("구 도메인 gyesangi 잔재 없음", !/gyesangi/.test(inner), true);
+t("저장 이미지에 브랜드명·설명 동반", /fillText\("동네보살"/.test(inner) && /무료 사주 · 오늘의 운세/.test(inner), true);
 
 // ── 일간·십성 원고 필수 필드 (본문·순서 검사는 위 SEO 블록) ──
 t("일간 원고 필수 필드", ILGAN_PAGES.every(p=>p.en&&p.ko&&p.han&&p.el&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
@@ -335,6 +339,9 @@ t("뒤로가기 링크 터치 타겟 44px", /\.back\{[^}]*min-height:44px/.test(
 t("푸터 링크 터치 타겟 44px (sfoot·sitenav)", /\.sfoot a\{[^}]*min-height:44px/.test(cssM) && /\.sitenav a\{[^}]*min-height:44px/.test(bs), true);
 t("모바일 본문 폰트 15px 이상", /@media \(max-width:600px\)\{\.sj-sec p\{font-size:15px/.test(cssM), true);
 t("다이얼 항목 44px(손가락 기준)", /\.dial-item\{height:44px/.test(cssM), true);
+// 좁은 화면에서 .r2가 2단으로 남으면 다이얼 한 칸이 45px로 눌려 '1990년'이 겹쳐 보인다
+t("좁은 화면에서 r2는 1단", /@media \(max-width:560px\)\{\.r2\{grid-template-columns:1fr/.test(src), true);
+t("다이얼 열에 최소폭", /grid-template-columns:minmax\(64px/.test(src), true);
 // max-width는 반응형이라 정상. 고정 width만 가로 스크롤을 만든다
 t("본문 컨테이너는 고정폭이 아니라 max-width", /\.wrap\{[^}]*max-width:\s*\d+px/.test(cssM) && !/\.wrap\{[^}]*[^-]width:\s*\d{3,}px/.test(cssM), true);
 

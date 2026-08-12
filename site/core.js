@@ -501,6 +501,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=test;}
     if(cur)lines.push(cur);return lines;}
   // 결과 카드 1080×1350 PNG. 외부 라이브러리 없이 Canvas만 사용
+  // 저장·공유 이미지에 찍히는 주소. 커스텀 도메인이 붙으면 여기 한 줄만 바꾼다
+  var BRAND_URL="dongnebosal.com";
   function fortuneCard(o){
     if(typeof document==="undefined")return null;
     var W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;
@@ -528,8 +530,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       x.fillStyle="#c3ccd9";x.font="400 38px "+F;
       var bl=wrapText(x,o.body,W-220),by=hy+hl.length*74+56;
       for(var k=0;k<bl.length&&k<6;k++){x.fillText(bl[k],W/2,by+k*60);}}
-    x.fillStyle="#d4af6e";x.font="700 42px "+F;x.fillText("동네보살",W/2,H-136);
-    x.fillStyle="#8b95a6";x.font="400 32px "+F;x.fillText("gyesangi.vercel.app",W/2,H-84);
+    // 저장 이미지는 출처를 달고 돌아다닌다. 도메인이 안 보이면 퍼져도 유입이 없다
+    x.fillStyle="#d4af6e";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-142);
+    x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText("무료 사주 · 오늘의 운세",W/2,H-100);
+    x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-52);
     return c;}
   function bindSave(el,opts){
     var b=el.querySelector(".save-btn");if(!b)return;
