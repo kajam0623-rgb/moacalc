@@ -9,3 +9,4 @@ _*.png
 .env.local
 threads-today.txt
 card-out/
+threads-log.txt
