@@ -278,7 +278,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function gradeFx(out,score,grade){
     var card=out.querySelector(".out");if(!card)return;
     if(grade){var s=card.querySelector(".s");
-      if(s)s.insertAdjacentHTML("beforeend",'<span class="grade-tag g-'+grade+'">'+grade+'</span>');}
+      // 앞에 공백을 둔다. 없으면 스크린리더·복사 텍스트에서 "…의 날길"로 붙어 읽힌다
+      if(s)s.insertAdjacentHTML("beforeend",' <span class="grade-tag g-'+grade+'">'+grade+'</span>');}
     if(typeof score!=="number"||!isFinite(score))return;
     var v=card.querySelector(".v");
     if(v){var small=v.querySelector("small"),txt=document.createElement("span");
