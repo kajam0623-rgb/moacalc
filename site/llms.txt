@@ -52,6 +52,32 @@
 - [개띠](https://dongnebosal.vercel.app/zodiac-dog.html): 지지 술(戌) · 토 기운 · 늦가을
 - [돼지띠](https://dongnebosal.vercel.app/zodiac-pig.html): 지지 해(亥) · 수 기운 · 초겨울
 
+## 일간별 상세 (10) — 사주에서 '나'에 해당하는 글자
+
+- [갑목(甲)](https://dongnebosal.vercel.app/ilgan-gap.html): 하늘로 곧게 크는 큰 나무 · 양간
+- [을목(乙)](https://dongnebosal.vercel.app/ilgan-eul.html): 바위를 감아 오르는 덩굴 · 음간
+- [병화(丙)](https://dongnebosal.vercel.app/ilgan-byeong.html): 숨김없이 내리쬐는 태양 · 양간
+- [정화(丁)](https://dongnebosal.vercel.app/ilgan-jeong.html): 어둠을 밝히는 촛불 · 음간
+- [무토(戊)](https://dongnebosal.vercel.app/ilgan-mu.html): 흔들리지 않는 큰 산 · 양간
+- [기토(己)](https://dongnebosal.vercel.app/ilgan-gi.html): 곡식을 기르는 밭의 흙 · 음간
+- [경금(庚)](https://dongnebosal.vercel.app/ilgan-gyeong.html): 벼려서 날을 세우는 무쇠 · 양간
+- [신금(辛)](https://dongnebosal.vercel.app/ilgan-sin.html): 다듬어 빛나는 보석 · 음간
+- [임수(壬)](https://dongnebosal.vercel.app/ilgan-im.html): 깊고 넓게 흐르는 바다 · 양간
+- [계수(癸)](https://dongnebosal.vercel.app/ilgan-gye.html): 스며들어 적시는 빗물과 이슬 · 음간
+
+## 십성별 상세 (10) — 나와 다른 글자의 관계
+
+- [비견(比肩)](https://dongnebosal.vercel.app/sipseong-bigyeon.html): 나와 오행이 같고 음양도 같은 글자 · 나와 어깨를 나란히 하는 기운
+- [겁재(劫財)](https://dongnebosal.vercel.app/sipseong-geopjae.html): 나와 오행이 같고 음양이 다른 글자 · 재물을 겁탈한다는 이름의 기운
+- [식신(食神)](https://dongnebosal.vercel.app/sipseong-siksin.html): 내가 낳는 오행 중 음양이 같은 글자 · 먹을 복과 표현의 기운
+- [상관(傷官)](https://dongnebosal.vercel.app/sipseong-sanggwan.html): 내가 낳는 오행 중 음양이 다른 글자 · 틀을 깨는 재능의 기운
+- [편재(偏財)](https://dongnebosal.vercel.app/sipseong-pyeonjae.html): 내가 통제하는 오행 중 음양이 같은 글자 · 크게 들고나는 돈의 기운
+- [정재(正財)](https://dongnebosal.vercel.app/sipseong-jeongjae.html): 내가 통제하는 오행 중 음양이 다른 글자 · 성실하게 쌓는 돈의 기운
+- [편관(偏官)](https://dongnebosal.vercel.app/sipseong-pyeongwan.html): 나를 극하는 오행 중 음양이 같은 글자 · 나를 누르는 압박의 기운
+- [정관(正官)](https://dongnebosal.vercel.app/sipseong-jeonggwan.html): 나를 극하는 오행 중 음양이 다른 글자 · 질서와 명예의 기운
+- [편인(偏印)](https://dongnebosal.vercel.app/sipseong-pyeonin.html): 나를 낳는 오행 중 음양이 같은 글자 · 직관과 사색의 기운
+- [정인(正印)](https://dongnebosal.vercel.app/sipseong-jeongin.html): 나를 낳는 오행 중 음양이 다른 글자 · 귀인과 배움의 기운
+
 ## 사이트 정보
 
 - [동네보살 소개](https://dongnebosal.vercel.app/about.html): 동네보살은 태양황경을 직접 계산하는 만세력 엔진으로 사주·오늘의 운세·별자리 운세를 풀이합니다. 같은 입력이면 언제 눌러도 같은 결과가 나오는 이유를 설명합니다.

@@ -189,6 +189,29 @@ t("띠 삼합 상대는 index%4 동일 조", ZODIAC_PAGES.every((z,i)=>z.match.b
   const j = SJ_TTI.indexOf(b.replace("띠","")); return j%4===i%4 && j!==i; })), true);
 t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap===SJ_TTI[sjYukhap(i)]+"띠"), true);
 
+// ── 일간 10 · 십성 10 개별 페이지 ──
+const ILGAN_PAGES = require("./content_ilgan.js"), SIPSEONG_PAGES = require("./content_sipseong.js");
+// 일간·십성은 6개 섹션 구성(별자리·띠와 항목 수가 달라 기준선도 별도로 잡는다)
+const longLen = o => (o.intro+o.love+o.work+o.money+(o.health||o.many)+o.y2026).replace(/\s/g,"").length;
+t("일간 원고 10개 · 천간 순서 일치", ILGAN_PAGES.length===10 && ILGAN_PAGES.every((g,i)=>g.ko===SJ_S[i]), true);
+t("일간 오행은 엔진 SJ_ES와 일치", ILGAN_PAGES.every((g,i)=>g.el===SJ_EL[SJ_ES[i]]), true);
+t("일간 음양은 index 짝수=양", ILGAN_PAGES.every((g,i)=>g.yy===(i%2===0?"양":"음")), true);
+t("일간 원고 본문 880자+ (전 항목)", ILGAN_PAGES.every(g=>longLen(g)>=880), true);
+t("십성 원고 10개 · 엔진 십성명과 일치", SIPSEONG_PAGES.length===10 &&
+  SIPSEONG_PAGES.every(s=>["비견","겁재","식신","상관","편재","정재","편관","정관","편인","정인"].includes(s.ko)), true);
+t("십성 원고 본문 880자+ (전 항목)", SIPSEONG_PAGES.every(s=>longLen(s)>=880), true);
+// 짝 관계는 서로를 가리켜야 한다 (비견↔겁재, 식신↔상관 …)
+t("십성 pair는 상호 참조", SIPSEONG_PAGES.every(s=>{
+  const p = SIPSEONG_PAGES.find(x=>x.ko===s.pair); return p && p.pair===s.ko && p.group===s.group; }), true);
+t("일간·십성 이미지 파일 존재", ILGAN_PAGES.every(g=>fs.existsSync("img/char/ilgan-"+g.en+".webp")) &&
+  SIPSEONG_PAGES.every(s=>fs.existsSync("img/char/ss-"+s.en+".webp")), true);
+t("일간·십성 페이지 생성기 배선", /ILGAN_PAGES\.forEach/.test(bs) && /SIPSEONG_PAGES\.forEach/.test(bs), true);
+t("일간·십성 sitemap 포함", /ilgan-\$\{g\.en\}\.html<\/loc>/.test(bs) && /sipseong-\$\{s\.en\}\.html<\/loc>/.test(bs), true);
+t("사주 페이지에서 일간·십성으로 내부링크", /ilganChips\(null\)/.test(bs) && /sipseongChips\(null\)/.test(bs), true);
+// 십성 이름은 받침이 섞여 있다(비견/겁재). 하드코딩 조사가 남으면 "겁재과 연애"가 출력된다
+const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const FUN_TOP"));
+t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
+
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
 const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
@@ -230,11 +253,9 @@ t("이미지 저장 버튼 마크업", /save-btn/.test(shareSrc), true);
 // 한글 줄바꿈: 캔버스에는 자동 줄바꿈이 없어 직접 끊어야 카드 밖으로 넘치지 않는다
 t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(shareSrc), true);
 
-// ── 일간 10종 개별 페이지(롱테일 SEO) ──
-const ILGAN_PAGES = require("./content_ilgan.js");
-t("일간 10종 원고", ILGAN_PAGES.length, 10);
+// ── 일간·십성 원고 필수 필드 (본문·순서 검사는 위 SEO 블록) ──
 t("일간 원고 필수 필드", ILGAN_PAGES.every(p=>p.en&&p.ko&&p.han&&p.el&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
-t("일간 이미지 파일 존재", ILGAN_PAGES.every(p=>fs.existsSync("img/char/ilgan-"+p.en+".webp")), true);
+t("십성 원고 필수 필드", SIPSEONG_PAGES.every(p=>p.en&&p.ko&&p.han&&p.group&&p.pair&&p.rule&&p.keyword&&p.strong&&p.weak&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
 
 // ── E-E-A-T 신뢰 페이지 + GEO ──
 const SITE_PAGES = require("./content_site.js");

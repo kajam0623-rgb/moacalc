@@ -20,6 +20,8 @@ const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 const STAR_PAGES = require("./content_star.js");
 const ZODIAC_PAGES = require("./content_zodiac.js");
 const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
+const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
+const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
 
 // 빌드 게이트: verify를 실제로 돌려 통과 수를 카피에 주입한다. 실패하면 빌드 중단.
 let VERIFY_PASS = 0;
@@ -872,7 +874,9 @@ ${t.cat==="재미·운세" ? `<div class="trust"><span>랜덤 문구 아님 — 
 <div class="card tool" id="tool"></div>
 ${tagHtml}
 ${t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
- : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>' : ""}
+ : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>'
+ : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
+                   '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
 ${introHtml}
 ${guideHtml}${exHtml}${cauHtml}${faqHtml}
 ${adSlot()}
@@ -899,6 +903,10 @@ const starChips = cur => '<div class="sibs">'+STAR_PAGES.map(s=>s.en===cur
   ? `<span class="cur">${s.sym} ${s.ko}</span>` : `<a href="star-${s.en}.html">${s.sym} ${s.ko}</a>`).join("")+'</div>';
 const zodiacChips = cur => '<div class="sibs">'+ZODIAC_PAGES.map(z=>z.en===cur
   ? `<span class="cur">${z.ko}띠</span>` : `<a href="zodiac-${z.en}.html">${z.ko}띠</a>`).join("")+'</div>';
+const ilganChips = cur => '<div class="sibs">'+ILGAN_PAGES.map(g=>g.en===cur
+  ? `<span class="cur">${g.han} ${g.ko}</span>` : `<a href="ilgan-${g.en}.html">${g.han} ${g.ko}</a>`).join("")+'</div>';
+const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===cur
+  ? `<span class="cur">${s.ko}</span>` : `<a href="sipseong-${s.en}.html">${s.ko}</a>`).join("")+'</div>';
 
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
@@ -949,6 +957,13 @@ ${footer}
 }
 
 const para = t => t.trim().split(/\n\s*/).map(p=>'<p style="margin-bottom:10px">'+p+'</p>').join("");
+// 십성 이름은 받침이 섞여 있다(겁재/비견). 조사를 하드코딩하면 "겁재과 연애"가 나온다
+const josa = (w, pair) => {
+  const [a, b] = pair.split("/");                       // a=받침 있을 때, b=없을 때
+  const c = w.charCodeAt(w.length - 1);
+  const has = c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 > 0;
+  return has ? a : b;
+};
 
 // 신뢰 페이지(About·개인정보·약관). 도구 임베드 없이 원고만 있는 정적 페이지
 function sitePage(o){
@@ -1048,6 +1063,63 @@ function zodiacPage(z, i){
     related:["zodiacfortune","gunghap","todayfortune","newyear"]});
 }
 
+// 일간·십성은 사주 도구의 하위 개념 페이지다. 부모를 saju.html로 두어 링크가 만세력으로 모이게 한다
+function ilganPage(g){
+  return seoPage({
+    title:`${g.ko}(${g.han}) 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
+    desc:`${g.ko}${g.el}(${g.han}${g.el==="목"?"木":g.el==="화"?"火":g.el==="토"?"土":g.el==="금"?"金":"水"}) 일간의 성격과 강점·약점, 연애 방식, 잘 맞는 직업, 재물 흐름, 2026 병오년 운세까지. 사주에서 '나'를 뜻하는 일간을 정통 명리로 풀이합니다.`,
+    url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
+    h1:`${g.han} ${g.ko}${g.el} 일간 — ${g.metaphor}`,
+    sub:`${g.el} 기운 · ${g.yy}간 · 잘 맞는 일간 ${g.best.join(" · ")}`,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:[`${g.ko}${g.el} 일간`,`${g.ko}${g.el} 성격`,`${g.ko}${g.el} 궁합`,`${g.ko}${g.el} 직업`,`일간 ${g.ko}`],
+    body:`<div class="exbox"><h3>${g.ko}${g.el} 일간 한눈에 보기</h3>`+
+      [["천간",`${g.han} ${g.ko}`],["오행",g.el],["음양",`${g.yy}간`],["상징",g.metaphor],["잘 맞는 일간",g.best.join(" · ")]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>조율이 필요한 일간</span><b>${esc(g.hard.join(" · "))}</b></div></div>`+
+      `<div class="intro">${para(g.intro)}</div>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 연애</h2><div class="intro" style="margin-top:0">${para(g.love)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 재물</h2><div class="intro" style="margin-top:0">${para(g.money)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 건강 — 약한 고리</h2><div class="intro" style="margin-top:0">${para(g.health)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(g.y2026)}</div></section>`,
+    faq:[
+      [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
+      [`${g.ko}${g.el} 일간과 잘 맞는 일간은?`,`${g.best.join("와 ")}가 대표적입니다. 반대로 ${g.hard.join("와 ")}는 기운이 부딪히기 쉬워 조율이 필요합니다. 다만 궁합은 일간만으로 정해지지 않고 사주 전체의 균형을 함께 봅니다.`],
+      [`일간이 사주에서 왜 중요한가요?`,`일간은 사주 여덟 글자 가운데 '나 자신'에 해당합니다. 나머지 일곱 글자가 나에게 어떤 관계인지(십성)를 판정하는 기준점이 일간이며, 신강·신약과 용신도 일간을 기준으로 정해집니다.`]],
+    sibTitle:"다른 일간도 보기", sibs:ilganChips(g.en),
+    related:["saju","todayfortune","gunghap","newyear"]});
+}
+
+function sipseongPage(s){
+  return seoPage({
+    title:`${s.ko}(${s.han}) — 뜻·성격·직업·재물 풀이 | 동네보살`,
+    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.keyword}로, ${s.strong}${josa(s.strong,"이/가")} 강점이고 ${s.weak}${josa(s.weak,"이/가")} 약점입니다. 연애·직업·재물에서 ${s.ko}${josa(s.ko,"이/가")} 어떻게 나타나는지와 2026 병오년 흐름까지 정통 명리로 풀이합니다.`,
+    url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
+    h1:`${s.han} ${s.ko} — ${s.keyword}`,
+    sub:`${s.group} · ${s.rule} · 짝이 되는 십성 ${s.pair}`,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:[`${s.ko} 뜻`,`${s.ko} 성격`,`사주 ${s.ko}`,`${s.ko} 직업`,`${s.ko} 많은 사주`],
+    body:`<div class="exbox"><h3>${s.ko} 한눈에 보기</h3>`+
+      [["한자",s.han],["분류",s.group],["판정 규칙",s.rule],["강점",s.strong],["짝이 되는 십성",s.pair]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>과할 때</span><b>${esc(s.weak)}</b></div></div>`+
+      `<div class="intro">${para(s.intro)}</div>`+
+      `<section class="guide"><h2>${s.ko}${josa(s.ko,"과/와")} 연애</h2><div class="intro" style="margin-top:0">${para(s.love)}</div></section>`+
+      `<section class="guide"><h2>${s.ko}${josa(s.ko,"과/와")} 직업</h2><div class="intro" style="margin-top:0">${para(s.work)}</div></section>`+
+      `<section class="guide"><h2>${s.ko}${josa(s.ko,"과/와")} 재물</h2><div class="intro" style="margin-top:0">${para(s.money)}</div></section>`+
+      `<section class="guide"><h2>${s.ko}${josa(s.ko,"이/가")} 많을 때 · 없을 때</h2><div class="intro" style="margin-top:0">${para(s.many)}</div></section>`+
+      `<section class="guide"><h2>${s.ko}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
+    faq:[
+      [`${s.ko}${josa(s.ko,"은/는")} 어떻게 판정하나요?`,`${s.rule}입니다. 내 일간을 기준으로 사주의 다른 글자를 하나씩 대조해 정합니다. 사주팔자 만세력에 생년월일을 넣으면 여덟 글자마다 십성이 표시됩니다.`],
+      [`${s.ko}${josa(s.ko,"이/가")} 많으면 나쁜가요?`,`십성 자체에 좋고 나쁨은 없습니다. 같은 ${s.ko}${josa(s.ko,"이/가")}라도 사주 전체의 균형에 따라 강점(${s.strong})으로 나타나기도 하고 약점(${s.weak})으로 나타나기도 합니다. 신강·신약과 용신을 함께 봐야 판단이 됩니다.`],
+      [`${s.ko}${josa(s.ko,"과/와")} ${s.pair}${josa(s.pair,"은/는")} 뭐가 다른가요?`,`둘 다 ${s.group}에 속하지만 음양이 다릅니다. 같은 계열이라도 ${s.ko}${josa(s.ko,"은/는")} ${s.keyword}로 나타나고, ${s.pair}${josa(s.pair,"은/는")} 결이 다르게 작용합니다. 두 글자가 함께 있으면 성격이 겹쳐 보이므로 어느 쪽이 더 강한지를 봅니다.`]],
+    sibTitle:"다른 십성도 보기", sibs:sipseongChips(s.en),
+    related:["saju","todayfortune","newyear","gunghap"]});
+}
+
 const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","stargunghap"]; // 검색량 높은 순
 const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다
   const items = meta.filter(t => t.cat===c);
@@ -1145,6 +1217,8 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   `<url><loc>${DOMAIN}/</loc></url>\n`+meta.map(t=>`<url><loc>${DOMAIN}/${t.id}.html</loc></url>`).join("\n")+"\n"+
   STAR_PAGES.map(s=>`<url><loc>${DOMAIN}/star-${s.en}.html</loc></url>`).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>`<url><loc>${DOMAIN}/zodiac-${z.en}.html</loc></url>`).join("\n")+"\n"+
+  ILGAN_PAGES.map(g=>`<url><loc>${DOMAIN}/ilgan-${g.en}.html</loc></url>`).join("\n")+"\n"+
+  SIPSEONG_PAGES.map(s=>`<url><loc>${DOMAIN}/sipseong-${s.en}.html</loc></url>`).join("\n")+"\n"+
   SITE_PAGES.map(p=>`<url><loc>${DOMAIN}/${p.id}.html</loc></url>`).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
@@ -1176,6 +1250,14 @@ ${STAR_PAGES.map(s=>`- [${s.ko}](${DOMAIN}/star-${s.en}.html): ${s.range} · ${s
 ## 띠별 상세 (12)
 
 ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`).join("\n")}
+
+## 일간별 상세 (10) — 사주에서 '나'에 해당하는 글자
+
+${ILGAN_PAGES.map(g=>`- [${g.ko}${g.el}(${g.han})](${DOMAIN}/ilgan-${g.en}.html): ${g.metaphor} · ${g.yy}간`).join("\n")}
+
+## 십성별 상세 (10) — 나와 다른 글자의 관계
+
+${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html): ${s.rule} · ${s.keyword}`).join("\n")}
 
 ## 사이트 정보
 
@@ -1213,6 +1295,8 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
+ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
+SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
@@ -1232,6 +1316,6 @@ if (fs.existsSync(IMG_SRC)) {
   console.log("   이미지 복사:", n, "개");
 }
 
-console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠");
+console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성");
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
