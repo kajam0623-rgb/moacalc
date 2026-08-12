@@ -245,9 +245,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var cols={y:build("y",1930,nowY,Y,"년"),m:build("m",1,12,M,"월"),d:build("d",1,daysIn(Y,M),D,"일")};
     wrap.appendChild(cols.y);wrap.appendChild(cols.m);wrap.appendChild(cols.d);
     var selBar=document.createElement("div");selBar.className="dial-sel";wrap.appendChild(selBar);
-    inp.style.display="none";
-    host.insertBefore(wrap,inp.nextSibling);
-    host.insertBefore(gan,wrap.nextSibling);
+    // 다이얼을 input 자리에 놓고, input은 아래로 옮겨 '직접 입력'으로 남긴다
+    inp.classList.add("dial-typed");
+    host.insertBefore(wrap,inp);
+    host.insertBefore(gan,inp);
+    var typedLabel=document.createElement("div");
+    typedLabel.className="dial-typed-label";
+    typedLabel.textContent="직접 입력";
+    host.insertBefore(typedLabel,inp);
     function center(col){ // 스크롤 위치로 가운데 항목을 판정한다
       var items=col.querySelectorAll(".dial-item");
       var idx=Math.round(col.scrollTop/44);
@@ -285,9 +290,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       else if(u==="m"){if(M===v)return;M=v;rebuildDays();}
       else{if(D===v)return;D=v;}
       mark(col);commit();}
+    var selfSet=false; // commit이 만든 change를 직접입력 핸들러가 되받지 않게 하는 표시
     function commit(){
       var v=Y+"-"+pad(M)+"-"+pad(D);
-      inp.value=v;
+      selfSet=true;inp.value=v;setTimeout(function(){selfSet=false;},0);
       try{ // 간지 미리보기 — 만세력 엔진 재사용
         var p=sjPillars(Y,M,D,null,0,false);
         gan.innerHTML='이 날의 일진 <b>'+SJ_SH[p.d.s]+SJ_BH[p.d.b]+'</b> ('+SJ_S[p.d.s]+SJ_B[p.d.b]+') · '+SJ_TTI[p.y.b]+'띠';
@@ -312,14 +318,46 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         wheelLock=true;setTimeout(function(){wheelLock=false;},70);
         step(col, e.deltaY>0?1:-1);
       },{passive:false});
+      // 클릭 후 드래그로 돌리기 — 손가락으로 굴리듯 위아래로 끈다
+      var dragging=false,startY=0,startTop=0,dragMoved=0;
+      col.addEventListener("pointerdown",function(e){
+        dragging=true;dragMoved=0;startY=e.clientY;startTop=col.scrollTop;
+        col.setPointerCapture(e.pointerId);col.style.scrollSnapType="none";});
+      col.addEventListener("pointermove",function(e){
+        if(!dragging)return;
+        var dy=e.clientY-startY;dragMoved=Math.max(dragMoved,Math.abs(dy));
+        col.scrollTop=startTop-dy;});
+      function endDrag(e){
+        if(!dragging)return;
+        dragging=false;col.style.scrollSnapType="";
+        try{col.releasePointerCapture(e.pointerId);}catch(_){}
+        var it=center(col);if(!it)return;
+        col.scrollTo({top:Math.round(col.scrollTop/44)*44,behavior:"smooth"});
+        apply(col,+it.dataset.v);}
+      col.addEventListener("pointerup",endDrag);
+      col.addEventListener("pointercancel",endDrag);
+      // 끌지 않고 눌렀다 뗀 경우만 클릭으로 본다 (6px 미만)
       col.addEventListener("click",function(e){
+        if(dragMoved>6)return;
         var it=e.target.closest(".dial-item");if(!it)return;
-        scrollTo(col,+it.dataset.v,true);});
+        scrollTo(col,+it.dataset.v,true);apply(col,+it.dataset.v);});
       col.addEventListener("keydown",function(e){
         var d=e.key==="ArrowDown"?1:e.key==="ArrowUp"?-1:0;if(!d)return;
         e.preventDefault();
         step(col,d);});}
     bind(cols.y);bind(cols.m);bind(cols.d);
+    // 직접 입력 → 다이얼 위치를 맞춘다 (달력에서 고르거나 타이핑한 경우)
+    function syncFromInput(){
+      if(selfSet)return;
+      var v=(inp.value||"").split("-");
+      if(v.length<3)return;
+      var y=+v[0],m=+v[1],d=+v[2];
+      if(!y||!m||!d||y<1930||y>nowY)return;
+      Y=y;M=m;D=d;rebuildDays();
+      scrollTo(cols.y,Y,true);scrollTo(cols.m,M,true);scrollTo(cols.d,D,true);
+      mark(cols.y);mark(cols.m);mark(cols.d);commit();}
+    inp.addEventListener("change",syncFromInput);
+    inp.addEventListener("input",syncFromInput);
     // rAF는 백그라운드 탭에서 실행되지 않아 휠이 0(1930년)에 머문 채 값과 어긋난다.
     // 타이머로도 한 번 더 맞춰 초기 위치를 보장한다.
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}

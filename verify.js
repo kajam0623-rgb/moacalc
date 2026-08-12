@@ -197,6 +197,11 @@ t("키보드 접근성(role=listbox + tabindex + 화살표 키)", /"role","listb
 t("휠 한 틱 = 한 칸 (preventDefault + step)", /wheel[\s\S]{0,200}preventDefault[\s\S]{0,200}step\(col/.test(inner), true);
 t("휠 연타 잠금(wheelLock)", /wheelLock/.test(inner), true);
 t("일 목록은 일수 변할 때만 재생성", /max===dayCount/.test(inner), true);
+// 조작 방식 3종: 휠·드래그·직접 입력
+t("포인터 드래그로 돌리기", /pointerdown/.test(inner) && /pointermove/.test(inner) && /pointerup/.test(inner), true);
+t("드래그와 클릭 구분(이동거리 임계)", /dragMoved|moved\s*>/.test(inner), true);
+t("직접 입력란 노출(date input)", /dial-typed/.test(inner), true);
+t("직접 입력 → 다이얼 동기화", /syncFromInput|fromInput/.test(inner), true);
 
 // ── P2-3 결과 이미지 저장(카드 캡처) ──
 const shareSrc = inner.slice(inner.indexOf("function shareBtn"), inner.indexOf("// ---------- TOOLS"));

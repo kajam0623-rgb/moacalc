@@ -271,7 +271,11 @@
   .dial-sel{position:absolute;left:6px;right:6px;top:50%;height:44px;transform:translateY(-50%);
     border-top:1px solid var(--fun);border-bottom:1px solid var(--fun);pointer-events:none;
     background:color-mix(in srgb,var(--fun) 7%,transparent);}
+  .dial-col{touch-action:none;cursor:grab;} /* 드래그로 돌리기 — 브라우저 기본 제스처는 막는다 */
+  .dial-col:active{cursor:grabbing;}
   .dial-ganji{margin-top:8px;text-align:center;font-size:12.5px;color:var(--muted);letter-spacing:.04em;}
+  .dial-typed-label{margin-top:12px;font-size:11.5px;color:var(--muted);letter-spacing:.04em;}
+  input.dial-typed{margin-top:4px;}
   .dial-ganji b{color:var(--fun-ink);font-weight:800;}
   .save-btn{margin-top:8px;width:100%;padding:12px;border:1px solid var(--line-2);border-radius:10px;background:transparent;
     color:var(--muted);font:inherit;font-weight:700;cursor:pointer;}
