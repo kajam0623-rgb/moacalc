@@ -193,6 +193,10 @@ t("돌릴 때 간지 미리보기 갱신", /dial-ganji/.test(inner), true);
 t("다이얼 조작 시 결과 재계산 트리거", /ready\)\{var g=el\.querySelector\("#go"\);if\(g\)g\.click\(\)/.test(inner), true);
 t("초기 배치 중에는 재계산 안 걸림(ready 플래그)", /var ready=false/.test(inner) && /ready=true/.test(inner), true);
 t("키보드 접근성(role=listbox + tabindex + 화살표 키)", /"role","listbox"/.test(inner) && /tabIndex\s*=\s*0/.test(inner) && /ArrowDown/.test(inner), true);
+// 마우스 휠은 한 틱에 여러 칸을 건너뛴다. 기본 스크롤을 막고 한 칸씩 이동해야 원하는 값을 고를 수 있다
+t("휠 한 틱 = 한 칸 (preventDefault + step)", /wheel[\s\S]{0,200}preventDefault[\s\S]{0,200}step\(col/.test(inner), true);
+t("휠 연타 잠금(wheelLock)", /wheelLock/.test(inner), true);
+t("일 목록은 일수 변할 때만 재생성", /max===dayCount/.test(inner), true);
 
 // ── P2-3 결과 이미지 저장(카드 캡처) ──
 const shareSrc = inner.slice(inner.indexOf("function shareBtn"), inner.indexOf("// ---------- TOOLS"));
@@ -203,6 +207,12 @@ t("캔버스 API는 typeof 가드 (노드 하네스 보호)", /typeof document/.
 t("이미지 저장 버튼 마크업", /save-btn/.test(shareSrc), true);
 // 한글 줄바꿈: 캔버스에는 자동 줄바꿈이 없어 직접 끊어야 카드 밖으로 넘치지 않는다
 t("캔버스 줄바꿈 함수 존재", /function wrapText\(|measureText/.test(shareSrc), true);
+
+// ── 일간 10종 개별 페이지(롱테일 SEO) ──
+const ILGAN_PAGES = require("./content_ilgan.js");
+t("일간 10종 원고", ILGAN_PAGES.length, 10);
+t("일간 원고 필수 필드", ILGAN_PAGES.every(p=>p.en&&p.ko&&p.han&&p.el&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
+t("일간 이미지 파일 존재", ILGAN_PAGES.every(p=>fs.existsSync("img/char/ilgan-"+p.en+".webp")), true);
 
 // ── E-E-A-T 신뢰 페이지 + GEO ──
 const SITE_PAGES = require("./content_site.js");
