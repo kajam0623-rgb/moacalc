@@ -9,7 +9,7 @@ fs.mkdirSync(OUT, { recursive: true });
 
 const DOMAIN = "https://dongnebosal.vercel.app"; // 배포 도메인(브랜드명과 일치). 구 gyesangi는 canonical로 통합
 // ↓ 승인/발급 후 값만 채우고 `node build_site.js` 재실행하면 전 페이지에 자동 적용됩니다.
-const GSC_VERIFY = "";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
+const GSC_VERIFY = "stemTd6BSTSo04hQTXvQLxU8EetRBf4mtilDmBumhx4";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
 const NAVER_VERIFY = "";    // 네이버 서치어드바이저 소유확인 메타의 content 값
 const ANALYTICS_ID = "";    // GA4 측정 ID (예: G-XXXXXXXXXX). 채우면 전 페이지에 gtag 로더 삽입
 const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890123456)
