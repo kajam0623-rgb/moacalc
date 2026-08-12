@@ -134,11 +134,28 @@ t("십이운성 무드 UN_MOOD 12문장", Object.keys(UN_MOOD).length===12 && SJ
 const txtCode = tfSrc.slice(tfSrc.indexOf("var TXT={"), tfSrc.indexOf("]};")+3);
 const TFTXT = new Function(txtCode + "; return TXT;")();
 t("오늘의 운세 TXT 10종 × 10필드(hl 포함)", Object.keys(TFTXT).length===10 && Object.values(TFTXT).every(a=>a.length===10 && typeof a[9]==="string" && a[9].length>=8), true);
-t("총운 3계층 조립(UN_MOOD 접합)", tfSrc.includes("UN_MOOD[un]") && tfSrc.includes("합충 없이"), true);
+t("총운 3계층 조립(UN_MOOD 접합)", tfSrc.includes("UN_MOOD[un]") && tfSrc.includes("삼합도 충도 육합도 없어"), true);
 t("용신 섹션·내일 미리보기 렌더", tfSrc.includes("용신으로 보는 오늘") && tfSrc.includes("내일 미리보기"), true);
 t("용신 보정 후 클램프 상한", Math.max(35,Math.min(98,85+8+5)), 98);
 t("용신 보정 후 클램프 하한", Math.max(35,Math.min(98,35-10-3)), 35);
 t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-id')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-hl')<tfSrc.indexOf('class="out"') && tfSrc.indexOf('tf-id')>0, true);
+
+// ── T2 페르소나: 보살 문체 ──
+// 풀이 원고에 존댓말이 섞이면 화자가 둘로 갈라진다. 계산 근거 고지(note·회색 주석)는 존댓말 유지이므로 데이터만 검사한다.
+const JONDAE = /습니다|합니다|하세요|입니다|십시오/;
+const BOSAL = /일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./;
+const tfBody = Object.values(TFTXT).flatMap(a => [a[1],a[2],a[3],a[4],a[6],a[7],a[8]]);
+const tfHead = Object.values(TFTXT).map(a => a[9]);
+t("오늘의 운세 원고에 존댓말 없음", tfBody.concat(tfHead).filter(s=>JONDAE.test(s)).length, 0);
+t("오늘의 운세 원고가 보살 어미 사용", tfBody.filter(s=>!BOSAL.test(s)).length, 0);
+// 헤드라인(슬롯 9)만은 체언 종결 카피 — 공유·저장 이미지에 그대로 박히므로 짧게 유지한다
+t("헤드라인 10종은 짧은 카피", tfHead.every(s=>s.length<=34), true);
+t("UN_MOOD 12종 보살 문체", Object.values(UN_MOOD).filter(s=>JONDAE.test(s)).length, 0);
+t("SJ_UN_DESC 12종 보살 문체", Object.values(SJ_UN_DESC).filter(s=>JONDAE.test(s)).length, 0);
+t("SJ_SINSAL_DESC 8종 보살 문체", Object.values(SJ_SINSAL_DESC).filter(s=>JONDAE.test(s)).length, 0);
+t("SJ_GYEOK_DESC 10종 보살 문체", Object.values(SJ_GYEOK_DESC).filter(s=>JONDAE.test(s)).length, 0);
+t("긴 섹션은 문단 분할(<br><br>)", (tfSrc.match(/<br><br>/g)||[]).length >= 8, true);
+t("조언에 최저·최고 항목 명시", tfSrc.includes("SUB_LBL[loI]") && tfSrc.includes("SUB_LBL[hiI]"), true);
 
 // ── 한글 조사 자동 선택 (받침 유무) ──
 t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
@@ -265,7 +282,7 @@ if (missing.length) console.log("   ⚠ height:auto 누락:", missing.join(", ")
 
 // 조립 변수 뒤에 조사를 붙일 때 josa()를 안 쓰면 "화이/수이/사은" 같은 오류가 화면에 나온다.
 // 오행·십이운성처럼 받침이 섞인 값을 담는 표현식 바로 뒤에 조사 리터럴이 오는지 소스에서 잡는다.
-const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel)";
+const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel|\\byEl|\\by2El|\\bluckEl|\\bgyeok|\\bs1)";
 const hardJosa = [...toolsSrc.matchAll(new RegExp(JVAR + "\\s*\\+\\s*[\"'](?:이|은|을|과|가|는|를|와)(?=[\\s\"'])", "g"))].map(m => m[0].replace(/\s+/g, ""));
 t("조립 변수 뒤 하드코딩 조사 없음 (josa 사용)", hardJosa.length, 0);
 if (hardJosa.length) console.log("   ⚠ 조사 하드코딩:", hardJosa.join(" | "));
