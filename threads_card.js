@@ -16,6 +16,20 @@ eval(inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// --------
 const tfSrc = inner.slice(inner.indexOf('{id:"todayfortune"'));
 eval(tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")));
 
+// 십성·일간을 일상어로 옮긴다. 카드는 이 사이트를 처음 보는 사람에게 간다 —
+// "편관"이라고 쓰면 아무도 못 읽는다. 용어는 근거로 작게만 붙인다.
+const REL_PLAIN = {
+  "비견": "내 힘이 세지는 날", "겁재": "돈이 새는 날",
+  "식신": "말과 재주가 풀리는 날", "상관": "말이 앞서는 날",
+  "편재": "큰돈이 오가는 날", "정재": "성실이 돈 되는 날",
+  "편관": "압박이 들어오는 날", "정관": "원칙이 통하는 날",
+  "편인": "생각이 깊어지는 날", "정인": "도움이 오는 날",
+};
+// 일간을 사람 모습으로 — content_ilgan.js의 비유를 그대로 쓴다
+const ILGAN_PLAIN = require("./content_ilgan.js").reduce((m, g) => {
+  m[g.ko] = g.metaphor; return m;
+}, {});
+
 const arg = process.argv[2];
 const now = arg && /^\d{4}-\d{2}-\d{2}$/.test(arg)
   ? new Date(+arg.slice(0, 4), +arg.slice(5, 7) - 1, +arg.slice(8, 10))
@@ -43,54 +57,58 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8">
   *{margin:0;padding:0;box-sizing:border-box}
   body{width:1080px;height:1350px;background:#0d1430;color:#f4efe4;
     font-family:"Pretendard","Malgun Gothic","맑은 고딕",sans-serif;overflow:hidden;position:relative}
-  /* 금박 구름 결 — 사이트 삽화와 같은 분위기 */
-  .glow{position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(120px);opacity:.28}
-  .g1{background:#d9a441;top:-320px;right:-260px}
-  .g2{background:#3f5fbf;bottom:-380px;left:-300px}
-  .wrap{position:relative;padding:86px 80px;height:100%;display:flex;flex-direction:column}
+  .glow{position:absolute;width:900px;height:900px;border-radius:50%;filter:blur(120px);opacity:.26}
+  .g1{background:#d9a441;top:-330px;right:-270px}
+  .g2{background:#3f5fbf;bottom:-390px;left:-310px}
+  .wrap{position:relative;padding:82px 78px;height:100%;display:flex;flex-direction:column}
   .top{display:flex;align-items:center;gap:20px}
-  .top img{width:78px;height:78px;border-radius:50%}
-  .brand{font-size:34px;font-weight:800;letter-spacing:-.5px}
-  .brand span{display:block;font-size:19px;font-weight:500;color:#c8bfa8;margin-top:5px;letter-spacing:0}
-  .date{margin-left:auto;text-align:right;font-size:21px;color:#c8bfa8;line-height:1.5}
-  .ganji{margin-top:64px;font-size:150px;font-weight:800;letter-spacing:10px;color:#e7b955;line-height:1}
-  .ganji small{display:block;font-size:34px;font-weight:600;letter-spacing:2px;color:#c8bfa8;margin-top:18px}
-  .line{margin-top:52px;height:2px;background:linear-gradient(90deg,#e7b955,transparent)}
-  .body{margin-top:52px;font-size:41px;line-height:1.62;font-weight:600;word-break:keep-all}
-  .body b{color:#e7b955}
-  .pick{margin-top:auto;display:flex;gap:20px}
-  .card{flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(231,185,85,.34);
-    border-radius:22px;padding:30px 32px}
-  .card .k{font-size:20px;color:#c8bfa8;letter-spacing:.06em}
-  .card .v{margin-top:12px;font-size:39px;font-weight:800}
-  .card .s{margin-top:9px;font-size:25px;color:#e7b955;font-weight:700}
-  .foot{margin-top:44px;display:flex;align-items:center;font-size:26px;color:#c8bfa8}
-  .foot b{color:#f4efe4;font-weight:700}
-  .foot .r{margin-left:auto;font-size:22px}
+  .top img{width:74px;height:74px;border-radius:50%}
+  .brand{font-size:32px;font-weight:800}
+  .brand span{display:block;font-size:19px;font-weight:500;color:#c8bfa8;margin-top:5px}
+  .date{margin-left:auto;text-align:right;font-size:22px;color:#c8bfa8}
+  /* 제일 큰 글씨는 일상어다. 용어가 아니라 */
+  .hero{margin-top:74px;font-size:78px;font-weight:800;line-height:1.28;
+    letter-spacing:-2px;word-break:keep-all;color:#e7b955}
+  .who{margin-top:34px;font-size:36px;font-weight:700;line-height:1.5;word-break:keep-all}
+  .who em{font-style:normal;color:#e7b955}
+  .say{margin-top:34px;font-size:38px;line-height:1.62;font-weight:500;
+    color:#e6e0d2;word-break:keep-all}
+  .vs{margin-top:52px;background:rgba(255,255,255,.055);
+    border:1px solid rgba(231,185,85,.28);border-radius:24px;padding:38px 40px}
+  .vs .k{font-size:24px;color:#c8bfa8;letter-spacing:.04em}
+  .vs .v{margin-top:16px;font-size:46px;font-weight:800;color:#8fd6a8;line-height:1.35;word-break:keep-all}
+  .vs .w{margin-top:14px;font-size:31px;color:#e6e0d2;line-height:1.5;word-break:keep-all}
+  .why{margin-top:auto;padding-top:34px;border-top:1px solid rgba(231,185,85,.3);
+    font-size:23px;color:#a99d84;line-height:1.62}
+  .why b{color:#c8bfa8;font-weight:600}
+  .cta{margin-top:30px;display:flex;align-items:center}
+  .cta .t{font-size:31px;font-weight:700}
+  .cta .u{margin-left:auto;font-size:29px;font-weight:800;color:#e7b955}
 </style></head><body>
 <div class="glow g1"></div><div class="glow g2"></div>
 <div class="wrap">
   <div class="top">
     <img src="logo.png" alt="">
     <div class="brand">동네보살<span>무료 사주 · 오늘의 운세</span></div>
-    <div class="date">${date}<br>${SJ_TTI[p.d.b]}띠 날</div>
+    <div class="date">${date}</div>
   </div>
 
-  <div class="ganji">${ganji}<small>${han} 일진</small></div>
-  <div class="line"></div>
+  <div class="hero">${REL_PLAIN[lo.rel]}</div>
 
-  <div class="body">${lo.gan}${lo.el}(${lo.han}) 일간인 사람.<br>
-    오늘 자네한테는 <b>${lo.rel}</b>이 도네.<br><br>
-    ${lo.T[4]}</div>
+  <div class="who">누가? — <em>${ILGAN_PLAIN[lo.gan]}</em> 같은 사람</div>
 
-  <div class="pick">
-    <div class="card"><div class="k">오늘 가장 무거운 자리</div>
-      <div class="v">${lo.gan}${lo.el} 일간</div><div class="s">${lo.rel} ${lo.score}점</div></div>
-    <div class="card"><div class="k">오늘 가장 좋은 자리</div>
-      <div class="v">${hi.gan}${hi.el} 일간</div><div class="s">${hi.rel} ${hi.score}점</div></div>
+  <div class="say">${lo.T[4]}</div>
+
+  <div class="vs">
+    <div class="k">반대로, 오늘 잘 풀리는 사람</div>
+    <div class="v">${REL_PLAIN[hi.rel]}</div>
+    <div class="w">${ILGAN_PLAIN[hi.gan]} 같은 사람일세.</div>
   </div>
 
-  <div class="foot"><b>dongnebosal.com</b><span class="r">생일만 넣으면 내 일간이 나오네</span></div>
+  <div class="why">오늘은 <b>${ganji}(${han})</b>일. 절기까지 따지는 만세력으로 계산했네.<br>
+    이런 사람을 명리에서는 <b>${lo.gan}${lo.el} 일간</b>, 오늘 기운을 <b>${lo.rel}</b>이라 부르네.</div>
+
+  <div class="cta"><span class="t">내 날은 어떤 날인가</span><span class="u">dongnebosal.com</span></div>
 </div>
 </body></html>`;
 

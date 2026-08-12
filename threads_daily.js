@@ -16,7 +16,20 @@ eval(inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// --------
 const tfSrc = inner.slice(inner.indexOf('{id:"todayfortune"'));
 eval(tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")));
 
+const NL = String.fromCharCode(10);
 const WD = ["일", "월", "화", "수", "목", "금", "토"];
+// 십성을 일상어로. 글은 이 사이트를 처음 보는 사람에게 간다 —
+// "편관이 도네"라고만 쓰면 아무도 못 읽는다. 용어는 근거로 뒤에 붙인다.
+const REL_PLAIN = {
+  "비견": "내 힘이 세지는 날", "겁재": "돈이 새는 날",
+  "식신": "말과 재주가 풀리는 날", "상관": "말이 앞서는 날",
+  "편재": "큰돈이 오가는 날", "정재": "성실이 돈 되는 날",
+  "편관": "압박이 들어오는 날", "정관": "원칙이 통하는 날",
+  "편인": "생각이 깊어지는 날", "정인": "도움이 오는 날",
+};
+const ILGAN_PLAIN = require("./content_ilgan.js").reduce((m, g) => {
+  m[g.ko] = g.metaphor; return m;
+}, {});
 // 일간 이름을 읽기 쉬운 형태로 — 갑 → 갑목(甲)
 const ILGAN_LABEL = i => SJ_S[i] + SJ_EL[SJ_ES[i]] + "(" + SJ_SH[i] + ")";
 
@@ -41,64 +54,59 @@ function dayData(dt) {
 const HEAD = d =>
   `${d.ganji}(${d.han})일일세.`;
 const TAIL = [
-  "자네 일간이 뭔지 모르겠거든 생일만 넣어보게. 프로필에 두었네.",
-  "일간은 태어난 날의 천간일세. 생일 하나면 나오네.",
-  "내 일간이 뭔지부터 알아야 이 말이 자네 것이 되네.",
+  "생일 하나 넣으면 오늘이 자네 날인지 아닌지 나오네. 프로필에 두었네.",
+  "태어난 날만 알면 되네. 시간도 이름도 필요 없어.",
+  "자네가 어느 쪽인지는 생일 하나로 갈리네.",
 ];
 
-// 네 가지 각도를 날짜로 돌린다. 매일 같은 틀이면 금세 질린다
+// 네 가지 각도를 날짜로 돌린다. 매일 같은 틀이면 금세 질린다.
+// 어느 각도든 첫 줄은 일상어다. 간지·십성은 맨 뒤 근거 줄에만 둔다.
+function why(d, x) {
+  return `오늘은 ${d.ganji}(${d.han})일. 명리에서 ${ILGAN_LABEL(x.ilgan)} 일간에게 ${x.rel}이라 부르는 자리일세.`;
+}
 function compose(d) {
   const angle = (d.dt.getDate() + d.dt.getMonth()) % 4;
   const tail = TAIL[d.dt.getDate() % TAIL.length];
 
   if (angle === 0) {
-    // 최저점 저격 — 경고가 제일 잘 읽힌다
     const x = d.lo;
     return [
-      HEAD(d), "",
-      `${ILGAN_LABEL(x.ilgan)} 일간인 사람.`,
-      `오늘 자네한테는 ${x.rel}이 도네. ${x.score}점.`, "",
-      x.T[1], "",
+      `오늘은 ${REL_PLAIN[x.rel]}일세.`, "",
+      `누구한테? ${ILGAN_PLAIN[SJ_S[x.ilgan]]} 같은 사람.`, "",
       x.T[4], "",
-      tail,
-    ].join("\n");
+      why(d, x), tail,
+    ].join(NL);
   }
   if (angle === 1) {
-    // 최고 vs 최저 — 같은 날인데 갈리는 게 후킹이 된다
     return [
-      HEAD(d), "",
-      `오늘 제일 좋은 자리는 ${ILGAN_LABEL(d.hi.ilgan)} 일간일세. ${d.hi.rel} ${d.hi.score}점.`,
-      d.hi.T[1], "",
-      `반대로 ${ILGAN_LABEL(d.lo.ilgan)} 일간은 ${d.lo.rel} ${d.lo.score}점.`,
+      `오늘 잘 풀리는 사람과 눌리는 사람이 갈리네.`, "",
+      `${REL_PLAIN[d.hi.rel]} — ${ILGAN_PLAIN[SJ_S[d.hi.ilgan]]} 같은 사람.`,
+      `${REL_PLAIN[d.lo.rel]} — ${ILGAN_PLAIN[SJ_S[d.lo.ilgan]]} 같은 사람.`, "",
       d.lo.T[4], "",
-      "일진은 하나인데 사람마다 다른 이유가 이걸세.",
-      "내 일간이 뭐냐에 따라 오늘의 결이 정해지네.", "",
+      `날은 하나인데 사람마다 다른 이유가 이걸세.`,
+      `태어난 날이 무엇이냐에 따라 오늘의 결이 정해지네.`, "",
       tail,
-    ].join("\n");
+    ].join(NL);
   }
   if (angle === 2) {
-    // 음양 짝 — 같은 오행인데 결이 다른 두 일간을 나란히
     const a = d.hi.ilgan, b = a % 2 === 0 ? a + 1 : a - 1;
     const rb = d.rows[b];
     return [
-      HEAD(d), "",
-      `${ILGAN_LABEL(a)}는 오늘 ${d.hi.rel} ${d.hi.score}점.`,
-      `${ILGAN_LABEL(b)}는 ${rb.rel} ${rb.score}점.`, "",
-      `같은 ${SJ_EL[SJ_ES[a]]}인데 왜 다르냐.`,
-      "음양이 다르면 같은 관계도 결이 달라지네.", "",
-      d.hi.T[9], "",
+      `같은 기운을 타고났는데 오늘이 갈리는 두 사람이 있네.`, "",
+      `${ILGAN_PLAIN[SJ_S[a]]} 같은 사람 — ${REL_PLAIN[d.hi.rel]}.`,
+      `${ILGAN_PLAIN[SJ_S[b]]} 같은 사람 — ${REL_PLAIN[rb.rel]}.`, "",
+      `둘 다 ${SJ_EL[SJ_ES[a]]}의 기운일세. 그런데 하나는 밖으로 뻗고 하나는 안으로 스미네.`,
+      `그 차이가 오늘을 가르네.`, "",
       tail,
-    ].join("\n");
+    ].join(NL);
   }
-  // 그날 지지(띠) 각도
   const x = d.rows[(d.dt.getDate() * 3) % 10];
   return [
-    HEAD(d), `${d.tti}띠의 기운이 깔린 날이야.`, "",
-    `${ILGAN_LABEL(x.ilgan)} 일간, 오늘 자네 ${x.rel}일세. ${x.score}점.`, "",
-    x.T[1], "",
+    `오늘은 ${d.tti}띠의 기운이 깔린 날일세.`, "",
+    `${ILGAN_PLAIN[SJ_S[x.ilgan]]} 같은 사람에게는 ${REL_PLAIN[x.rel]}이야.`, "",
     x.T[3], "",
-    tail,
-  ].join("\n");
+    why(d, x), tail,
+  ].join(NL);
 }
 
 function render(dt) {
