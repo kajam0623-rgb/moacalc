@@ -184,6 +184,7 @@ t("상생 매핑은 나를 낳는 관계", ART_SAENG[0]==="el-saeng-sumok" && AR
 t("상극 매핑은 나를 극하는 관계", ART_GEUK[0]==="el-geuk-geummok" && ART_GEUK[1]==="el-geuk-suhwa" && ART_GEUK[4]==="el-geuk-tosu", true);
 t("합충 삽화 배선(오늘의 운세·띠별·사주)", /bonusArt\?conceptArt\(ART_HAP/.test(inner) && /ART_HAP\[rel\]\?conceptArt/.test(inner) && /conceptArt\(ART_SAENG\[SJ_EL\.indexOf\(mn\)\]/.test(inner), true);
 
+
 // ── 한글 조사 자동 선택 (받침 유무) ──
 t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
 t("조사 받침 없음 → 와/가", josa("공기","와/과")+josa("공기","가/이"), "와가");
@@ -215,6 +216,14 @@ t("띠 충 상대는 자기 지지의 6칸 반대", ZODIAC_PAGES.every((z,i)=>z.
 t("띠 삼합 상대는 index%4 동일 조", ZODIAC_PAGES.every((z,i)=>z.match.best.every(b=>{
   const j = SJ_TTI.indexOf(b.replace("띠","")); return j%4===i%4 && j!==i; })), true);
 t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap===SJ_TTI[sjYukhap(i)]+"띠"), true);
+// ── 별자리·띠 본문컷 (SEO 페이지 원고 옆 삽화) ──
+t("별자리 본문컷 12장 존재", STAR_PAGES.every(s=>fs.existsSync("img/char/stc-"+s.en+".webp")), true);
+t("띠 본문컷 12장 존재", ZODIAC_PAGES.every(z=>fs.existsSync("img/char/zoc-"+z.en+".webp")), true);
+t("본문컷 배선(별자리·띠 페이지)", /bodyCut\("stc-"\+s\.en/.test(bs) && /bodyCut\("zoc-"\+z\.en/.test(bs), true);
+// 파일이 없으면 onerror로 조용히 사라져 티가 안 난다. 원본 24장이 규격(webp·10KB 이상)인지 본다
+t("본문컷 24장 규격", STAR_PAGES.concat(ZODIAC_PAGES).every((x,i)=>{
+  const f = "img/char/" + (i<12 ? "stc-" : "zoc-") + x.en + ".webp";
+  return fs.existsSync(f) && fs.statSync(f).size > 10000; }), true);
 
 // ── 일간 10 · 십성 10 개별 페이지 ──
 const ILGAN_PAGES = require("./content_ilgan.js"), SIPSEONG_PAGES = require("./content_sipseong.js");

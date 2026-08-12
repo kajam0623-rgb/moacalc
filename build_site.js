@@ -957,6 +957,9 @@ ${footer}
 }
 
 const para = t => t.trim().split(/\n\s*/).map(p=>'<p style="margin-bottom:10px">'+p+'</p>').join("");
+// 본문컷 — 원고 옆에 흘려 배치하는 정사각 삽화. 파일이 없으면 스스로 사라진다
+const bodyCut = (file, alt) =>
+  `<img class="sj-art" width="520" height="520" src="img/char/${file}.webp" alt="${esc(alt)}" loading="lazy" onerror="this.remove()">`;
 // 십성 이름은 받침이 섞여 있다(겁재/비견). 조사를 하드코딩하면 "겁재과 연애"가 나온다
 const josa = (w, pair) => {
   const [a, b] = pair.split("/");                       // a=받침 있을 때, b=없을 때
@@ -1018,7 +1021,7 @@ function starPage(s, i){
       [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>어려운 별자리</span><b>${esc(s.match.hard.join(" · "))}</b></div></div>`+
-      `<div class="intro">${para(s.intro)}</div>`+
+      `<div class="intro">${bodyCut("stc-"+s.en, s.ko+" 상징")}${para(s.intro)}</div>`+
       `<section class="guide"><h2>${s.ko}의 연애</h2><div class="intro" style="margin-top:0">${para(s.love)}</div></section>`+
       `<section class="guide"><h2>${s.ko}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(s.work)}</div></section>`+
       `<section class="guide"><h2>${s.ko} 궁합</h2>`+
@@ -1047,7 +1050,7 @@ function zodiacPage(z, i){
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
-      `<div class="intro">${para(z.intro)}</div>`+
+      `<div class="intro">${bodyCut("zoc-"+z.en, z.ko+"띠 상징")}${para(z.intro)}</div>`+
       `<section class="guide"><h2>${z.ko}띠의 연애</h2><div class="intro" style="margin-top:0">${para(z.love)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 일과 적성</h2><div class="intro" style="margin-top:0">${para(z.work)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠 궁합 — 삼합·육합·충</h2>`+
