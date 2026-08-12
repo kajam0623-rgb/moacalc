@@ -174,6 +174,16 @@ t("스트릭·부적은 매일 오는 도구에만", (inner.match(/streak:true/g
 t("부적 문구 8종", (inner.slice(inner.indexOf("var BUJEOK=")).match(/\["/g)||[]).length>=8, true);
 t("모션 최소화 설정 존중", /prefers-reduced-motion/.test(src), true);
 
+// ── 오행 상생·상극 / 합충 삽화 ──
+// 파일이 없으면 onerror로 조용히 사라져 버그를 못 잡는다. 존재 여부를 여기서 못 박는다
+t("상생 삽화 5장 존재", ART_SAENG.length===5 && ART_SAENG.every(f=>fs.existsSync("img/char/"+f+".webp")), true);
+t("상극 삽화 5장 존재", ART_GEUK.length===5 && ART_GEUK.every(f=>fs.existsSync("img/char/"+f+".webp")), true);
+t("합충 삽화 6장 존재", Object.keys(ART_HAP).length===6 && Object.values(ART_HAP).every(f=>fs.existsSync("img/char/"+f+".webp")), true);
+// 상생 인덱스는 "그 오행을 낳는" 관계여야 한다 (수생목 → 목 자리)
+t("상생 매핑은 나를 낳는 관계", ART_SAENG[0]==="el-saeng-sumok" && ART_SAENG[1]==="el-saeng-mokhwa" && ART_SAENG[4]==="el-saeng-geumsu", true);
+t("상극 매핑은 나를 극하는 관계", ART_GEUK[0]==="el-geuk-geummok" && ART_GEUK[1]==="el-geuk-suhwa" && ART_GEUK[4]==="el-geuk-tosu", true);
+t("합충 삽화 배선(오늘의 운세·띠별·사주)", /bonusArt\?conceptArt\(ART_HAP/.test(inner) && /ART_HAP\[rel\]\?conceptArt/.test(inner) && /conceptArt\(ART_SAENG\[SJ_EL\.indexOf\(mn\)\]/.test(inner), true);
+
 // ── 한글 조사 자동 선택 (받침 유무) ──
 t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
 t("조사 받침 없음 → 와/가", josa("공기","와/과")+josa("공기","가/이"), "와가");

@@ -50,7 +50,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
       zoCard(b)+
-      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
       '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
       '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+

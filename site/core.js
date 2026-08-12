@@ -124,6 +124,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
   var ART_GYEOK={"건록격":"gyeok-geollok","양인격":"gyeok-yangin","식신격":"gyeok-siksin","상관격":"gyeok-sanggwan","편재격":"gyeok-pyeonjae","정재격":"gyeok-jeongjae","편관격":"gyeok-pyeongwan","정관격":"gyeok-jeonggwan","편인격":"gyeok-pyeonin","정인격":"gyeok-jeongin"};
   var ART_ILGAN=["ilgan-gap","ilgan-eul","ilgan-byeong","ilgan-jeong","ilgan-mu","ilgan-gi","ilgan-gyeong","ilgan-sin","ilgan-im","ilgan-gye"];
+  // 오행 상생·상극 삽화 — 인덱스는 SJ_EL 순서(목0 화1 토2 금3 수4). 상생은 i를 낳는 그림
+  var ART_SAENG=["el-saeng-sumok","el-saeng-mokhwa","el-saeng-hwato","el-saeng-togeum","el-saeng-geumsu"];
+  var ART_GEUK=["el-geuk-geummok","el-geuk-suhwa","el-geuk-mokto","el-geuk-hwageum","el-geuk-tosu"];
+  // 지지·천간 관계 삽화
+  var ART_HAP={"천간합":"hap-cheongan","삼합":"hap-samhap","육합":"hap-yukhap","충":"hap-chung","형":"hap-hyeong","해":"hap-hae"};
   // 개념 삽화 한 장. 파일이 없으면 스스로 사라져 레이아웃이 깨지지 않는다
   function conceptArt(file,alt){
     if(!file)return "";

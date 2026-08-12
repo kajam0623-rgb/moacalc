@@ -33,10 +33,10 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var today=sjPillars(ty,tm,td,null,0,false);
       var rel=sjTenGod(me.d.s,today.d.s),T=TXT[rel],score=T[0];
-      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",diff=Math.abs(myB-tB);
-      if(myB%4===tB%4&&myB!==tB){score+=8;bonus="자네 일지와 오늘 지지가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
-      else if(diff===6){score-=10;bonus="자네 일지와 오늘 지지가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
-      else if(sjYukhap(myB)===tB){score+=6;bonus="자네 일지와 오늘 지지가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
+      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",bonusArt="",diff=Math.abs(myB-tB);
+      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 일지와 오늘 지지가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
+      else if(diff===6){score-=10;bonusArt="충";bonus="자네 일지와 오늘 지지가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
+      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 일지와 오늘 지지가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
       // 용신 판정: 오늘 일진 천간의 오행이 내 억부용신인지 / 용신을 극하는지
       var st=sjStrength(me),todayEl=SJ_ES[today.d.s],EL_HAN="木火土金水";
       var yongHit=(todayEl===st.yong),yongClash=((todayEl+2)%5===st.yong);
@@ -74,7 +74,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">자네 일간 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
       '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
-      '<div class="sj-sec"><h3>총운</h3><p>'+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 일지와 오늘 지지는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
+      '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 일지와 오늘 지지는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
       '<div class="sj-sec"><h3>애정운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[0]+'점</span></h3><p>'+T[6]+'</p></div>'+
       '<div class="sj-sec"><h3>재물운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[1]+'점</span></h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+

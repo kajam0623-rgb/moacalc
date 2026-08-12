@@ -542,6 +542,11 @@
   var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
   var ART_GYEOK={"건록격":"gyeok-geollok","양인격":"gyeok-yangin","식신격":"gyeok-siksin","상관격":"gyeok-sanggwan","편재격":"gyeok-pyeonjae","정재격":"gyeok-jeongjae","편관격":"gyeok-pyeongwan","정관격":"gyeok-jeonggwan","편인격":"gyeok-pyeonin","정인격":"gyeok-jeongin"};
   var ART_ILGAN=["ilgan-gap","ilgan-eul","ilgan-byeong","ilgan-jeong","ilgan-mu","ilgan-gi","ilgan-gyeong","ilgan-sin","ilgan-im","ilgan-gye"];
+  // 오행 상생·상극 삽화 — 인덱스는 SJ_EL 순서(목0 화1 토2 금3 수4). 상생은 i를 낳는 그림
+  var ART_SAENG=["el-saeng-sumok","el-saeng-mokhwa","el-saeng-hwato","el-saeng-togeum","el-saeng-geumsu"];
+  var ART_GEUK=["el-geuk-geummok","el-geuk-suhwa","el-geuk-mokto","el-geuk-hwageum","el-geuk-tosu"];
+  // 지지·천간 관계 삽화
+  var ART_HAP={"천간합":"hap-cheongan","삼합":"hap-samhap","육합":"hap-yukhap","충":"hap-chung","형":"hap-hyeong","해":"hap-hae"};
   // 개념 삽화 한 장. 파일이 없으면 스스로 사라져 레이아웃이 깨지지 않는다
   function conceptArt(file,alt){
     if(!file)return "";
@@ -1517,7 +1522,7 @@
         '<div class="sj-sec"><h3>직업운</h3><p>'+job+'</p></div>'+
         '<div class="sj-sec"><h3>애정운</h3><p>'+love+'</p></div>'+
         '<div class="sj-sec"><h3>건강운</h3><p>'+health+'</p></div>'+
-        '<div class="sj-sec"><h3>오행 균형</h3><p>'+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.</p></div>'+
+        '<div class="sj-sec"><h3>오행 균형</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.</p></div>'+
         '<div class="sj-sec"><h3>십성 분포</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br>비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</p></div>'+
         '<div class="sj-sec"><h3>대운 (10년 주기 · '+(fwd?"순행":"역행")+')</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">현재 대운은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> — '+DUTXT[duNow.tg]+'</p></div>'+
@@ -1726,10 +1731,10 @@
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var today=sjPillars(ty,tm,td,null,0,false);
       var rel=sjTenGod(me.d.s,today.d.s),T=TXT[rel],score=T[0];
-      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",diff=Math.abs(myB-tB);
-      if(myB%4===tB%4&&myB!==tB){score+=8;bonus="자네 일지와 오늘 지지가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
-      else if(diff===6){score-=10;bonus="자네 일지와 오늘 지지가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
-      else if(sjYukhap(myB)===tB){score+=6;bonus="자네 일지와 오늘 지지가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
+      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",bonusArt="",diff=Math.abs(myB-tB);
+      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 일지와 오늘 지지가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
+      else if(diff===6){score-=10;bonusArt="충";bonus="자네 일지와 오늘 지지가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
+      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 일지와 오늘 지지가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
       // 용신 판정: 오늘 일진 천간의 오행이 내 억부용신인지 / 용신을 극하는지
       var st=sjStrength(me),todayEl=SJ_ES[today.d.s],EL_HAN="木火土金水";
       var yongHit=(todayEl===st.yong),yongClash=((todayEl+2)%5===st.yong);
@@ -1767,7 +1772,7 @@
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">자네 일간 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
       '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
-      '<div class="sj-sec"><h3>총운</h3><p>'+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 일지와 오늘 지지는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
+      '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 일지와 오늘 지지는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
       '<div class="sj-sec"><h3>애정운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[0]+'점</span></h3><p>'+T[6]+'</p></div>'+
       '<div class="sj-sec"><h3>재물운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[1]+'점</span></h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+
@@ -1939,7 +1944,7 @@
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
       zoCard(b)+
-      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
+      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
       '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
       '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+
