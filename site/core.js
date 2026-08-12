@@ -219,6 +219,127 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
   function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
     return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+  // ---------- 물어보기 게이트 ----------
+  // 입력만 바꿔도 결과가 즉시 나오면 '물어본다'는 감각이 사라진다.
+  // 답은 버튼을 눌러야 나오고, 나오기 직전에 보살이 짚어 보는 시간을 둔다.
+  var ASK_LABEL="동네보살에게 물어보기";
+  function askWait(msg){
+    return '<div class="ask-wait"><div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
+      '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르게.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나오네.</div></div>';}
+  var ASK_GANJI="甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥";
+  // 버튼을 누른 뒤 결과까지 약 1초. 릴이 돌고 짚는 순서가 한 줄씩 지나간다.
+  function askThink(out,btn,steps,done){
+    var reel="";for(var i=0;i<14;i++)reel+=ASK_GANJI.charAt(Math.floor(Math.random()*ASK_GANJI.length));
+    out.innerHTML='<div class="ask-think"><div class="ask-reel"><i>'+reel.split("").join("<br>")+'</i></div>'+
+      '<div class="ask-step"></div><div class="ask-dots">'+steps.map(function(){return "<span></span>";}).join("")+'</div></div>';
+    var stepEl=out.querySelector(".ask-step"),dots=out.querySelectorAll(".ask-dots span");
+    var was=btn?btn.textContent:"",n=0;
+    if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
+    (function tick(){
+      if(n<steps.length){
+        stepEl.textContent=steps[n];
+        if(dots[n])dots[n].classList.add("on");
+        n++;setTimeout(tick,340);return;}
+      if(btn){btn.disabled=false;btn.textContent=was;}
+      done();
+    })();}
+  // 결과 섹션을 위에서부터 차례로 띄운다. 지연은 12번째 이후로는 늘리지 않는다.
+  // 애니메이션이 끝나면 클래스를 걷어낸다. 백그라운드 탭처럼 애니메이션이
+  // 아예 돌지 않는 상황에서 opacity:0인 채로 남는 것을 막는다.
+  function reveal(out){
+    var kids=Array.prototype.slice.call(out.children),i,d;
+    for(i=0;i<kids.length;i++){
+      d=Math.min(i,12)*55;
+      kids[i].classList.add("rv");
+      kids[i].style.animationDelay=d+"ms";}
+    setTimeout(function(){
+      kids.forEach(function(k){k.classList.remove("rv");k.style.animationDelay="";});},1300);}
+  // 점수는 0에서 올라간다. 숫자가 멈추는 순간이 이 도구의 결과 발표다.
+  function countUp(node,to,ms){
+    if(!node)return;var t0=null,dur=ms||620;
+    // 백그라운드 탭에서는 rAF가 멈춘다. 최종값을 먼저 써 두어야 점수 자리가 비지 않는다
+    node.textContent=to;
+    if(typeof requestAnimationFrame!=="function")return;
+    function f(ts){
+      if(t0===null)t0=ts;
+      var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);
+      node.textContent=Math.round(to*e);
+      if(p<1)requestAnimationFrame(f);else node.textContent=to;}
+    requestAnimationFrame(f);}
+  // 막대도 0에서 채운다. 목표 폭은 인라인 style에 이미 들어 있으므로 잠깐 0으로 눌렀다 되돌린다.
+  // rAF는 백그라운드 탭에서 멈춘다. 되돌리는 쪽은 타이머로 걸어야 막대가 0에 머물지 않는다
+  function fillBars(out){
+    var bars=out.querySelectorAll(".sj-bar .t i");
+    Array.prototype.forEach.call(bars,function(b,i){
+      var w=b.style.width;b.style.width="0";b.style.transition="width .7s cubic-bezier(.2,.8,.2,1) "+(i*90+120)+"ms";
+      setTimeout(function(){b.style.width=w;},20);});}
+  // 결과 카드에 등급 뱃지를 달고, 대길일 때만 한 번 번쩍인다.
+  // 점수가 없는 도구(사주 명식)는 뱃지·번쩍임 없이 넘어간다.
+  function gradeFx(out,score,grade){
+    var card=out.querySelector(".out");if(!card)return;
+    if(grade){var s=card.querySelector(".s");
+      if(s)s.insertAdjacentHTML("beforeend",'<span class="grade-tag g-'+grade+'">'+grade+'</span>');}
+    if(typeof score!=="number"||!isFinite(score))return;
+    var v=card.querySelector(".v");
+    if(v){var small=v.querySelector("small"),txt=document.createElement("span");
+      v.insertBefore(txt,v.firstChild);
+      // 숫자만 0에서 올린다. 뒤에 붙는 "점 · 등급" 표기는 그대로 둔다
+      Array.prototype.slice.call(v.childNodes).forEach(function(n){
+        if(n!==txt&&n!==small&&n.nodeType===3)n.textContent="";});
+      countUp(txt,score);}
+    if(score>=85)card.classList.add("hit");}
+  // ---------- 연속 확인 스트릭 ----------
+  // 어제 봤으면 +1, 오늘 이미 봤으면 그대로, 끊겼으면 1부터 다시.
+  function bumpStreak(){
+    var p=loadPrefs(),today=new Date(),key=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
+    if(p.stDay===key)return {n:p.stN||1,fresh:false};
+    var y=new Date(today.getFullYear(),today.getMonth(),today.getDate()-1);
+    var yKey=y.getFullYear()+"-"+(y.getMonth()+1)+"-"+y.getDate();
+    var n=(p.stDay===yKey)?(p.stN||1)+1:1;
+    savePrefs({stDay:key,stN:n});
+    return {n:n,fresh:true};}
+  function streakHtml(s){
+    var cal="";for(var i=0;i<7;i++)cal+='<i class="'+(i<Math.min(s.n,7)?"on":"")+'"></i>';
+    var msg=s.n<=1?"오늘부터 세어 보겠네. 내일도 오게.":
+      s.n<7?"자네, <b>"+s.n+"일</b> 연속으로 물어보러 왔군.":
+      "<b>"+s.n+"일</b> 연속일세. 이쯤이면 습관이야.";
+    return '<div class="streak"><span>🔥</span><span>'+msg+'</span><span class="cal">'+cal+'</span></div>';}
+  // ---------- 오늘의 부적 ----------
+  // 하루 한 번만 열린다. 같은 날 다시 눌러도 같은 문장이 나오도록 날짜+점수로 뽑는다.
+  var BUJEOK=[
+   ["막힌 문 앞에서 돌아서지 말 것","오늘 한 번 더 두드리면 열리는 문이 있네. 두 번은 말고 한 번만 더 하게."],
+   ["작게 시작한 것을 끝까지","크게 벌인 것보다 작게 끝낸 것이 오늘 자네를 살리네."],
+   ["말보다 한 박자 늦게","오늘 참은 한마디가 이번 주를 조용하게 만드네."],
+   ["먼저 연락하는 쪽이 이긴다","자존심은 내일도 쓸 수 있네. 오늘은 관계를 먼저 놓게."],
+   ["지갑은 닫고 귀는 열고","오늘 들어온 이야기는 값이 나가고, 오늘 나간 돈은 값이 없네."],
+   ["몸이 먼저 보낸 신호를 믿게","오늘 피곤한 건 게을러서가 아닐세. 일찍 눕게."],
+   ["아는 사람에게 물을 것","혼자 사흘 걸릴 일이 오늘은 한 통이면 풀리네."],
+   ["오늘 적어둔 것이 내일의 증거","머리에만 두지 말고 날짜 찍히는 곳에 남기게."]];
+  function bujeokHtml(score,grade){
+    var p=loadPrefs(),now=new Date(),key=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
+    var idx=(now.getDate()+now.getMonth()*31+score)%BUJEOK.length,b=BUJEOK[idx];
+    var first=(p.bjDay!==key);
+    if(first)savePrefs({bjDay:key});
+    return '<div class="bujeok"><div class="k">오늘의 부적 · '+(grade||"")+'</div>'+
+      '<div class="w">'+b[0]+'</div><div class="m">'+b[1]+'</div>'+
+      '<div class="m" style="margin-top:12px;opacity:.6">'+(first?"오늘 몫은 이걸로 다 썼네. 내일 새로 한 장 나오네.":"오늘은 이미 받아 갔네. 부적은 하루 한 장일세.")+'</div></div>';}
+  // 결과 렌더 후 한 번에 거는 마무리 연출. o={score,grade,streak,bujeok}
+  function askFx(el,o){
+    var out=el.querySelector("#out");if(!out)return;o=o||{};
+    if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
+    if(o.bujeok){
+      // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
+      var sb=out.querySelector(".share-btn");
+      if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
+      else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
+    gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
+    var top=out.querySelector(".out");
+    if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
+  // 물어보기 배선 — 초기엔 대기 화면, 버튼을 눌러야 짚어 보고 답이 나온다
+  function askWire(el,go,steps,waitMsg){
+    var btn=el.querySelector("#go"),out=el.querySelector("#out");
+    if(out)out.innerHTML=askWait(waitMsg);
+    if(btn)btn.addEventListener("click",function(){askThink(out,btn,steps,go);});}
   // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
   // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
   function birthDial(el,sel,onChange){
@@ -300,10 +421,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       }catch(e){gan.textContent="";}
       inp.dispatchEvent(new Event("change",{bubbles:true}));
       if(typeof onChange==="function")onChange(v);
-      // 각 도구의 go()는 대개 버튼 클릭에만 묶여 있다. 초기 배치가 끝난 뒤의
-      // 사용자 조작에서만 재계산을 걸어 준다(초기엔 도구가 이미 한 번 계산했다).
-      else if(ready){var g=el.querySelector("#go");if(g)g.click();}}
-    var ready=false;
+      // 날짜를 돌리는 것만으로 답이 나오면 '물어본다'는 감각이 사라진다.
+      // 다이얼은 입력만 바꾸고, 답은 물어보기 버튼에서만 나온다.
+      }
     var timer=null;
     function bind(col){
       col.addEventListener("scroll",function(){
@@ -362,7 +482,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     // 타이머로도 한 번 더 맞춰 초기 위치를 보장한다.
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
-    setTimeout(function(){settle();ready=true;},180);
+    setTimeout(settle,180);
     return wrap;}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+

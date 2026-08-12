@@ -308,6 +308,50 @@
   .sj-art{float:right;width:118px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:12px;
     margin:0 0 10px 14px;border:1px solid var(--line-2);}
   @media (max-width:480px){.sj-art{width:92px;margin-left:10px;}}
+  /* ── 물어보기 게이트 · 보살이 답을 고르는 연출 ── */
+  .ask-wait{margin-top:20px;padding:26px 18px;border:1px dashed var(--line-2);border-radius:14px;text-align:center;background:var(--surface-2);}
+  .ask-wait .ic{font-size:30px;line-height:1;}
+  .ask-wait .t{margin-top:10px;font-size:14.5px;font-weight:700;color:var(--ink);}
+  .ask-wait .d{margin-top:6px;font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .ask-think{margin-top:20px;padding:30px 18px 26px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);text-align:center;}
+  /* 간지 글자가 돌아가는 릴. 결과가 정해지기 전의 '뽑는 중' 감각을 만든다 */
+  .ask-reel{height:46px;overflow:hidden;font-family:var(--mono);font-size:32px;font-weight:800;letter-spacing:.12em;color:var(--fun-ink);}
+  .ask-reel i{display:block;font-style:normal;animation:reelspin .42s linear infinite;}
+  @keyframes reelspin{from{transform:translateY(0)}to{transform:translateY(-46px)}}
+  .ask-step{margin-top:14px;font-size:13px;color:var(--muted);min-height:20px;}
+  .ask-dots{margin-top:12px;display:flex;gap:5px;justify-content:center;}
+  .ask-dots span{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:background .2s;}
+  .ask-dots span.on{background:var(--fun-ink);}
+  /* 결과 섹션 순차 등장 — 한 번에 다 뜨면 읽을 곳을 못 찾는다 */
+  .rv{opacity:0;transform:translateY(9px);animation:rvup .42s ease-out forwards;}
+  @keyframes rvup{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .rv{animation:none;opacity:1;transform:none;}
+    .ask-reel i{animation:none;}
+  }
+  /* 대길(85점+)일 때만 카드가 한 번 번쩍인다. 매번 빛나면 신호가 안 된다 */
+  .out.hit{border-color:var(--fun-ink);box-shadow:0 0 0 1px var(--fun-ink) inset;}
+  .out.hit::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);
+    transform:translateX(-100%);animation:sheen 1.1s ease-out .15s 1;}
+  @keyframes sheen{to{transform:translateX(100%)}}
+  .grade-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.04em;vertical-align:middle;}
+  .g-대길{background:#d05548;color:#fff;} .g-길{background:#b8862d;color:#fff;}
+  .g-평온{background:var(--line-2);color:var(--ink);} .g-주의{background:#8a8f98;color:#fff;}
+  /* 연속 확인 스트릭 — 재방문 훅 */
+  .streak{display:flex;align-items:center;gap:8px;margin-top:14px;padding:9px 12px;border-radius:11px;
+    background:var(--surface-2);border:1px solid var(--line-2);font-size:12.5px;color:var(--ink);}
+  .streak b{color:var(--fun-ink);font-family:var(--mono);font-size:14px;}
+  .streak .cal{display:flex;gap:3px;margin-left:auto;}
+  .streak .cal i{width:9px;height:9px;border-radius:2px;background:var(--line-2);}
+  .streak .cal i.on{background:var(--fun-ink);}
+  /* 오늘의 부적 — 하루 한 번만 열리는 보상 */
+  .bujeok{margin-top:18px;border-radius:14px;padding:18px;text-align:center;color:#fff;
+    background:linear-gradient(150deg,#2c2440,#6b3f5e);border:1px solid rgba(255,255,255,.14);}
+  .bujeok .k{font-size:11px;letter-spacing:.16em;opacity:.75;}
+  .bujeok .w{margin-top:9px;font-size:19px;font-weight:800;line-height:1.45;word-break:keep-all;}
+  .bujeok .m{margin-top:9px;font-size:12.5px;line-height:1.7;opacity:.82;}
+  .bujeok.locked{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line-2);}
   .tf-id{margin-top:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);letter-spacing:.08em;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
@@ -593,6 +637,127 @@
   if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
   function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
     return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
+  // ---------- 물어보기 게이트 ----------
+  // 입력만 바꿔도 결과가 즉시 나오면 '물어본다'는 감각이 사라진다.
+  // 답은 버튼을 눌러야 나오고, 나오기 직전에 보살이 짚어 보는 시간을 둔다.
+  var ASK_LABEL="동네보살에게 물어보기";
+  function askWait(msg){
+    return '<div class="ask-wait"><div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
+      '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르게.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나오네.</div></div>';}
+  var ASK_GANJI="甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥";
+  // 버튼을 누른 뒤 결과까지 약 1초. 릴이 돌고 짚는 순서가 한 줄씩 지나간다.
+  function askThink(out,btn,steps,done){
+    var reel="";for(var i=0;i<14;i++)reel+=ASK_GANJI.charAt(Math.floor(Math.random()*ASK_GANJI.length));
+    out.innerHTML='<div class="ask-think"><div class="ask-reel"><i>'+reel.split("").join("<br>")+'</i></div>'+
+      '<div class="ask-step"></div><div class="ask-dots">'+steps.map(function(){return "<span></span>";}).join("")+'</div></div>';
+    var stepEl=out.querySelector(".ask-step"),dots=out.querySelectorAll(".ask-dots span");
+    var was=btn?btn.textContent:"",n=0;
+    if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
+    (function tick(){
+      if(n<steps.length){
+        stepEl.textContent=steps[n];
+        if(dots[n])dots[n].classList.add("on");
+        n++;setTimeout(tick,340);return;}
+      if(btn){btn.disabled=false;btn.textContent=was;}
+      done();
+    })();}
+  // 결과 섹션을 위에서부터 차례로 띄운다. 지연은 12번째 이후로는 늘리지 않는다.
+  // 애니메이션이 끝나면 클래스를 걷어낸다. 백그라운드 탭처럼 애니메이션이
+  // 아예 돌지 않는 상황에서 opacity:0인 채로 남는 것을 막는다.
+  function reveal(out){
+    var kids=Array.prototype.slice.call(out.children),i,d;
+    for(i=0;i<kids.length;i++){
+      d=Math.min(i,12)*55;
+      kids[i].classList.add("rv");
+      kids[i].style.animationDelay=d+"ms";}
+    setTimeout(function(){
+      kids.forEach(function(k){k.classList.remove("rv");k.style.animationDelay="";});},1300);}
+  // 점수는 0에서 올라간다. 숫자가 멈추는 순간이 이 도구의 결과 발표다.
+  function countUp(node,to,ms){
+    if(!node)return;var t0=null,dur=ms||620;
+    // 백그라운드 탭에서는 rAF가 멈춘다. 최종값을 먼저 써 두어야 점수 자리가 비지 않는다
+    node.textContent=to;
+    if(typeof requestAnimationFrame!=="function")return;
+    function f(ts){
+      if(t0===null)t0=ts;
+      var p=Math.min(1,(ts-t0)/dur),e=1-Math.pow(1-p,3);
+      node.textContent=Math.round(to*e);
+      if(p<1)requestAnimationFrame(f);else node.textContent=to;}
+    requestAnimationFrame(f);}
+  // 막대도 0에서 채운다. 목표 폭은 인라인 style에 이미 들어 있으므로 잠깐 0으로 눌렀다 되돌린다.
+  // rAF는 백그라운드 탭에서 멈춘다. 되돌리는 쪽은 타이머로 걸어야 막대가 0에 머물지 않는다
+  function fillBars(out){
+    var bars=out.querySelectorAll(".sj-bar .t i");
+    Array.prototype.forEach.call(bars,function(b,i){
+      var w=b.style.width;b.style.width="0";b.style.transition="width .7s cubic-bezier(.2,.8,.2,1) "+(i*90+120)+"ms";
+      setTimeout(function(){b.style.width=w;},20);});}
+  // 결과 카드에 등급 뱃지를 달고, 대길일 때만 한 번 번쩍인다.
+  // 점수가 없는 도구(사주 명식)는 뱃지·번쩍임 없이 넘어간다.
+  function gradeFx(out,score,grade){
+    var card=out.querySelector(".out");if(!card)return;
+    if(grade){var s=card.querySelector(".s");
+      if(s)s.insertAdjacentHTML("beforeend",'<span class="grade-tag g-'+grade+'">'+grade+'</span>');}
+    if(typeof score!=="number"||!isFinite(score))return;
+    var v=card.querySelector(".v");
+    if(v){var small=v.querySelector("small"),txt=document.createElement("span");
+      v.insertBefore(txt,v.firstChild);
+      // 숫자만 0에서 올린다. 뒤에 붙는 "점 · 등급" 표기는 그대로 둔다
+      Array.prototype.slice.call(v.childNodes).forEach(function(n){
+        if(n!==txt&&n!==small&&n.nodeType===3)n.textContent="";});
+      countUp(txt,score);}
+    if(score>=85)card.classList.add("hit");}
+  // ---------- 연속 확인 스트릭 ----------
+  // 어제 봤으면 +1, 오늘 이미 봤으면 그대로, 끊겼으면 1부터 다시.
+  function bumpStreak(){
+    var p=loadPrefs(),today=new Date(),key=today.getFullYear()+"-"+(today.getMonth()+1)+"-"+today.getDate();
+    if(p.stDay===key)return {n:p.stN||1,fresh:false};
+    var y=new Date(today.getFullYear(),today.getMonth(),today.getDate()-1);
+    var yKey=y.getFullYear()+"-"+(y.getMonth()+1)+"-"+y.getDate();
+    var n=(p.stDay===yKey)?(p.stN||1)+1:1;
+    savePrefs({stDay:key,stN:n});
+    return {n:n,fresh:true};}
+  function streakHtml(s){
+    var cal="";for(var i=0;i<7;i++)cal+='<i class="'+(i<Math.min(s.n,7)?"on":"")+'"></i>';
+    var msg=s.n<=1?"오늘부터 세어 보겠네. 내일도 오게.":
+      s.n<7?"자네, <b>"+s.n+"일</b> 연속으로 물어보러 왔군.":
+      "<b>"+s.n+"일</b> 연속일세. 이쯤이면 습관이야.";
+    return '<div class="streak"><span>🔥</span><span>'+msg+'</span><span class="cal">'+cal+'</span></div>';}
+  // ---------- 오늘의 부적 ----------
+  // 하루 한 번만 열린다. 같은 날 다시 눌러도 같은 문장이 나오도록 날짜+점수로 뽑는다.
+  var BUJEOK=[
+   ["막힌 문 앞에서 돌아서지 말 것","오늘 한 번 더 두드리면 열리는 문이 있네. 두 번은 말고 한 번만 더 하게."],
+   ["작게 시작한 것을 끝까지","크게 벌인 것보다 작게 끝낸 것이 오늘 자네를 살리네."],
+   ["말보다 한 박자 늦게","오늘 참은 한마디가 이번 주를 조용하게 만드네."],
+   ["먼저 연락하는 쪽이 이긴다","자존심은 내일도 쓸 수 있네. 오늘은 관계를 먼저 놓게."],
+   ["지갑은 닫고 귀는 열고","오늘 들어온 이야기는 값이 나가고, 오늘 나간 돈은 값이 없네."],
+   ["몸이 먼저 보낸 신호를 믿게","오늘 피곤한 건 게을러서가 아닐세. 일찍 눕게."],
+   ["아는 사람에게 물을 것","혼자 사흘 걸릴 일이 오늘은 한 통이면 풀리네."],
+   ["오늘 적어둔 것이 내일의 증거","머리에만 두지 말고 날짜 찍히는 곳에 남기게."]];
+  function bujeokHtml(score,grade){
+    var p=loadPrefs(),now=new Date(),key=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
+    var idx=(now.getDate()+now.getMonth()*31+score)%BUJEOK.length,b=BUJEOK[idx];
+    var first=(p.bjDay!==key);
+    if(first)savePrefs({bjDay:key});
+    return '<div class="bujeok"><div class="k">오늘의 부적 · '+(grade||"")+'</div>'+
+      '<div class="w">'+b[0]+'</div><div class="m">'+b[1]+'</div>'+
+      '<div class="m" style="margin-top:12px;opacity:.6">'+(first?"오늘 몫은 이걸로 다 썼네. 내일 새로 한 장 나오네.":"오늘은 이미 받아 갔네. 부적은 하루 한 장일세.")+'</div></div>';}
+  // 결과 렌더 후 한 번에 거는 마무리 연출. o={score,grade,streak,bujeok}
+  function askFx(el,o){
+    var out=el.querySelector("#out");if(!out)return;o=o||{};
+    if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
+    if(o.bujeok){
+      // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
+      var sb=out.querySelector(".share-btn");
+      if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
+      else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
+    gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
+    var top=out.querySelector(".out");
+    if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
+  // 물어보기 배선 — 초기엔 대기 화면, 버튼을 눌러야 짚어 보고 답이 나온다
+  function askWire(el,go,steps,waitMsg){
+    var btn=el.querySelector("#go"),out=el.querySelector("#out");
+    if(out)out.innerHTML=askWait(waitMsg);
+    if(btn)btn.addEventListener("click",function(){askThink(out,btn,steps,go);});}
   // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
   // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
   function birthDial(el,sel,onChange){
@@ -674,10 +839,9 @@
       }catch(e){gan.textContent="";}
       inp.dispatchEvent(new Event("change",{bubbles:true}));
       if(typeof onChange==="function")onChange(v);
-      // 각 도구의 go()는 대개 버튼 클릭에만 묶여 있다. 초기 배치가 끝난 뒤의
-      // 사용자 조작에서만 재계산을 걸어 준다(초기엔 도구가 이미 한 번 계산했다).
-      else if(ready){var g=el.querySelector("#go");if(g)g.click();}}
-    var ready=false;
+      // 날짜를 돌리는 것만으로 답이 나오면 '물어본다'는 감각이 사라진다.
+      // 다이얼은 입력만 바꾸고, 답은 물어보기 버튼에서만 나온다.
+      }
     var timer=null;
     function bind(col){
       col.addEventListener("scroll",function(){
@@ -736,7 +900,7 @@
     // 타이머로도 한 번 더 맞춰 초기 위치를 보장한다.
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
-    setTimeout(function(){settle();ready=true;},180);
+    setTimeout(settle,180);
     return wrap;}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
@@ -1271,7 +1435,7 @@
     Array.from({length:24},function(_,i){var sv=loadPrefs().birthHour!=null?+loadPrefs().birthHour:12;return '<option value="'+i+'"'+(i===sv?' selected':'')+'>'+String(i).padStart(2,"0")+"시</option>";}).join("")+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m"'+(loadPrefs().gender==="f"?"":" selected")+'>남</option><option value="f"'+(loadPrefs().gender==="f"?" selected":"")+'>여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">명식 뽑기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
     function cell(s,b,ds){var tg1=s===null?"":sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
@@ -1357,8 +1521,9 @@
         '<div class="sj-sec"><h3>대운 (10년 주기 · '+(fwd?"순행":"역행")+')</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">현재 대운은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> — '+DUTXT[duNow.tg]+'</p></div>'+
         '<div class="sj-sec"><h3>대운 흐름 요약</h3><p>'+duList.slice(0,5).map(function(d){return '<b>'+d.age+'세~</b> '+d.tg+' — '+DUTXT[d.tg].split(".")[0]+'.';}).join("<br>")+'</p></div>'+
-        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
+        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
+      askFx(el,{});}
+    askWire(el,go,["생년월일로 사주 여덟 글자를 세우고","일간의 힘부터 재어 본다","격국과 신살을 짚는다"],"명식을 아직 안 뽑았네.");birthDial(el,"#d");}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"과거·현재·미래 3장",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
@@ -1550,7 +1715,7 @@
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.","귀인의 날. 혼자 앓지 말 것."]};
     el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">오늘 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
     function go(){
@@ -1620,14 +1785,15 @@
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
-        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
+        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
+      askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
+    askWire(el,go,["오늘 일진부터 짚는다","자네 일간과 견주어 본다","일지의 합충과 용신을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
     ST_KO.map(function(n,i){return '<option value="'+i+'">'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">별자리 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function hbar(n,v){return rateBar(n,v);}
     function go(){
@@ -1666,9 +1832,9 @@
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">요일마다 다스리는 행성(칠요)이 다릅니다. 내 별자리 수호성 '+ruler+'이 맡은 '+best+'요일이 한 주의 중심이고, '+ele+' 원소와 결이 맞는 행성의 날이 그다음입니다.</p></div>'+
       shareBtn()+
       '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';
-      bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();birthDial(el,"#d");}},
+      bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
+    askWire(el,go,["태양 황경으로 별자리를 잡는다","오늘 하늘의 각을 잰다","자네 별자리와 맞춰 본다"],"아직 안 물어봤네.");
+    birthDial(el,"#d");}},
 
   {id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합",desc:"12별자리 커플 궁합",render:function(el){
     // 원소 관계 [점수, 이름, 해설]
@@ -1684,7 +1850,7 @@
     ST_KO.map(function(n,i){return '<option value="'+i+'"'+(i===4?' selected':'')+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div>'+
     '<div><label>상대 별자리</label><select id="b">'+
     ST_KO.map(function(n,i){return '<option value="'+i+'"'+(i===8?' selected':'')+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">별자리 궁합 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){
       var a=+el.querySelector("#a").value,b=+el.querySelector("#b").value;
@@ -1716,10 +1882,9 @@
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
       shareBtn()+
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
-      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#a").addEventListener("change",go);
-    el.querySelector("#b").addEventListener("change",go);go();}},
+      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
+    askWire(el,go,["두 사람의 별자리를 세운다","원소와 양태를 견준다","각도를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
+    }},
 
   {id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세",desc:"12띠 오늘의 운세",render:function(el){
     // 오늘 일지와 내 띠(연지)의 관계 → [기본점수, 총운, 재물·일, 애정, 조언, [애정·재물·직장·건강]]
@@ -1734,7 +1899,7 @@
     el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="'+((loadPrefs().birth||"1990-03-15").split("-")[0])+'" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
     SJ_TTI.map(function(n,i){return '<option value="'+i+'">'+n+'띠</option>';}).join("")+'</select></div></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">띠별 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function zrel(b,t){
       if(Math.abs(b-t)===6)return"충";
@@ -1783,14 +1948,14 @@
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
       shareBtn()+
       '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
-      bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);
-    el.querySelector("#s").addEventListener("change",go);go();}},
+      bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
+    askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
+    }},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
     '<div><label>상대 생년월일</label><input type="date" id="b" value="'+(loadPrefs().partnerBirth||"1992-07-20")+'"></div></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">궁합 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function pts(a,b){ // [점수증감, 설명] 목록
       var out=[],sc=60;
@@ -1867,8 +2032,8 @@
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
       shareBtn()+
       '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
-      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#a");birthDial(el,"#b");}},
+      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
+    askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}},
 
   {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
     var YR=2026,YS=2,YB=6; // 병오년
@@ -1884,7 +2049,7 @@
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해일세. 자격증·공부·기획에 유리하고, 결정은 좀 묵혔다 내리는 게 좋네.","혼자 파고드는 시간이 하반기의 반전을 만들어."],
     "정인":["귀인과 문서의 해","어른이든 스승이든 기관이든, 위에서 도움이 오는 해일세. 계약·합격·승인 같은 문서운이 밝네.","배움에 쓰는 돈이 올해 자네한테 제일 수익률 높은 투자야."]};
     el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">2026 병오년 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
@@ -1932,8 +2097,8 @@
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
-      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}},
+      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
+    askWire(el,go,["병오년 태세를 세운다","자네 일간과 견주어 본다","띠·일지의 합충을 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
     var CHO=[1,2,2,3,3,4,4,6,2,4,4,6,4,6,3,2,3,4,3];   // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ 근사 획수

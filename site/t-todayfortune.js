@@ -23,7 +23,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.","귀인의 날. 혼자 앓지 말 것."]};
     el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">오늘 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
     function go(){
@@ -93,5 +93,6 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
-        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}});
+        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
+      askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
+    askWire(el,go,["오늘 일진부터 짚는다","자네 일간과 견주어 본다","일지의 합충과 용신을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}});

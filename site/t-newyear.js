@@ -12,7 +12,7 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",d
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해일세. 자격증·공부·기획에 유리하고, 결정은 좀 묵혔다 내리는 게 좋네.","혼자 파고드는 시간이 하반기의 반전을 만들어."],
     "정인":["귀인과 문서의 해","어른이든 스승이든 기관이든, 위에서 도움이 오는 해일세. 계약·합격·승인 같은 문서운이 밝네.","배움에 쓰는 돈이 올해 자네한테 제일 수익률 높은 투자야."]};
     el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">2026 병오년 운세 보기</button>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
@@ -60,5 +60,5 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",d
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네 일간 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
-      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");}
-    el.querySelector("#go").addEventListener("click",go);go();birthDial(el,"#d");}});
+      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
+    askWire(el,go,["병오년 태세를 세운다","자네 일간과 견주어 본다","띠·일지의 합충을 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}});

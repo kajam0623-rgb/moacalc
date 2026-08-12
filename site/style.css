@@ -307,6 +307,50 @@
   .sj-art{float:right;width:118px;height:auto;aspect-ratio:1/1;object-fit:cover;border-radius:12px;
     margin:0 0 10px 14px;border:1px solid var(--line-2);}
   @media (max-width:480px){.sj-art{width:92px;margin-left:10px;}}
+  /* ── 물어보기 게이트 · 보살이 답을 고르는 연출 ── */
+  .ask-wait{margin-top:20px;padding:26px 18px;border:1px dashed var(--line-2);border-radius:14px;text-align:center;background:var(--surface-2);}
+  .ask-wait .ic{font-size:30px;line-height:1;}
+  .ask-wait .t{margin-top:10px;font-size:14.5px;font-weight:700;color:var(--ink);}
+  .ask-wait .d{margin-top:6px;font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .ask-think{margin-top:20px;padding:30px 18px 26px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface-2);text-align:center;}
+  /* 간지 글자가 돌아가는 릴. 결과가 정해지기 전의 '뽑는 중' 감각을 만든다 */
+  .ask-reel{height:46px;overflow:hidden;font-family:var(--mono);font-size:32px;font-weight:800;letter-spacing:.12em;color:var(--fun-ink);}
+  .ask-reel i{display:block;font-style:normal;animation:reelspin .42s linear infinite;}
+  @keyframes reelspin{from{transform:translateY(0)}to{transform:translateY(-46px)}}
+  .ask-step{margin-top:14px;font-size:13px;color:var(--muted);min-height:20px;}
+  .ask-dots{margin-top:12px;display:flex;gap:5px;justify-content:center;}
+  .ask-dots span{width:6px;height:6px;border-radius:50%;background:var(--line-2);transition:background .2s;}
+  .ask-dots span.on{background:var(--fun-ink);}
+  /* 결과 섹션 순차 등장 — 한 번에 다 뜨면 읽을 곳을 못 찾는다 */
+  .rv{opacity:0;transform:translateY(9px);animation:rvup .42s ease-out forwards;}
+  @keyframes rvup{to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .rv{animation:none;opacity:1;transform:none;}
+    .ask-reel i{animation:none;}
+  }
+  /* 대길(85점+)일 때만 카드가 한 번 번쩍인다. 매번 빛나면 신호가 안 된다 */
+  .out.hit{border-color:var(--fun-ink);box-shadow:0 0 0 1px var(--fun-ink) inset;}
+  .out.hit::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.5) 50%,transparent 62%);
+    transform:translateX(-100%);animation:sheen 1.1s ease-out .15s 1;}
+  @keyframes sheen{to{transform:translateX(100%)}}
+  .grade-tag{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:800;letter-spacing:.04em;vertical-align:middle;}
+  .g-대길{background:#d05548;color:#fff;} .g-길{background:#b8862d;color:#fff;}
+  .g-평온{background:var(--line-2);color:var(--ink);} .g-주의{background:#8a8f98;color:#fff;}
+  /* 연속 확인 스트릭 — 재방문 훅 */
+  .streak{display:flex;align-items:center;gap:8px;margin-top:14px;padding:9px 12px;border-radius:11px;
+    background:var(--surface-2);border:1px solid var(--line-2);font-size:12.5px;color:var(--ink);}
+  .streak b{color:var(--fun-ink);font-family:var(--mono);font-size:14px;}
+  .streak .cal{display:flex;gap:3px;margin-left:auto;}
+  .streak .cal i{width:9px;height:9px;border-radius:2px;background:var(--line-2);}
+  .streak .cal i.on{background:var(--fun-ink);}
+  /* 오늘의 부적 — 하루 한 번만 열리는 보상 */
+  .bujeok{margin-top:18px;border-radius:14px;padding:18px;text-align:center;color:#fff;
+    background:linear-gradient(150deg,#2c2440,#6b3f5e);border:1px solid rgba(255,255,255,.14);}
+  .bujeok .k{font-size:11px;letter-spacing:.16em;opacity:.75;}
+  .bujeok .w{margin-top:9px;font-size:19px;font-weight:800;line-height:1.45;word-break:keep-all;}
+  .bujeok .m{margin-top:9px;font-size:12.5px;line-height:1.7;opacity:.82;}
+  .bujeok.locked{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line-2);}
   .tf-id{margin-top:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);letter-spacing:.08em;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}

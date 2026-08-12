@@ -157,6 +157,23 @@ t("SJ_GYEOK_DESC 10종 보살 문체", Object.values(SJ_GYEOK_DESC).filter(s=>JO
 t("긴 섹션은 문단 분할(<br><br>)", (tfSrc.match(/<br><br>/g)||[]).length >= 8, true);
 t("조언에 최저·최고 항목 명시", tfSrc.includes("SUB_LBL[loI]") && tfSrc.includes("SUB_LBL[hiI]"), true);
 
+// ── T3 물어보기 게이트 · 도파민 연출 ──
+// 운세 7종은 버튼을 눌러야 답이 나온다. 자동 실행이 하나라도 남으면 게이트가 뚫린다
+const FORTUNE_GATED = ["saju","todayfortune","horoscope","stargunghap","zodiacfortune","gunghap","newyear"];
+const toolBlock = id => { const i = inner.indexOf('{id:"'+id+'"'); const j = inner.indexOf('{id:"', i+8); return inner.slice(i, j<0?inner.length:j); };
+t("운세 7종 물어보기 배선(askWire)", FORTUNE_GATED.every(id=>/askWire\(el,go,\[/.test(toolBlock(id))), true);
+// 버튼 클릭 외에 결과를 그리는 경로가 남아 있으면 게이트가 샌다(select change·초기 go() 모두)
+t("운세 7종 자동 실행 제거", FORTUNE_GATED.every(id=>{const b=toolBlock(id);return !/;go\(\);/.test(b) && !/addEventListener\("change",go\)/.test(b);}), true);
+t("버튼 문구 통일(ASK_LABEL)", (inner.match(/'\+ASK_LABEL\+'<\/button>/g)||[]).length, 7);
+t("물어보기 전 대기 화면", /function askWait/.test(inner) && /ask-wait/.test(src), true);
+// 도파민 1 — 짚어 보는 연출(릴 + 단계 문구), 2 — 점수 카운트업·막대 채우기·등급, 3 — 스트릭·부적
+t("연출1 짚어보기(릴+단계)", /function askThink/.test(inner) && /ask-reel/.test(src) && /reelspin/.test(src), true);
+t("연출2 카운트업·막대·등급", /function countUp/.test(inner) && /function fillBars/.test(inner) && /function gradeFx/.test(inner) && /\.out\.hit/.test(src), true);
+t("연출3 스트릭·부적", /function bumpStreak/.test(inner) && /function bujeokHtml/.test(inner) && /\.bujeok\{/.test(src), true);
+t("스트릭·부적은 매일 오는 도구에만", (inner.match(/streak:true/g)||[]).length===1 && (inner.match(/bujeok:true/g)||[]).length===1, true);
+t("부적 문구 8종", (inner.slice(inner.indexOf("var BUJEOK=")).match(/\["/g)||[]).length>=8, true);
+t("모션 최소화 설정 존중", /prefers-reduced-motion/.test(src), true);
+
 // ── 한글 조사 자동 선택 (받침 유무) ──
 t("조사 받침 있음 → 과/이", josa("불","와/과")+josa("물","가/이"), "과이");
 t("조사 받침 없음 → 와/가", josa("공기","와/과")+josa("공기","가/이"), "와가");
@@ -213,7 +230,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -229,9 +246,8 @@ t("다이얼은 hidden input의 값을 갱신(기존 로직 보존)", /\.value\s
 t("다이얼 DOM은 typeof document 가드", /typeof document/.test(inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function birthDial")+400)), true);
 t("연·월·일 3열 구성", /data-unit="y"|dial-col/.test(inner), true);
 t("돌릴 때 간지 미리보기 갱신", /dial-ganji/.test(inner), true);
-// 값만 바꾸고 재계산을 안 걸면 화면의 명식이 옛 날짜로 남는다
-t("다이얼 조작 시 결과 재계산 트리거", /ready\)\{var g=el\.querySelector\("#go"\);if\(g\)g\.click\(\)/.test(inner), true);
-t("초기 배치 중에는 재계산 안 걸림(ready 플래그)", /var ready=false/.test(inner) && /ready=true/.test(inner), true);
+// 답은 물어보기 버튼에서만 나온다. 다이얼이 결과를 다시 그리면 '물어본다'는 감각이 사라진다
+t("다이얼은 결과를 재계산하지 않음", !/g\)g\.click\(\)/.test(inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function shareBtn"))), true);
 t("키보드 접근성(role=listbox + tabindex + 화살표 키)", /"role","listbox"/.test(inner) && /tabIndex\s*=\s*0/.test(inner) && /ArrowDown/.test(inner), true);
 // 마우스 휠은 한 틱에 여러 칸을 건너뛴다. 기본 스크롤을 막고 한 칸씩 이동해야 원하는 값을 고를 수 있다
 t("휠 한 틱 = 한 칸 (preventDefault + step)", /wheel[\s\S]{0,200}preventDefault[\s\S]{0,200}step\(col/.test(inner), true);
