@@ -5,5 +5,8 @@
   "description": "동네보살 — 무료 사주·운세와 계산기 56가지 (2026)",
   "scripts": {
     "build": "node build_site.js"
+  },
+  "devDependencies": {
+    "puppeteer-core": "^25.6.0"
   }
 }

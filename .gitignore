@@ -8,3 +8,4 @@ _*.png
 # 자격증명 — 절대 커밋 금지
 .env.local
 threads-today.txt
+card-out/
