@@ -224,6 +224,8 @@ t("본문컷 배선(별자리·띠 페이지)", /bodyCut\("stc-"\+s\.en/.test(bs
 // ── 색인 유도: 홈 링크 · lastmod · 일일 갱신 신호 · 앵커 ──
 // 개념 44페이지가 홈에서 링크되지 않으면 크롤 깊이가 2가 되고 중요도도 낮게 잡힌다
 t("홈에서 개념 44페이지 링크(생성기)", /conceptGroups/.test(bs) && /conceptHtml/.test(bs), true);
+// 이름만 있으면 '갑목'·'비견'이 무슨 말인지 알 수 없다. 뜻 한 줄이 같이 나가야 한다
+t("개념 링크에 뜻 한 줄 동반", /g\.metaphor\]/.test(bs) && /s\.keyword\]/.test(bs) && /class="ix-d">\$\{esc\(gloss\)\}/.test(bs), true);
 t("sitemap에 lastmod", /<lastmod>\$\{BUILD_DAY\}<\/lastmod>/.test(bs), true);
 t("일일 갱신 도구에만 dateModified", /const DAILY = \["todayfortune","horoscope","zodiacfortune"\]/.test(bs) && /ld\.dateModified = BUILD_DAY/.test(bs), true);
 t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.test(bs) && /\$\{s\.ko\} 뜻<\/a>/.test(bs), true);

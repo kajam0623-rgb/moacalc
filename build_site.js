@@ -1171,19 +1171,26 @@ function indexPage(){
 <div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
 </div>`;
   // 개념 페이지 44개(별자리·띠·일간·십성)는 도구 페이지를 거쳐야만 닿았다.
-  // 홈에서 직접 링크해 크롤 깊이를 1로 낮추고, 앵커에 검색어를 싣는다.
+  // 홈에서 직접 링크해 크롤 깊이를 1로 낮춘다.
+  // 이름만 늘어놓으면 '갑목'·'비견'이 무슨 말인지 알 수 없다. 한 줄 뜻을 같이 건다.
   const conceptGroups = [
-    ["별자리 12", "생일로 보는 성격·연애·궁합", STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`])],
-    ["띠 12", "삼합·육합·충으로 보는 띠 궁합", ZODIAC_PAGES.map(z=>[`zodiac-${z.en}.html`, `${z.ko}띠 성격`])],
-    ["일간 10", "사주에서 '나'에 해당하는 글자", ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`])],
-    ["십성 10", "나와 다른 글자의 관계 열 가지", SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`])],
+    ["별자리 12", "태어난 날짜로 정해진다. 성격·연애·궁합을 본다.",
+      STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`, `${s.range} · ${s.ele} 원소 · ${s.mode}`])],
+    ["띠 12", "태어난 해로 정해진다. 삼합·육합·충으로 궁합을 본다.",
+      ZODIAC_PAGES.map(z=>[`zodiac-${z.en}.html`, `${z.ko}띠 성격`, `지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`])],
+    ["일간 10", "사주 여덟 글자 중 '나'를 뜻하는 글자. 태어난 날의 천간이다.",
+      ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
+    ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
+      SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
   ];
+  // 나머지 목록과 같은 .idxrow를 쓴다 — 이름·뜻·화살표 한 줄. 새 CSS가 필요 없다
   const conceptHtml = conceptGroups.map(([title, sub, links]) =>
     `<section class="grp wash fun"><div class="cat" data-n="${links.length}"><span>${title}</span></div>`+
-    `<p style="padding:0 16px 10px;color:var(--muted);font-size:13px">${sub}</p>`+
-    `<div class="sibs" style="padding:0 16px 16px">`+
-    links.map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join("")+
-    `</div></section>`).join("");
+    `<p style="padding:2px 16px 12px;color:var(--muted);font-size:13px;line-height:1.65">${esc(sub)}</p>`+
+    links.map(([href, label, gloss]) =>
+      `<a class="idxrow" href="${href}"><span class="ix-n">${esc(label)}</span>`+
+      `<span class="ix-d">${esc(gloss)}</span><span class="ix-a">→</span></a>`).join("")+
+    `</section>`).join("");
 
   const desc="무료 사주팔자 만세력부터 오늘의 운세·별자리 운세·띠별 운세·궁합·타로까지. 실수령액·퇴직금·대출 계산기도 함께 "+meta.length+"가지. 2026년 기준, 가입 없이 무료.";
   return `<!doctype html><html lang="ko"><head>
@@ -1210,7 +1217,7 @@ function indexPage(){
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
 <div class="bento">${catCards}</div>
-<div class="sect"><h2>내 것부터 찾아보기</h2><p>별자리·띠·일간·십성을 하나씩 풀어둔 44개 페이지</p></div>
+<div class="sect"><h2>용어부터 알고 보기</h2><p>사주·운세에 나오는 말이 낯설다면 여기부터. 별자리·띠·일간·십성을 하나씩 풀어뒀습니다</p></div>
 <div class="alllist">${conceptHtml}</div>
 <div class="sect"><h2>전체 ${meta.length}개</h2><p>이름으로 검색하면 더 빠릅니다</p></div>
 <div class="alllist">${rows}</div>
