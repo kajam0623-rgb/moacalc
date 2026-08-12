@@ -229,6 +229,16 @@ t("본문컷 배선(별자리·띠 페이지)", /bodyCut\("stc-"\+s\.en/.test(bs
 t("홈에서 개념 44페이지 링크(생성기)", /conceptGroups/.test(bs) && /conceptHtml/.test(bs), true);
 // 이름만 있으면 '갑목'·'비견'이 무슨 말인지 알 수 없다. 뜻 한 줄이 같이 나가야 한다
 t("개념 링크에 뜻 한 줄 동반", /g\.metaphor\]/.test(bs) && /s\.keyword\]/.test(bs) && /class="ix-d">\$\{esc\(gloss\)\}/.test(bs), true);
+// ── 모바일 글자 크기 ──
+// 한글은 같은 px에서 영문보다 작게 읽힌다. 이 값들이 조용히 되돌아가면 다시 읽기 힘들어진다
+const mqStart = src.indexOf(".sj-sec p{font-size:16px");
+const mqBlock = src.slice(mqStart, src.indexOf("  }", mqStart) + 3);
+t("모바일 본문 16px", /\.sj-sec p\{font-size:16px/.test(mqBlock), true);
+t("모바일 입력창 16px (iOS 확대 방지)", /input,select,textarea[^}]*font-size:16px/.test(mqBlock), true);
+// 12.5px 미만이 하나라도 있으면 최소선이 무너진 것이다
+const smalls = [...mqBlock.matchAll(/font-size:(\d+(?:\.\d+)?)px/g)].map(m => +m[1]);
+t("모바일 글자 최소 12.5px", smalls.length > 10 && Math.min(...smalls) >= 12.5, true);
+
 t("sitemap에 lastmod", /<lastmod>\$\{BUILD_DAY\}<\/lastmod>/.test(bs), true);
 t("일일 갱신 도구에만 dateModified", /const DAILY = \["todayfortune","horoscope","zodiacfortune"\]/.test(bs) && /ld\.dateModified = BUILD_DAY/.test(bs), true);
 t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.test(bs) && /\$\{s\.ko\} 뜻<\/a>/.test(bs), true);
@@ -318,6 +328,13 @@ t("저장 이미지에 브랜드명·설명 동반", /fillText\("동네보살"/.
 // ── 일간·십성 원고 필수 필드 (본문·순서 검사는 위 SEO 블록) ──
 t("일간 원고 필수 필드", ILGAN_PAGES.every(p=>p.en&&p.ko&&p.han&&p.el&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
 t("십성 원고 필수 필드", SIPSEONG_PAGES.every(p=>p.en&&p.ko&&p.han&&p.group&&p.pair&&p.rule&&p.keyword&&p.strong&&p.weak&&p.intro&&p.love&&p.work&&p.money&&p.y2026), true);
+
+// 목록의 뜻은 한 줄 말줄임이라 길면 잘린다. 375px 실측에서 별자리가 가장 빠듯했다
+// (양태를 빼기 전 여유 5px). 글자 수로 상한을 걸어 재발을 막는다
+const GLOSS_MAX = 20;
+t("별자리 뜻 길이 상한", STAR_PAGES.every(x => `${x.range} · ${x.ele} 원소`.length <= GLOSS_MAX), true);
+t("일간 뜻 길이 상한", ILGAN_PAGES.every(g => g.metaphor.length <= GLOSS_MAX), true);
+t("십성 뜻 길이 상한", SIPSEONG_PAGES.every(x => x.keyword.length <= GLOSS_MAX), true);
 
 // ── E-E-A-T 신뢰 페이지 + GEO ──
 const SITE_PAGES = require("./content_site.js");

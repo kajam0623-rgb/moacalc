@@ -1175,7 +1175,7 @@ function indexPage(){
   // 이름만 늘어놓으면 '갑목'·'비견'이 무슨 말인지 알 수 없다. 한 줄 뜻을 같이 건다.
   const conceptGroups = [
     ["별자리 12", "태어난 날짜로 정해진다. 성격·연애·궁합을 본다.",
-      STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`, `${s.range} · ${s.ele} 원소 · ${s.mode}`])],
+      STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`, `${s.range} · ${s.ele} 원소`])],
     ["띠 12", "태어난 해로 정해진다. 삼합·육합·충으로 궁합을 본다.",
       ZODIAC_PAGES.map(z=>[`zodiac-${z.en}.html`, `${z.ko}띠 성격`, `지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`])],
     ["일간 10", "사주 여덟 글자 중 '나'를 뜻하는 글자. 태어난 날의 천간이다.",
