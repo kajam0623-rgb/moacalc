@@ -4,3 +4,7 @@ node_modules/
 _*.png
 
 .vercel
+
+# 자격증명 — 절대 커밋 금지
+.env.local
+threads-today.txt
