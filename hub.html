@@ -360,9 +360,34 @@
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
-  /* 모바일에선 13.5px 한글 본문이 작다. 운세는 읽는 분량이 많아 한 단계 키운다 */
-  @media (max-width:600px){.sj-sec p{font-size:15px;line-height:1.75;}
-    .sj-sec h3{font-size:14px;}}
+  /* 모바일 글자 크기 일괄 상향. 한글은 같은 px에서 영문보다 작게 읽혀 12px 밑은 부담이 크다.
+     기준: 본문 16px, 부가정보 13~15.5px, 최소 12.5px.
+     목록의 뜻(.ix-d)은 한 줄 말줄임이라 상한이 있다 — 375px에서 이름 15.5/뜻 13.5까지
+     44개 전부 안 잘리고, 16/14로 올리면 잘리기 시작한다. */
+  @media (max-width:600px){
+    .sj-sec p{font-size:16px;line-height:1.78;}
+    .sj-sec h3{font-size:15px;}
+    .grp .ix-n,.ccard .body .ix-n{font-size:15.5px;}
+    .grp .ix-d{font-size:13.5px;}
+    .cat span{font-size:14px;}
+    .sect p{font-size:13.5px;}
+    .hero-sub{font-size:15.5px;}
+    .hero-trust{font-size:13.5px !important;}
+    .pop a{font-size:14px;}
+    .chip{font-size:14px;}
+    .note{font-size:13px;line-height:1.75;}
+    .tags a,.tags span{font-size:13px;}
+    .sfoot{font-size:13.5px;}
+    .sfoot p{font-size:13px;}
+    .kpi .kd{font-size:13px;}
+    .kpi .kl{font-size:11.5px;}
+    .exbox .row{font-size:14.5px;}
+    .warns li{font-size:14.5px;}
+    label,.tool label{font-size:12.5px;}
+    /* iOS는 16px 미만 입력창에 포커스하면 화면을 확대한다 */
+    input,select,textarea,.sbar .search,
+    .tool input[type=date],.tool input[type=time],.tool select{font-size:16px;}
+  }
   .sj-daeun{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
   .sj-du{flex:0 0 auto;min-width:52px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:7px 4px;}
   .sj-du .a{font-size:10px;color:var(--muted);}

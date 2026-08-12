@@ -337,7 +337,12 @@ const cssM = src.match(/<style>([\s\S]*?)<\/style>/)[1];
 t("사이드바 링크 터치 타겟 44px", /\.rail a\{[^}]*min-height:44px/.test(cssM), true);
 t("뒤로가기 링크 터치 타겟 44px", /\.back\{[^}]*min-height:44px/.test(cssM), true);
 t("푸터 링크 터치 타겟 44px (sfoot·sitenav)", /\.sfoot a\{[^}]*min-height:44px/.test(cssM) && /\.sitenav a\{[^}]*min-height:44px/.test(bs), true);
-t("모바일 본문 폰트 15px 이상", /@media \(max-width:600px\)\{\.sj-sec p\{font-size:15px/.test(cssM), true);
+// 모바일 본문은 16px. 한글은 같은 px에서 영문보다 작게 읽힌다
+t("모바일 본문 폰트 16px", /\.sj-sec p\{font-size:16px/.test(cssM), true);
+// 목록의 뜻은 한 줄 말줄임이라 상한이 있다. 375px 실측으로 15.5/13.5가 44개 전부 안 잘리는 한계였다
+t("모바일 목록 이름·뜻은 잘리지 않는 상한 내", /\.ix-n\{font-size:15\.5px/.test(cssM) && /\.ix-d\{font-size:13\.5px/.test(cssM), true);
+// iOS는 16px 미만 입력창 포커스 시 화면을 확대한다
+t("모바일 입력창 16px(확대 방지)", /input,select,textarea[^{]*\{font-size:16px/.test(cssM), true);
 t("다이얼 항목 44px(손가락 기준)", /\.dial-item\{height:44px/.test(cssM), true);
 // 좁은 화면에서 .r2가 2단으로 남으면 다이얼 한 칸이 45px로 눌려 '1990년'이 겹쳐 보인다
 t("좁은 화면에서 r2는 1단", /@media \(max-width:560px\)\{\.r2\{grid-template-columns:1fr/.test(src), true);
