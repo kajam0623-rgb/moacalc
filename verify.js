@@ -220,6 +220,13 @@ t("띠 육합 상대는 sjYukhap 결과", ZODIAC_PAGES.every((z,i)=>z.match.hap=
 t("별자리 본문컷 12장 존재", STAR_PAGES.every(s=>fs.existsSync("img/char/stc-"+s.en+".webp")), true);
 t("띠 본문컷 12장 존재", ZODIAC_PAGES.every(z=>fs.existsSync("img/char/zoc-"+z.en+".webp")), true);
 t("본문컷 배선(별자리·띠 페이지)", /bodyCut\("stc-"\+s\.en/.test(bs) && /bodyCut\("zoc-"\+z\.en/.test(bs), true);
+
+// ── 색인 유도: 홈 링크 · lastmod · 일일 갱신 신호 · 앵커 ──
+// 개념 44페이지가 홈에서 링크되지 않으면 크롤 깊이가 2가 되고 중요도도 낮게 잡힌다
+t("홈에서 개념 44페이지 링크(생성기)", /conceptGroups/.test(bs) && /conceptHtml/.test(bs), true);
+t("sitemap에 lastmod", /<lastmod>\$\{BUILD_DAY\}<\/lastmod>/.test(bs), true);
+t("일일 갱신 도구에만 dateModified", /const DAILY = \["todayfortune","horoscope","zodiacfortune"\]/.test(bs) && /ld\.dateModified = BUILD_DAY/.test(bs), true);
+t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.test(bs) && /\$\{s\.ko\} 뜻<\/a>/.test(bs), true);
 // 파일이 없으면 onerror로 조용히 사라져 티가 안 난다. 원본 24장이 규격(webp·10KB 이상)인지 본다
 t("본문컷 24장 규격", STAR_PAGES.concat(ZODIAC_PAGES).every((x,i)=>{
   const f = "img/char/" + (i<12 ? "stc-" : "zoc-") + x.en + ".webp";
@@ -242,7 +249,7 @@ t("십성 pair는 상호 참조", SIPSEONG_PAGES.every(s=>{
 t("일간·십성 이미지 파일 존재", ILGAN_PAGES.every(g=>fs.existsSync("img/char/ilgan-"+g.en+".webp")) &&
   SIPSEONG_PAGES.every(s=>fs.existsSync("img/char/ss-"+s.en+".webp")), true);
 t("일간·십성 페이지 생성기 배선", /ILGAN_PAGES\.forEach/.test(bs) && /SIPSEONG_PAGES\.forEach/.test(bs), true);
-t("일간·십성 sitemap 포함", /ilgan-\$\{g\.en\}\.html<\/loc>/.test(bs) && /sipseong-\$\{s\.en\}\.html<\/loc>/.test(bs), true);
+t("일간·십성 sitemap 포함", /smUrl\("ilgan-"\+g\.en\+"\.html"\)/.test(bs) && /smUrl\("sipseong-"\+s\.en\+"\.html"\)/.test(bs), true);
 t("사주 페이지에서 일간·십성으로 내부링크", /ilganChips\(null\)/.test(bs) && /sipseongChips\(null\)/.test(bs), true);
 // 십성 이름은 받침이 섞여 있다(비견/겁재). 하드코딩 조사가 남으면 "겁재과 연애"가 출력된다
 const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const FUN_TOP"));

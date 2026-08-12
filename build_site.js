@@ -841,6 +841,10 @@ function toolPage(t){
     applicationCategory:appCat,operatingSystem:"All",url:url,inLanguage:"ko",
     isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"},
     offers:{"@type":"Offer",price:"0",priceCurrency:"KRW"}};
+  // 일진이 자정에 바뀌는 도구는 '오늘 것'이라는 신호가 있어야 매일 다시 크롤된다.
+  // 날짜가 결과를 바꾸지 않는 계산기에는 붙이지 않는다.
+  const DAILY = ["todayfortune","horoscope","zodiacfortune"];
+  if (DAILY.indexOf(t.id) >= 0) { ld.dateModified = BUILD_DAY; }
   const g=guide[t.id], f=faq[t.id], d=deep[t.id], tg=tags[t.id]||[];
   const tagHtml = tg.length ? '<div class="tags">'+tg.map(x=>'<span>#'+esc(x)+'</span>').join("")+'</div>' : '';
   const introHtml = d
@@ -903,10 +907,11 @@ const starChips = cur => '<div class="sibs">'+STAR_PAGES.map(s=>s.en===cur
   ? `<span class="cur">${s.sym} ${s.ko}</span>` : `<a href="star-${s.en}.html">${s.sym} ${s.ko}</a>`).join("")+'</div>';
 const zodiacChips = cur => '<div class="sibs">'+ZODIAC_PAGES.map(z=>z.en===cur
   ? `<span class="cur">${z.ko}띠</span>` : `<a href="zodiac-${z.en}.html">${z.ko}띠</a>`).join("")+'</div>';
+// 앵커에 검색어를 싣는다. "甲 갑"보다 "갑목 일간"이 실제로 검색되는 말이다
 const ilganChips = cur => '<div class="sibs">'+ILGAN_PAGES.map(g=>g.en===cur
-  ? `<span class="cur">${g.han} ${g.ko}</span>` : `<a href="ilgan-${g.en}.html">${g.han} ${g.ko}</a>`).join("")+'</div>';
+  ? `<span class="cur">${g.ko}${g.el} 일간</span>` : `<a href="ilgan-${g.en}.html">${g.ko}${g.el} 일간</a>`).join("")+'</div>';
 const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===cur
-  ? `<span class="cur">${s.ko}</span>` : `<a href="sipseong-${s.en}.html">${s.ko}</a>`).join("")+'</div>';
+  ? `<span class="cur">${s.ko} 뜻</span>` : `<a href="sipseong-${s.en}.html">${s.ko} 뜻</a>`).join("")+'</div>';
 
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
@@ -1155,6 +1160,21 @@ function indexPage(){
 <div class="kpi wash"><div class="kl"><i></i>가입</div><div class="kv">0</div><div class="kd">로그인 없이 <b>바로 사용</b></div></div>
 <div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
 </div>`;
+  // 개념 페이지 44개(별자리·띠·일간·십성)는 도구 페이지를 거쳐야만 닿았다.
+  // 홈에서 직접 링크해 크롤 깊이를 1로 낮추고, 앵커에 검색어를 싣는다.
+  const conceptGroups = [
+    ["별자리 12", "생일로 보는 성격·연애·궁합", STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`])],
+    ["띠 12", "삼합·육합·충으로 보는 띠 궁합", ZODIAC_PAGES.map(z=>[`zodiac-${z.en}.html`, `${z.ko}띠 성격`])],
+    ["일간 10", "사주에서 '나'에 해당하는 글자", ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`])],
+    ["십성 10", "나와 다른 글자의 관계 열 가지", SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`])],
+  ];
+  const conceptHtml = conceptGroups.map(([title, sub, links]) =>
+    `<section class="grp wash fun"><div class="cat" data-n="${links.length}"><span>${title}</span></div>`+
+    `<p style="padding:0 16px 10px;color:var(--muted);font-size:13px">${sub}</p>`+
+    `<div class="sibs" style="padding:0 16px 16px">`+
+    links.map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join("")+
+    `</div></section>`).join("");
+
   const desc="무료 사주팔자 만세력부터 오늘의 운세·별자리 운세·띠별 운세·궁합·타로까지. 실수령액·퇴직금·대출 계산기도 함께 "+meta.length+"가지. 2026년 기준, 가입 없이 무료.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1180,6 +1200,8 @@ function indexPage(){
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
 <div class="bento">${catCards}</div>
+<div class="sect"><h2>내 것부터 찾아보기</h2><p>별자리·띠·일간·십성을 하나씩 풀어둔 44개 페이지</p></div>
+<div class="alllist">${conceptHtml}</div>
 <div class="sect"><h2>전체 ${meta.length}개</h2><p>이름으로 검색하면 더 빠릅니다</p></div>
 <div class="alllist">${rows}</div>
 ${adSlot()}
@@ -1216,13 +1238,17 @@ const coreV = hash8(coreJs);
 chunks.forEach(c => c.v = hash8(c.src));
 
 // 사이트맵 + robots
+// lastmod가 없으면 크롤러가 재방문 시점을 잡을 근거가 없다. 빌드일을 찍는다.
+// changefreq·priority는 구글이 무시하므로 넣지 않는다.
+const BUILD_DAY = new Date().toISOString().slice(0,10);
+const smUrl = path => `<url><loc>${DOMAIN}/${path}</loc><lastmod>${BUILD_DAY}</lastmod></url>`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
-  `<url><loc>${DOMAIN}/</loc></url>\n`+meta.map(t=>`<url><loc>${DOMAIN}/${t.id}.html</loc></url>`).join("\n")+"\n"+
-  STAR_PAGES.map(s=>`<url><loc>${DOMAIN}/star-${s.en}.html</loc></url>`).join("\n")+"\n"+
-  ZODIAC_PAGES.map(z=>`<url><loc>${DOMAIN}/zodiac-${z.en}.html</loc></url>`).join("\n")+"\n"+
-  ILGAN_PAGES.map(g=>`<url><loc>${DOMAIN}/ilgan-${g.en}.html</loc></url>`).join("\n")+"\n"+
-  SIPSEONG_PAGES.map(s=>`<url><loc>${DOMAIN}/sipseong-${s.en}.html</loc></url>`).join("\n")+"\n"+
-  SITE_PAGES.map(p=>`<url><loc>${DOMAIN}/${p.id}.html</loc></url>`).join("\n")+`\n</urlset>`;
+  smUrl("")+"\n"+meta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
+  STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
+  ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
+  ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
+  SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
+  SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
 // llms.txt — 생성형 검색(ChatGPT·Perplexity 등)이 사이트를 정확히 인용하도록 돕는 안내 파일
