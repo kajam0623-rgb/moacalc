@@ -2,6 +2,18 @@
   "buildCommand": "node build_site.js",
   "outputDirectory": "site",
   "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "dongnebosal.vercel.app" }],
+      "destination": "https://dongnebosal.com/$1",
+      "statusCode": 301
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "www.dongnebosal.com" }],
+      "destination": "https://dongnebosal.com/$1",
+      "statusCode": 301
+    },
     { "source": "/lotto.html", "destination": "/", "statusCode": 301 },
     { "source": "/draw.html", "destination": "/", "statusCode": 301 },
     { "source": "/ladder.html", "destination": "/", "statusCode": 301 }
