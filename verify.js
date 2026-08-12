@@ -183,6 +183,9 @@ t("합충 삽화 6장 존재", Object.keys(ART_HAP).length===6 && Object.values(
 t("상생 매핑은 나를 낳는 관계", ART_SAENG[0]==="el-saeng-sumok" && ART_SAENG[1]==="el-saeng-mokhwa" && ART_SAENG[4]==="el-saeng-geumsu", true);
 t("상극 매핑은 나를 극하는 관계", ART_GEUK[0]==="el-geuk-geummok" && ART_GEUK[1]==="el-geuk-suhwa" && ART_GEUK[4]==="el-geuk-tosu", true);
 t("합충 삽화 배선(오늘의 운세·띠별·사주)", /bonusArt\?conceptArt\(ART_HAP/.test(inner) && /ART_HAP\[rel\]\?conceptArt/.test(inner) && /conceptArt\(ART_SAENG\[SJ_EL\.indexOf\(mn\)\]/.test(inner), true);
+// 상극 5장이 파일만 있고 화면에 안 뜨면 죽은 자산이다. 용신이 극당하는 날에만 노출한다
+t("상극 삽화 배선(용신 극하는 날)", /yongClash\?conceptArt\(ART_GEUK\[st\.yong\]/.test(inner), true);
+t("상생 삽화 배선(용신 들어오는 날)", /yongHit\?conceptArt\(ART_SAENG\[st\.yong\]/.test(inner), true);
 
 
 // ── 한글 조사 자동 선택 (받침 유무) ──
