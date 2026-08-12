@@ -769,7 +769,14 @@ namematch:[["이 방식은 뭔가요?","이름 획수를 번갈아 놓고 이웃
 
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-const FAVICON = `<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%232a44c6'/><text x='16' y='23' font-size='19' fill='%23ffffff' text-anchor='middle' font-family='monospace' font-weight='bold'>%3D</text></svg>">`;
+// 계산기 시절의 '=' 아이콘을 보살 마크로 교체.
+// .ico는 구글 검색결과·구형 브라우저가 아직 우선으로 찾는다.
+const FAVICON = `<link rel="icon" href="/img/favicon.ico" sizes="any">`+
+  `<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">`+
+  `<link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png">`+
+  `<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">`+
+  `<link rel="manifest" href="/site.webmanifest">`+
+  `<meta name="theme-color" content="#101b3d">`;
 const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
@@ -804,9 +811,12 @@ const footer = `<footer class="sfoot">
 </footer>
 <div class="foot">© 2026 동네보살</div>`;
 
+// 애드센스 승인 전에는 아무것도 그리지 않는다.
+// 빈 자리 표시는 사용자에게 광고를 보여주지도 못하면서 완성도만 깎고,
+// 심사에서도 '준비 중인 사이트'로 읽힌다.
 const adSlot = () => ADSENSE_CLIENT
   ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
-  : `<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>`;
+  : "";
 
 // 전체 도구 내부링크 네비 (모든 페이지에 삽입 → SEO 링크)
 function siteNav(currentId){
@@ -1185,7 +1195,7 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero"><div class="logo-row"><svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><defs><mask id="dnbs"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="var(--fun)" mask="url(#dnbs)"/><circle cx="25.5" cy="24.5" r="1.7" fill="var(--accent)"/></svg><span class="brand">동네보살</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
+<header class="hero"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
 <div class="hero-wrap">
 <div>
 <h1 class="hero-h">뭐든 물어보세요.<br><b>동네 보살이 답합니다.</b></h1>
@@ -1330,6 +1340,13 @@ SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p))
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
+// 홈 화면에 추가했을 때 쓰이는 아이콘·이름
+fs.writeFileSync(path.join(OUT,"site.webmanifest"), JSON.stringify({
+  name:"동네보살", short_name:"동네보살",
+  icons:[{src:"/img/icon-192.png",sizes:"192x192",type:"image/png"},
+         {src:"/img/icon-512.png",sizes:"512x512",type:"image/png"}],
+  theme_color:"#101b3d", background_color:"#101b3d", display:"standalone", start_url:"/"
+}, null, 1));
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
 fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
 // img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)

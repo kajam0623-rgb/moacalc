@@ -38,7 +38,7 @@
   /* 로고 + 히어로 임팩트 */
   .hero{padding-bottom:18px;border-bottom:2px solid var(--ink);margin-bottom:20px;}
   .logo-row{display:flex;align-items:center;gap:10px;}
-  .lmark{flex:0 0 auto;color:var(--ink);}
+  .lmark{flex:0 0 auto;width:34px;height:auto;aspect-ratio:1/1;border-radius:50%;object-fit:cover;}
   .logo-row .brand{font-size:21px;font-weight:800;letter-spacing:-1px;}
   .logo-row .meta{margin-left:auto;}
   .hero-h{font-size:34px;font-weight:900;letter-spacing:-1.7px;line-height:1.14;margin:20px 0 8px;text-wrap:balance;}

@@ -39,7 +39,7 @@
   /* 로고 + 히어로 임팩트 */
   .hero{padding-bottom:18px;border-bottom:2px solid var(--ink);margin-bottom:20px;}
   .logo-row{display:flex;align-items:center;gap:10px;}
-  .lmark{flex:0 0 auto;color:var(--ink);}
+  .lmark{flex:0 0 auto;width:34px;height:auto;aspect-ratio:1/1;border-radius:50%;object-fit:cover;}
   .logo-row .brand{font-size:21px;font-weight:800;letter-spacing:-1px;}
   .logo-row .meta{margin-left:auto;}
   .hero-h{font-size:34px;font-weight:900;letter-spacing:-1.7px;line-height:1.14;margin:20px 0 8px;text-wrap:balance;}
@@ -2157,7 +2157,7 @@
   // ---------- router / render ----------
   var CATS=["재미·운세","급여·노동","금융","부동산·세금","생활","변환·기타"];
   function home(){
-    var LOGO='<svg class="lmark" viewBox="0 0 36 36" width="30" height="30" aria-hidden="true"><defs><mask id="dnbs"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="var(--fun)" mask="url(#dnbs)"/><circle cx="25.5" cy="24.5" r="1.7" fill="var(--accent)"/></svg>';
+    var LOGO='<img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" onerror="this.remove()">';
     var h='<header class="hero"><div class="logo-row">'+LOGO+'<span class="brand">동네보살</span><span class="meta">2026 · '+TOOLS.length+' TOOLS</span></div>'+
       '<h1 class="hero-h">뭐든 물어보세요.<br><b>동네 보살이 답합니다.</b></h1>'+
       '<div class="hero-sub">무료 사주·오늘의 운세·별자리 운세부터 실수령액·퇴직금까지 '+TOOLS.length+'가지, 한 곳에서.</div>'+
@@ -2168,8 +2168,7 @@
     CATS.forEach(function(c){var items=TOOLS.filter(function(t){return t.cat===c;});
       h+='<section class="grp wash'+(c==="재미·운세"?" fun":"")+'" data-cat="'+c+'"><div class="cat" data-n="'+items.length+'"><span>'+c+'</span></div>'+items.map(function(t){
         return '<a class="idxrow" href="#'+t.id+'" data-name="'+t.name+'"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';}).join("")+'</section>';});
-    h+='<div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>'+
-      '<div class="foot">© 2026 동네보살 · 모든 운세 풀이와 계산은 참고용입니다</div>';
+    h+='<div class="foot">© 2026 동네보살 · 모든 운세 풀이와 계산은 참고용입니다</div>';
     app.innerHTML=h;
     var q=document.getElementById("q");q.addEventListener("input",function(){var v=this.value.trim();
       app.querySelectorAll(".grp").forEach(function(g){var any=false;
@@ -2178,7 +2177,7 @@
   }
   function view(t){
     app.innerHTML='<a class="back" href="#">← 전체 도구</a><h1 class="th">'+t.name+'</h1><div class="tl">'+t.desc+'</div>'+
-      '<div class="card tool" id="tool"></div><div class="ad">AD · 애드센스 / 쿠팡 배너 자리</div>'+
+      '<div class="card tool" id="tool"></div>'+
       '<div class="foot">© 2026 동네보살 · 참고용</div>';
     t.render(document.getElementById("tool"));window.scrollTo(0,0);
   }

@@ -227,6 +227,17 @@ t("홈에서 개념 44페이지 링크(생성기)", /conceptGroups/.test(bs) && 
 t("sitemap에 lastmod", /<lastmod>\$\{BUILD_DAY\}<\/lastmod>/.test(bs), true);
 t("일일 갱신 도구에만 dateModified", /const DAILY = \["todayfortune","horoscope","zodiacfortune"\]/.test(bs) && /ld\.dateModified = BUILD_DAY/.test(bs), true);
 t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.test(bs) && /\$\{s\.ko\} 뜻<\/a>/.test(bs), true);
+
+// ── 브랜드: 파비콘·로고 ──
+// 계산기 시절 '=' 아이콘이 남아 있으면 브랜드가 갈린다
+t("파비콘은 보살 마크(= 아이콘 잔재 없음)", !/%3D<\/text>/.test(bs) && /favicon\.ico/.test(bs), true);
+t("파비콘 규격 파일 존재", ["favicon.ico","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png"]
+  .every(f=>fs.existsSync("img/"+f)), true);
+t("웹매니페스트 출력", /site\.webmanifest/.test(bs), true);
+t("헤더 로고는 이미지", /class="lmark" src="img\/logo\.png"/.test(bs) && /class=\\"lmark\\" src=\\"img\/logo\.png\\"/.test(inner) || /class="lmark" src="img\/logo\.png"/.test(bs), true);
+t("로고 파일 존재·정사각", fs.existsSync("img/logo.png") && fs.statSync("img/logo.png").size > 5000, true);
+// 승인 전 빈 광고 자리는 완성도만 깎는다
+t("광고 자리 플레이스홀더 제거", !/배너 자리/.test(bs) && !/배너 자리/.test(src), true);
 // 파일이 없으면 onerror로 조용히 사라져 티가 안 난다. 원본 24장이 규격(webp·10KB 이상)인지 본다
 t("본문컷 24장 규격", STAR_PAGES.concat(ZODIAC_PAGES).every((x,i)=>{
   const f = "img/char/" + (i<12 ? "stc-" : "zoc-") + x.en + ".webp";
