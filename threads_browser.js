@@ -35,7 +35,7 @@ const SITE = "https://dongnebosal.com";
 const MAX_LEN = 500;
 
 // 첫 댓글. 여기에만 주소가 들어간다.
-const REPLY = `생일 하나면 되네. 값은 안 받네.\n${SITE}`;
+const REPLY = `생일 하나면 돼. 무료야.\n${SITE}`;
 
 const has = f => process.argv.includes(f);
 const mode = has("--login") ? "login" : has("--check") ? "check" : has("--publish") ? "publish" : "fill";
