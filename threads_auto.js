@@ -51,6 +51,18 @@ function run(script, args = []) {
 
   log(`── 시작 (${slot}) ──`);
 
+  // 저녁 원고는 밖에서 받아 붙여넣을 수 있다. 사람 눈을 안 거치고 나가므로
+  // 게시 전에 은행 전체를 한 번 훑는다. 오류가 있으면 여기서 멈춘다
+  if (slot === "pm") {
+    try { run("threads_bank.js", ["--lint"]); }
+    catch (e) {
+      log("은행 원고 검사 실패 — 게시하지 않는다:");
+      log(((e.stdout || "") + (e.stderr || "")).toString().trim());
+      process.exitCode = 1;
+      return;
+    }
+  }
+
   const gen = slot === "pm" ? "threads_bank.js" : "threads_daily.js";
   const text = run(gen).replace(/^━━━[^\n]*━━━\n+/, "").trim();
   log(`원고 ${text.length}자`);

@@ -28,7 +28,9 @@ const CTA = [
 ];
 
 function bank() {
-  const md = fs.readFileSync(path.join(ROOT, "THREADS-HOOKS.md"), "utf8");
+  // 줄끝을 먼저 통일한다. 윈도우에서 git이 CRLF로 체크아웃하면
+  // ```\n 을 찾는 정규식이 하나도 안 맞아 은행이 통째로 빈다
+  const md = fs.readFileSync(path.join(ROOT, "THREADS-HOOKS.md"), "utf8").replace(/\r\n/g, "\n");
   const re = /^## \s*\d+\.\s*(.+?)\s*$[\s\S]*?```\n([\s\S]*?)```/gm;
   const out = [];
   let m;
@@ -48,6 +50,47 @@ const dayIndex = dt => Math.floor(
 
 const arg = process.argv[2];
 const items = bank();
+
+/* --lint : 은행 원고 검사.
+   이 글들은 사람 눈을 안 거치고 자동으로 공개 게시된다.
+   밖에서 받아온 원고를 붙여넣었을 때 그대로 나가면 안 되는 것들을 잡는다. */
+if (arg === "--lint") {
+  const errs = [], warns = [];
+  const seen = new Map();
+  const maxBody = MAX_LEN - Math.max(...CTA.map(c => c.length)) - 2;
+
+  items.forEach((it, i) => {
+    const tag = `${i + 1}. ${it.title}`;
+    const t = it.text;
+    if (seen.has(it.title)) errs.push(`${tag}: 제목이 ${seen.get(it.title)}번과 겹친다`);
+    seen.set(it.title, i + 1);
+
+    if (t.length > maxBody) errs.push(`${tag}: ${t.length}자 — CTA까지 붙으면 500자를 넘는다 (본문 ${maxBody}자 이하)`);
+    if (/니다|세요|습니다|해요|하십시오/.test(t)) errs.push(`${tag}: 존댓말이 섞였다 — 스레드는 사람 말투(반말)다`);
+    // "~네." 는 하게체 서술이다. 사람 말투에는 거의 안 나온다
+    if (/자네|일세|[가-힣]네\.|하게\.|보게\.|말게\./.test(t))
+      errs.push(`${tag}: 보살 말투가 섞였다 — 그건 사이트 안쪽 전용이다`);
+    if (/https?:\/\//.test(t)) errs.push(`${tag}: 본문에 링크가 있다 — 주소는 첫 댓글이 맡는다`);
+    if (/생일|생년월일/.test(t.split("\n").slice(-2).join("\n")))
+      warns.push(`${tag}: 끝에 CTA를 직접 썼다 — CTA는 스크립트가 붙인다`);
+
+    const first = t.split("\n")[0].trim();
+    if (first.length > 34) warns.push(`${tag}: 첫 줄이 ${first.length}자 — 길면 훅이 안 산다`);
+    if (/(사람이 있어|사람이 있네|사람이야)\.$/.test(first))
+      warns.push(`${tag}: 첫 줄이 3인칭 관찰형이다 — 질문이나 호명으로 바꿔라`);
+    // 한자를 썼으면 뜻풀이가 있어야 한다. 그게 이 콘텐츠의 신뢰 축이다
+    if (/[一-鿿]/.test(t) && !/[가-힣] [一-鿿]\(|\([一-鿿]\)/.test(t))
+      warns.push(`${tag}: 한자를 썼는데 글자 뜻풀이가 안 보인다`);
+    if (t.split("\n").filter(l => !l.trim()).length < 2)
+      warns.push(`${tag}: 문단이 안 나뉘었다 — 스레드는 한 덩어리면 안 읽힌다`);
+  });
+
+  warns.forEach(w => console.log("경고  " + w));
+  errs.forEach(e => console.log("오류  " + e));
+  console.log(`\n${items.length}편 · 오류 ${errs.length} · 경고 ${warns.length}`);
+  if (errs.length) { console.log("오류가 있으면 게시하지 마라."); process.exit(1); }
+  return;
+}
 
 if (arg === "--list") {
   items.forEach((it, i) => console.log(`${String(i + 1).padStart(2)}. ${it.title}  (${it.text.length}자)`));
