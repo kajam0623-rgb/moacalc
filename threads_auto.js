@@ -14,6 +14,9 @@ const { execFileSync } = require("child_process");
 const ROOT = __dirname;
 const LOG = path.join(ROOT, "threads-log.txt");
 const publish = process.argv.includes("--publish");
+// --browser : API 토큰 대신 로그인 세션으로 올린다 (threads_browser.js).
+// 토큰이 필요 없는 대신, 메타는 브라우저 자동 조작을 약관 위반으로 본다.
+const useBrowser = process.argv.includes("--browser");
 
 // toISOString()은 UTC다. 한국 새벽에 돌리면 날짜가 전날로 찍혀
 // 같은 날 두 번 게시되거나 로그 날짜가 원고 날짜와 어긋난다. 전부 로컬로 통일한다.
@@ -58,12 +61,18 @@ function run(script, args = []) {
     return;
   }
 
-  // 게시는 threads_post.js에 맡긴다 — 토큰 확인·500자 가드가 거기 있다
+  // 게시는 전용 스크립트에 맡긴다 — 계정 확인·500자 가드가 거기 있다
   try {
-    const out = run("threads_post.js", ["--publish"]);
-    const id = (out.match(/post id = (\S+)/) || [])[1];
-    if (id) log(`게시 완료 ${stamp} · post id ${id}`);
-    else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
+    if (useBrowser) {
+      const out = run("threads_browser.js", ["--publish"]);
+      if (/게시 확인 OK/.test(out)) log(`게시 완료 ${stamp} · 브라우저`);
+      else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
+    } else {
+      const out = run("threads_post.js", ["--publish"]);
+      const id = (out.match(/post id = (\S+)/) || [])[1];
+      if (id) log(`게시 완료 ${stamp} · post id ${id}`);
+      else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
+    }
   } catch (e) {
     // 중단 사유는 stderr에 있다. stdout 끝줄을 집으면
     // "길이 160자" 같은 엉뚱한 줄이 사유로 찍힌다.
