@@ -72,8 +72,9 @@ function run(script, args = []) {
   try {
     if (useBrowser) {
       const out = run("threads_browser.js", slot === "pm" ? ["--publish", "--pm"] : ["--publish"]);
+      // 중복 방지 키는 threads_browser.js가 직접 남긴다. 여기서 또 쓰면 두 줄이 된다
       if (/게시 확인 OK/.test(out)) {
-        log(`${key} · 브라우저${/첫 댓글 OK/.test(out) ? " · 댓글" : " · 댓글실패"}`);
+        log(`게시함 (${slot}) ${/첫 댓글 OK/.test(out) ? "· 댓글 OK" : "· 댓글 실패"}`);
       } else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
     } else {
       const out = run("threads_post.js", ["--publish"]);

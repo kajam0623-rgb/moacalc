@@ -65,9 +65,8 @@ const dt = arg && /^\d{4}-\d{2}-\d{2}$/.test(arg)
    (--avoid=편관 으로 직접 지정할 수도 있다) */
 function morningRel(stamp) {
   try {
-    const out = execFileSync("node", [path.join(ROOT, "threads_daily.js"), stamp],
-      { cwd: ROOT, encoding: "utf8" });
-    return (out.match(/일간에게 ([가-힣]{2})이라 부르는/) || [])[1] || "";
+    return execFileSync("node", [path.join(ROOT, "threads_daily.js"), stamp, "--rel"],
+      { cwd: ROOT, encoding: "utf8" }).trim();
   } catch (e) { return ""; }   // 못 읽어도 저녁 글은 나가야 한다
 }
 const avoidArg = (process.argv.find(a => a.startsWith("--avoid=")) || "").slice(8);

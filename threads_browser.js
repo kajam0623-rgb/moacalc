@@ -187,6 +187,17 @@ async function clickPost(page) {
   }
   console.log(`게시 확인 OK · @${id}`);
 
+  /* 중복 방지 키를 여기서 남긴다.
+     이 스크립트를 직접 부르면 threads_auto.js를 안 거치므로,
+     auto가 남기기를 기다리면 그날 스케줄러가 한 번 더 올린다. (2026-08-13에 그랬다)
+     댓글 실패보다 앞에 둔다 — 본문은 이미 공개됐으니 다시 올리면 안 된다. */
+  const two = n => String(n).padStart(2, "0");
+  const now = new Date();
+  const day = `${now.getFullYear()}-${two(now.getMonth() + 1)}-${two(now.getDate())}`;
+  const at = `${two(now.getHours())}:${two(now.getMinutes())}:${two(now.getSeconds())}`;
+  fs.appendFileSync(path.join(ROOT, "threads-log.txt"),
+    `[${day} ${at}] 게시 완료 ${day} ${slot} · 브라우저\n`, "utf8");
+
   /* 첫 댓글에 주소를 단다.
      프로필 목록의 첫 글 shortcode를 집어 reply_post_shortcode 로 넘긴다. */
   const sc = await page.evaluate(() => {

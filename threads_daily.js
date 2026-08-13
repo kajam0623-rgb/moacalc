@@ -115,13 +115,17 @@ const TAIL = [
 function why(d, x) {
   return `오늘은 ${d.ganji}(${d.han})일. 명리에서 ${ILGAN_LABEL(x.ilgan)} 일간한테 ${x.rel}이라고 부르는 자리야.`;
 }
-function compose(d) {
+/* out.rel 에 이 글이 다룬 십성을 담아 준다.
+   저녁 은행이 같은 십성을 피하려면 이 값이 필요하다.
+   본문을 정규식으로 긁어 알아내던 걸 그만뒀다 — 문장을 고치면 조용히 깨진다. */
+function compose(d, out = {}) {
   const angle = (d.dt.getDate() + d.dt.getMonth()) % 4;
   const tail = TAIL[d.dt.getDate() % TAIL.length];
   const H = hook(d);   // 모든 각도의 첫 줄은 띠 호명이다
 
   if (angle === 0) {
     const x = d.lo;
+    out.rel = x.rel;
     return [
       H, "",
       `오늘은 ${REL_PLAIN[x.rel]}이야.`, "",
@@ -131,6 +135,7 @@ function compose(d) {
     ].join(NL);
   }
   if (angle === 1) {
+    out.rel = d.lo.rel;
     return [
       H, "",
       `오늘 잘 풀리는 사람이랑 눌리는 사람이 갈려.`, "",
@@ -145,6 +150,7 @@ function compose(d) {
   if (angle === 2) {
     const a = d.hi.ilgan, b = a % 2 === 0 ? a + 1 : a - 1;
     const rb = d.rows[b];
+    out.rel = d.hi.rel;
     return [
       H, "",
       `같은 기운 타고났는데 오늘이 갈리는 두 사람이 있어.`, "",
@@ -156,6 +162,7 @@ function compose(d) {
     ].join(NL);
   }
   const x = d.rows[(d.dt.getDate() * 3) % 10];
+  out.rel = x.rel;
   return [
     H, "",
     `오늘은 ${d.tti}띠 기운이 깔린 날이야.`, "",
@@ -168,14 +175,23 @@ function compose(d) {
 function render(dt) {
   const d = dayData(dt);
   const stamp = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")} (${WD[dt.getDay()]})`;
-  return { stamp, ganji: d.ganji, text: compose(d) };
+  const out = {};
+  const text = compose(d, out);
+  return { stamp, ganji: d.ganji, text, rel: out.rel || "" };
 }
 
-const arg = process.argv[2];
+const args = process.argv.slice(2);
+const arg = args.find(a => !a.startsWith("--"));
 const base = arg && /^\d{4}-\d{2}-\d{2}$/.test(arg)
   ? new Date(+arg.slice(0, 4), +arg.slice(5, 7) - 1, +arg.slice(8, 10))
   : new Date();
-const days = arg === "--week" ? 7 : 1;
+const days = args.includes("--week") ? 7 : 1;
+
+// --rel : 그날 글이 다룬 십성만 찍는다. 저녁 은행이 겹침을 피할 때 쓴다
+if (args.includes("--rel")) {
+  console.log(render(base).rel);
+  return;
+}
 
 const out = [];
 for (let k = 0; k < days; k++) {
