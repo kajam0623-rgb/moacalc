@@ -53,6 +53,28 @@ function dayData(dt) {
 
 const HEAD = d =>
   `${d.ganji}(${d.han})일일세.`;
+
+/* 첫 줄이 전부다. 스크롤을 멈추게 하려면 "누구 얘기인지"가 첫 줄에 있어야 한다.
+   사람들이 아는 건 일간이 아니라 띠다. 그래서 띠로 부른다.
+
+   충(沖) — 지지가 여섯 칸 마주 보는 자리. 자↔오, 축↔미, 인↔신, 묘↔유, 진↔술, 사↔해.
+   삼합 — 신자진(수), 해묘미(목), 인오술(화), 사유축(금).
+   둘 다 그날 일지에서 바로 나온다. 지어낸 게 아니다. */
+const SAMHAP = [[8, 0, 4], [11, 3, 7], [2, 6, 10], [5, 9, 1]];
+const chungTti = b => SJ_TTI[(b + 6) % 12];
+const hapTti = b => (SAMHAP.find(g => g.includes(b)) || []).map(i => SJ_TTI[i]);
+
+function hook(d) {
+  const b = d.p.d.b;
+  const ch = chungTti(b);
+  const hp = hapTti(b);
+  switch (d.dt.getDate() % 4) {
+    case 0: return `오늘 ${ch}띠 자네, 이건 보고 가게.`;
+    case 1: return `${hp.join("·")}띠 — 오늘은 자네들 판일세.`;
+    case 2: return `오늘 하루, ${ch}띠가 제일 시끄럽겠네.`;
+    default: return `${ch}띠는 눈 크게 뜨고, ${hp[0]}띠는 발 뻗고 자게.`;
+  }
+}
 // 본문에 주소를 넣지 않는다. 맥락 없는 링크는 도달이 깎인다 —
 // 주소는 첫 댓글이 맡는다. 여기서는 궁금증과 "공짜"만 남긴다.
 const TAIL = [
@@ -69,10 +91,12 @@ function why(d, x) {
 function compose(d) {
   const angle = (d.dt.getDate() + d.dt.getMonth()) % 4;
   const tail = TAIL[d.dt.getDate() % TAIL.length];
+  const H = hook(d);   // 모든 각도의 첫 줄은 띠 호명이다
 
   if (angle === 0) {
     const x = d.lo;
     return [
+      H, "",
       `오늘은 ${REL_PLAIN[x.rel]}일세.`, "",
       `누구한테? ${ILGAN_PLAIN[SJ_S[x.ilgan]]} 같은 사람.`, "",
       x.T[4], "",
@@ -81,6 +105,7 @@ function compose(d) {
   }
   if (angle === 1) {
     return [
+      H, "",
       `오늘 잘 풀리는 사람과 눌리는 사람이 갈리네.`, "",
       `${REL_PLAIN[d.hi.rel]} — ${ILGAN_PLAIN[SJ_S[d.hi.ilgan]]} 같은 사람.`,
       `${REL_PLAIN[d.lo.rel]} — ${ILGAN_PLAIN[SJ_S[d.lo.ilgan]]} 같은 사람.`, "",
@@ -94,6 +119,7 @@ function compose(d) {
     const a = d.hi.ilgan, b = a % 2 === 0 ? a + 1 : a - 1;
     const rb = d.rows[b];
     return [
+      H, "",
       `같은 기운을 타고났는데 오늘이 갈리는 두 사람이 있네.`, "",
       `${ILGAN_PLAIN[SJ_S[a]]} 같은 사람 — ${REL_PLAIN[d.hi.rel]}.`,
       `${ILGAN_PLAIN[SJ_S[b]]} 같은 사람 — ${REL_PLAIN[rb.rel]}.`, "",
@@ -104,6 +130,7 @@ function compose(d) {
   }
   const x = d.rows[(d.dt.getDate() * 3) % 10];
   return [
+    H, "",
     `오늘은 ${d.tti}띠의 기운이 깔린 날일세.`, "",
     `${ILGAN_PLAIN[SJ_S[x.ilgan]]} 같은 사람에게는 ${REL_PLAIN[x.rel]}이야.`, "",
     x.T[3], "",
