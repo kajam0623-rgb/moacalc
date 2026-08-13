@@ -17,6 +17,8 @@ const publish = process.argv.includes("--publish");
 // --browser : API 토큰 대신 로그인 세션으로 올린다 (threads_browser.js).
 // 토큰이 필요 없는 대신, 메타는 브라우저 자동 조작을 약관 위반으로 본다.
 const useBrowser = process.argv.includes("--browser");
+// 하루 두 번 돈다. 아침은 그날 일진, 저녁은 후킹 소재 은행.
+const slot = process.argv.includes("--pm") ? "pm" : "am";
 
 // toISOString()은 UTC다. 한국 새벽에 돌리면 날짜가 전날로 찍혀
 // 같은 날 두 번 게시되거나 로그 날짜가 원고 날짜와 어긋난다. 전부 로컬로 통일한다.
@@ -39,21 +41,26 @@ function run(script, args = []) {
 (async () => {
   const stamp = localDay();
 
-  // 같은 날 두 번 돌지 않게 막는다. 스케줄러가 밀려서 두 번 부를 수 있다
+  // 같은 슬롯을 두 번 돌지 않게 막는다. 스케줄러가 밀려서 두 번 부를 수 있다.
+  // 아침·저녁은 별개다 — 키에 슬롯을 넣지 않으면 저녁이 통째로 막힌다
+  const key = `게시 완료 ${stamp} ${slot}`;
   if (publish && fs.existsSync(LOG)) {
-    const done = fs.readFileSync(LOG, "utf8").split("\n")
-      .some(l => l.includes(`게시 완료 ${stamp}`));
-    if (done) { log(`이미 오늘(${stamp}) 게시했다. 건너뛴다.`); return; }
+    const done = fs.readFileSync(LOG, "utf8").split("\n").some(l => l.includes(key));
+    if (done) { log(`이미 오늘(${stamp}) ${slot} 게시했다. 건너뛴다.`); return; }
   }
 
-  log("── 시작 ──");
+  log(`── 시작 (${slot}) ──`);
 
-  const text = run("threads_daily.js").replace(/^━━━[^\n]*━━━\n+/, "").trim();
+  const gen = slot === "pm" ? "threads_bank.js" : "threads_daily.js";
+  const text = run(gen).replace(/^━━━[^\n]*━━━\n+/, "").trim();
   log(`원고 ${text.length}자`);
 
-  run("threads_card.js");
-  const shot = run("threads_shot.js").trim();
-  log(shot.replace(/^저장: /, "카드 "));
+  // 카드는 아침 일진용이다. 저녁 소재는 은행 이미지(img/social)를 쓴다
+  if (slot === "am") {
+    run("threads_card.js");
+    const shot = run("threads_shot.js").trim();
+    log(shot.replace(/^저장: /, "카드 "));
+  }
 
   if (!publish) {
     log("원고·카드까지만 했다. 게시하려면 --publish 를 붙여라.");
@@ -64,13 +71,14 @@ function run(script, args = []) {
   // 게시는 전용 스크립트에 맡긴다 — 계정 확인·500자 가드가 거기 있다
   try {
     if (useBrowser) {
-      const out = run("threads_browser.js", ["--publish"]);
-      if (/게시 확인 OK/.test(out)) log(`게시 완료 ${stamp} · 브라우저`);
-      else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
+      const out = run("threads_browser.js", slot === "pm" ? ["--publish", "--pm"] : ["--publish"]);
+      if (/게시 확인 OK/.test(out)) {
+        log(`${key} · 브라우저${/첫 댓글 OK/.test(out) ? " · 댓글" : " · 댓글실패"}`);
+      } else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
     } else {
       const out = run("threads_post.js", ["--publish"]);
       const id = (out.match(/post id = (\S+)/) || [])[1];
-      if (id) log(`게시 완료 ${stamp} · post id ${id}`);
+      if (id) log(`${key} · post id ${id}`);
       else { log("게시 결과를 확인하지 못했다:"); log(out.trim()); }
     }
   } catch (e) {

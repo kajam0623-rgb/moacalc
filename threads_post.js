@@ -37,13 +37,22 @@ function loadEnv() {
   return out;
 }
 
-// 오늘 원고를 새로 뽑는다. 파일이 오래됐을 수 있으니 매번 생성한다
+// 오늘 원고를 새로 뽑는다. 파일이 오래됐을 수 있으니 매번 생성한다.
+// --pm 이면 저녁 슬롯(후킹 소재 은행) 원고를 쓴다
 function todayText() {
-  execFileSync("node", [path.join(ROOT, "threads_daily.js")], { cwd: ROOT, stdio: "pipe" });
-  const raw = fs.readFileSync(path.join(ROOT, "threads-today.txt"), "utf8");
+  const pm = process.argv.includes("--pm");
+  const gen = pm ? "threads_bank.js" : "threads_daily.js";
+  const out = pm ? "threads-today-pm.txt" : "threads-today.txt";
+  execFileSync("node", [path.join(ROOT, gen)], { cwd: ROOT, stdio: "pipe" });
+  const raw = fs.readFileSync(path.join(ROOT, out), "utf8");
   // "━━━ 날짜 · 간지 ━━━" 머리말은 확인용이라 게시에서는 뺀다
   return raw.replace(/^━━━[^\n]*━━━\n+/, "").trim();
 }
+
+/* 아직 없는 것: 첫 댓글에 주소 달기.
+   본문에서 링크를 뺐으므로(도달 때문) 주소는 댓글이 맡아야 하는데,
+   API로 자기 글에 답글을 다는 파라미터를 공식 문서에서 확인하지 못했다.
+   토큰이 생기면 그때 확인하고 붙인다. 브라우저 경로에는 이미 있다. */
 
 async function post(url, params) {
   const body = new URLSearchParams(params);

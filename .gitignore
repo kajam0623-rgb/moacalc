@@ -9,5 +9,6 @@ _*.png
 .env.local
 .chrome-threads/
 threads-today.txt
+threads-today-pm.txt
 card-out/
 threads-log.txt
