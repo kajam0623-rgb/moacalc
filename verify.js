@@ -390,7 +390,8 @@ if (missing.length) console.log("   ⚠ height:auto 누락:", missing.join(", ")
 
 // 조립 변수 뒤에 조사를 붙일 때 josa()를 안 쓰면 "화이/수이/사은" 같은 오류가 화면에 나온다.
 // 오행·십이운성처럼 받침이 섞인 값을 담는 표현식 바로 뒤에 조사 리터럴이 오는지 소스에서 잡는다.
-const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel|\\byEl|\\by2El|\\bluckEl|\\bgyeok|\\bs1)";
+// WEAK[..]: 장부 이름은 받침이 섞여 있다. "피부과 이어져"가 실제로 화면에 나갔었다
+const JVAR = "(?:SJ_EL\\[[^\\]]+\\]|SJ_UN\\[[^\\]]+\\]|WEAK\\[[^\\]]+\\]|\\bmn|\\bmx|\\bun|\\brel|\\byEl|\\by2El|\\bluckEl|\\bgyeok|\\bs1)";
 const hardJosa = [...toolsSrc.matchAll(new RegExp(JVAR + "\\s*\\+\\s*[\"'](?:이|은|을|과|가|는|를|와)(?=[\\s\"'])", "g"))].map(m => m[0].replace(/\s+/g, ""));
 t("조립 변수 뒤 하드코딩 조사 없음 (josa 사용)", hardJosa.length, 0);
 if (hardJosa.length) console.log("   ⚠ 조사 하드코딩:", hardJosa.join(" | "));
