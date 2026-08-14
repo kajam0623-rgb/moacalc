@@ -18,6 +18,15 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     Array.from({length:24},function(_,i){var sv=loadPrefs().birthHour!=null?+loadPrefs().birthHour:12;return '<option value="'+i+'"'+(i===sv?' selected':'')+'>'+String(i).padStart(2,"0")+"시</option>";}).join("")+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m"'+(loadPrefs().gender==="f"?"":" selected")+'>남</option><option value="f"'+(loadPrefs().gender==="f"?" selected":"")+'>여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
+    // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
+    '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
+      '<option value="all">전체 다 보기</option>'+
+      '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
+      '<option value="job">일·사업 — 지금 하는 일을 언제까지</option>'+
+      '<option value="love">인연 — 언제 만나나</option>'+
+      '<option value="health">건강 — 어디를 조심하나</option>'+
+    '</select></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
@@ -30,6 +39,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value});
       track("fortune_view",{tool:"saju"});
       var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
+      var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
       var p=sjPillars(y,mo,d,h,0,corr),ds=p.d.s;
       // 오행 카운트
@@ -121,11 +131,76 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         var cur=dd.age===duNow.age;
         return '<p style="margin:0 0 12px">'+(cur?'▶ ':'')+'<b>'+dd.age+'세 ~ '+(dd.age+9)+'세</b> · '+dd.g+' · '+dd.tg+' ('+dd.el+')'+
           (cur?' <b style="color:var(--fun-ink)">지금 여기</b>':'')+'<br>'+DUTXT[dd.tg]+' '+duFit(dd.el)+'</p>';}).join("");
+
+      /* 물음에 답하는 자리.
+         사람들은 명식표를 보러 오지 않는다. "언제"와 "그래서 뭘"을 보러 온다.
+         둘 다 이미 계산돼 있는데 여태 표로만 흩어놓고 있었다.
+         주제에 맞는 십성 무리와 용신이 함께 드는 대운 구간을 골라 답으로 만든다. */
+      var QMETA={
+        money:{t:"재물",grp:["재성"],why:"재성이 돈이 들어오는 자리라 그렇네.",
+          plan:"그때까지는 새는 자리를 막고 종잣돈을 모아두게. 그릇을 먼저 키워야 큰돈이 담기네."},
+        job:{t:"일·사업",grp:["관성","식상"],why:"관성은 자리와 책임을, 식상은 만들어 내놓는 힘을 뜻하네.",
+          plan:"그때를 겨냥해 사람과 시스템을 미리 갖춰두게. 혼자 뛰는 방식으로는 그 판을 못 받네."},
+        love:{t:"인연",grp:[male?"재성":"관성"],why:male?"남자 사주에서는 재성이 배우자 자리라 그렇네.":"여자 사주에서는 관성이 배우자 자리라 그렇네.",
+          plan:"그때까지는 자네 결을 다져두게. 준비된 사람한테 인연이 오는 법일세."},
+        health:{t:"건강",grp:[],why:"몸은 용신이 채워지는 때에 편해지는 법일세.",
+          plan:"그 전까지가 고비일세. 무리를 줄이고 잠을 먼저 지키게."}
+      };
+      function span(dd){return dd.age+"세~"+(dd.age+9)+"세";}
+      // 큰 흐름이 지났을 때, 지금 구간이 무엇에 좋은지로 답을 돌려주기 위한 표
+      var GRP_GOOD={비겁:"사람과 자립",식상:"만들어 내놓는 일",재성:"재물",관성:"자리와 이름",인성:"배움과 문서"};
+      function focusBlock(){
+        if(!QMETA[Q])return "";
+        var M=QMETA[Q], nowAge=new Date().getFullYear()-y+1;
+        var inGrp=function(dd){return M.grp.indexOf(grp(dd.tg))>=0;};
+        var inYong=function(dd){return dd.el===yEl||dd.el===y2El;};
+        /* 조건을 느슨하게 잡으면 여덟 구간이 전부 "좋은 때"로 나온다. 그건 답이 아니다.
+           십성과 용신이 함께 드는 구간을 먼저 찾고, 없을 때만 십성 하나로 내려간다.
+           건강은 해당 십성이 없으니 용신으로만 본다. */
+        var both=duList.filter(function(dd){return inGrp(dd)&&inYong(dd);});
+        var loose=duList.filter(function(dd){return M.grp.length?inGrp(dd):inYong(dd);});
+        var pool=both.length?both:loose;
+        // 앞에서부터 자르면 다 지나간 어린 시절 구간만 뽑힌다. 아직 남은 때를 먼저 보여준다
+        var future=pool.filter(function(dd){return dd.age+9>=nowAge;});
+        var pick=(future.length?future:pool).slice(0,3), tight=both.length>0;
+        var nowIn=pool.some(function(dd){return dd.age===duNow.age;});
+        var next=pool.filter(function(dd){return dd.age>nowAge;})[0];   // 아직 시작 안 한 구간만
+        return '<div class="sj-sec" style="border:1px solid var(--fun-ink);border-radius:12px;padding:14px 16px">'+
+          '<h3 style="margin-top:0">자네가 물은 것 — '+M.t+'</h3>'+
+          '<p>지금은 <b>'+span(duNow)+'</b>, '+duNow.tg+'('+grp(duNow.tg)+') 대운일세. '+
+          (nowIn?'<b>지금이 바로 그때일세.</b> '+M.t+'에 볕이 드는 구간 안에 들어와 있네.'
+                :'물은 '+M.t+'과는 직접 닿지 않는 구간이야. 지금은 힘을 모으는 때일세.')+'</p>'+
+          (pick.length
+            ?'<p>여든까지 여덟 구간 가운데 '+M.t+'에 볕이 드는 때는 <b>'+pick.map(span).join(" · ")+'</b>일세. '+
+              (tight?'십성과 용신이 함께 드는 구간이라 그중에서도 힘이 실리네. ':'')+M.why+'</p>'
+            :'<p>여덟 구간에 '+M.t+'과 곧바로 닿는 때는 뚜렷하지 않네. 큰 흐름보다 해마다의 운으로 갈리는 짜임일세.</p>')+
+          // 구간 표기는 늘 "…세"로 끝나 받침이 없다. 조사는 항상 "는"이다
+          /* 여기서 "지나왔다"로 끝내면 안 된다. 대운 여덟 구간은 여든까지일 뿐이고,
+             큰 흐름이 지났다면 지금 구간이 무엇에 좋은지로 답을 돌려줘야 한다. */
+          (next?'<p>다음으로 열리는 때는 <b>'+next.age+'세</b>부터일세. '+M.plan+'</p>'
+               :(nowIn?'<p>지금 구간이 그 마지막일세. 이때를 흘려보내지 말게. '+M.plan+'</p>'
+                      :'<p>큰 흐름으로 보면 '+M.t+josa(M.t,"의/의")+' 때는 지나왔네. 다만 지금은 '+duNow.tg+
+                        ' 대운이라 <b>'+GRP_GOOD[grp(duNow.tg)]+'</b>에 힘이 실리는 때일세. '+
+                        M.t+josa(M.t,"는/은")+' 큰 흐름보다 해마다 드는 운에서 갈리니 그쪽을 봐야 하네.</p>'))+
+          '<p>어느 때든 자네를 받치는 건 용신 '+yEl+'일세. '+Y.act+' — 이런 걸 곁에 두게.</p>'+
+          '<span style="color:var(--muted);font-size:12.5px">대운의 십성과 오행을 용신과 대조해 고른 구간입니다. 아래에 항목별 풀이가 이어집니다.</span></div>';
+      }
+
+      // 물은 주제를 맨 앞으로 올린다. 계산은 그대로고 순서만 바꾼다
+      var SEC={
+        money:'<div class="sj-sec"><h3>재물운</h3><p>'+money+'</p></div>',
+        job:'<div class="sj-sec"><h3>직업운</h3><p>'+job+'</p></div>',
+        love:'<div class="sj-sec"><h3>애정운</h3><p>'+love+'</p></div>',
+        health:'<div class="sj-sec"><h3>건강운</h3><p>'+health+'</p></div>'};
+      var ORDER=["money","job","love","health"];
+      if(QMETA[Q])ORDER=[Q].concat(ORDER.filter(function(k){return k!==Q;}));
+      var secFortune=ORDER.map(function(k){return SEC[k];}).join("");
       el.querySelector("#out").innerHTML=
         '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>'+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
         '<div class="s">돕는 기운 '+Math.round(st.ratio*100)+'% · 보조용신 '+y2El+'</div></div>'+
+        focusBlock()+
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
@@ -139,10 +214,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.</p></div>'+
         '<div class="sj-sec"><h3>용신 '+yEl+' 활용법</h3><p>· 색: <b>'+Y.color+'</b>  · 방향: <b>'+Y.dir+'</b>  · 계절: '+Y.season+'<br>· 잘 맞는 일: '+Y.job+'<br>· 도움이 되는 활동: '+Y.act+'</p></div>'+
-        '<div class="sj-sec"><h3>재물운</h3><p>'+money+'</p></div>'+
-        '<div class="sj-sec"><h3>직업운</h3><p>'+job+'</p></div>'+
-        '<div class="sj-sec"><h3>애정운</h3><p>'+love+'</p></div>'+
-        '<div class="sj-sec"><h3>건강운</h3><p>'+health+'</p></div>'+
+        secFortune+
         '<div class="sj-sec"><h3>오행 균형</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.</p></div>'+
         '<div class="sj-sec"><h3>십성 분포</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br>비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</p></div>'+
         '<div class="sj-sec"><h3>대운 (10년 주기 · '+(fwd?"순행":"역행")+')</h3><div class="sj-daeun">'+duHtml+'</div>'+
