@@ -437,6 +437,30 @@
   .tr-read .one{border-left:3px solid var(--fun);padding:2px 0 2px 12px;margin:12px 0;}
   .tr-read .one b{font-size:13.5px;}
   .tr-read .one p{font-size:13px;color:var(--muted);line-height:1.75;margin-top:3px;}
+  /* 인쇄 = 결과지. 종이에 남는 건 풀이뿐이고 화면용 장치는 전부 뺀다.
+     다크 모드로 보던 사람이 그대로 인쇄하면 검은 바탕이 찍히므로
+     변수를 밝은 값으로 덮어 테마와 상관없이 흰 종이가 나오게 한다. */
+  @media print{
+    :root{--bg:#fff;--surface:#fff;--surface-2:#fff;--ink:#111;--muted:#555;
+          --line:#ddd;--line-2:#ccc;--accent-weak:#f3f4f9;--on-accent:#111}
+    .back,.trust,.tags,.guide,.sibs,.foot,.crumb,.share,.adbox,
+    .intro,.exbox,.faq,.rail,.rcard,.sitenav,.sfoot{display:none!important}
+    /* 폼은 항목을 하나씩 지우면 새 입력칸이 생길 때마다 샌다.
+       결과지에 남길 건 #out 하나뿐이니 나머지를 통째로 지운다. */
+    .card.tool>*{display:none!important}
+    .card.tool>#out{display:block!important}
+    #pdf{display:none!important}
+    body{background:#fff}
+    .wrap,.shell,main{max-width:none;margin:0;padding:0}
+    .card{border:none;box-shadow:none;padding:0;background:#fff}
+    .toolhero img{display:none}
+    .sj-sec,.sj-grid,.out{break-inside:avoid;page-break-inside:avoid}
+    a{color:inherit;text-decoration:none}
+    #out::after{content:"무료 사주는 동네보살 · dongnebosal.com";display:block;
+      text-align:center;margin-top:20px;padding-top:12px;border-top:1px solid #ddd;
+      color:#666;font-size:12px}
+    @page{margin:14mm}
+  }
 .intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}
 .trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}
 .trust span{font-size:11.5px;font-weight:700;letter-spacing:0;color:var(--fun-ink);background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}
