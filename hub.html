@@ -1689,13 +1689,20 @@
       var nowD=new Date();
       var seP=sjPillars(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0,false);
       var seTg=sjTenGod(ds,seP.y.s), seEl=SJ_EL[SJ_ES[seP.y.s]];
-      var seSec='<div class="sj-sec"><h3>올해 세운 — '+nowD.getFullYear()+' '+
+      /* 간지는 입춘에 넘어가는데 제목에 양력 연도를 그대로 쓰면
+         1월 1일부터 입춘까지 약 5주 동안 "2026 을사년"처럼 어긋난 짝이 나온다.
+         간지가 가리키는 해를 따로 구해 쓴다. */
+      var seJd=sjJdKST(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0);
+      var seBefore=seJd<sjIpchun(nowD.getFullYear());
+      var seYear=seBefore?nowD.getFullYear()-1:nowD.getFullYear();
+      var seSec='<div class="sj-sec"><h3>올해 세운 — '+seYear+' '+
         SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</h3>'+
         '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+')일세. 자네 일간에게는 <b>'+seTg+'</b>에 해당하네.<br><br>'+
         DUTXT[seTg]+' '+duFit(seEl,"해")+'<br><br>'+
         '대운이 십 년의 큰 결이라면 세운은 그해의 결일세. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, '+
         '큰 흐름이 얇아도 그해가 받쳐주면 일이 되네. 두 개를 겹쳐 봐야 그해의 무게가 나오는 게야.'+
-        '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 연주를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.</span></p></div>';
+        '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 연주를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
+        (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p></div>';
 
       // 십성 분포는 숫자만 나열돼 있었다. 어느 축으로 사는 사람인지까지 읽어준다
       var GRP_MEAN={비겁:"내 힘과 사람",식상:"표현과 재능",재성:"현실 감각과 돈",관성:"책임과 자리",인성:"배움과 받는 힘"};
