@@ -1603,10 +1603,13 @@
       var DUTXT={"비견":"자립과 동료의 시기일세. 제 힘으로 밀고 나가기 좋으나 동업은 경계를 분명히 하게.","겁재":"경쟁과 지출의 시기야. 사람은 얻되 돈은 새기 쉬우니 관리가 핵심일세.","식신":"표현과 결실의 시기일세. 만들고 낳는 일에 볕이 들고 몸도 편안하네.","상관":"변화와 도전의 시기야. 틀을 깨는 힘이 강하나 윗사람과의 마찰은 조심하게.","편재":"큰돈이 오가는 시기일세. 기회가 많은 만큼 흔들림도 크네.","정재":"안정과 축적의 시기야. 성실함이 그대로 자산이 되네.","편관":"시험과 승부의 시기일세. 부담이 크지만 통과하면 급이 오르네.","정관":"명예와 자리의 시기야. 승진이든 합격이든 공적인 인정운이 밝네.","편인":"공부와 전환의 시기일세. 속으로 자라는 때이니 결정은 좀 묵혔다 내리게.","정인":"귀인과 문서의 시기야. 어른과 기관의 도움, 그리고 배움이 따르네."};
       /* 대운 구간별 해설. 간지만 늘어놓으면 자기 구간을 못 찾는다.
          구간마다 십성 뜻과, 그 구간이 용신에 맞는지까지 짚는다 — 둘 다 계산값이다. */
-      function duFit(e){
-        return e===yEl?"용신 "+yEl+josa(yEl,"와/과")+" 같은 기운이라 <b>순하게 풀리는 구간</b>일세."
-          :e===y2El?"보조용신 "+y2El+josa(y2El,"와/과")+" 같은 기운이라 <b>도움이 붙는 구간</b>이야."
-          :"용신과는 결이 다른 구간이니 <b>벌이기보다 다지는 때</b>로 삼게.";}
+      // u: 대운이면 "구간", 세운이면 "해". 같은 문장을 쓰면 세운을 구간이라 부르게 된다
+      function duFit(e,u){
+        u=u||"구간";
+        return e===yEl?"용신 "+yEl+josa(yEl,"와/과")+" 같은 기운이라 <b>순하게 풀리는 "+u+"</b>일세."
+          // u가 "구간"이면 받침이 있고 "해"면 없다. 조사를 박아두면 "해이야"가 나온다
+          :e===y2El?"보조용신 "+y2El+josa(y2El,"와/과")+" 같은 기운이라 <b>도움이 붙는 "+u+"</b>"+josa(u,"야/이야")+"."
+          :"용신과는 결이 다른 "+u+josa(u,"라/이라")+" <b>벌이기보다 다지는 때</b>로 삼게.";}
       var duDetail=duList.map(function(dd){
         var cur=dd.age===duNow.age;
         return '<p style="margin:0 0 12px">'+(cur?'▶ ':'')+'<b>'+dd.age+'세 ~ '+(dd.age+9)+'세</b> · '+dd.g+' · '+dd.tg+' ('+dd.el+')'+
@@ -1680,6 +1683,39 @@
       if(QMETA[Q])ORDER=[Q].concat(ORDER.filter(function(k){return k!==Q;}));
       var secFortune=ORDER.map(function(k){return SEC[k];}).join("");
 
+      /* 올해 세운. 앞에서 "해마다 드는 운에서 갈리니 그쪽을 보라"고 해놓고
+         정작 보여주지 않으면 말이 빈다. 오늘 날짜로 사주를 한 번 더 세워 연주를 가져온다.
+         해가 입춘에 바뀌는 처리는 sjPillars가 이미 한다. */
+      var nowD=new Date();
+      var seP=sjPillars(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0,false);
+      var seTg=sjTenGod(ds,seP.y.s), seEl=SJ_EL[SJ_ES[seP.y.s]];
+      var seSec='<div class="sj-sec"><h3>올해 세운 — '+nowD.getFullYear()+' '+
+        SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</h3>'+
+        '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+')일세. 자네 일간에게는 <b>'+seTg+'</b>에 해당하네.<br><br>'+
+        DUTXT[seTg]+' '+duFit(seEl,"해")+'<br><br>'+
+        '대운이 십 년의 큰 결이라면 세운은 그해의 결일세. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, '+
+        '큰 흐름이 얇아도 그해가 받쳐주면 일이 되네. 두 개를 겹쳐 봐야 그해의 무게가 나오는 게야.'+
+        '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 연주를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.</span></p></div>';
+
+      // 십성 분포는 숫자만 나열돼 있었다. 어느 축으로 사는 사람인지까지 읽어준다
+      var GRP_MEAN={비겁:"내 힘과 사람",식상:"표현과 재능",재성:"현실 감각과 돈",관성:"책임과 자리",인성:"배움과 받는 힘"};
+      var gTop=Object.keys(G).sort(function(a,b){return G[b]-G[a];})[0];
+      var gZero=Object.keys(G).filter(function(k){return G[k]===0;});
+      var gTxt='가장 두터운 자리는 <b>'+gTop+'</b>('+GRP_MEAN[gTop]+')일세. 자네 삶이 그 축으로 굴러간다는 뜻이야.'+
+        (gZero.length
+          ?' 반대로 '+gZero.join("·")+josa(gZero[gZero.length-1],"가/이")+' 비어 있네. 없는 자리는 평생 목마른 자리라, '+
+            '그쪽을 채워주는 사람이나 일을 곁에 두면 숨통이 트이네.'
+          :' 다섯 자리가 고루 들어 어느 한쪽으로도 치우치지 않는 짜임일세. 무난한 대신 뾰족한 무기는 스스로 만들어야 하네.');
+
+      // 용신 활용법이 목록만 있었다. 왜 이 기운인지와 어떻게 쓰는지를 붙인다
+      var yongWhy=(st.strong
+        ?'자네는 힘이 넘치는 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 그 힘을 밖으로 빼주는 자리일세.'
+        :'자네는 힘이 얇은 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 자네를 받쳐 채워주는 자리일세.')+
+        ' 타고난 걸 억지로 바꾸라는 말이 아니야. 이 기운이 도는 자리에 몸을 두라는 말일세.';
+      var yongHow='옷이나 물건은 '+Y.color+' 쪽으로, 이사나 사무실은 '+Y.dir+' 방향으로 잡게. '+
+        '큰일은 '+Y.season+'에 벌이면 결이 맞고, 일은 '+Y.job+' 쪽이 몸에 붙네. '+
+        '지칠 땐 이런 걸로 기운을 돌리게 — '+Y.act+'.';
+
       /* 제목과 맺음말.
          여태 결과가 항목 나열로 시작해 나열로 끝났다. 읽는 사람은 자기 얘기가
          어떤 그림인지 먼저 보고, 마지막엔 사람 말 한마디를 듣고 싶어 한다.
@@ -1713,7 +1749,10 @@
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
         '<div class="sj-sec"><h3>일간 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'</p></div>'+
-        '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
+        '<div class="sj-sec"><h3>격국 — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>격국은 타고난 그릇의 모양일세. '+
+        (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
+                  :'자네는 힘이 얇으니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.')+
+        '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>신살</h3><p>두드러진 신살이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
@@ -1721,10 +1760,14 @@
         '<div class="sj-sec"><h3>신강·신약과 용신</h3><p>일간을 돕는 기운이 '+Math.round(st.ratio*100)+'%로 <b>'+(st.strong?"신강":"신약")+'</b>한 사주일세. '+
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.</p></div>'+
-        '<div class="sj-sec"><h3>용신 '+yEl+' 활용법</h3><p>· 색: <b>'+Y.color+'</b>  · 방향: <b>'+Y.dir+'</b>  · 계절: '+Y.season+'<br>· 잘 맞는 일: '+Y.job+'<br>· 도움이 되는 활동: '+Y.act+'</p></div>'+
+        '<div class="sj-sec"><h3>용신 '+yEl+' 활용법</h3><p>'+yongWhy+'<br><br>'+
+        '· 색: <b>'+Y.color+'</b>  · 방향: <b>'+Y.dir+'</b>  · 계절: '+Y.season+'<br>· 잘 맞는 일: '+Y.job+'<br>· 도움이 되는 활동: '+Y.act+'<br><br>'+
+        yongHow+'</p></div>'+
         secFortune+
         '<div class="sj-sec"><h3>오행 균형</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.</p></div>'+
-        '<div class="sj-sec"><h3>십성 분포</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br>비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</p></div>'+
+        '<div class="sj-sec"><h3>십성 분포</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br><br>'+
+        gTxt+'<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
+        seSec+
         '<div class="sj-sec"><h3>대운 (10년 주기 · '+(fwd?"순행":"역행")+')</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>대운 구간별 흐름 — 80년</h3>'+duDetail+
