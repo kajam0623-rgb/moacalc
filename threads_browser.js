@@ -41,6 +41,18 @@ const has = f => process.argv.includes(f);
 const mode = has("--login") ? "login" : has("--check") ? "check" : has("--publish") ? "publish" : "fill";
 const slot = has("--pm") ? "pm" : "am";
 
+/* 2026-08-16, 이 스크립트로 자동 게시하던 @dongnebosal1 계정이 비활성화됐다.
+   메타는 브라우저 자동 조작을 약관 위반으로 본다. 재검토 요청도 받지 않는다.
+   그래서 무인 게시는 기본으로 막는다. 다시 쓰려면 위험을 알고 플래그를 붙여야 한다.
+   안전한 길은 API 토큰이다 — threads_post.js 를 봐라. */
+if (mode === "publish" && !has("--i-accept-ban-risk")) {
+  console.error("중단: 브라우저 무인 게시는 막아 뒀다.");
+  console.error("2026-08-16 이 경로로 돌리던 계정이 약관 위반으로 비활성화됐다. 복구는 불가였다.");
+  console.error("그래도 돌리려면 --i-accept-ban-risk 를 붙여라. 권하지 않는다.");
+  console.error("위험이 없는 길은 API 토큰이다: node threads_post.js --publish");
+  process.exit(1);
+}
+
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const intent = (text, extra = "") =>
   `https://www.threads.com/intent/post?text=${encodeURIComponent(text)}${extra}`;
