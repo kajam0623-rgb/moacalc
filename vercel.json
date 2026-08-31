@@ -14,6 +14,12 @@
       "destination": "https://dongnebosal.com/$1",
       "statusCode": 301
     },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "moacalc.vercel.app" }],
+      "destination": "https://dongnebosal.com/$1",
+      "statusCode": 301
+    },
     { "source": "/lotto.html", "destination": "/", "statusCode": 301 },
     { "source": "/draw.html", "destination": "/", "statusCode": 301 },
     { "source": "/ladder.html", "destination": "/", "statusCode": 301 }
