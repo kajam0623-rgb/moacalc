@@ -1494,7 +1494,9 @@ chunks.forEach(c => { try { new Function("TOOLS.push(" + c.src + ");"); } catch 
 // 캐시 무효화: js/css는 장기 캐시되므로 내용 해시를 쿼리로 붙인다 (파일명 고정 + ?v=해시)
 const hash8 = s => require("crypto").createHash("md5").update(s).digest("hex").slice(0, 8);
 const coreV = hash8(coreJs);
-chunks.forEach(c => c.v = hash8(c.src));
+chunks.forEach(c => c.v = hash8(c.id === "lunar"
+  ? fs.readFileSync(path.join(__dirname, "vendor-lunar.js"), "utf8") + c.src
+  : c.src));
 
 // 사이트맵 + robots
 // lastmod가 없으면 크롤러가 재방문 시점을 잡을 근거가 없다. 빌드일을 찍는다.
@@ -1587,7 +1589,11 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
 const styleV = hash8(css+extraCss);
 fs.writeFileSync(path.join(OUT,"style.css"), css+extraCss);
 fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
-chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"), "TOOLS.push("+c.src+");"));
+// 음력 변환은 KASI 기준 구현(MIT)이 필요하다. core.js에 넣으면 모든 페이지가 받으므로
+// 그 도구 청크 앞에만 붙인다.
+const VENDOR_LUNAR = fs.readFileSync(path.join(__dirname, "vendor-lunar.js"), "utf8");
+chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"),
+  (c.id === "lunar" ? VENDOR_LUNAR + "\n" : "") + "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
