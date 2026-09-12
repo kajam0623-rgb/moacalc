@@ -14,7 +14,7 @@
 
 - [사주팔자 만세력](https://dongnebosal.com/saju.html): 생년월일과 시각으로 사주팔자를 뽑고 격국·신살·십이운성·신강신약·용신, 재물운·직업운·애정운·건강운, 대운 흐름까지 무료로 풀이합니다. 절기(태양황경) 기반 만세력과 진태양시 보정을 적용한 정통 방
 - [오늘의 운세](https://dongnebosal.com/todayfortune.html): 생년월일만 넣으면 오늘의 일진(일 간지)과 내 일간의 십성 관계로 오늘의 총운·애정·재물·직장·건강운과 행운의 색·방위·숫자·시간까지 풀이합니다. 매일 자정 일진이 바뀌는 정통 명리 방식 무료 운세
-- [별자리 운세](https://dongnebosal.com/horoscope.html): 생년월일을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐름을 봅
+- [별자리 운세](https://dongnebosal.com/horoscope.html): 생년월일(양력)을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐
 - [띠별 운세](https://dongnebosal.com/zodiacfortune.html): 띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 12띠 오늘의 운세를 풀이합니다. 총운·재물·애정·조언과 행운의 색·방위·숫자, 2026 병오년 한 해 흐름까지 무료로 확인하세요.
 - [궁합 보기](https://dongnebosal.com/gunghap.html): 두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합한 무료 사주 궁합을 봅니다.
 - [별자리 궁합](https://dongnebosal.com/stargunghap.html): 두 사람의 별자리를 고르면 원소(불·흙·공기·물) 관계, 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합해 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다. 무료 별자리 
@@ -77,6 +77,72 @@
 - [정관(正官)](https://dongnebosal.com/sipseong-jeonggwan.html): 나를 극하는 오행 중 음양이 다른 글자 · 질서와 명예의 기운
 - [편인(偏印)](https://dongnebosal.com/sipseong-pyeonin.html): 나를 낳는 오행 중 음양이 같은 글자 · 직관과 사색의 기운
 - [정인(正印)](https://dongnebosal.com/sipseong-jeongin.html): 나를 낳는 오행 중 음양이 다른 글자 · 귀인과 배움의 기운
+
+## 일진별 상세 (60) — 날에 붙는 간지
+
+일진은 60일마다 돌아온다. 같은 일진이라도 사람마다 결과가 갈리는 것은, 그날 천간이 각자의 일간에게 다른 십성이 되기 때문이다. 아래 각 페이지에 일간 열 가지의 십성·점수·십이운성이 계산되어 있다.
+
+- [일진 달력 — 오늘 일진](https://dongnebosal.com/iljin.html): 60갑자 전체 목록과 오늘 일진
+- [갑자일(甲子)](https://dongnebosal.com/iljin-gapja.html): 갑목·자수 · 밑에서 받쳐주는 날 · 충 말띠 · 삼합 쥐·용·원숭이띠
+- [을축일(乙丑)](https://dongnebosal.com/iljin-eulchuk.html): 을목·축토 · 밀어붙여 얻는 날 · 충 양띠 · 삼합 소·뱀·닭띠
+- [병인일(丙寅)](https://dongnebosal.com/iljin-byeongin.html): 병화·인목 · 밑에서 받쳐주는 날 · 충 원숭이띠 · 삼합 호랑이·말·개띠
+- [정묘일(丁卯)](https://dongnebosal.com/iljin-jeongmyo.html): 정화·묘목 · 밑에서 받쳐주는 날 · 충 닭띠 · 삼합 토끼·양·돼지띠
+- [무진일(戊辰)](https://dongnebosal.com/iljin-mujin.html): 무토·진토 · 기운이 한쪽으로 몰리는 날 · 충 개띠 · 삼합 용·원숭이·쥐띠
+- [기사일(己巳)](https://dongnebosal.com/iljin-gisa.html): 기토·사화 · 밑에서 받쳐주는 날 · 충 돼지띠 · 삼합 뱀·닭·소띠
+- [경오일(庚午)](https://dongnebosal.com/iljin-gyeongo.html): 경금·오화 · 눌려서 정리되는 날 · 충 쥐띠 · 삼합 말·개·호랑이띠
+- [신미일(辛未)](https://dongnebosal.com/iljin-sinmi.html): 신금·미토 · 밑에서 받쳐주는 날 · 충 소띠 · 삼합 양·돼지·토끼띠
+- [임신일(壬申)](https://dongnebosal.com/iljin-imsin.html): 임수·신금 · 밑에서 받쳐주는 날 · 충 호랑이띠 · 삼합 원숭이·쥐·용띠
+- [계유일(癸酉)](https://dongnebosal.com/iljin-gyeyu.html): 계수·유금 · 밑에서 받쳐주는 날 · 충 토끼띠 · 삼합 닭·소·뱀띠
+- [갑술일(甲戌)](https://dongnebosal.com/iljin-gapsul.html): 갑목·술토 · 밀어붙여 얻는 날 · 충 용띠 · 삼합 개·호랑이·말띠
+- [을해일(乙亥)](https://dongnebosal.com/iljin-eulhae.html): 을목·해수 · 밑에서 받쳐주는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
+- [병자일(丙子)](https://dongnebosal.com/iljin-byeongja.html): 병화·자수 · 눌려서 정리되는 날 · 충 말띠 · 삼합 쥐·용·원숭이띠
+- [정축일(丁丑)](https://dongnebosal.com/iljin-jeongchuk.html): 정화·축토 · 가진 것을 내주는 날 · 충 양띠 · 삼합 소·뱀·닭띠
+- [무인일(戊寅)](https://dongnebosal.com/iljin-muin.html): 무토·인목 · 눌려서 정리되는 날 · 충 원숭이띠 · 삼합 호랑이·말·개띠
+- [기묘일(己卯)](https://dongnebosal.com/iljin-gimyo.html): 기토·묘목 · 눌려서 정리되는 날 · 충 닭띠 · 삼합 토끼·양·돼지띠
+- [경진일(庚辰)](https://dongnebosal.com/iljin-gyeongjin.html): 경금·진토 · 밑에서 받쳐주는 날 · 충 개띠 · 삼합 용·원숭이·쥐띠
+- [신사일(辛巳)](https://dongnebosal.com/iljin-sinsa.html): 신금·사화 · 눌려서 정리되는 날 · 충 돼지띠 · 삼합 뱀·닭·소띠
+- [임오일(壬午)](https://dongnebosal.com/iljin-imo.html): 임수·오화 · 밀어붙여 얻는 날 · 충 쥐띠 · 삼합 말·개·호랑이띠
+- [계미일(癸未)](https://dongnebosal.com/iljin-gyemi.html): 계수·미토 · 눌려서 정리되는 날 · 충 소띠 · 삼합 양·돼지·토끼띠
+- [갑신일(甲申)](https://dongnebosal.com/iljin-gapsin.html): 갑목·신금 · 눌려서 정리되는 날 · 충 호랑이띠 · 삼합 원숭이·쥐·용띠
+- [을유일(乙酉)](https://dongnebosal.com/iljin-eulyu.html): 을목·유금 · 눌려서 정리되는 날 · 충 토끼띠 · 삼합 닭·소·뱀띠
+- [병술일(丙戌)](https://dongnebosal.com/iljin-byeongsul.html): 병화·술토 · 가진 것을 내주는 날 · 충 용띠 · 삼합 개·호랑이·말띠
+- [정해일(丁亥)](https://dongnebosal.com/iljin-jeonghae.html): 정화·해수 · 눌려서 정리되는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
+- [무자일(戊子)](https://dongnebosal.com/iljin-muja.html): 무토·자수 · 밀어붙여 얻는 날 · 충 말띠 · 삼합 쥐·용·원숭이띠
+- [기축일(己丑)](https://dongnebosal.com/iljin-gichuk.html): 기토·축토 · 기운이 한쪽으로 몰리는 날 · 충 양띠 · 삼합 소·뱀·닭띠
+- [경인일(庚寅)](https://dongnebosal.com/iljin-gyeongin.html): 경금·인목 · 밀어붙여 얻는 날 · 충 원숭이띠 · 삼합 호랑이·말·개띠
+- [신묘일(辛卯)](https://dongnebosal.com/iljin-sinmyo.html): 신금·묘목 · 밀어붙여 얻는 날 · 충 닭띠 · 삼합 토끼·양·돼지띠
+- [임진일(壬辰)](https://dongnebosal.com/iljin-imjin.html): 임수·진토 · 눌려서 정리되는 날 · 충 개띠 · 삼합 용·원숭이·쥐띠
+- [계사일(癸巳)](https://dongnebosal.com/iljin-gyesa.html): 계수·사화 · 밀어붙여 얻는 날 · 충 돼지띠 · 삼합 뱀·닭·소띠
+- [갑오일(甲午)](https://dongnebosal.com/iljin-gapo.html): 갑목·오화 · 가진 것을 내주는 날 · 충 쥐띠 · 삼합 말·개·호랑이띠
+- [을미일(乙未)](https://dongnebosal.com/iljin-eulmi.html): 을목·미토 · 밀어붙여 얻는 날 · 충 소띠 · 삼합 양·돼지·토끼띠
+- [병신일(丙申)](https://dongnebosal.com/iljin-byeongsin.html): 병화·신금 · 밀어붙여 얻는 날 · 충 호랑이띠 · 삼합 원숭이·쥐·용띠
+- [정유일(丁酉)](https://dongnebosal.com/iljin-jeongyu.html): 정화·유금 · 밀어붙여 얻는 날 · 충 토끼띠 · 삼합 닭·소·뱀띠
+- [무술일(戊戌)](https://dongnebosal.com/iljin-musul.html): 무토·술토 · 기운이 한쪽으로 몰리는 날 · 충 용띠 · 삼합 개·호랑이·말띠
+- [기해일(己亥)](https://dongnebosal.com/iljin-gihae.html): 기토·해수 · 밀어붙여 얻는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
+- [경자일(庚子)](https://dongnebosal.com/iljin-gyeongja.html): 경금·자수 · 가진 것을 내주는 날 · 충 말띠 · 삼합 쥐·용·원숭이띠
+- [신축일(辛丑)](https://dongnebosal.com/iljin-sinchuk.html): 신금·축토 · 밑에서 받쳐주는 날 · 충 양띠 · 삼합 소·뱀·닭띠
+- [임인일(壬寅)](https://dongnebosal.com/iljin-imin.html): 임수·인목 · 가진 것을 내주는 날 · 충 원숭이띠 · 삼합 호랑이·말·개띠
+- [계묘일(癸卯)](https://dongnebosal.com/iljin-gyemyo.html): 계수·묘목 · 가진 것을 내주는 날 · 충 닭띠 · 삼합 토끼·양·돼지띠
+- [갑진일(甲辰)](https://dongnebosal.com/iljin-gapjin.html): 갑목·진토 · 밀어붙여 얻는 날 · 충 개띠 · 삼합 용·원숭이·쥐띠
+- [을사일(乙巳)](https://dongnebosal.com/iljin-eulsa.html): 을목·사화 · 가진 것을 내주는 날 · 충 돼지띠 · 삼합 뱀·닭·소띠
+- [병오일(丙午)](https://dongnebosal.com/iljin-byeongo.html): 병화·오화 · 기운이 한쪽으로 몰리는 날 · 충 쥐띠 · 삼합 말·개·호랑이띠
+- [정미일(丁未)](https://dongnebosal.com/iljin-jeongmi.html): 정화·미토 · 가진 것을 내주는 날 · 충 소띠 · 삼합 양·돼지·토끼띠
+- [무신일(戊申)](https://dongnebosal.com/iljin-musin.html): 무토·신금 · 가진 것을 내주는 날 · 충 호랑이띠 · 삼합 원숭이·쥐·용띠
+- [기유일(己酉)](https://dongnebosal.com/iljin-giyu.html): 기토·유금 · 가진 것을 내주는 날 · 충 토끼띠 · 삼합 닭·소·뱀띠
+- [경술일(庚戌)](https://dongnebosal.com/iljin-gyeongsul.html): 경금·술토 · 밑에서 받쳐주는 날 · 충 용띠 · 삼합 개·호랑이·말띠
+- [신해일(辛亥)](https://dongnebosal.com/iljin-sinhae.html): 신금·해수 · 가진 것을 내주는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
+- [임자일(壬子)](https://dongnebosal.com/iljin-imja.html): 임수·자수 · 기운이 한쪽으로 몰리는 날 · 충 말띠 · 삼합 쥐·용·원숭이띠
+- [계축일(癸丑)](https://dongnebosal.com/iljin-gyechuk.html): 계수·축토 · 눌려서 정리되는 날 · 충 양띠 · 삼합 소·뱀·닭띠
+- [갑인일(甲寅)](https://dongnebosal.com/iljin-gapin.html): 갑목·인목 · 기운이 한쪽으로 몰리는 날 · 충 원숭이띠 · 삼합 호랑이·말·개띠
+- [을묘일(乙卯)](https://dongnebosal.com/iljin-eulmyo.html): 을목·묘목 · 기운이 한쪽으로 몰리는 날 · 충 닭띠 · 삼합 토끼·양·돼지띠
+- [병진일(丙辰)](https://dongnebosal.com/iljin-byeongjin.html): 병화·진토 · 가진 것을 내주는 날 · 충 개띠 · 삼합 용·원숭이·쥐띠
+- [정사일(丁巳)](https://dongnebosal.com/iljin-jeongsa.html): 정화·사화 · 기운이 한쪽으로 몰리는 날 · 충 돼지띠 · 삼합 뱀·닭·소띠
+- [무오일(戊午)](https://dongnebosal.com/iljin-muo.html): 무토·오화 · 밑에서 받쳐주는 날 · 충 쥐띠 · 삼합 말·개·호랑이띠
+- [기미일(己未)](https://dongnebosal.com/iljin-gimi.html): 기토·미토 · 기운이 한쪽으로 몰리는 날 · 충 소띠 · 삼합 양·돼지·토끼띠
+- [경신일(庚申)](https://dongnebosal.com/iljin-gyeongsin.html): 경금·신금 · 기운이 한쪽으로 몰리는 날 · 충 호랑이띠 · 삼합 원숭이·쥐·용띠
+- [신유일(辛酉)](https://dongnebosal.com/iljin-sinyu.html): 신금·유금 · 기운이 한쪽으로 몰리는 날 · 충 토끼띠 · 삼합 닭·소·뱀띠
+- [임술일(壬戌)](https://dongnebosal.com/iljin-imsul.html): 임수·술토 · 눌려서 정리되는 날 · 충 용띠 · 삼합 개·호랑이·말띠
+- [계해일(癸亥)](https://dongnebosal.com/iljin-gyehae.html): 계수·해수 · 기운이 한쪽으로 몰리는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
 
 ## 사이트 정보
 

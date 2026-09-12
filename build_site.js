@@ -22,6 +22,7 @@ const ZODIAC_PAGES = require("./content_zodiac.js");
 const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
+const ILJIN_SRC = require("./content_iljin.js");         // 일진 60갑자 — 천간10 원고 × 지지12 원고 조합
 
 // 빌드 게이트: verify를 실제로 돌려 통과 수를 카피에 주입한다. 실패하면 빌드 중단.
 let VERIFY_PASS = 0;
@@ -94,7 +95,7 @@ bmr:"성별·키·몸무게·나이로 기초대사량(BMR)과 하루 권장 칼
 saju:"생년월일과 시각으로 사주팔자를 뽑고 격국·신살·십이운성·신강신약·용신, 재물운·직업운·애정운·건강운, 대운 흐름까지 무료로 풀이합니다. 절기(태양황경) 기반 만세력과 진태양시 보정을 적용한 정통 방식입니다.",
 tarot:"마음속 질문을 떠올리고 3장의 타로 카드를 뒤집어 과거·현재·미래의 흐름을 읽습니다. 메이저 아르카나 22장, 정·역방향 해석.",
 todayfortune:"생년월일만 넣으면 오늘의 일진(일 간지)과 내 일간의 십성 관계로 오늘의 총운·애정·재물·직장·건강운과 행운의 색·방위·숫자·시간까지 풀이합니다. 매일 자정 일진이 바뀌는 정통 명리 방식 무료 운세.",
-horoscope:"생년월일을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐름을 봅니다. 무료 별자리 운세.",
+horoscope:"생년월일(양력)을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐름을 봅니다. 무료 별자리 운세.",
 zodiacfortune:"띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 12띠 오늘의 운세를 풀이합니다. 총운·재물·애정·조언과 행운의 색·방위·숫자, 2026 병오년 한 해 흐름까지 무료로 확인하세요.",
 stargunghap:"두 사람의 별자리를 고르면 원소(불·흙·공기·물) 관계, 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합해 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다. 무료 별자리 궁합.",
 gunghap:"두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합한 무료 사주 궁합을 봅니다.",
@@ -834,7 +835,7 @@ todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
 horoscope:"별자리 운세 — 오늘·이번주 12별자리 운세 무료",
 zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
-saju:"무료 사주 — 사주팔자 만세력·오행·십성·대운 풀이",
+saju:"무료 사주 — 사주팔자 만세력·사주계산기·오행 풀이",
 gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
 newyear:"2026 신년운세 — 병오년 무료 운세",
 tarot:"타로 카드 — 무료 온라인 타로점 3카드",
@@ -887,7 +888,8 @@ ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
 ${t.cat==="재미·운세" ? `<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
-${t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
+${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
+ : t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
  : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
@@ -922,6 +924,63 @@ const ilganChips = cur => '<div class="sibs">'+ILGAN_PAGES.map(g=>g.en===cur
   ? `<span class="cur">${g.ko}${g.el} 일간</span>` : `<a href="ilgan-${g.en}.html">${g.ko}${g.el} 일간</a>`).join("")+'</div>';
 const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===cur
   ? `<span class="cur">${s.ko} 뜻</span>` : `<a href="sipseong-${s.en}.html">${s.ko} 뜻</a>`).join("")+'</div>';
+
+/* ── 일진 60갑자 ─────────────────────────────────────────────────
+   "오늘 일진", "경진일", "갑자일 운세" 같은 검색어는 도구 페이지 하나로 받을 수 없다.
+   60갑자마다 결과가 실제로 다르므로 페이지도 60개로 나눈다.
+
+   원고를 60벌 쓰지 않는다. 천간 10 + 지지 12 + 오행 관계 5(content_iljin.js)를
+   조합하고, 나머지(일간별 십성·점수·십이운성·합충·행운)는 hub.html 만세력 엔진이
+   그대로 계산한다. 즉 페이지마다 다른 것은 문장 조합이 아니라 계산 결과다.
+
+   엔진은 new Function으로 격리해 부른다. eval을 이 파일 스코프에 풀면
+   hub.html의 var가 build_site.js의 const(josa 등)와 이름이 부딪친다. */
+const ENGINE = new Function(
+  inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")) + "\n" +
+  (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
+               return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
+  "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
+  "sjPillars,sjTenGod,sjUnseong,sjYukhap,TXT};")();
+
+const IL_D0 = new Date(2026, 8, 3); // 기준일 — 이 날의 일진 인덱스로 60갑자 순환을 센다
+const ilIdxOf = p => { for (let k = 0; k < 60; k++) if (k % 10 === p.s && k % 12 === p.b) return k; return 0; };
+const IL_I0 = ilIdxOf(ENGINE.sjPillars(2026, 9, 3, null, 0, false).d);
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+const WDAY = ["일","월","화","수","목","금","토"];
+
+// 60갑자 — 천간은 10, 지지는 12로 함께 돌아 60일 만에 제자리로 온다
+const ILJIN_PAGES = Array.from({length:60}, (_, k) => {
+  const g = ILJIN_SRC.GAN[k % 10], j = ILJIN_SRC.JI[k % 12];
+  const rk = ILJIN_SRC.relKey(g.el, j.el);
+  const b = k % 12, s = k % 10;
+  return {
+    k, gan:g, ji:j, rel:ILJIN_SRC.REL_TEXT[rk], relKey:rk,
+    en:`${g.en}${j.rom}`,                 // 예: gyeongjin
+    ko:`${g.ko}${j.ko}`,                  // 경진
+    han:`${g.han}${j.han}`,               // 庚辰
+    s, b,
+    chung:ENGINE.SJ_TTI[(b + 6) % 12],                                   // 충(沖) — 마주 보는 띠
+    samhap:[0,4,8].map(o=>ENGINE.SJ_TTI[(b + o) % 12]),                  // 삼합 — 지지 넷 칸 간격
+    yukhap:ENGINE.SJ_TTI[ENGINE.sjYukhap(b)],                            // 육합 — 짝이 되는 띠
+    luck:ENGINE.SJ_LUCK[ENGINE.SJ_ES[s]],                                // 행운 색·방위·숫자(천간 오행)
+    hour:ENGINE.SJ_HOUR[ENGINE.sjYukhap(b)],                             // 사람과 일이 맞물리는 시간대
+    // 일간 10명이 이 날 각각 어떤 자리에 서는지 — 페이지의 알맹이
+    rows:Array.from({length:10}, (_, i) => {
+      const tg = ENGINE.sjTenGod(i, s), T = ENGINE.TXT[tg];
+      return { i, ilgan:ILGAN_PAGES[i], tengod:tg, score:T[0],
+               head:T[9], all:T[1], advice:T[3], warn:T[4], un:ENGINE.sjUnseong(i, b) };
+    }),
+  };
+});
+ILJIN_PAGES.forEach(p => {
+  p.hi = p.rows.reduce((a,x)=> x.score > a.score ? x : a);
+  p.lo = p.rows.reduce((a,x)=> x.score < a.score ? x : a);
+  // 다음 도래일 3회 — 60일 주기라 기준일에서 offset만 구하면 된다
+  const off = (p.k - IL_I0 + 60) % 60;
+  p.next = [0,1,2].map(n => { const d = new Date(IL_D0); d.setDate(d.getDate() + off + n*60); return d; });
+});
+const iljinChips = cur => '<div class="sibs">'+ILJIN_PAGES.map(p=>p.en===cur
+  ? `<span class="cur">${p.ko}일</span>` : `<a href="iljin-${p.en}.html">${p.ko}일</a>`).join("")+'</div>';
 
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
@@ -1138,6 +1197,165 @@ function sipseongPage(s){
     related:["saju","todayfortune","newyear","gunghap"]});
 }
 
+/* 일진 페이지 — 하루의 간지 하나를 통째로 푼다.
+   표에 박히는 십성·점수·십이운성은 전부 엔진 계산값이라 60장이 서로 다르다. */
+function iljinPage(p){
+  const G = p.gan, J = p.ji;
+  const dayLabel = d => `${ymd(d)} (${WDAY[d.getDay()]})`;
+  const relRow = r => `<div class="row"><span><a href="ilgan-${r.ilgan.en}.html">${r.ilgan.ko}${r.ilgan.el} 일간</a>`+
+    ` · ${esc(r.tengod)}</span><b>${r.score}점 · ${esc(r.un)}</b></div>`;
+  return seoPage({
+    title:`${p.ko}일(${p.han}) 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
+    desc:`${p.ko}일(${p.han})은 ${G.ko}${G.el} 천간에 ${J.ko}(${J.han}) 지지가 놓인 날입니다. ${p.rel.label}이며 ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합입니다. 일간 열 가지가 이 날 각각 어떤 십성 자리에 서는지, 점수와 조언까지 정통 명리로 풀이합니다.`,
+    url:`${DOMAIN}/iljin-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-todayfortune.webp",
+    h1:`${p.han} ${p.ko}일 — ${G.tag}${josa(G.tag,"이/가")} ${J.ko}(${J.han}) 위에 앉은 날`,
+    sub:`${G.ko}${G.el}(${G.yy}) 천간 · ${J.ko} ${J.tti}띠 ${J.el} 지지 · ${p.rel.label}`,
+    parent:"todayfortune.html", parentName:"오늘의 운세",
+    tool:"todayfortune", preset:"",
+    tags:[`${p.ko}일`,`${p.ko}일 운세`,`오늘 일진`,`일진 ${p.ko}`,`${p.han}`,`${J.tti}띠 날`],
+    body:
+      `<div class="exbox"><h3>${p.ko}일 한눈에 보기</h3>`+
+      [["일진",`${p.han} ${p.ko}일 (60갑자 ${p.k+1}번째)`],
+       ["천간",`${G.han} ${G.ko}${G.el} · ${G.yy}간`],
+       ["지지",`${J.han} ${J.ko} · ${J.tti}띠 · ${J.el}`],
+       ["천간·지지 관계",p.rel.label],
+       ["삼합 띠",p.samhap.join(" · ")],
+       ["육합 띠",p.yukhap],
+       ["행운 색·방위",`${p.luck[0]} / ${p.luck[1]}`],
+       ["맞물리는 시간대",p.hour]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>충(沖) — 흔들리는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+
+
+      `<div class="intro">${para(G.day)}</div>`+
+      `<section class="guide"><h2>${J.ko}(${J.han}) — 이 날 밑에 깔린 기운</h2>`+
+      `<div class="intro" style="margin-top:0">${para(J.day)}</div></section>`+
+      `<section class="guide"><h2>${G.ko}${G.el}${josa(G.el,"과/와")} ${J.ko}${J.el}${josa(J.el,"이/가")} 만나면 — ${esc(p.rel.label)}</h2>`+
+      `<div class="intro" style="margin-top:0">${para(p.rel.text)}</div></section>`+
+
+      `<section class="guide"><h2>일간별로 본 ${p.ko}일 — 십성과 점수</h2>`+
+      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">같은 날이라도 사람마다 결과가 다릅니다. 내 일간(태어난 날의 천간)이 ${p.ko}일의 천간 ${G.han}(${G.ko})${josa(G.ko,"을/를")} 어떤 관계로 받는지에 따라 갈립니다. 점수 옆은 이 날 지지 ${J.han}(${J.ko})에서의 십이운성입니다.</p>`+
+      `<div class="exbox">${p.rows.map(relRow).join("")}`+
+      `<div class="res"><span>가장 볕 드는 일간</span><b>${p.hi.ilgan.ko}${p.hi.ilgan.el} · ${p.hi.tengod} ${p.hi.score}점</b></div></div></section>`+
+
+      `<section class="guide"><h2>${p.ko}일에 볕이 드는 사람 — ${p.hi.ilgan.ko}${p.hi.ilgan.el} 일간</h2>`+
+      `<div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px">${p.hi.ilgan.ko}${p.hi.ilgan.el} 일간에게 ${p.ko}일의 천간 ${G.han}(${G.ko})${josa(G.ko,"은/는")} <b>${esc(p.hi.tengod)}</b>입니다. 기본 점수는 ${p.hi.score}점으로 이 날 열 일간 가운데 가장 높습니다.</p>`+
+      `<p style="margin-bottom:10px">${esc(p.hi.all)}</p>`+
+      `<p style="margin-bottom:10px"><b>이 날의 조언</b> — ${esc(p.hi.advice)}</p></div></section>`+
+
+      `<section class="guide"><h2>${p.ko}일에 조심할 사람 — ${p.lo.ilgan.ko}${p.lo.ilgan.el} 일간</h2>`+
+      `<div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px">${p.lo.ilgan.ko}${p.lo.ilgan.el} 일간에게는 <b>${esc(p.lo.tengod)}</b>의 날이라 기본 점수가 ${p.lo.score}점으로 가장 낮습니다. 나쁜 날이라는 뜻이 아니라 힘이 드는 쪽이 어디인지를 미리 알려주는 신호입니다.</p>`+
+      `<p style="margin-bottom:10px">${esc(p.lo.all)}</p>`+
+      `<p style="margin-bottom:10px"><b>피해야 할 것</b> — ${esc(p.lo.warn)}</p></div></section>`+
+
+      `<section class="guide"><h2>띠로 보는 ${p.ko}일</h2><div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px"><b>충 — ${esc(p.chung)}띠</b><br>${p.ko}일의 지지 ${J.han}(${J.ko})${josa(J.ko,"과/와")} 정면으로 마주 보는 자리입니다. 계획이 흔들리거나 일정이 밀리기 쉬우니 이 날 잡은 약속은 예비 시간을 두는 편이 낫습니다. 대신 오래 미뤄둔 것을 끊어내기에는 오히려 좋은 날입니다.</p>`+
+      `<p style="margin-bottom:10px"><b>삼합 — ${esc(p.samhap.join(", "))}띠</b><br>지지 넷 칸 간격으로 묶이는 세 띠입니다. 혼자 밀던 일에 사람이 붙습니다. 부탁·소개·협업을 꺼내기에 이 날이 유리합니다.</p>`+
+      `<p style="margin-bottom:10px"><b>육합 — ${esc(p.yukhap)}띠</b><br>짝이 되는 지지입니다. 사이가 부드럽게 풀리는 관계라 껄끄러웠던 자리를 정리하기 좋습니다. 시간대로는 ${esc(p.hour)}가 같은 자리입니다.</p>`+
+      `<p style="margin-bottom:10px">띠는 태어난 해로만 보므로 열두 갈래로 나뉩니다. 생년월일 전체로 보는 <a href="todayfortune.html">오늘의 운세</a>가 더 좁게 나옵니다.</p></div></section>`+
+
+      `<section class="guide"><h2>${p.ko}일의 행운 정보</h2><div class="exbox">`+
+      [["행운 색",p.luck[0]],["행운 방위",p.luck[1]],["행운 숫자",p.luck[2]],["맞물리는 시간대",p.hour]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `</div><p style="color:var(--muted);font-size:13px;margin:10px 2px 0">색·방위·숫자는 이 날 천간 ${G.han}(${G.ko})의 오행 ${G.el}에서 뽑았습니다. 시간대는 이 날 지지 ${J.han}(${J.ko})${josa(J.ko,"과/와")} 육합이 되는 시각으로, 사람과 일이 맞물리기 쉬운 구간입니다.</p></section>`+
+
+      /* 도래일은 빌드 시점에 굳으면 안 된다 — 페이지가 묵으면 "가장 가까운 날"이 과거가 된다.
+         60일 주기의 나머지라 기준일 하나로 브라우저에서 다시 센다. 스크립트가 막히면 빌드값이 남는다. */
+      `<section class="guide"><h2>${p.ko}일은 언제 오나</h2><div class="exbox" id="nextdays">`+
+      p.next.map((d,n)=>`<div class="row"><span>${n===0?"가장 가까운 ":""}${p.ko}일</span><b>${dayLabel(d)}</b></div>`).join("")+
+      `</div>`+
+      `<script>(function(){var base=new Date(${IL_D0.getFullYear()},${IL_D0.getMonth()},${IL_D0.getDate()}),i0=${IL_I0},k=${p.k};`+
+      `var n=new Date(),t=new Date(n.getFullYear(),n.getMonth(),n.getDate());`+
+      `var diff=Math.round((t-base)/86400000),cur=((i0+diff)%60+60)%60,off=(k-cur+60)%60;`+
+      `var w=["일","월","화","수","목","금","토"],out="";`+
+      `for(var m=0;m<3;m++){var d=new Date(t);d.setDate(d.getDate()+off+m*60);`+
+      `var s=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" ("+w[d.getDay()]+")";`+
+      `out+='<div class="row"><span>'+(m===0?(off===0?"오늘이 ":"가장 가까운 "):"")+"${p.ko}일"+'</span><b>'+s+'</b></div>';}`+
+      `document.getElementById("nextdays").innerHTML=out;})();</script>`+
+      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 열 자와 지지 열두 자가 함께 돌아 60일마다 같은 일진이 옵니다. ${p.ko}일은 60갑자 가운데 ${p.k+1}번째입니다. 오늘 일진은 <a href="iljin.html">일진 달력</a>에서 확인하세요.</p></section>`,
+    faq:[
+      [`${p.ko}일은 무슨 날인가요?`,`천간 ${G.han}(${G.ko}${G.el})에 지지 ${J.han}(${J.ko}, ${J.tti}띠)가 놓인 날입니다. 두 글자의 오행 관계가 ${p.relKey}${josa(p.relKey,"이라/라")} ${p.rel.label}로 봅니다. 60갑자 가운데 ${p.k+1}번째이며 60일마다 돌아옵니다.`],
+      [`${p.ko}일에 좋은 띠와 나쁜 띠는?`,`삼합인 ${p.samhap.join("·")}띠와 육합인 ${p.yukhap}띠가 힘을 받습니다. 충인 ${p.chung}띠는 일정이 흔들리기 쉬워 여유를 두는 편이 좋습니다. 다만 띠는 태어난 해 하나만 보는 방식이라 열두 갈래로만 나뉩니다.`],
+      [`같은 ${p.ko}일인데 왜 사람마다 다른가요?`,`이 날의 천간 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 내 일간에게 어떤 십성인지가 사람마다 다르기 때문입니다. ${p.hi.ilgan.ko}${p.hi.ilgan.el} 일간에게는 ${p.hi.tengod}(${p.hi.score}점)이고 ${p.lo.ilgan.ko}${p.lo.ilgan.el} 일간에게는 ${p.lo.tengod}(${p.lo.score}점)입니다. 내 일간은 생년월일을 사주팔자 만세력에 넣으면 일주 위쪽 글자로 나옵니다.`],
+      [`일진은 언제 바뀌나요?`,`자정에 바뀝니다. 밤 11시 이후를 다음 날로 보는 야자시 관점도 있지만 이 사이트는 자정을 기준으로 계산합니다.`]],
+    sibTitle:"다른 일진도 보기", sibs:iljinChips(p.en),
+    related:["todayfortune","saju","zodiacfortune","newyear"]});
+}
+
+/* 일진 달력 허브 — 오늘 일진은 빌드 시점에 굳으면 안 되므로 브라우저에서 계산한다.
+   일진은 60일 주기의 단순 나머지라 기준일 하나면 어느 날짜든 나온다. */
+function iljinHubPage(){
+  const url = `${DOMAIN}/iljin.html`;
+  const ld = {"@context":"https://schema.org","@type":"CollectionPage",
+    name:"일진 60갑자 — 오늘 일진과 날짜별 기운",
+    description:"60갑자 일진 60가지를 각각 풀이합니다. 오늘 일진을 확인하고 해당 일진 페이지로 이동하세요.",
+    inLanguage:"ko", url, isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"},
+    hasPart:ILJIN_PAGES.map(p=>({"@type":"WebPage",name:`${p.ko}일`,url:`${DOMAIN}/iljin-${p.en}.html`}))};
+  const faq = [
+    ["일진이 무엇인가요?","날짜에 붙는 간지입니다. 해에 갑자년이 있듯 날에도 갑자일이 있습니다. 천간 열 자와 지지 열두 자가 함께 돌아 60일마다 같은 일진이 돌아옵니다."],
+    ["오늘 일진은 어떻게 확인하나요?","이 페이지 맨 위에 오늘 일진이 표시됩니다. 브라우저에서 오늘 날짜로 직접 계산하므로 언제 열어도 그날 값이 나옵니다."],
+    ["일진만 알면 내 운세를 알 수 있나요?","일진은 날의 기운입니다. 내 운세는 그 기운이 내 일간에게 어떤 관계인지에 따라 갈리므로, 생년월일을 넣는 오늘의 운세가 더 좁게 나옵니다."],
+    ["일진은 몇 시에 바뀌나요?","자정에 바뀝니다. 야자시 관점을 쓰는 곳도 있지만 이 사이트는 자정 기준입니다."]];
+  const table = '<div class="sibs" style="margin-top:6px">'+ILJIN_PAGES.map(p=>
+    `<a href="iljin-${p.en}.html">${p.k+1}. ${p.ko}일</a>`).join("")+'</div>';
+  const body =
+    `<div class="exbox" id="today"><h3>오늘 일진</h3><div class="row"><span>계산 중</span><b>—</b></div></div>`+
+    `<div class="intro"><p style="margin-bottom:10px">일진(日辰)은 <b>날에 붙는 간지</b>입니다. 해에 병오년이 있고 달에 갑인월이 있듯, 하루에도 각각 간지가 있습니다. 천간 열 자와 지지 열두 자가 나란히 돌아 60일 만에 제자리로 오므로 일진은 모두 60가지입니다.</p>`+
+    `<p style="margin-bottom:10px">같은 날이라도 사람마다 운세가 다른 이유가 여기 있습니다. 그날 일진의 천간이 내 일간에게 재성이면 재물이 움직이는 날, 관성이면 일과 책임의 날, 인성이면 배움과 귀인의 날입니다. 아래 60개 페이지에는 일진마다 열 일간이 각각 어떤 자리에 서는지 점수와 함께 정리해 두었습니다.</p>`+
+    `<p style="margin-bottom:10px">내 생년월일까지 넣어 좁게 보려면 <a href="todayfortune.html">오늘의 운세</a>, 띠 하나로 간단히 보려면 <a href="zodiacfortune.html">띠별 운세</a>를 쓰세요.</p></div>`+
+    `<section class="guide"><h2>60갑자 일진 전체</h2>${table}</section>`+
+    `<section class="guide"><h2>자주 묻는 질문</h2>`+
+    faq.map(x=>`<details class="faq"><summary>${esc(x[0])}</summary><p>${esc(x[1])}</p></details>`).join("")+`</section>`;
+  const KO = ILJIN_PAGES.map(p=>p.ko), EN = ILJIN_PAGES.map(p=>p.en);
+  return `<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>오늘 일진 — 60갑자 일진 달력과 날짜별 기운 | 동네보살</title>
+<meta name="description" content="오늘 일진을 바로 확인하고 60갑자 일진 60가지를 각각 풀이합니다. 일진마다 열 일간이 어떤 십성 자리에 서는지, 충·삼합·육합 띠와 행운 색·방위·시간까지 정통 명리로 계산합니다.">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website"><meta property="og:title" content="오늘 일진 — 60갑자 일진 달력 | 동네보살">
+<meta property="og:description" content="오늘 일진을 바로 확인하고 60갑자 60가지를 각각 풀이합니다."><meta property="og:url" content="${url}">
+<meta property="og:image" content="${DOMAIN}/img/tool/h-todayfortune.webp">
+<link rel="stylesheet" href="style.css?v=${styleV}">
+<script type="application/ld+json">${JSON.stringify(ld)}</script>
+<script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
+  mainEntity:faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})}</script>${headExtra}
+</head><body><div class="wrap">
+<a class="back" href="todayfortune.html">← 오늘의 운세</a>
+<div class="shell">
+<main>
+<div class="toolhero"><img src="img/tool/h-todayfortune.webp" alt="일진 달력" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>일진 달력 — 오늘 일진과 60갑자</h1><div class="tl">날에 붙는 간지 60가지</div></div></div>
+<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>
+${body}
+${adSlot()}
+</main>
+<aside class="rail">
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · 재미·운세</h4>
+${["todayfortune","saju","zodiacfortune","horoscope","gunghap"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
+</aside>
+</div>
+${siteNav(null)}
+${footer}
+</div>
+<script>
+/* 일진은 60일 주기의 나머지다. 기준일 하나면 어느 날짜든 나오므로
+   오늘 일진은 빌드 결과가 아니라 브라우저에서 계산한다 — 페이지가 묵어도 값은 안 묵는다. */
+(function(){
+  var KO=${JSON.stringify(KO)}, EN=${JSON.stringify(EN)};
+  var base=new Date(${IL_D0.getFullYear()},${IL_D0.getMonth()},${IL_D0.getDate()}), i0=${IL_I0};
+  var now=new Date(), t=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  var diff=Math.round((t-base)/86400000);
+  var k=((i0+diff)%60+60)%60;
+  var box=document.getElementById("today");
+  var wd=["일","월","화","수","목","금","토"][t.getDay()];
+  var ds=t.getFullYear()+"년 "+(t.getMonth()+1)+"월 "+t.getDate()+"일 ("+wd+")";
+  box.innerHTML='<h3>오늘 일진</h3><div class="row"><span>'+ds+'</span><b>'+KO[k]+'일</b></div>'+
+    '<div class="res"><span>이 날 풀이 보기</span><b><a href="iljin-'+EN[k]+'.html">'+KO[k]+'일 자세히 →</a></b></div>';
+})();
+</script>
+</body></html>`;
+}
+
 const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","stargunghap"]; // 검색량 높은 순
 const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다
   const items = meta.filter(t => t.cat===c);
@@ -1265,6 +1483,8 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
+  smUrl("iljin.html")+"\n"+
+  ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
@@ -1305,6 +1525,13 @@ ${ILGAN_PAGES.map(g=>`- [${g.ko}${g.el}(${g.han})](${DOMAIN}/ilgan-${g.en}.html)
 
 ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html): ${s.rule} · ${s.keyword}`).join("\n")}
 
+## 일진별 상세 (60) — 날에 붙는 간지
+
+일진은 60일마다 돌아온다. 같은 일진이라도 사람마다 결과가 갈리는 것은, 그날 천간이 각자의 일간에게 다른 십성이 되기 때문이다. 아래 각 페이지에 일간 열 가지의 십성·점수·십이운성이 계산되어 있다.
+
+- [일진 달력 — 오늘 일진](${DOMAIN}/iljin.html): 60갑자 전체 목록과 오늘 일진
+${ILJIN_PAGES.map(p=>`- [${p.ko}일(${p.han})](${DOMAIN}/iljin-${p.en}.html): ${p.gan.ko}${p.gan.el}·${p.ji.ko}${p.ji.el} · ${p.rel.label} · 충 ${p.chung}띠 · 삼합 ${p.samhap.join("·")}띠`).join("\n")}
+
 ## 사이트 정보
 
 ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`).join("\n")}
@@ -1343,6 +1570,8 @@ STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), 
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
+ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
+fs.writeFileSync(path.join(OUT,"iljin.html"), iljinHubPage());
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
@@ -1369,6 +1598,6 @@ if (fs.existsSync(IMG_SRC)) {
   console.log("   이미지 복사:", n, "개");
 }
 
-console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성");
+console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", ILJIN_PAGES.length, "일진(+달력 1)");
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
