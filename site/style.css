@@ -261,6 +261,13 @@
   .share-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
   /* 생년월일 다이얼 — 한지·먹 톤의 회전 휠 */
   /* 년 칸은 '1990년' 5글자가 들어가야 한다. 비율(fr)만 쓰면 좁은 폭에서 잘리므로 최소폭을 준다 */
+  .dial-era{display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;
+    -webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .dial-era::-webkit-scrollbar{display:none}
+  .dial-era-chip{flex:0 0 auto;display:inline-flex;align-items:center;padding:7px 12px;border:1px solid var(--line);
+    border-radius:999px;background:var(--surface);color:var(--muted);
+    font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+  .dial-era-chip.on{border-color:var(--fun-ink);background:var(--accent-weak);color:var(--fun-ink)}
   .dial{position:relative;display:grid;grid-template-columns:minmax(64px,1.35fr) minmax(46px,1fr) minmax(46px,1fr);gap:6px;
     border:1px solid var(--line-2);border-radius:14px;padding:6px;background:var(--surface-2);overflow:hidden;}
   .dial-col{height:132px;overflow-y:auto;scroll-snap-type:y mandatory;scrollbar-width:none;

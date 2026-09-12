@@ -392,6 +392,46 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       var items=col.querySelectorAll(".dial-item");
       for(var i=0;i<items.length;i++)if(+items[i].dataset.v===v){
         col.scrollTo({top:i*44,behavior:smooth?"smooth":"auto"});return;}}
+    /* 연대 점프.
+       연도 열은 97칸인데 화면에 3칸만 보인다. 1990(기본값)에서 1966까지 24칸,
+       1,056px을 훑어야 한다. 검색 유입은 40~80년대생이 많아 그 거리가 매번 든다.
+       10년 단위로 바로 뛰는 칩을 얹는다 — scrollTo/apply를 그대로 쓴다. */
+    var era=document.createElement("div");era.className="dial-era";
+    var eraFrom=1930, eraTo=Math.floor(nowY/10)*10;
+    for(var e=eraFrom;e<=eraTo;e+=10){
+      // button 을 쓰면 .tool button 의 !important 배경에 먹힌다. span 으로 피한다
+      var chip=document.createElement("span");
+      chip.className="dial-era-chip";chip.dataset.era=e;
+      chip.setAttribute("role","button");chip.tabIndex=0;
+      chip.textContent=(e%100<10?"0":"")+(e%100)+"년대";
+      era.appendChild(chip);}
+    host.insertBefore(era,wrap);
+    era.addEventListener("keydown",function(ev){
+      if(ev.key!=="Enter"&&ev.key!==" ")return;
+      var t=ev.target.closest(".dial-era-chip");if(!t)return;
+      ev.preventDefault();t.click();});
+    era.addEventListener("click",function(ev){
+      var t=ev.target.closest(".dial-era-chip");if(!t)return;
+      var y=+t.dataset.era;
+      // 그 연대의 첫 해로 간다. 이미 그 연대면 값은 그대로 두고 위치만 맞춘다
+      var target=(Math.floor(Y/10)*10!==y)?y:Y;
+      jumping=cols.y;
+      scrollTo(cols.y,target,true);
+      if(target!==Y)apply(cols.y,target);
+      // smooth 스크롤에는 완료 이벤트가 없다. 목표에 닿으면 푼다.
+      (function settle(tries){
+        var items=cols.y.querySelectorAll('.dial-item');
+        var want=-1;
+        for(var i2=0;i2<items.length;i2++)if(+items[i2].dataset.v===target){want=i2*44;break;}
+        if(want<0||Math.abs(cols.y.scrollTop-want)<2||tries>40){
+          jumping=null;mark(cols.y);markEra();return;}
+        setTimeout(function(){settle(tries+1);},50);
+      })(0);
+      markEra();});
+    function markEra(){
+      var cur=Math.floor(Y/10)*10;
+      era.querySelectorAll(".dial-era-chip").forEach(function(c){
+        c.classList.toggle("on",+c.dataset.era===cur);});}
     // 일 목록은 실제 일수가 바뀔 때만 다시 만든다. 매번 교체하면 스크롤이 끊긴다
     var dayCount=daysIn(Y,M);
     function rebuildDays(){
@@ -401,6 +441,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       var fresh=build("d",1,max,D,"일");
       wrap.replaceChild(fresh,cols.d);cols.d=fresh;bind(fresh);scrollTo(fresh,D,false);}
     var wheelLock=false;
+    var jumping=null;   // 연대 점프가 끝날 때까지 scroll 판정을 멈춘다
     // 현재 선택에서 n칸 이동 — 휠·키보드가 함께 쓴다
     function step(col,n){
       var items=col.querySelectorAll(".dial-item"),cur=center(col);
@@ -412,6 +453,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         return;}}
     // 값 확정 — 단위에 따라 Y/M/D를 갱신하고 결과를 다시 계산한다
     function apply(col,v){
+      if(col===cols.y&&typeof markEra==="function")setTimeout(markEra,0);
       var u=col.dataset.unit;
       if(u==="y"){if(Y===v)return;Y=v;rebuildDays();}
       else if(u==="m"){if(M===v)return;M=v;rebuildDays();}
@@ -433,6 +475,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var timer=null;
     function bind(col){
       col.addEventListener("scroll",function(){
+        if(jumping===col)return;   // 점프 애니메이션 중간값은 버린다
         var v=mark(col);if(v==null)return;
         clearTimeout(timer);
         timer=setTimeout(function(){apply(col,v);},90);});
