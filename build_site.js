@@ -940,8 +940,31 @@ const ENGINE = new Function(
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
-  "sjPillars,sjTenGod,sjUnseong,sjYukhap,TXT};")();
+  "sjPillars,sjTenGod,sjUnseong,sjYukhap,TXT," +
+  "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP};")();
 
+
+/* 별자리 월간 운세.
+   "2026 10월 사자자리 운세" 같은 검색어는 오늘 기준 도구로는 못 받는다.
+   새 계산은 없다 — 그 달 15일 태양이 어느 별자리에 있는지만 stOf로 구하고,
+   나머지(각도·점수·설명)는 horoscope 도구가 쓰는 ST_ASP를 그대로 쓴다. */
+function starMonth(myIdx, y, m){
+  const sun = ENGINE.stOf(y, m, 15);
+  const k = (sun - myIdx + 12) % 12, dist = Math.min(k, 12 - k);
+  const A = ENGINE.ST_ASP[dist];
+  return { y, m, sunKo: ENGINE.ST_KO[sun], sunSym: ENGINE.ST_SYM[sun],
+           aspect: A[1], score: A[0], text: A[2] };
+}
+function starMonthSection(s, myIdx){
+  const now = new Date();
+  const months = [0, 1].map(add => {
+    const d = new Date(now.getFullYear(), now.getMonth() + add, 1);
+    return starMonth(myIdx, d.getFullYear(), d.getMonth() + 1);
+  });
+  return `<section class="guide"><h2>${s.ko} 이달의 운세 — ${months[0].y}년 ${months[0].m}월</h2>` +
+    months.map(o => `<div class="intro" style="margin-top:0"><p><b>${o.y}년 ${o.m}월</b> — 태양은 ${o.sunSym} ${o.sunKo} 구간을 지납니다. ${s.ko} 기준 <b>${o.aspect}</b> 관계, ${o.score}점.<br>${o.text}</p></div>`).join("") +
+    `<p style="color:var(--muted);font-size:12.5px;margin-top:6px">월 중순(15일) 태양 황경으로 판정한 그 달의 흐름입니다. 날짜별 운세는 <a href="horoscope.html">별자리 운세</a>에서 생년월일로 보세요.</p></section>`;
+}
 const IL_D0 = new Date(2026, 8, 3); // 기준일 — 이 날의 일진 인덱스로 60갑자 순환을 센다
 const ilIdxOf = p => { for (let k = 0; k < 60; k++) if (k % 10 === p.s && k % 12 === p.b) return k; return 0; };
 const IL_I0 = ilIdxOf(ENGINE.sjPillars(2026, 9, 3, null, 0, false).d);
@@ -1101,6 +1124,7 @@ function starPage(s, i){
       `<section class="guide"><h2>${s.ko} 궁합</h2>`+
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>잘 맞는 별자리 — ${esc(s.match.best.join(", "))}</b><br>${s.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>조율이 필요한 별자리 — ${esc(s.match.hard.join(", "))}</b><br>${s.match.hardWhy}</p></div></section>`+
+      starMonthSection(s, ENGINE.ST_KO.indexOf(s.ko))+
       `<section class="guide"><h2>${s.ko}의 2026년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
     faq:[
       [`${s.ko}는 몇 월생인가요?`,`${s.range} 사이에 태어난 사람이 ${s.ko}입니다. 다만 태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎으로 달라지므로, 경계일 출생이면 날짜표 대신 별자리 운세 페이지에서 생년월일로 판정하는 편이 정확합니다.`],
