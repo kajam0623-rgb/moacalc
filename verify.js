@@ -444,5 +444,9 @@ const saveCss = (cssAll.match(/\.tool \.save-btn\{([^}]*)\}/) || [])[1] || "";
 t("공유 버튼 배경이 .tool button 을 특이도로 이김", /background:\s*transparent\s*!important/.test(shareCss), true);
 t("저장 버튼 배경이 .tool button 을 특이도로 이김", /background:\s*transparent\s*!important/.test(saveCss), true);
 
+
+// 월력 페이지가 빌드에 연결됐는지 — 사이트맵에 빠지면 크롤러가 못 찾는다
+t("build_site에 MANSE_PAGES 존재", /const MANSE_PAGES\s*=/.test(bs), true);
+t("사이트맵에 월력 포함", /MANSE_PAGES\.map\(p=>smUrl\("manse-/.test(bs), true);
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

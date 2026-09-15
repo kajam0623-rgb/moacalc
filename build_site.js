@@ -1016,6 +1016,59 @@ const IL_I0 = ilIdxOf(ENGINE.sjPillars(2026, 9, 3, null, 0, false).d);
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
 const WDAY = ["일","월","화","수","목","금","토"];
 
+const MANSE_SRC = require("./content_manse.js");
+// UMD 번들이라 require() 가 생성자 함수를 그대로 돌려준다 (.KoreanLunarCalendar 아님).
+// 132개 페이지마다 다시 불러오지 않도록 여기서 한 번만 잡는다.
+const KoreanLunarCalendar = require("./vendor-lunar.js");
+
+/* 만세력 월력 — 2020~2030 × 12개월 = 132.
+   날짜별 일진·음력·절기 시각을 엔진이 직접 계산한다.
+   달마다 절기 두 개와 고유 문단이 달라 본문이 겹치지 않는다. */
+const MANSE_Y0 = 2020, MANSE_Y1 = 2030;
+const MANSE_PAGES = [];
+for (let y = MANSE_Y0; y <= MANSE_Y1; y++)
+  for (let mo = 1; mo <= 12; mo++) MANSE_PAGES.push({ y, mo, en: `${y}-${String(mo).padStart(2,"0")}` });
+
+// JD(KST) → KST 달력. 절기 시각 표시에 쓴다. verify.js의 kst()와 같은 역변환이다.
+function jdToKst(jd){
+  const z = Math.floor(jd + 0.5 + 9/24), f = (jd + 0.5 + 9/24) - z;
+  let a = z; if (z >= 2299161){ const al = Math.floor((z-1867216.25)/36524.25); a = z+1+al-Math.floor(al/4); }
+  const b = a+1524, c = Math.floor((b-122.1)/365.25), d0 = Math.floor(365.25*c), e = Math.floor((b-d0)/30.6001);
+  const day = b-d0-Math.floor(30.6001*e), mo = e<14 ? e-1 : e-13, yr = mo>2 ? c-4716 : c-4715;
+  const mins = Math.round(f*1440);
+  return { y:yr, mo, d:day, h:Math.floor(mins/60)%24, mi:mins%60 };
+}
+
+// 음력 변환기는 setSolarDate로 상태를 갈아끼우는 방식이라 인스턴스 하나면 된다
+const MANSE_CAL = new KoreanLunarCalendar();
+// 음력 고정 명절 — 양력 날짜가 해마다 달라지므로 엔진이 잡아야 한다
+const LUNAR_FEAST = { "1-1":"설날", "1-15":"정월대보름", "4-8":"부처님오신날",
+                      "5-5":"단오", "7-7":"칠석", "8-15":"추석" };
+const hhmm = o => `${String(o.h).padStart(2,"0")}:${String(o.mi).padStart(2,"0")}`;
+
+/* 한 달치 계산. 같은 달이라도 해가 다르면 절기 시각·일진·음력이 전부 달라진다. */
+function manseData(p){
+  const dim = new Date(p.y, p.mo, 0).getDate();
+  const terms = MANSE_SRC.MONTH_TERMS[p.mo].map(name => ({
+    name, at: jdToKst(ENGINE.sjTermJd(p.y, ENGINE.SJ_TERM.find(t => t[0] === name)[1])) }));
+  const days = [];
+  for (let d = 1; d <= dim; d++){
+    const il = ENGINE.sjPillars(p.y, p.mo, d, null, 0, false).d;
+    MANSE_CAL.setSolarDate(p.y, p.mo, d);
+    const L = MANSE_CAL.getLunarCalendar();
+    const note = [];
+    for (const t of terms) if (t.at.d === d) note.push(`${t.name} ${hhmm(t.at)}`);
+    if (MANSE_SRC.SOLAR_HOLIDAYS[`${p.mo}-${d}`]) note.push(MANSE_SRC.SOLAR_HOLIDAYS[`${p.mo}-${d}`]);
+    if (!L.intercalation && LUNAR_FEAST[`${L.month}-${L.day}`]) note.push(LUNAR_FEAST[`${L.month}-${L.day}`]);
+    days.push({ d, w:new Date(p.y, p.mo-1, d).getDay(), lun:L, note:note.join(" · "), b:il.b,
+      ko:ENGINE.SJ_S[il.s]+ENGINE.SJ_B[il.b], han:ENGINE.SJ_SH[il.s]+ENGINE.SJ_BH[il.b] });
+  }
+  return { dim, terms, days,
+    leap: days.some(x => x.lun.intercalation),
+    feasts: days.filter(x => x.note).map(x => `${x.d}일 ${x.note}`),
+    first: days[0], last: days[dim-1] };
+}
+
 // 60갑자 — 천간은 10, 지지는 12로 함께 돌아 60일 만에 제자리로 온다
 const ILJIN_PAGES = Array.from({length:60}, (_, k) => {
   const g = ILJIN_SRC.GAN[k % 10], j = ILJIN_SRC.JI[k % 12];
@@ -1049,6 +1102,10 @@ ILJIN_PAGES.forEach(p => {
 });
 const iljinChips = cur => '<div class="sibs">'+ILJIN_PAGES.map(p=>p.en===cur
   ? `<span class="cur">${p.ko}일</span>` : `<a href="iljin-${p.en}.html">${p.ko}일</a>`).join("")+'</div>';
+
+// 같은 해 열두 달 — 월력 페이지끼리 가로로 묶는다
+const manseChips = p => '<div class="sibs">'+MANSE_PAGES.filter(q=>q.y===p.y).map(q=>q.mo===p.mo
+  ? `<span class="cur">${q.mo}월</span>` : `<a href="manse-${q.en}.html">${q.mo}월</a>`).join("")+'</div>';
 
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
@@ -1266,6 +1323,129 @@ function sipseongPage(s){
     related:["saju","todayfortune","newyear","gunghap"]});
 }
 
+/* 만세력 월력 페이지 — "2026년 9월 만세력" 같은 검색어를 받는다.
+   표의 일진·음력과 절기 시각은 전부 엔진 계산값이라 132장이 서로 다르다.
+   같은 달 다른 해는 산문이 겹치므로, 그 해 그 달에만 해당하는 계산값을 문장으로 풀어 채운다. */
+function mansePage(p){
+  const M = manseData(p), T = MANSE_SRC.MONTH_TEXT[p.mo];
+  const prev = p.mo === 1 ? { y:p.y-1, mo:12 } : { y:p.y, mo:p.mo-1 };
+  const next = p.mo === 12 ? { y:p.y+1, mo:1 } : { y:p.y, mo:p.mo+1 };
+  const enOf = o => `${o.y}-${String(o.mo).padStart(2,"0")}`;
+  const inRange = o => o.y >= MANSE_Y0 && o.y <= MANSE_Y1;
+  const termAt = t => `${p.mo}월 ${t.at.d}일 ${hhmm(t.at)}`;
+  const lunOf = L => `${L.intercalation ? "윤" : ""}${L.month}월 ${L.day}일`;
+  const lunSpan = `음력 ${lunOf(M.first.lun)} ~ ${lunOf(M.last.lun)}`;
+  const jeol = M.terms[0], jung = M.terms[1];      // 앞이 절기(월주를 가름), 뒤가 중기
+  const mid = M.days[Math.min(15, M.dim) - 1];     // 대표일 — FAQ에서 "15일 일진"으로 쓴다
+  const prevJi = MANSE_SRC.MONTH_TEXT[prev.mo].ji;
+
+  /* 연주·월주는 같은 달이라도 해마다 다르다. 월주는 5년, 연주는 60년 주기다.
+     절입일은 3~9일·18~24일 사이라 1일은 늘 절입 전, 말일은 늘 절입 후다. */
+  const gz = q => ENGINE.SJ_S[q.s] + ENGINE.SJ_B[q.b];
+  const gzh = q => ENGINE.SJ_SH[q.s] + ENGINE.SJ_BH[q.b];
+  const P1 = ENGINE.sjPillars(p.y, p.mo, 1, null, 0, false);
+  const P2 = ENGINE.sjPillars(p.y, p.mo, M.dim, null, 0, false);
+  const ipchun = jdToKst(ENGINE.sjTermJd(p.y, 315));
+  const tti = ENGINE.SJ_TTI[P2.y.b];               // 말일 기준 — 입춘이 이미 지난 연주
+  const kIdx = (ILJIN_PAGES.find(z => z.ko === M.first.ko) || { k:0 }).k + 1;
+  const jeolW = WDAY[M.days[jeol.at.d - 1].w], jungW = WDAY[M.days[jung.at.d - 1].w];
+
+  const rows = M.days.map(x => {
+    const q = ILJIN_PAGES.find(z => z.ko === x.ko);
+    const cell = q ? `<a href="iljin-${q.en}.html">${x.ko}(${x.han})</a>` : `${x.ko}(${x.han})`;
+    return `<tr><td>${x.d}</td><td>${WDAY[x.w]}</td><td>${cell}</td><td>${lunOf(x.lun)}</td><td>${esc(x.note)}</td></tr>`;
+  }).join("");
+
+  return seoPage({
+    title:`${p.y}년 ${p.mo}월 만세력 — 날짜별 일진·음력·절기 | 동네보살`,
+    desc:`${p.y}년 ${p.mo}월 만세력입니다. ${jeol.name}${josa(jeol.name,"은/는")} ${termAt(jeol)}, ${jung.name}${josa(jung.name,"은/는")} ${termAt(jung)}에 듭니다. ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜, 절기·명절을 태양황경 계산으로 정리했습니다. ${lunSpan}.`,
+    url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
+    h1:`${p.y}년 ${p.mo}월 만세력 — ${T.season}, ${T.ji}월`,
+    sub:`${jeol.name} ${termAt(jeol)} · ${jung.name} ${termAt(jung)} · ${lunSpan}`,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:[`${p.y}년 ${p.mo}월 만세력`, `${p.y} ${p.mo}월 음력 달력`, `${p.mo}월 일진`,
+          `${jeol.name} ${p.y}`, `${jung.name} ${p.y}`, `${p.y}년 ${p.mo}월 절기`],
+    body:
+      `<div class="exbox"><h3>${p.y}년 ${p.mo}월 한눈에 보기</h3>`+
+      [["절기(節氣)", `${jeol.name} · ${termAt(jeol)}`],
+       ["중기(中氣)", `${jung.name} · ${termAt(jung)}`],
+       ["월지(月支)", `${T.ji} — ${T.season}`],
+       ["날수", `${M.dim}일`],
+       ["음력 구간", lunSpan],
+       ["1일 일진", `${M.first.ko}(${M.first.han})일`],
+       [`${M.dim}일 일진`, `${M.last.ko}(${M.last.han})일`]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>윤달</span><b>${M.leap ? "이 달에 윤달이 걸칩니다" : "없음"}</b></div></div>`+
+
+      `<div class="intro"><p style="margin-bottom:10px">${T.lead}</p>`+
+      `<p style="margin-bottom:10px">${p.y}년 ${p.mo}월은 ${M.dim}일까지 있습니다. 1일이 ${M.first.ko}(${M.first.han})일로 시작해 ${M.dim}일 ${M.last.ko}(${M.last.han})일로 끝나고, 음력으로는 ${lunSpan} 구간입니다.${M.leap ? " 이 달에는 윤달이 걸쳐 있어 음력 날짜가 한 번 되감깁니다." : ""}</p>`+
+      `<p style="margin-bottom:10px">${M.feasts.length ? `표에 따로 표시되는 날은 ${M.feasts.join(", ")}입니다.` : "이 달에는 절기 말고 따로 표시되는 날이 없습니다."}</p></div>`+
+
+      `<section class="guide"><h2>${p.y}년 ${p.mo}월의 절기 — ${jeol.name}${josa(jeol.name,"과/와")} ${jung.name}</h2>`+
+      `<div class="exbox" style="margin-top:0">`+
+      M.terms.map(t=>`<div class="row"><span>${t.name}</span><b>${p.mo}월 ${t.at.d}일 ${hhmm(t.at)}</b></div>`).join("")+
+      `</div>`+
+      `<div class="intro" style="margin-top:10px">`+
+      `<p style="margin-bottom:10px">${jeol.name}${josa(jeol.name,"은/는")} ${p.y}년 ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}, ${jung.name}${josa(jung.name,"은/는")} ${p.mo}월 ${jung.at.d}일 ${hhmm(jung.at)}입니다. 날짜표에서 옮겨 적은 값이 아니라 태양 황경이 그 각도에 닿는 순간을 직접 계산한 한국 시각이라 분 단위까지 나옵니다.</p>`+
+      `<p style="margin-bottom:10px">월주(月柱)를 가르는 것은 앞의 ${jeol.name}입니다. ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)} 이전에 태어났다면 ${p.mo}월생이라도 앞 달인 ${prevJi}월을 씁니다. 같은 ${jeol.at.d}일생이라도 태어난 시각이 이 경계를 넘었는지에 따라 월주가 갈립니다.</p>`+
+      `<p style="margin-bottom:10px">뒤의 ${jung.name}${josa(jung.name,"은/는")} 중기라 월주를 가르지 않습니다. 계절이 어디까지 왔는지를 표시하는 자리입니다. 내 사주의 월주를 바로 보려면 <a href="saju.html">사주팔자 만세력</a>에 생년월일시를 넣으세요.</p></div></section>`+
+
+      /* 연주·월주는 해마다 갈린다. 같은 9월이라도 2026년과 2027년은 여기서 완전히 달라진다 */
+      `<section class="guide"><h2>${p.y}년 ${p.mo}월의 연주와 월주</h2><div class="exbox" style="margin-top:0">`+
+      [["연주(年柱)", `${gz(P2.y)}(${gzh(P2.y)})년 · ${tti}띠`],
+       [`${jeol.name} 이전 월주`, `${gz(P1.m)}(${gzh(P1.m)})월`],
+       [`${jeol.name} 이후 월주`, `${gz(P2.m)}(${gzh(P2.m)})월`],
+       [`${p.y}년 입춘`, `${ipchun.mo}월 ${ipchun.d}일 ${hhmm(ipchun)}`],
+       ["1일 요일", `${WDAY[M.first.w]}요일`],
+       ["1일 일진 순번", `60갑자 ${kIdx}번째 ${M.first.ko}(${M.first.han})`]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `</div><div class="intro" style="margin-top:10px">`+
+      `<p style="margin-bottom:10px">${p.y}년의 연주는 ${gz(P2.y)}(${gzh(P2.y)})년, ${tti}띠 해입니다. 연주는 1월 1일이 아니라 입춘에 바뀌며 ${p.y}년 입춘은 ${ipchun.mo}월 ${ipchun.d}일 ${hhmm(ipchun)}입니다.</p>`+
+      `<p style="margin-bottom:10px">${p.mo}월의 월주는 ${jeol.name} 절입을 기준으로 갈립니다. ${p.mo}월 1일은 아직 ${gz(P1.m)}(${gzh(P1.m)})월이고, ${jeol.at.d}일 ${hhmm(jeol.at)}부터 ${M.dim}일까지가 ${gz(P2.m)}(${gzh(P2.m)})월입니다. 월지는 해마다 같지만 월간은 그 해 연간을 따라가므로 ${p.y}년 ${p.mo}월의 월주는 5년마다 한 번씩만 돌아옵니다.</p>`+
+      `<p style="margin-bottom:10px">${jeol.name}${josa(jeol.name,"은/는")} ${jeolW}요일, ${jung.name}${josa(jung.name,"은/는")} ${jungW}요일에 듭니다. ${p.mo}월 1일은 ${WDAY[M.first.w]}요일이고 일진은 60갑자 ${kIdx}번째인 <a href="iljin-${(ILJIN_PAGES.find(z=>z.ko===M.first.ko)||{en:""}).en}.html">${M.first.ko}(${M.first.han})일</a>입니다.</p></div></section>`+
+
+      `<section class="guide"><h2>${p.y}년 ${p.mo}월 날짜별 일진과 음력</h2>`+
+      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일진은 날에 붙는 간지이며 60일마다 돌아옵니다. 간지를 누르면 그 일진의 풀이로 갑니다. 음력은 한국천문연구원 기준 변환입니다.</p>`+
+      `<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>일</th><th>요일</th><th>일진</th><th>음력</th><th>비고</th></tr></thead><tbody>${rows}</tbody></table></div></section>`+
+
+      /* 띠날 목록 — "이번 달 말날"처럼 날짜로 찾는 수요를 받는다.
+         일진이 해마다 닷새씩 밀려서 같은 달이라도 해가 다르면 날짜가 전부 어긋난다 */
+      `<section class="guide"><h2>${p.y}년 ${p.mo}월의 띠날 — 무슨 날이 며칠인가</h2>`+
+      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일진의 지지가 그 날의 띠입니다. 열두 지지가 돌아가므로 한 달에 같은 띠 날이 두세 번 옵니다.</p>`+
+      `<div class="exbox" style="margin-top:0">`+
+      ENGINE.SJ_TTI.map((t, b) => {
+        const ds = M.days.filter(x => x.b === b).map(x => x.d);
+        return `<div class="row"><span>${t}날 (${ENGINE.SJ_B[b]}일)</span><b>${ds.join("일 · ")}일</b></div>`;
+      }).join("")+
+      `</div></section>`+
+
+      `<section class="guide"><h2>${p.mo}월은 사주에서 ${T.ji}월 — 이 달에 태어난 사람</h2>`+
+      `<div class="intro" style="margin-top:0">${para(T.body)}</div></section>`+
+
+      `<section class="guide"><h2>앞뒤 달 만세력</h2><div class="sibs">`+
+      (inRange(prev) ? `<a href="manse-${enOf(prev)}.html">← ${prev.y}년 ${prev.mo}월</a>` : "")+
+      `<span class="cur">${p.y}년 ${p.mo}월</span>`+
+      (inRange(next) ? `<a href="manse-${enOf(next)}.html">${next.y}년 ${next.mo}월 →</a>` : "")+
+      `</div><div class="sibs" style="margin-top:8px">`+
+      [-1,1].map(o=>p.y+o).filter(y=>y>=MANSE_Y0&&y<=MANSE_Y1)
+        .map(y=>`<a href="manse-${enOf({y,mo:p.mo})}.html">${y}년 ${p.mo}월</a>`).join("")+
+      `</div></section>`,
+    faq:[
+      [`${p.y}년 ${p.mo}월 절기는 언제인가요?`,
+       `${jeol.name}${josa(jeol.name,"은/는")} ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}, ${jung.name}${josa(jung.name,"은/는")} ${p.mo}월 ${jung.at.d}일 ${hhmm(jung.at)}입니다. 태양 황경으로 직접 계산한 한국 시각입니다.`],
+      [`${p.y}년 ${p.mo}월생의 월주는 무엇인가요?`,
+       `${jeol.name} 절입 시각인 ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}부터 ${T.ji}월입니다. 그 이전에 태어났다면 앞 달인 ${prevJi}월을 씁니다. 월주의 천간은 그 해 연간에 따라 갈리므로 사주팔자 만세력에 생년월일시를 넣어 확인하세요.`],
+      [`${p.y}년 ${p.mo}월 음력 날짜는 어떻게 되나요?`,
+       `${p.mo}월 1일이 ${lunOf(M.first.lun)}, ${M.dim}일이 ${lunOf(M.last.lun)}입니다. 날짜별 음력은 위 표의 음력 칸에 있습니다.${M.leap ? " 이 달에는 윤달이 걸쳐 있습니다." : ""}`],
+      [`${p.y}년 ${p.mo}월 ${mid.d}일 일진은 무엇인가요?`,
+       `${M.first.ko}(${M.first.han})일로 시작한 달이라 ${p.mo}월 ${mid.d}일은 ${mid.ko}(${mid.han})일입니다. 음력으로는 ${lunOf(mid.lun)}입니다. 일진은 자정에 바뀌며 60일마다 같은 간지가 돌아옵니다.`],
+      ["만세력이 무엇인가요?",
+       "날짜를 간지로 바꿔 적은 책입니다. 예전에는 두꺼운 책을 넘겨 찾았지만 이 사이트는 태양 황경과 음력 변환을 그때그때 계산합니다. 같은 날짜를 언제 열어도 같은 값이 나옵니다."]],
+    sibTitle:`${p.y}년 다른 달 만세력`, sibs:manseChips(p),
+    related:["saju","lunar","todayfortune","newyear"]});
+}
+
 /* 일진 페이지 — 하루의 간지 하나를 통째로 푼다.
    표에 박히는 십성·점수·십이운성은 전부 엔진 계산값이라 60장이 서로 다르다. */
 function iljinPage(p){
@@ -1469,6 +1649,9 @@ function indexPage(){
       ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
     ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
       SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
+    ["만세력 월력 " + MANSE_PAGES.length, "달마다 한 장. 날짜별 일진·음력과 절기 절입 시각이 들어 있다.",
+      Array.from({length:MANSE_Y1-MANSE_Y0+1},(_,i)=>MANSE_Y0+i).map(y=>
+        [`manse-${y}-01.html`, `${y}년 만세력`, `1월부터 12월까지 · 절기 24개와 날짜별 간지`])],
   ];
   // 나머지 목록과 같은 .idxrow를 쓴다 — 이름·뜻·화살표 한 줄. 새 CSS가 필요 없다
   const conceptHtml = conceptGroups.map(([title, sub, links]) =>
@@ -1587,6 +1770,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
+  MANSE_PAGES.map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
 
@@ -1634,6 +1818,12 @@ ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html):
 - [일진 달력 — 오늘 일진](${DOMAIN}/iljin.html): 60갑자 전체 목록과 오늘 일진
 ${ILJIN_PAGES.map(p=>`- [${p.ko}일(${p.han})](${DOMAIN}/iljin-${p.en}.html): ${p.gan.ko}${p.gan.el}·${p.ji.ko}${p.ji.el} · ${p.rel.label} · 충 ${p.chung}띠 · 삼합 ${p.samhap.join("·")}띠`).join("\n")}
 
+## 만세력 월력 (${MANSE_PAGES.length}) — 날짜별 일진·음력·절기
+
+${MANSE_Y0}년 1월부터 ${MANSE_Y1}년 12월까지 달마다 한 장씩 있다. URL은 ${DOMAIN}/manse-연도-월.html 형식이고 월은 두 자리다(예: manse-2026-09.html). 132개를 전부 나열하지 않는 이유는 주소가 이 규칙 하나로 정해지기 때문이다. 각 페이지에는 그 달의 절기 두 개와 절입 시각(분 단위), 날짜별 일진 간지, 음력 날짜, 절기·명절, 그 달의 연주·월주가 계산되어 들어 있다. 월주는 달의 앞 절기 시각에 바뀌므로 절입 이전에 태어났다면 앞 달의 월지를 쓴다.
+
+${MANSE_PAGES.filter(p=>p.y===2026).map(p=>`- [${p.y}년 ${p.mo}월 만세력](${DOMAIN}/manse-${p.en}.html): ${MANSE_SRC.MONTH_TERMS[p.mo].join("·")} · ${MANSE_SRC.MONTH_TEXT[p.mo].ji}월`).join("\n")}
+
 ## 사이트 정보
 
 ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`).join("\n")}
@@ -1655,6 +1845,10 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `\n.sitenav a{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 2px 0;}`+
   `\n.sitenav a:hover{color:var(--accent);}`+
   `\n.sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}`+
+  `\n.mtbl{border-collapse:collapse;width:100%;min-width:430px;font-size:13px;}`+
+  `\n.mtbl th,.mtbl td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;}`+
+  `\n.mtbl th{color:var(--muted);font-weight:700;font-size:12px;}`+
+  `\n.mtbl td a{color:var(--accent);text-decoration:none;}`+
   `\n.sibs{display:flex;flex-wrap:wrap;gap:7px;}`+
   `\n.sibs a,.sibs .cur{display:inline-flex;align-items:center;min-height:44px;font-size:13px;text-decoration:none;border:1px solid var(--line-2);`+
   `border-radius:100px;padding:0 12px;color:var(--muted);}`+
@@ -1677,6 +1871,7 @@ ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
+MANSE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"manse-"+p.en+".html"), mansePage(p)));
 fs.writeFileSync(path.join(OUT,"iljin.html"), iljinHubPage());
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
@@ -1704,6 +1899,6 @@ if (fs.existsSync(IMG_SRC)) {
   console.log("   이미지 복사:", n, "개");
 }
 
-console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", ILJIN_PAGES.length, "일진(+달력 1)");
+console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", ILJIN_PAGES.length, "일진(+달력 1) +", MANSE_PAGES.length, "월력");
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
