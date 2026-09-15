@@ -303,6 +303,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec"><h3>대운 구간별 흐름 — 80년</h3>'+duDetail+
         '<p style="color:var(--muted);font-size:12.5px;margin-top:4px">대운은 10년마다 바뀌는 큰 흐름입니다. 태어난 날부터 절기까지의 날수로 시작 나이를 정하며, 여기서는 8개 구간을 보여드립니다. 괄호 안은 그 구간 천간의 오행입니다.</p></div>'+
         closing+
+        shareBtn()+
         // 저장·소장 경로. 브라우저 인쇄 대화상자에서 "PDF로 저장"을 고르면 파일이 된다
         '<div style="text-align:center;margin:18px 0 4px">'+
         '<button type="button" id="pdf" style="padding:11px 20px;border:1px solid var(--line-2);'+
@@ -312,5 +313,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
+      bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
+      bindSave(el,{file:"사주팔자",tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간",
+        headline:EL_TITLE[SJ_EL[SJ_ES[ds]]][1],
+        body:SJ_EL[SJ_ES[ds]]+" 일간 · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" · "+mx+" 기운이 가장 강함"});
       askFx(el,{});}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우고","일간의 힘부터 재어 본다","격국과 신살을 짚는다"],"명식을 아직 안 뽑았네.");birthDial(el,"#d");}});
