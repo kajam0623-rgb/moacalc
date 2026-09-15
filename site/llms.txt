@@ -144,6 +144,25 @@
 - [임술일(壬戌)](https://dongnebosal.com/iljin-imsul.html): 임수·술토 · 눌려서 정리되는 날 · 충 용띠 · 삼합 개·호랑이·말띠
 - [계해일(癸亥)](https://dongnebosal.com/iljin-gyehae.html): 계수·해수 · 기운이 한쪽으로 몰리는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
 
+## 일주별 상세 (60) — 태어난 날의 간지
+
+일진과 같은 60갑자를 쓰지만 보는 대상이 다르다. 일진은 그 날의 기운이고, 일주는 그 간지로 태어난 사람이다. 일간(위 글자)은 나 자신, 일지(아래 글자)는 배우자 자리로 읽는다. 주소는 https://dongnebosal.com/ilju-천간지지.html 형식이며 철자는 일진과 같다(예: ilju-gapja.html ↔ iljin-gapja.html). 각 페이지에는 그 일주의 십이운성, 일지 지장간 본기로 본 십성, 삼합·육합·충 띠가 계산되어 있고 성격·배우자 자리·여자와 남자의 차이가 적혀 있다.
+
+- [갑자일주(甲子)](https://dongnebosal.com/ilju-gapja.html): 일간 갑목 · 일지 자수 · 십이운성 목욕 · 일지 십성 정인
+- [을축일주(乙丑)](https://dongnebosal.com/ilju-eulchuk.html): 일간 을목 · 일지 축토 · 십이운성 쇠 · 일지 십성 편재
+- [병인일주(丙寅)](https://dongnebosal.com/ilju-byeongin.html): 일간 병화 · 일지 인목 · 십이운성 장생 · 일지 십성 편인
+- [정묘일주(丁卯)](https://dongnebosal.com/ilju-jeongmyo.html): 일간 정화 · 일지 묘목 · 십이운성 병 · 일지 십성 편인
+- [무진일주(戊辰)](https://dongnebosal.com/ilju-mujin.html): 일간 무토 · 일지 진토 · 십이운성 관대 · 일지 십성 비견
+- [기사일주(己巳)](https://dongnebosal.com/ilju-gisa.html): 일간 기토 · 일지 사화 · 십이운성 제왕 · 일지 십성 정인
+- [경오일주(庚午)](https://dongnebosal.com/ilju-gyeongo.html): 일간 경금 · 일지 오화 · 십이운성 목욕 · 일지 십성 정관
+- [신미일주(辛未)](https://dongnebosal.com/ilju-sinmi.html): 일간 신금 · 일지 미토 · 십이운성 쇠 · 일지 십성 편인
+- [임신일주(壬申)](https://dongnebosal.com/ilju-imsin.html): 일간 임수 · 일지 신금 · 십이운성 장생 · 일지 십성 편인
+- [계유일주(癸酉)](https://dongnebosal.com/ilju-gyeyu.html): 일간 계수 · 일지 유금 · 십이운성 병 · 일지 십성 편인
+- [병자일주(丙子)](https://dongnebosal.com/ilju-byeongja.html): 일간 병화 · 일지 자수 · 십이운성 태 · 일지 십성 정관
+- [무자일주(戊子)](https://dongnebosal.com/ilju-muja.html): 일간 무토 · 일지 자수 · 십이운성 태 · 일지 십성 정재
+- [경자일주(庚子)](https://dongnebosal.com/ilju-gyeongja.html): 일간 경금 · 일지 자수 · 십이운성 사 · 일지 십성 상관
+- [임자일주(壬子)](https://dongnebosal.com/ilju-imja.html): 일간 임수 · 일지 자수 · 십이운성 제왕 · 일지 십성 겁재
+
 ## 만세력 월력 (132) — 날짜별 일진·음력·절기
 
 2020년 1월부터 2030년 12월까지 달마다 한 장씩 있다. URL은 https://dongnebosal.com/manse-연도-월.html 형식이고 월은 두 자리다(예: manse-2026-09.html). 132개를 전부 나열하지 않는 이유는 주소가 이 규칙 하나로 정해지기 때문이다. 각 페이지에는 그 달의 절기 두 개와 절입 시각(분 단위), 날짜별 일진 간지, 음력 날짜, 절기·명절, 그 달의 연주·월주가 계산되어 들어 있다. 월주는 달의 앞 절기 시각에 바뀌므로 절입 이전에 태어났다면 앞 달의 월지를 쓴다.
