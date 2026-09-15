@@ -57,4 +57,33 @@ const { textOf, grams, jaccard, checkGroup } = require("./gate.js");
   assert.strictEqual(r.ok, true, "통과해야 한다: " + r.reasons.join(" | "));
 }
 
+// 6) checkGroup: 전 페이지 공통 크롬은 빼고 잰다 (문서 3개 이상일 때)
+{
+  const chrome = "동네보살 실수령액 계산기 퇴직금 계산기 대출 이자 계산기 글자수 세기 개인정보처리방침 이용약관 오늘의 운세 별자리 운세 띠별 운세 사주팔자 만세력 궁합 보기 타로 카드 ".repeat(25);
+  const mk = seed => chrome + (seed + " 고유한 본문 문단입니다. ").repeat(30) + seed.repeat(200);
+  const docs = [
+    { id: "a", text: mk("가나다") },
+    { id: "b", text: mk("ABCDEF") },
+    { id: "c", text: mk("１２３４") },
+  ];
+  // 크롬을 안 빼면 본문이 전부 달라도 유사도가 높게 나온다 — 이 테스트가 실제로 뭔가를 막고 있다는 증거
+  assert.ok(jaccard(grams(docs[0].text), grams(docs[1].text)) > 0.7, "크롬 포함 원본은 유사도가 높아야 한다");
+
+  const r = checkGroup(docs, { maxMean: 0.40, maxMax: 0.70, minChars: 2000 });
+  assert.strictEqual(r.ok, true, "크롬을 빼면 통과해야 한다: " + r.reasons.join(" | "));
+  assert.ok(r.chromeRatio > 0.5, "크롬 비중이 잡혀야 한다: " + r.chromeRatio);
+  assert.ok(r.thinnest.uniqueChars < docs[0].text.length, "고유 본문은 전체보다 짧아야 한다");
+}
+
+// 7) checkGroup: 문서가 2개면 크롬 제거를 건너뛴다 (교집합이 과해져 왜곡되므로)
+{
+  const chrome = "공통 푸터 문구가 아주 길게 들어갑니다. ".repeat(60);
+  const docs = [
+    { id: "a", text: chrome + "가나다".repeat(300) },
+    { id: "b", text: chrome + "ABCDEF".repeat(300) },
+  ];
+  const r = checkGroup(docs, { maxMean: 0.40, maxMax: 0.70, minChars: 2000 });
+  assert.strictEqual(r.chromeRatio, 0, "2개짜리는 크롬을 빼지 않는다");
+}
+
 console.log("✅ gate.test.js 전부 통과");
