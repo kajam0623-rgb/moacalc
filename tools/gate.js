@@ -34,7 +34,7 @@ const jaccard = (a, b) => {
 };
 
 /* docs: [{id, text}], opts: {maxMean, maxMax, minChars}
-   돌려주는 것: {ok, mean, max, maxPair, shortest, thinnest, chromeRatio, reasons[]} */
+   돌려주는 것: {ok, mean, max, maxPair, shortest, thinnest, medianSentChars, chromeRatio, reasons[]} */
 function checkGroup(docs, opts) {
   const reasons = [];
   const withG = docs.map(d => ({ ...d, g: grams(d.text) }));
@@ -65,9 +65,16 @@ function checkGroup(docs, opts) {
   const avgG = withG.reduce((a, d) => a + d.g.size, 0) / withG.length;
   const chromeRatio = avgG ? common.size / avgG : 0;
 
-  /* 고유 본문 글자 수: 공통 3-gram이 덮지 않는 문자 위치만 센다.
-     판정에는 안 쓰고, 다음 페이지군을 설계할 때 "고유 원고를 얼마나 써야 하나"의 근거로 찍어준다. */
-  const uniqueChars = s => {
+  /* 고유 본문 글자 수 — 두 가지로 잰다. 판정에는 안 쓰고 설계 근거로만 찍는다.
+
+     (1) 3-gram 하한: 공통 3-gram이 덮지 않는 문자 위치만 센다.
+         한국어 어미("~니다.", "~습니")가 전 문서에 있어 크롬으로 흡수되므로
+         실제 고유 원고보다 크게 낮게 나온다. 일진 60에서 399자가 나왔는데
+         문장 단위로는 2035자였다. 이 숫자만 보고 "고유 원고가 이만큼뿐"으로
+         읽으면 새 페이지군을 얇게 만든다.
+     (2) 문장 기준: 그룹 전원이 공유하는 문장을 뺀 나머지 글자 수.
+         사람이 "고유 본문"이라고 할 때 뜻하는 것에 가깝다. 기준 잡을 때 이걸 쓴다. */
+  const uniqueGramChars = s => {
     if (!common.size) return s.length;
     const hit = new Uint8Array(s.length);
     for (let i = 0; i <= s.length - 3; i++)
@@ -76,8 +83,18 @@ function checkGroup(docs, opts) {
     for (let i = 0; i < s.length; i++) if (!hit[i]) n++;
     return n;
   };
-  const thinnest = uniq.map(d => ({ ...d, uniqueChars: uniqueChars(d.text) }))
-                       .reduce((a, d) => d.uniqueChars < a.uniqueChars ? d : a);
+
+  const sentsOf = t => t.split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => x.length > 6);
+  const sentCount = new Map();
+  for (const d of docs) for (const s of new Set(sentsOf(d.text))) sentCount.set(s, (sentCount.get(s) || 0) + 1);
+  const chromeSents = new Set([...sentCount].filter(([, c]) => c === docs.length).map(([s]) => s));
+  const uniqueSentChars = t => sentsOf(t).filter(s => !chromeSents.has(s)).join(" ").length;
+
+  const measured = uniq.map(d => ({ ...d,
+    uniqueChars: uniqueGramChars(d.text),
+    uniqueSentChars: uniqueSentChars(d.text) }));
+  const thinnest = measured.reduce((a, d) => d.uniqueSentChars < a.uniqueSentChars ? d : a);
+  const medianSentChars = measured.map(d => d.uniqueSentChars).sort((a, b) => a - b)[Math.floor(measured.length / 2)];
 
   // 중복 — 크롬 뺀 집합끼리 모든 쌍
   let sum = 0, n = 0, max = 0, maxPair = "";
@@ -91,7 +108,7 @@ function checkGroup(docs, opts) {
   if (mean > opts.maxMean) reasons.push(`평균 유사도 ${(mean*100).toFixed(1)}% > 기준 ${(opts.maxMean*100)}%`);
   if (max > opts.maxMax)  reasons.push(`최대 유사도 ${(max*100).toFixed(1)}% (${maxPair}) > 기준 ${(opts.maxMax*100)}%`);
 
-  return { ok: reasons.length === 0, mean, max, maxPair, shortest, thinnest, chromeRatio, reasons };
+  return { ok: reasons.length === 0, mean, max, maxPair, shortest, thinnest, medianSentChars, chromeRatio, reasons };
 }
 
 /* site/ 에서 접두사로 파일을 모아 검사한다 */
@@ -112,7 +129,10 @@ if (require.main === module) {
   const r = checkFiles(path.join(__dirname, "..", "site"), prefix, { maxMean: 0.40, maxMax: 0.70, minChars });
   console.log(`${prefix}*  ${r.count || 0}개`);
   console.log(`  고유도   평균 ${(r.mean*100).toFixed(1)}%   최대 ${(r.max*100).toFixed(1)}%${r.maxPair ? " ("+r.maxPair+")" : ""}`);
-  if (r.thinnest) console.log(`  크롬비중 ${(r.chromeRatio*100).toFixed(1)}%   고유 본문 최소 ${r.thinnest.id} ${r.thinnest.uniqueChars}자 / 전체 ${r.thinnest.text.length}자`);
+  if (r.thinnest) {
+    console.log(`  고유본문 중앙값 ${r.medianSentChars}자   최소 ${r.thinnest.id} ${r.thinnest.uniqueSentChars}자 / 전체 ${r.thinnest.text.length}자`);
+    console.log(`  크롬비중 ${(r.chromeRatio*100).toFixed(1)}%   (3-gram 하한 ${r.thinnest.uniqueChars}자 — 어미가 크롬에 흡수돼 낮게 나온다)`);
+  }
   if (r.ok) { console.log("  ✅ 통과"); }
   else { console.log("  ❌ 막힘:"); r.reasons.forEach(x => console.log("     - " + x)); process.exit(1); }
 }
