@@ -477,6 +477,10 @@
 .sitenav a{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 2px 0;}
 .sitenav a:hover{color:var(--accent);}
 .sitenav .cur{display:inline-block;color:var(--ink);font-weight:700;font-size:13px;margin:0 14px 7px 0;}
+.mtbl{border-collapse:collapse;width:100%;min-width:430px;font-size:13px;}
+.mtbl th,.mtbl td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;}
+.mtbl th{color:var(--muted);font-weight:700;font-size:12px;}
+.mtbl td a{color:var(--accent);text-decoration:none;}
 .sibs{display:flex;flex-wrap:wrap;gap:7px;}
 .sibs a,.sibs .cur{display:inline-flex;align-items:center;min-height:44px;font-size:13px;text-decoration:none;border:1px solid var(--line-2);border-radius:100px;padding:0 12px;color:var(--muted);}
 .sibs a:hover{border-color:var(--accent);color:var(--accent);}

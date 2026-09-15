@@ -144,6 +144,23 @@
 - [임술일(壬戌)](https://dongnebosal.com/iljin-imsul.html): 임수·술토 · 눌려서 정리되는 날 · 충 용띠 · 삼합 개·호랑이·말띠
 - [계해일(癸亥)](https://dongnebosal.com/iljin-gyehae.html): 계수·해수 · 기운이 한쪽으로 몰리는 날 · 충 뱀띠 · 삼합 돼지·토끼·양띠
 
+## 만세력 월력 (132) — 날짜별 일진·음력·절기
+
+2020년 1월부터 2030년 12월까지 달마다 한 장씩 있다. URL은 https://dongnebosal.com/manse-연도-월.html 형식이고 월은 두 자리다(예: manse-2026-09.html). 132개를 전부 나열하지 않는 이유는 주소가 이 규칙 하나로 정해지기 때문이다. 각 페이지에는 그 달의 절기 두 개와 절입 시각(분 단위), 날짜별 일진 간지, 음력 날짜, 절기·명절, 그 달의 연주·월주가 계산되어 들어 있다. 월주는 달의 앞 절기 시각에 바뀌므로 절입 이전에 태어났다면 앞 달의 월지를 쓴다.
+
+- [2026년 1월 만세력](https://dongnebosal.com/manse-2026-01.html): 소한·대한 · 축(丑)월
+- [2026년 2월 만세력](https://dongnebosal.com/manse-2026-02.html): 입춘·우수 · 인(寅)월
+- [2026년 3월 만세력](https://dongnebosal.com/manse-2026-03.html): 경칩·춘분 · 묘(卯)월
+- [2026년 4월 만세력](https://dongnebosal.com/manse-2026-04.html): 청명·곡우 · 진(辰)월
+- [2026년 5월 만세력](https://dongnebosal.com/manse-2026-05.html): 입하·소만 · 사(巳)월
+- [2026년 6월 만세력](https://dongnebosal.com/manse-2026-06.html): 망종·하지 · 오(午)월
+- [2026년 7월 만세력](https://dongnebosal.com/manse-2026-07.html): 소서·대서 · 미(未)월
+- [2026년 8월 만세력](https://dongnebosal.com/manse-2026-08.html): 입추·처서 · 신(申)월
+- [2026년 9월 만세력](https://dongnebosal.com/manse-2026-09.html): 백로·추분 · 유(酉)월
+- [2026년 10월 만세력](https://dongnebosal.com/manse-2026-10.html): 한로·상강 · 술(戌)월
+- [2026년 11월 만세력](https://dongnebosal.com/manse-2026-11.html): 입동·소설 · 해(亥)월
+- [2026년 12월 만세력](https://dongnebosal.com/manse-2026-12.html): 대설·동지 · 자(子)월
+
 ## 사이트 정보
 
 - [동네보살 소개](https://dongnebosal.com/about.html): 동네보살은 태양황경을 직접 계산하는 만세력 엔진으로 사주·오늘의 운세·별자리 운세를 풀이합니다. 같은 입력이면 언제 눌러도 같은 결과가 나오는 이유를 설명합니다.
