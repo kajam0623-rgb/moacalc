@@ -41,6 +41,29 @@ const jdn = (y,m,d)=>{const a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;return
 const di = (((jdn(2026,1,1)-2451545)+54)%60+60)%60;
 t("2026-01-01 일주(산술 교차검증)", G(p.d), SJ_S[di%10]+SJ_B[di%12]);
 
+// ── 24절기 ──
+// 기존 sjIpchun 과 일반 함수가 어긋나면 월주 판정과 절기 표시가 서로 다른 말을 한다
+const kst = jd => { // JD → KST 달력 (verify 안에서만 쓰는 역변환)
+  const z = Math.floor(jd + 0.5 + 9/24), f = (jd + 0.5 + 9/24) - z;
+  let a = z; if (z >= 2299161){ const al = Math.floor((z-1867216.25)/36524.25); a = z+1+al-Math.floor(al/4); }
+  const b = a+1524, c = Math.floor((b-122.1)/365.25), d0 = Math.floor(365.25*c), e = Math.floor((b-d0)/30.6001);
+  const day = b-d0-Math.floor(30.6001*e), mo = e<14 ? e-1 : e-13, yr = mo>2 ? c-4716 : c-4715;
+  const mins = Math.round(f*1440);
+  return { y:yr, mo, d:day, h:Math.floor(mins/60)%24, mi:mins%60 };
+};
+const fmtT = o => `${o.y}-${String(o.mo).padStart(2,"0")}-${String(o.d).padStart(2,"0")} ${String(o.h).padStart(2,"0")}:${String(o.mi).padStart(2,"0")}`;
+
+for (const y of [2000, 2026, 2030]) {
+  const diffMin = Math.abs(sjTermJd(y, 315) - sjIpchun(y)) * 1440;
+  t(`${y} 입춘: 일반 절기 함수가 sjIpchun과 1분 이내`, diffMin < 1, true);
+}
+// 외부 대조 — 포스텔러 만세력 2026년 9월 표시값 (스크린샷)
+t("2026 백로 날짜", fmtT(kst(sjTermJd(2026, 165))).slice(0,10), "2026-09-07");
+t("2026 추분 날짜", fmtT(kst(sjTermJd(2026, 180))).slice(0,10), "2026-09-23");
+// 시각은 ±5분 허용 (Meeus 근사)
+const bkMin = (o => o.h*60+o.mi)(kst(sjTermJd(2026, 165)));
+t("2026 백로 시각 23:40 ±5분", Math.abs(bkMin - (23*60+40)) <= 5, true);
+
 // 십성 스팟: 갑(0) 기준 — 을(1)=겁재, 병(2)=식신, 신(7)=정관, 계(9)=정인
 t("십성 갑→을(겁재)", sjTenGod(0,1), "겁재");
 t("십성 갑→병(식신)", sjTenGod(0,2), "식신");

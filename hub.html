@@ -546,6 +546,20 @@
     for(var i=0;i<40;i++){var mid=(lo+hi)/2,L=sjSunLong(mid);
       (L>=315&&L<330)?hi=mid:lo=mid;}
     return (lo+hi)/2;}
+  // 24절기 일반형 — 황경 deg 에 태양이 닿는 순간(KST JD). sjIpchun(315°)의 일반화.
+  // 315°(입춘)처럼 연초 근사일이 한 해를 넘기는 값은 한 해 빼준다.
+  function sjTermJd(y,deg){
+    var approx=79+deg*365.2422/360; if(approx>365.2422)approx-=365.2422;
+    var lo=sjJdKST(y,1,1,0,0)+approx-5, hi=lo+10;
+    var norm=function(x){return ((x%360)+360)%360;};
+    for(var i=0;i<60;i++){var mid=(lo+hi)/2;
+      (norm(sjSunLong(mid)-deg)<180)?hi=mid:lo=mid;}
+    return (lo+hi)/2;}
+  // 절기 24개 — [이름, 황경]. 입춘(315°)부터 한 해가 시작한다.
+  var SJ_TERM=[["입춘",315],["우수",330],["경칩",345],["춘분",0],["청명",15],["곡우",30],
+    ["입하",45],["소만",60],["망종",75],["하지",90],["소서",105],["대서",120],
+    ["입추",135],["처서",150],["백로",165],["추분",180],["한로",195],["상강",210],
+    ["입동",225],["소설",240],["대설",255],["동지",270],["소한",285],["대한",300]];
   function sjPillars(y,mo,d,h,mi,tCorr){
     var jd=sjJdKST(y,mo,d,h,mi);
     var yy=(jd<sjIpchun(y))?y-1:y;
