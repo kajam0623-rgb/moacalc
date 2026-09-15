@@ -396,5 +396,30 @@ const hardJosa = [...toolsSrc.matchAll(new RegExp(JVAR + "\\s*\\+\\s*[\"'](?:이
 t("조립 변수 뒤 하드코딩 조사 없음 (josa 사용)", hardJosa.length, 0);
 if (hardJosa.length) console.log("   ⚠ 조사 하드코딩:", hardJosa.join(" | "));
 
+// 공유 URL·문구에 생년월일이 들어가면 개인정보가 링크를 타고 같이 퍼진다.
+// 함수 본문과 '호출부'를 둘 다 본다 — 위험한 값은 호출할 때 넘어간다.
+const bindSrc = inner.slice(inner.indexOf("function bindShare"), inner.indexOf("// ---------- TOOLS"));
+t("공유 URL에서 쿼리스트링 제거", /location\.href\.split\("#"\)\[0\]\.split\("\?"\)\[0\]/.test(bindSrc), true);
+const bindCalls = [...toolsSrc.matchAll(/bindShare\s*\(([^;]{0,300}?)\)\s*;/g)].map(m => m[1]);
+t("bindShare 호출이 최소 1개", bindCalls.length >= 1, true);
+const leakyShare = bindCalls.filter(a =>
+  /\bbirth\b|loadPrefs|\bd\.value|getElementById\(["\']d["\']\)|querySelector\(["\']#d["\']\)/.test(a));
+t("공유 인자에 생년월일 값 없음", leakyShare.length, 0);
+if (leakyShare.length) console.log("   ⚠ 공유 인자에 생일:", leakyShare.join(" | "));
+
+// 사주는 대표 도구다. 여기에 공유 수단이 없으면 바이럴 유입이 거기서 끊긴다
+const sajuToolSrc = toolsSrc.slice(toolsSrc.indexOf('{id:"saju"'), toolsSrc.indexOf('{id:"tarot"'));
+t("사주 결과에 공유 버튼 있음", /shareBtn\(\)/.test(sajuToolSrc), true);
+t("사주 결과에 bindShare 배선됨", /bindShare\(/.test(sajuToolSrc), true);
+
+// .tool button 의 !important 배경이 공유·저장 버튼을 강조색으로 덮어쓴 적이 있다.
+// 되받지 않으면 외곽선 스타일이 화면에 아예 안 나온다.
+// .tool button 은 (0,1,1)이라 !important 만 붙인 (0,1,0) .share-btn 은 못 이긴다.
+// 선택자에 .tool 이 붙어 특이도가 올라갔는지까지 본다.
+const shareCss = (cssAll.match(/\.tool \.share-btn\{([^}]*)\}/) || [])[1] || "";
+const saveCss = (cssAll.match(/\.tool \.save-btn\{([^}]*)\}/) || [])[1] || "";
+t("공유 버튼 배경이 .tool button 을 특이도로 이김", /background:\s*transparent\s*!important/.test(shareCss), true);
+t("저장 버튼 배경이 .tool button 을 특이도로 이김", /background:\s*transparent\s*!important/.test(saveCss), true);
+
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
