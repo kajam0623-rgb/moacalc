@@ -1849,14 +1849,21 @@ function indexPage(){
 <div class="hero-wrap">
 <div>
 <h1 class="hero-h">뭐든 물어보세요.<br><b>동네보살이 답합니다.</b></h1>
-<div class="hero-sub">무료 사주·오늘의 운세·별자리 운세부터 실수령액·퇴직금·대출까지 ${meta.length}가지, 한 곳에서.</div>
+<div class="hero-sub">사주·오늘의 운세·궁합·별자리 운세, 생일만 넣으면 무료로. 실수령액·퇴직금 계산기까지 ${meta.length}가지.</div>
 <div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
 <div class="console"><div class="prompt">&gt; 무엇이 궁금하세요<span class="cur"></span></div>
 <div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
-<nav class="pop"><a class="f" href="todayfortune.html">✦ 오늘의 운세</a><a class="f" href="horoscope.html">✦ 별자리운세</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="saju.html">✦ 사주</a><a class="f" href="tarot.html">✦ 타로</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
+<nav class="pop"><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
 <img class="hero-art" width="1200" height="800" fetchpriority="high" src="img/hero.webp" alt="동네보살 — 밤하늘 아래 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
-</div></header>
+</div>
+<nav class="fortune4" aria-label="주요 운세">${[
+  ["saju","사주팔자","생년월일로 타고난 기운"],
+  ["todayfortune","오늘의 운세","오늘 일진으로 보는 하루"],
+  ["gunghap","궁합","두 사람 오행·합충"],
+  ["horoscope","별자리 운세","12별자리 오늘·이번주"],
+].map(([id,n,d])=>`<a href="${id}.html"><img src="img/tool/h-${id}.webp" alt="" decoding="async" onerror="this.remove()"><span class="t"><b>${n}</b><small>${d}</small></span></a>`).join("")}</nav>
+</header>
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
 <div class="bento">${catCards}</div>
@@ -2000,6 +2007,18 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}`+
   `\n.hero-trust{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px;max-width:520px;`+
   `border-left:2px solid var(--fun);padding-left:10px;}`+
+  `\n.fortune4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 2px;}`+
+  `\n@media (max-width:720px){.fortune4{grid-template-columns:1fr 1fr;gap:10px;}}`+
+  // 모바일은 한 줄로 쌓여 카드가 히어로 그림 밑(첫 화면 밖)으로 밀린다. 부제 바로 아래로 끌어올린다
+  `\n@media (max-width:600px){.hero{display:flex;flex-direction:column;}.hero-wrap,.hero-wrap>div{display:contents;}`+
+  `.fortune4{order:1;margin:16px 0 4px;}.hero-trust,.console,.pop{order:2;}.hero-art{order:3;margin-top:16px;}}`+
+  `\n.fortune4 a{display:block;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:14px;background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .16s,border-color .16s,box-shadow .16s;}`+
+  `\n.fortune4 a:hover{transform:translateY(-3px);border-color:var(--fun);box-shadow:0 8px 24px color-mix(in srgb,var(--fun) 28%,transparent);}`+
+  `\n.fortune4 img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface-2);}`+
+  `\n.fortune4 .t{display:block;padding:10px 12px 12px;}`+
+  `\n.fortune4 b{display:block;font-size:19px;font-weight:900;letter-spacing:-.6px;color:var(--fun-ink);}`+
+  `\n.fortune4 small{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}`+
+  `\n@media (prefers-reduced-motion:reduce){.fortune4 a{transition:none;}.fortune4 a:hover{transform:none;}}`+
   `\n.sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}`+
   `\n.sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}`+
   `\n.sitenav a{display:inline-flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;font-size:13px;margin:0 14px 2px 0;}`+
