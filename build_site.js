@@ -1855,7 +1855,7 @@ function indexPage(){
 <div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
-<img class="hero-art" width="1200" height="800" fetchpriority="high" src="img/hero.webp" alt="동네보살 — 밤하늘 아래 물어보면 답이 떠오르는 일러스트" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
+<img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div>
 <nav class="fortune4" aria-label="주요 운세">${[
   ["saju","사주팔자","생년월일로 타고난 기운"],
@@ -2007,6 +2007,8 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}`+
   `\n.hero-trust{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:10px;max-width:520px;`+
   `border-left:2px solid var(--fun);padding-left:10px;}`+
+  `\n.hero-art.mascot{border:0;border-radius:0;box-shadow:none;width:auto;max-width:100%;max-height:430px;margin:0 auto;filter:drop-shadow(0 14px 32px color-mix(in srgb,var(--fun) 28%,transparent));}`+
+  `\n@media (max-width:600px){.hero-art.mascot{max-height:240px;object-fit:contain;object-position:center;}}`+
   `\n.fortune4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 2px;}`+
   `\n@media (max-width:720px){.fortune4{grid-template-columns:1fr 1fr;gap:10px;}}`+
   // 모바일은 한 줄로 쌓여 카드가 히어로 그림 밑(첫 화면 밖)으로 밀린다. 부제 바로 아래로 끌어올린다
