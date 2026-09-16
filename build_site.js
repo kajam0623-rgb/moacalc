@@ -1164,10 +1164,12 @@ const crumbLd = rows => '<script type="application/ld+json">'+JSON.stringify({
 function seoPage(o){
   const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
-  // 홈 → 부모 도구 → 이 페이지. o.parent 는 "saju.html" 같은 상대 경로다.
+  /* 홈 → 부모 도구 → 이 페이지. o.parent 는 "saju.html" 같은 상대 경로다.
+     마지막 칸은 h1 대신 o.crumb(짧은 이름)을 쓴다. h1 은 "甲子 갑자일주 — 나는 갑목,
+     배우자 자리는 자수" 처럼 길어서 빵부스러기에 넣으면 잘린다. */
   const crumb = crumbLd([["홈", DOMAIN+"/"],
                          [o.parentName, `${DOMAIN}/${o.parent}`],
-                         [o.h1, o.url]]);
+                         [o.crumb || o.h1, o.url]]);
   const ld = {"@context":"https://schema.org","@type":"Article",headline:o.title,description:o.desc,
     inLanguage:"ko",url:o.url,image:DOMAIN+"/"+o.img,
     publisher:{"@type":"Organization",name:"동네보살",url:DOMAIN+"/"},
@@ -1263,6 +1265,7 @@ ${footer}
 
 function starPage(s, i){
   return seoPage({
+    crumb:`${s.ko}`,
     title:`${s.ko} 운세·성격·궁합 | 동네보살`,
     desc:`${s.ko}(${s.range}) 성격과 연애 스타일, 잘 맞는 별자리와 어려운 별자리. 태양황경으로 판정하는 오늘의 ${s.ko} 운세.`,
     // img=OG용 캐릭터(정사각), hero=배너용 가로 이미지. 정사각을 16:7 배너에 넣으면 얼굴이 잘린다
@@ -1294,6 +1297,7 @@ function starPage(s, i){
 
 function zodiacPage(z, i){
   return seoPage({
+    crumb:`${z.ko}띠`,
     title:`${z.ko}띠 운세·성격·궁합 — 2026 | 동네보살`,
     desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2026 병오년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
@@ -1325,6 +1329,7 @@ function zodiacPage(z, i){
 // 일간·십성은 사주 도구의 하위 개념 페이지다. 부모를 saju.html로 두어 링크가 만세력으로 모이게 한다
 function ilganPage(g){
   return seoPage({
+    crumb:`${g.ko}${g.el} 일간`,
     title:`${g.ko} 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
     desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2026 병오년 운세.`,
     url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -1353,6 +1358,7 @@ function ilganPage(g){
 
 function sipseongPage(s){
   return seoPage({
+    crumb:`${s.ko}`,
     title:`${s.ko} — 뜻·성격·직업·재물 풀이 | 동네보살`,
     desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 약점. 연애·직업·재물에서 어떻게 나타나는지.`,
     url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -1413,6 +1419,7 @@ function mansePage(p){
   }).join("");
 
   return seoPage({
+    crumb:`${p.y}년 ${p.mo}월 만세력`,
     title:`${p.y}년 ${p.mo}월 만세력 — 일진·음력·절기 | 동네보살`,
     desc:`${p.y}년 ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
@@ -1510,6 +1517,7 @@ function iljinPage(p){
   const relRow = r => `<div class="row"><span><a href="ilgan-${r.ilgan.en}.html">${r.ilgan.ko}${r.ilgan.el} 일간</a>`+
     ` · ${esc(r.tengod)}</span><b>${r.score}점 · ${esc(r.un)}</b></div>`;
   return seoPage({
+    crumb:`${p.ko}일`,
     title:`${p.ko}일 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
     desc:`${p.ko}일(${p.han})은 ${p.rel.label}입니다. ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합. 일간 열 가지의 점수와 조언.`,
     url:`${DOMAIN}/iljin-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-todayfortune.webp",
@@ -1601,6 +1609,7 @@ function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
   return seoPage({
+    crumb:`${p.ko}일주`,
     title:`${p.ko}일주 성격 — 여자·남자 차이와 배우자 자리 | 동네보살`,
     desc:`${p.ko}일주(${p.han}) 성격과 배우자 자리, 여자와 남자의 차이. 십이운성 ${p.un}, 일지 십성 ${p.tengod}.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
