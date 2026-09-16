@@ -136,18 +136,22 @@ t("타로 상징 스토리 22개", tarotData.STORY.length === 22 && tarotData.ST
 t("타로 카드 오행 22장 (0~4)", tarotData.CARD_EL.length === 22 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
 t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.qs.every(q => q.sp.length >= 1 && q.sp.length <= 3 &&
   q.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined))), true);
-const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","day"];
+const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","exam","family","friend","health","day"];
 t("타로 고민 키는 원고 topic 키와 일치", tarotData.TOPICS.map(tp => tp.k).join(","), TOPIC_K.join(","));
 t("타로 풀이 원고 22장 · 자리 9 · 고민 4×정역 · 한마디", TREAD.length === 22 && TREAD.every((c, i) => c.no === i &&
   ROLE_K.every(k => typeof c.role[k] === "string" && c.role[k].length >= 30) &&
   TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
 const bosalLines = readLines.concat(tarotData.REVL, tarotData.CLOSE, [].concat(...tarotData.REL), [].concat(...Object.values(tarotData.YN_LINE)),
-  tarotData.TOPICS.flatMap(tp => [tp.hi].concat(tp.qs.map(q => q.say))));
+  tarotData.TOPICS.flatMap(tp => (tp.lite ? [] : [tp.hi]).concat(tp.qs.map(q => q.say))));
 t("타로 대화 원고에 존댓말 없음", bosalLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x)).length, 0);
 t("타로 대화 원고가 보살 어미 사용", bosalLines.filter(x => !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
 t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x => /반드시|틀림없|정확하게|신령|부적|굿을/.test(x)).length, 0);
-t("타로 관계 풀이 5관계 × 4고민", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === 4), true);
+// 건강 고민은 생활 리듬·컨디션만 다룬다. 병명·증상·예후를 말하면 사람을 겁주거나 병원에 갈 사람을 붙잡는다
+const healthLines = TREAD.flatMap(c => c.topic.health);
+t("타로 건강 풀이에 병·증상·치료 표현 없음", healthLines.filter(x => /질환|증상|암에|수술|약을|약이|진단|통증|아프|낫는|낫게|회복|치료|감기|염증|부상|다치/.test(x)).length, 0);
+t("타로 건강 고민은 병원 안내를 먼저 한다", /병원/.test(tarotData.TOPICS.find(tp => tp.k === "health").hi) && /병원/.test(tarotData.CLOSE[tarotData.TOPICS.findIndex(tp => tp.k === "health")]), true);
+t("타로 관계 풀이 5관계 × 고민 수", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === tarotData.TOPICS.length) && tarotData.CLOSE.length === tarotData.TOPICS.length, true);
 t("타로 예/아니오 성향은 카드 뜻 페이지와 같음", tarotData.YN.join(","), require("./content_tarot.js").map(c => c.yesno).join(","));
 t("타로 예/아니오 줄은 성향 3종 × 정역", ["예","아니오","조건부"].every(k => tarotData.YN_LINE[k] && tarotData.YN_LINE[k].length === 2), true);
 t("타로 풀이 원고가 청크에 주입됨", /c\.id === "tarot" \? "var TAROT_READ="/.test(bs), true);
