@@ -412,7 +412,26 @@
   .tr-card.flip{transform:rotateY(180deg);}
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
-  .tr-b{background:repeating-linear-gradient(45deg,var(--surface-2) 0 6px,var(--surface) 6px 12px);font-size:26px;color:var(--fun);}
+  /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
+  .tr-b,.tr-dk{background:radial-gradient(circle at 50% 50%,rgba(230,178,90,.22),transparent 55%),repeating-linear-gradient(45deg,#1b2550 0 6px,#152042 6px 12px);
+    color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
+  .tr-b{font-size:26px;border-color:#2c3a6e;}
+  .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
+  .tr-table.done{height:0 !important;opacity:0;margin-top:0;overflow:hidden;}
+  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;border-radius:7px;border:1px solid #2c3a6e;
+    display:flex;align-items:center;justify-content:center;font-size:calc(var(--cw,70px)*.3);
+    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s,box-shadow .2s;}
+  .tr-dk.pick{cursor:pointer;}
+  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -14px;outline:none;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 10px 22px rgba(0,0,0,.35);}
+  .tr-dk.gone{translate:0 -46px;opacity:0;pointer-events:none;}
+  .tool .tr-go{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);z-index:40;padding:11px 26px;border:none;border-radius:100px;
+    font:inherit;font-weight:800;background:var(--fun) !important;color:#1b1405 !important;border-radius:100px !important;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+  .tr-f.art .cap .nm,.tr-f.art .cap .rv{display:block;}
+  .tr-board{max-width:600px;margin-left:auto;margin-right:auto;}
+  .tr-empty{width:100%;aspect-ratio:5/8;border:1.5px dashed var(--line-2);border-radius:8px;}
+  .tr-card.dealt{animation:trDeal .45s cubic-bezier(.2,.7,.3,1) backwards;}
+  @keyframes trDeal{from{transform:translateY(-44px) scale(.86);opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}.tr-card.dealt{animation:none;}}
   .tr-f{background:var(--surface);transform:rotateY(180deg);}
   .tr-f .no{font-family:var(--mono);font-size:10px;color:var(--muted);}
   .tr-f .sym{font-size:34px;margin:6px 0;}

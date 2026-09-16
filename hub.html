@@ -413,7 +413,26 @@
   .tr-card.flip{transform:rotateY(180deg);}
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
-  .tr-b{background:repeating-linear-gradient(45deg,var(--surface-2) 0 6px,var(--surface) 6px 12px);font-size:26px;color:var(--fun);}
+  /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
+  .tr-b,.tr-dk{background:radial-gradient(circle at 50% 50%,rgba(230,178,90,.22),transparent 55%),repeating-linear-gradient(45deg,#1b2550 0 6px,#152042 6px 12px);
+    color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
+  .tr-b{font-size:26px;border-color:#2c3a6e;}
+  .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
+  .tr-table.done{height:0 !important;opacity:0;margin-top:0;overflow:hidden;}
+  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;border-radius:7px;border:1px solid #2c3a6e;
+    display:flex;align-items:center;justify-content:center;font-size:calc(var(--cw,70px)*.3);
+    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s,box-shadow .2s;}
+  .tr-dk.pick{cursor:pointer;}
+  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -14px;outline:none;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 10px 22px rgba(0,0,0,.35);}
+  .tr-dk.gone{translate:0 -46px;opacity:0;pointer-events:none;}
+  .tool .tr-go{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);z-index:40;padding:11px 26px;border:none;border-radius:100px;
+    font:inherit;font-weight:800;background:var(--fun) !important;color:#1b1405 !important;border-radius:100px !important;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);}
+  .tr-f.art .cap .nm,.tr-f.art .cap .rv{display:block;}
+  .tr-board{max-width:600px;margin-left:auto;margin-right:auto;}
+  .tr-empty{width:100%;aspect-ratio:5/8;border:1.5px dashed var(--line-2);border-radius:8px;}
+  .tr-card.dealt{animation:trDeal .45s cubic-bezier(.2,.7,.3,1) backwards;}
+  @keyframes trDeal{from{transform:translateY(-44px) scale(.86);opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}.tr-card.dealt{animation:none;}}
   .tr-f{background:var(--surface);transform:rotateY(180deg);}
   .tr-f .no{font-family:var(--mono);font-size:10px;color:var(--muted);}
   .tr-f .sym{font-size:34px;margin:6px 0;}
@@ -2022,9 +2041,10 @@
     var ART={0:"tarot-00-fool",1:"tarot-01-magician",2:"tarot-02-priestess",3:"tarot-03-empress",4:"tarot-04-emperor",5:"tarot-05-hierophant",6:"tarot-06-lovers",7:"tarot-07-chariot",8:"tarot-08-strength",9:"tarot-09-hermit",10:"tarot-10-wheel",11:"tarot-11-justice",12:"tarot-12-hanged",13:"tarot-13-death",14:"tarot-14-temperance",15:"tarot-15-devil",16:"tarot-16-tower",17:"tarot-17-star",18:"tarot-18-moon",19:"tarot-19-sun",20:"tarot-20-judgement",21:"tarot-21-world"};
     var FLDN=["연애·관계","일·금전","전체 흐름"];
     el.innerHTML='<label>무엇에 대해 묻고 싶으세요?</label><select id="f"><option value="0">연애·관계</option><option value="1">일·금전</option><option value="2">전체 흐름</option></select>'+
-    '<p class="note" style="margin-top:12px">질문을 하나로 좁힐수록 해석이 선명해집니다. 카드를 차례로 눌러 뒤집으세요.</p>'+
+    '<p class="note tr-hint" id="hint" style="margin-top:12px" aria-live="polite"></p>'+
+    '<div class="tr-table" id="tb"></div>'+
     '<div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>'+
-    '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">다시 뽑기</button>';
+    '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">처음부터 다시 섞기</button>';
     // 세 장을 엮는 종합 해석 — 역방향 수·여정 단계·결과 카드 방향으로 조합
     function summary(pk,fi){
       var revN=pk.filter(function(x){return x.rev;}).length;
@@ -2050,22 +2070,71 @@
         '<p style="margin-top:10px">'+spread+'</p>'+
         '<p style="margin-top:10px">'+fut+' '+end+'</p>'+
         '<p style="margin-top:10px">이 스프레드는 메이저 아르카나 22장 중 세 장을 뽑아 과거·현재·미래 자리에 놓은 결과입니다. 같은 카드라도 어느 자리에 놓이느냐에 따라 뜻이 달라지므로, 카드 이름의 인상보다 자리와 방향을 함께 읽어야 합니다. 오늘 답이 흐릿하게 느껴진다면 카드가 아니라 질문이 넓어서일 가능성이 큽니다. 질문을 한 문장으로 좁혀 다시 뽑아보세요.</p></div>';}
-    var picks;
-    function deal(){
-      var idx=[];while(idx.length<3){var n=Math.floor(Math.random()*22);if(idx.indexOf(n)<0)idx.push(n);}
-      picks=idx.map(function(n){return {c:M[n],i:n,rev:Math.random()<0.4};});
-      el.querySelector("#r").innerHTML="";
-      el.querySelector("#b").innerHTML=POS.map(function(p,i){
+    // 섞기 → 펼치기 → 고르기 → 뒤집기. 덱 순서와 정·역은 섞는 순간 정해지고, 고른 카드는 그 자리의 카드다
+    var tb=el.querySelector("#tb"),bd=el.querySelector("#b"),rd=el.querySelector("#r"),hint=el.querySelector("#hint");
+    var RM=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    var deck,picks,opened,dk,stage,run=0;
+    function later(ms,fn){var id=run;window.setTimeout(function(){if(id===run)fn.call(null);},RM?0:ms);}
+    function geo(){var W=tb.clientWidth||320,cw=Math.max(44,Math.min(74,Math.floor(W/7.2)));
+      tb.style.setProperty("--cw",cw+"px");return {W:W,cw:cw,ch:cw*1.6};}
+    function put(d,x,y,r){d.style.transform="translate("+x+"px,"+y+"px) rotate("+(r||0)+"deg)";}
+    function stack(){var g=geo();tb.style.height=(g.ch+70)+"px";
+      dk.forEach(function(d,i){d.style.transitionDelay="0ms";put(d,(g.W-g.cw)/2-i*0.5,8-i*0.5);});}
+    function fan(){var g=geo(),two=g.W<520,rowH=g.ch*0.62;
+      tb.style.height=(two?rowH+g.ch+30:g.ch+44)+"px";
+      dk.forEach(function(d,i){
+        var j=two?i%11:i,n=two?10:21,t=(j-n/2)/(n/2),x=4+j*(g.W-g.cw-8)/n;
+        d.style.transitionDelay=(RM?0:i*18)+"ms";
+        put(d,x,(two?Math.floor(i/11)*rowH:0)+10+t*t*(two?10:22),t*(two?8:14));});}
+    function idle(){
+      run++;stage="idle";picks=[];opened=0;rd.innerHTML="";el.querySelector("#re").hidden=true;
+      bd.innerHTML=POS.map(function(p){return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-empty"></div></div>';}).join("");
+      tb.classList.remove("done");
+      var h="";for(var i=0;i<22;i++)h+='<div class="tr-dk" aria-hidden="true"><span>✦</span></div>';
+      tb.innerHTML=h+'<button type="button" class="tr-go">카드 섞기</button>';
+      dk=[].slice.call(tb.querySelectorAll(".tr-dk"));stack();
+      hint.textContent="질문 하나를 마음에 품고 카드를 섞으세요.";
+      tb.querySelector(".tr-go").addEventListener("click",shuffle);}
+    function shuffle(){
+      stage="shuffle";tb.querySelector(".tr-go").remove();el.querySelector("#re").hidden=false;hint.textContent="카드를 섞는 중…";
+      var idx=[];for(var i=0;i<22;i++)idx.push(i);
+      for(i=21;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=idx[i];idx[i]=idx[j];idx[j]=tmp;}
+      deck=idx.map(function(n){return {c:M[n],i:n,rev:Math.random()<0.4};});
+      var g=geo(),cx=(g.W-g.cw)/2,round=0;
+      (function riffle(){
+        dk.forEach(function(d,i){var s=(i+round)%2?-1:1;d.style.transitionDelay="0ms";
+          put(d,cx+s*(g.cw*0.7+Math.random()*10),6+Math.random()*8,s*(5+Math.random()*6));});
+        later(300,function(){
+          dk.forEach(function(d){d.style.zIndex=Math.floor(Math.random()*22);});stack();
+          if(++round<3)later(300,riffle);else later(380,spread);});})();}
+    function spread(){
+      stage="pick";dk.forEach(function(d){d.style.zIndex="";});fan();
+      dk.forEach(function(d,k){
+        d.removeAttribute("aria-hidden");d.setAttribute("role","button");d.tabIndex=0;
+        d.setAttribute("aria-label",(k+1)+"번째 카드 고르기");d.classList.add("pick");
+        d.addEventListener("click",function(){choose(d,k);});
+        d.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(d,k);}});});
+      hint.textContent="마음이 가는 카드를 고르세요. 첫 장은 과거 자리에 놓입니다 (0/3)";}
+    function choose(d,k){
+      if(stage!=="pick"||d.classList.contains("gone"))return;
+      d.classList.add("gone");d.tabIndex=-1;
+      var i=picks.length;picks.push(deck[k]);
+      bd.children[i].innerHTML='<div class="tr-pos">'+POS[i]+'</div>'+slotCard(i);
+      bindFlip(bd.children[i].querySelector(".tr-card"));
+      if(picks.length<3){hint.textContent="다음 장은 "+POS[picks.length]+" 자리에 놓입니다 ("+picks.length+"/3)";return;}
+      stage="read";hint.textContent="세 장을 모두 골랐습니다. 카드를 눌러 한 장씩 뒤집으세요.";
+      dk.forEach(function(x){x.classList.add("gone");x.tabIndex=-1;});
+      later(450,function(){tb.classList.add("done");});}
+    function slotCard(i){
         var pk=picks[i],art=ART[pk.i];
         var face=art
           ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+pk.c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
           : '<div class="tr-f"><span class="no">'+pk.c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+pk.c[2]+'</span><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
-        return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-card" data-i="'+i+'" tabindex="0" role="button" aria-label="'+p+' 카드 뒤집기"><div class="tr-b">✦</div>'+face+'</div></div>';}).join("");
-      var opened=0;
-      el.querySelectorAll(".tr-card").forEach(function(card){
+        return '<div class="tr-card dealt" data-i="'+i+'" tabindex="0" role="button" aria-label="'+POS[i]+' 카드 뒤집기"><div class="tr-b">✦</div>'+face+'</div>';}
+    function bindFlip(card){
         card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
         card.addEventListener("click",function(){
-        if(card.classList.contains("flip"))return;card.classList.add("flip");
+        if(stage!=="read"||card.classList.contains("flip"))return;card.classList.add("flip");
         var i=+card.dataset.i,pk=picks[i],fi=el.querySelector("#f").value;
         // FLD는 카드의 정방향 주제다. 역방향이면 그 흐름이 지연·반전된다고 덧붙여야 해석이 어긋나지 않는다
         var ext=(fi==="2")?"":" <b style=\"color:var(--fun-ink)\">"+FLDN[fi]+"</b> — 이 카드가 가리키는 자리는 “"+FLD[pk.i][+fi]+"”"+
@@ -2076,9 +2145,11 @@
           '<p style="margin-top:8px"><b style="color:var(--fun-ink)">'+POS[i]+'의 자리</b> — '+posLine+'</p>'+
           '<p style="margin-top:8px">'+(pk.rev?pk.c[4]:pk.c[3])+ext+'</p>'+
           '<p style="margin-top:8px;color:var(--muted);font-size:12.5px">'+ARC[pk.i<8?0:pk.i<15?1:2]+' '+POS_GUIDE[i]+(pk.rev?" 역방향으로 나온 카드는 그 힘이 사라졌다는 뜻이 아니라, 안으로 향하거나 속도가 걸려 있다는 신호입니다.":" 정방향으로 나온 카드는 그 힘이 밖으로 자연스럽게 흐르고 있다는 뜻입니다.")+'</p></div>';
-        if(++opened===3)el.querySelector("#r").innerHTML+=summary(picks,fi);});});}
-    el.querySelector("#re").addEventListener("click",deal);
-    el.querySelector("#f").addEventListener("change",deal);deal();}},
+        if(++opened===3)el.querySelector("#r").innerHTML+=summary(picks,fi);});}
+    var rz;window.addEventListener("resize",function(){window.clearTimeout(rz);rz=window.setTimeout(function(){
+      if(stage==="idle")stack();else if(stage==="pick")fan();},150);});
+    el.querySelector("#re").addEventListener("click",idle);
+    el.querySelector("#f").addEventListener("change",function(){if(stage!=="idle")idle();});idle();}},
 
   {id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운세",desc:"일진×일간 명리 풀이",render:function(el){
     // 오늘 일진 천간이 내 일간에 대해 갖는 십성
