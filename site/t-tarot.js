@@ -87,7 +87,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
         {q:"요즘 왜 이렇게 지칠까요",say:"기운이 빠지는 데도 까닭이 있지. 지치는 까닭과 기운 되찾는 법을 보겠네.",sp:[["cause","지치는 까닭"],["fix","기운 되찾는 법"]]},
         {q:"생활 리듬을 어떻게 바꿀까요",say:"잠과 끼니, 움직임이 흐트러지면 몸이 먼저 알지. 지금 리듬과 흐트러뜨리는 것, 조언을 놓겠네.",sp:[["now","지금 리듬"],["block","흐트러뜨리는 것"],["advice","보살의 조언"]]},
         {q:"마음이 무거워요",say:"무거운 마음은 말로 꺼내야 가벼워지네. 자네 마음과 짓누르는 것, 그리고 조언을 보겠네.",sp:[["mine","내 마음"],["block","짓누르는 것"],["advice","보살의 조언"]]}]},
-      {k:"day",lite:true,name:"가볍게 보기",hi:"",qs:[
+      {k:"day",name:"오늘·요즘 운세",hi:"딱히 고민이 있다기보다 흐름이 궁금한 게로구먼. 어떻게 볼지 골라 보게.",qs:[
         {q:"오늘 하루 운세",say:"오늘 하루는 한 장이면 족하네. 마음 가는 카드 하나만 뽑게.",sp:[["now","오늘의 기운"]]},
         {q:"요즘 흐름",say:"지난 흐름과 지금, 앞으로를 한 줄로 이어 보겠네.",sp:[["past","지난 흐름"],["now","지금"],["future","앞으로"]]},
         {q:"예/아니오 한 장",say:"마음속으로 물음 하나를 분명히 떠올리게. 한 장으로 예인지 아니오인지 짚어 주겠네.",sp:[["answer","보살의 답"]]}]}];
@@ -125,12 +125,9 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
     function hint(t){var h=el.querySelector("#hint");if(h)h.textContent=t;}
     function start(){
       run++;stage="chat";topic=null;ques=null;tb.innerHTML="";tb.style.height="0px";tb.classList.remove("done");bd.innerHTML="";rd.innerHTML="";
-      var main=TOPICS.filter(function(t){return !t.lite;}),lite=TOPICS.filter(function(t){return t.lite;})[0];
       chat.innerHTML=say("어서 오게. 먼 길 오느라 애썼네. 패를 펼치기 전에 무엇이 고민인지부터 들어 보겠네.")+
-        opts(main.map(function(t){return t.name;})).replace('class="bs-opts"','class="bs-opts bs-grid"')+
-        '<div class="bs-lite"><span class="bs-lite-t">고민 없이 가볍게</span>'+lite.qs.map(function(q,i){return '<span class="bs-chip" role="button" tabindex="0" data-i="'+i+'">'+q.q+'</span>';}).join("")+'</div>';
-      bindOpts(function(i){topic=main[i];askQ();});
-      [].slice.call(chat.querySelectorAll(".bs-chip")).forEach(function(c){keyClick(c,function(){topic=lite;ques=lite.qs[+c.dataset.i];askBirth();});});}
+        opts(TOPICS.map(function(t){return t.name;})).replace('class="bs-opts"','class="bs-opts bs-grid"');
+      bindOpts(function(i){topic=TOPICS[i];askQ();});}
     function askQ(){
       chat.innerHTML='<div class="bs-me">'+topic.name+'</div>'+say(topic.hi)+opts(topic.qs.map(function(q){return q.q;}).concat(["‹ 다른 고민 고르기"]));
       bindOpts(function(i){if(i===topic.qs.length){start();return;}ques=topic.qs[i];askBirth();});}

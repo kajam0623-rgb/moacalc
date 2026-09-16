@@ -143,7 +143,7 @@ t("타로 풀이 원고 22장 · 자리 9 · 고민 4×정역 · 한마디", TRE
   TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
 const bosalLines = readLines.concat(tarotData.REVL, tarotData.CLOSE, [].concat(...tarotData.REL), [].concat(...Object.values(tarotData.YN_LINE)),
-  tarotData.TOPICS.flatMap(tp => (tp.lite ? [] : [tp.hi]).concat(tp.qs.map(q => q.say))));
+  tarotData.TOPICS.flatMap(tp => [tp.hi].concat(tp.qs.map(q => q.say))));
 t("타로 대화 원고에 존댓말 없음", bosalLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x)).length, 0);
 t("타로 대화 원고가 보살 어미 사용", bosalLines.filter(x => !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
 t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x => /반드시|틀림없|정확하게|신령|부적|굿을/.test(x)).length, 0);
@@ -151,6 +151,7 @@ t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x =>
 const healthLines = TREAD.flatMap(c => c.topic.health);
 t("타로 건강 풀이에 병·증상·치료 표현 없음", healthLines.filter(x => /질환|증상|암에|수술|약을|약이|진단|통증|아프|낫는|낫게|회복|치료|감기|염증|부상|다치/.test(x)).length, 0);
 t("타로 건강 고민은 병원 안내를 먼저 한다", /병원/.test(tarotData.TOPICS.find(tp => tp.k === "health").hi) && /병원/.test(tarotData.CLOSE[tarotData.TOPICS.findIndex(tp => tp.k === "health")]), true);
+t("타로 첫 화면 고민 8칸 (두 줄 격자에 빈칸 없음)", tarotData.TOPICS.length, 8);
 t("타로 관계 풀이 5관계 × 고민 수", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === tarotData.TOPICS.length) && tarotData.CLOSE.length === tarotData.TOPICS.length, true);
 t("타로 예/아니오 성향은 카드 뜻 페이지와 같음", tarotData.YN.join(","), require("./content_tarot.js").map(c => c.yesno).join(","));
 t("타로 예/아니오 줄은 성향 3종 × 정역", ["예","아니오","조건부"].every(k => tarotData.YN_LINE[k] && tarotData.YN_LINE[k].length === 2), true);
