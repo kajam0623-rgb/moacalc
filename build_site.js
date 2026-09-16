@@ -84,7 +84,7 @@ let m; while ((m = re.exec(toolsArr))) meta.push({ id:m[1], cat:m[2], name:m[3],
 
 // 페이지별 고유 소개문 (SEO 본문)
 const intro = {
-salary:"연봉이나 월급의 세전 금액을 입력하면 국민연금·건강보험·장기요양·고용보험 등 4대보험과 소득세를 제외한 월 실수령액을 바로 확인합니다. 2026년 최신 요율 기준입니다.",
+salary:"세전 연봉이나 월급을 넣으면 4대보험과 소득세를 뺀 월 실수령액을 바로 확인합니다. 2026년 요율 기준.",
 severance:"입사일과 퇴사일, 평균임금을 입력하면 근로기준법에 따른 예상 퇴직금을 계산합니다. 계속근로 1년 이상부터 지급 대상입니다.",
 annual:"미사용 연차 일수와 통상임금으로 받을 수 있는 연차수당을 계산합니다. 시간당 통상임금 × 8시간 × 미사용일수로 산정됩니다.",
 hourly:"시급과 주 근로시간을 입력해 예상 월급과 연봉을 환산합니다. 2026년 최저시급 10,320원 기준 주휴수당도 반영할 수 있습니다.",
@@ -129,12 +129,12 @@ caffeine:"음료 종류와 잔 수로 하루 카페인 섭취량을 계산하고
 sleep:"기상 시각을 기준으로 90분 수면주기에 맞춘 추천 취침 시각을 알려줍니다.",
 calorie:"운동 종류와 시간, 체중으로 소모 칼로리를 계산합니다.",
 bmr:"성별·키·몸무게·나이로 기초대사량(BMR)과 하루 권장 칼로리를 계산합니다.",
-saju:"생년월일과 시각으로 사주팔자를 뽑고 격국·신살·십이운성·신강신약·용신, 재물운·직업운·애정운·건강운, 대운 흐름까지 무료로 풀이합니다. 절기(태양황경) 기반 만세력과 진태양시 보정을 적용한 정통 방식입니다.",
+saju:"생년월일로 사주팔자를 뽑고 신강신약·용신·격국과 재물·직업·애정·건강운, 대운 흐름까지 무료로 풀이합니다.",
 tarot:"마음속 질문을 떠올리고 3장의 타로 카드를 뒤집어 과거·현재·미래의 흐름을 읽습니다. 메이저 아르카나 22장, 정·역방향 해석.",
-todayfortune:"생년월일만 넣으면 오늘의 일진(일 간지)과 내 일간의 십성 관계로 오늘의 총운·애정·재물·직장·건강운과 행운의 색·방위·숫자·시간까지 풀이합니다. 매일 자정 일진이 바뀌는 정통 명리 방식 무료 운세.",
-horoscope:"생년월일(양력)을 넣으면 태양 황경으로 12별자리를 정확히 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 오늘의 총운·애정·재물운과 이번주 요일별 흐름을 봅니다. 무료 별자리 운세.",
-zodiacfortune:"띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 12띠 오늘의 운세를 풀이합니다. 총운·재물·애정·조언과 행운의 색·방위·숫자, 2026 병오년 한 해 흐름까지 무료로 확인하세요.",
-stargunghap:"두 사람의 별자리를 고르면 원소(불·흙·공기·물) 관계, 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합해 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다. 무료 별자리 궁합.",
+todayfortune:"생년월일만 넣으면 오늘 일진과 내 일간의 관계로 총운·애정·재물·직장·건강운과 행운의 색·방위를 풀이합니다.",
+horoscope:"생년월일로 별자리를 판정하고, 오늘 태양과 이루는 각도로 총운·애정·재물운과 이번주 흐름을 봅니다.",
+zodiacfortune:"내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2026 병오년 흐름까지 무료로.",
+stargunghap:"두 별자리의 원소 관계와 황도 각도, 수호성 친화로 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다.",
 gunghap:"두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합한 무료 사주 궁합을 봅니다.",
 newyear:"생년월일만 넣으면 2026 병오년 연간(丙)과 내 일간의 십성 관계, 태세(午)와 내 띠·일지의 합충으로 한 해의 흐름과 전략을 풀이하는 무료 신년운세입니다.",
 namematch:"두 사람의 이름 획수를 번갈아 더해가는 전통 이름궁합 놀이입니다. 획수 피라미드와 점수, 풀이까지 무료로 확인하세요.",
@@ -881,10 +881,10 @@ function siteNav(currentId){
 // 운세 페이지는 "계산기" 대신 검색어에 맞는 타이틀을 쓴다
 const titleOverride = {
 todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
-horoscope:"별자리 운세 — 오늘·이번주 12별자리 운세 무료",
+horoscope:"별자리 운세 — 오늘·이번주 12별자리 무료",
 zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
-saju:"무료 사주 — 사주팔자 만세력·사주계산기·오행 풀이",
+saju:"무료 사주 — 사주팔자 만세력·사주계산기",
 gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
 newyear:"2026 신년운세 — 병오년 무료 운세",
 tarot:"타로 카드 — 무료 온라인 타로점 3카드",
@@ -925,6 +925,10 @@ function toolPage(t){
   const guideHtml = g ? '<section class="guide"><h2>이렇게 계산해요</h2><ul>'+g.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul></section>' : '';
   const faqHtml = f ? '<section class="faq"><h2>자주 묻는 질문</h2>'+f.map(x=>'<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")+'</section>' : '';
   const faqLd = f ? '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:f.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>' : '';
+  // 홈 → 분류 → 도구. 분류는 홈의 해당 묶음(#c-…)으로 보낸다.
+  const crumb = crumbLd([["홈", DOMAIN+"/"],
+                         [t.cat, `${DOMAIN}/#c-${CAT_IMG[t.cat]}`],
+                         [t.name, url]]);
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
@@ -933,7 +937,7 @@ function toolPage(t){
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${ogTag(t.id)}
 <link rel="stylesheet" href="style.css?v=${styleV}">
-<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
+<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${crumb}${headExtra}
 </head><body><div class="wrap">
 <a class="back" href="index.html">← 전체 도구</a>
 <div class="shell">
@@ -1147,10 +1151,23 @@ const iljuChips = cur => '<div class="sibs">'+ILJU_PAGES.map(p=>p.en===cur
 const manseChips = p => '<div class="sibs">'+MANSE_PAGES.filter(q=>q.y===p.y).map(q=>q.mo===p.mo
   ? `<span class="cur">${q.mo}월</span>` : `<a href="manse-${q.en}.html">${q.mo}월</a>`).join("")+'</div>';
 
+/* 빵부스러기 구조화 데이터. 구글이 검색결과의 URL 자리를 이 경로로 바꿔 보여준다.
+   FAQ·HowTo 리치 결과는 2023년에 대부분의 사이트에 대해 중단됐지만 빵부스러기는 남아 있다.
+   about/privacy/terms 세 장에만 있었고 나머지 353장에 없었다.
+   rows: [[이름, URL], ...] — 마지막이 현재 페이지다. */
+const crumbLd = rows => '<script type="application/ld+json">'+JSON.stringify({
+  "@context":"https://schema.org","@type":"BreadcrumbList",
+  itemListElement: rows.map(([name, item], i) => ({"@type":"ListItem", position:i+1, name, item}))
+})+'</script>';
+
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
   const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
+  // 홈 → 부모 도구 → 이 페이지. o.parent 는 "saju.html" 같은 상대 경로다.
+  const crumb = crumbLd([["홈", DOMAIN+"/"],
+                         [o.parentName, `${DOMAIN}/${o.parent}`],
+                         [o.h1, o.url]]);
   const ld = {"@context":"https://schema.org","@type":"Article",headline:o.title,description:o.desc,
     inLanguage:"ko",url:o.url,image:DOMAIN+"/"+o.img,
     publisher:{"@type":"Organization",name:"동네보살",url:DOMAIN+"/"},
@@ -1164,7 +1181,7 @@ function seoPage(o){
 <meta property="og:description" content="${esc(o.desc)}"><meta property="og:url" content="${o.url}">
 <meta property="og:image" content="${DOMAIN}/${o.img}">
 <link rel="stylesheet" href="style.css?v=${styleV}">
-<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${headExtra}
+<script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${crumb}${headExtra}
 </head><body><div class="wrap">
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
@@ -1246,8 +1263,8 @@ ${footer}
 
 function starPage(s, i){
   return seoPage({
-    title:`${s.ko} 운세·성격·궁합 — 오늘의 ${s.ko} | 동네보살`,
-    desc:`${s.ko}(${s.range}) 성격과 강점·약점, 연애 스타일, 잘 맞는 별자리와 어려운 별자리, 2026년 흐름까지. 태양황경으로 판정하는 오늘의 ${s.ko} 운세를 바로 확인하세요.`,
+    title:`${s.ko} 운세·성격·궁합 | 동네보살`,
+    desc:`${s.ko}(${s.range}) 성격과 연애 스타일, 잘 맞는 별자리와 어려운 별자리. 태양황경으로 판정하는 오늘의 ${s.ko} 운세.`,
     // img=OG용 캐릭터(정사각), hero=배너용 가로 이미지. 정사각을 16:7 배너에 넣으면 얼굴이 잘린다
     url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`, hero:"img/tool/h-horoscope.webp",
     h1:`${s.sym} ${s.ko} — 성격·연애·궁합·오늘의 운세`,
@@ -1277,8 +1294,8 @@ function starPage(s, i){
 
 function zodiacPage(z, i){
   return seoPage({
-    title:`${z.ko}띠 운세·성격·궁합 — 2026 ${z.ko}띠 | 동네보살`,
-    desc:`${z.ko}띠(${z.ji}) 성격과 강점·약점, 연애와 직업 적성, 삼합·육합·충으로 보는 띠 궁합, 2026 병오년 흐름까지. 오늘의 ${z.ko}띠 운세를 바로 확인하세요.`,
+    title:`${z.ko}띠 운세·성격·궁합 — 2026 | 동네보살`,
+    desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2026 병오년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
     h1:`${z.ko}띠 — 성격·연애·궁합·오늘의 운세`,
     sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
@@ -1308,8 +1325,8 @@ function zodiacPage(z, i){
 // 일간·십성은 사주 도구의 하위 개념 페이지다. 부모를 saju.html로 두어 링크가 만세력으로 모이게 한다
 function ilganPage(g){
   return seoPage({
-    title:`${g.ko}(${g.han}) 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
-    desc:`${g.ko}${g.el}(${g.han}${g.el==="목"?"木":g.el==="화"?"火":g.el==="토"?"土":g.el==="금"?"金":"水"}) 일간의 성격과 강점·약점, 연애 방식, 잘 맞는 직업, 재물 흐름, 2026 병오년 운세까지. 사주에서 '나'를 뜻하는 일간을 정통 명리로 풀이합니다.`,
+    title:`${g.ko} 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
+    desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2026 병오년 운세.`,
     url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${g.han} ${g.ko}${g.el} 일간 — ${g.metaphor}`,
     sub:`${g.el} 기운 · ${g.yy}간 · 잘 맞는 일간 ${g.best.join(" · ")}`,
@@ -1336,8 +1353,8 @@ function ilganPage(g){
 
 function sipseongPage(s){
   return seoPage({
-    title:`${s.ko}(${s.han}) — 뜻·성격·직업·재물 풀이 | 동네보살`,
-    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.keyword}로, ${s.strong}${josa(s.strong,"이/가")} 강점이고 ${s.weak}${josa(s.weak,"이/가")} 약점입니다. 연애·직업·재물에서 ${s.ko}${josa(s.ko,"이/가")} 어떻게 나타나는지와 2026 병오년 흐름까지 정통 명리로 풀이합니다.`,
+    title:`${s.ko} — 뜻·성격·직업·재물 풀이 | 동네보살`,
+    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 약점. 연애·직업·재물에서 어떻게 나타나는지.`,
     url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${s.han} ${s.ko} — ${s.keyword}`,
     sub:`${s.group} · ${s.rule} · 짝이 되는 십성 ${s.pair}`,
@@ -1396,8 +1413,8 @@ function mansePage(p){
   }).join("");
 
   return seoPage({
-    title:`${p.y}년 ${p.mo}월 만세력 — 날짜별 일진·음력·절기 | 동네보살`,
-    desc:`${p.y}년 ${p.mo}월 만세력입니다. ${jeol.name}${josa(jeol.name,"은/는")} ${termAt(jeol)}, ${jung.name}${josa(jung.name,"은/는")} ${termAt(jung)}에 듭니다. ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜, 절기·명절을 태양황경 계산으로 정리했습니다. ${lunSpan}.`,
+    title:`${p.y}년 ${p.mo}월 만세력 — 일진·음력·절기 | 동네보살`,
+    desc:`${p.y}년 ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${p.y}년 ${p.mo}월 만세력 — ${T.season}, ${T.ji}월`,
     sub:`${jeol.name} ${termAt(jeol)} · ${jung.name} ${termAt(jung)} · ${lunSpan}`,
@@ -1493,8 +1510,8 @@ function iljinPage(p){
   const relRow = r => `<div class="row"><span><a href="ilgan-${r.ilgan.en}.html">${r.ilgan.ko}${r.ilgan.el} 일간</a>`+
     ` · ${esc(r.tengod)}</span><b>${r.score}점 · ${esc(r.un)}</b></div>`;
   return seoPage({
-    title:`${p.ko}일(${p.han}) 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
-    desc:`${p.ko}일(${p.han})은 ${G.ko}${G.el} 천간에 ${J.ko}(${J.han}) 지지가 놓인 날입니다. ${p.rel.label}이며 ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합입니다. 일간 열 가지가 이 날 각각 어떤 십성 자리에 서는지, 점수와 조언까지 정통 명리로 풀이합니다.`,
+    title:`${p.ko}일 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
+    desc:`${p.ko}일(${p.han})은 ${p.rel.label}입니다. ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합. 일간 열 가지의 점수와 조언.`,
     url:`${DOMAIN}/iljin-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-todayfortune.webp",
     h1:`${p.han} ${p.ko}일 — ${G.tag}${josa(G.tag,"이/가")} ${J.ko}(${J.han}) 위에 앉은 날`,
     sub:`${G.ko}${G.el}(${G.yy}) 천간 · ${J.ko} ${J.tti}띠 ${J.el} 지지 · ${p.rel.label}`,
@@ -1584,8 +1601,8 @@ function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
   return seoPage({
-    title:`${p.ko}일주 성격 — 여자·남자 차이와 배우자 자리(${p.han}) | 동네보살`,
-    desc:`${p.ko}일주(${p.han})는 일간 ${gEl}에 일지 ${J.ko}(${J.han})가 놓인 사람입니다. 일간은 나 자신, 일지는 배우자 자리입니다. 십이운성은 ${p.un}, 일지 십성은 ${p.tengod}입니다. 성격과 배우자 자리, 여자와 남자의 차이, 일과 재물까지 정통 명리로 풀이합니다.`,
+    title:`${p.ko}일주 성격 — 여자·남자 차이와 배우자 자리 | 동네보살`,
+    desc:`${p.ko}일주(${p.han}) 성격과 배우자 자리, 여자와 남자의 차이. 십이운성 ${p.un}, 일지 십성 ${p.tengod}.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${p.han} ${p.ko}일주 — 나는 ${gEl}, 배우자 자리는 ${jEl}`,
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
@@ -1679,7 +1696,7 @@ function iljinHubPage(){
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>오늘 일진 — 60갑자 일진 달력과 날짜별 기운 | 동네보살</title>
-<meta name="description" content="오늘 일진을 바로 확인하고 60갑자 일진 60가지를 각각 풀이합니다. 일진마다 열 일간이 어떤 십성 자리에 서는지, 충·삼합·육합 띠와 행운 색·방위·시간까지 정통 명리로 계산합니다.">
+<meta name="description" content="오늘 일진을 바로 확인하고 60갑자 60가지를 각각 풀이합니다. 일간별 십성과 충·삼합·육합 띠까지.">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="오늘 일진 — 60갑자 일진 달력 | 동네보살">
 <meta property="og:description" content="오늘 일진을 바로 확인하고 60갑자 60가지를 각각 풀이합니다."><meta property="og:url" content="${url}">

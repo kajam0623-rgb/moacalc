@@ -189,6 +189,10 @@
   .th{font-size:25px;font-weight:800;letter-spacing:-.7px;margin-bottom:3px;text-wrap:balance;}
   .tl{color:var(--muted);font-size:13.5px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--line);}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 20px;}
+  /* 도구는 JS 가 마운트한다. 느린 기기에서는 8초 뒤에 붙기도 하는데, 그때 아래 내용이
+     통째로 밀려 CLS 0.471 이 찍혔다(구글 기준 0.1 이하가 양호). 실측한 도구 높이가
+     474~970px 이라 가장 낮은 쪽에 맞춰 미리 자리를 잡아둔다. 마운트되면 늘어난다. */
+  #tool:empty{min-height:470px}
   .tool label{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:18px 0 3px;}
   .tool label:first-child{margin-top:0;}
   .field{position:relative;}
