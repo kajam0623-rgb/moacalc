@@ -1874,7 +1874,10 @@ chunks.forEach(c => c.v = hash8(c.id === "lunar"
 // 사이트맵 + robots
 // lastmod가 없으면 크롤러가 재방문 시점을 잡을 근거가 없다. 빌드일을 찍는다.
 // changefreq·priority는 구글이 무시하므로 넣지 않는다.
-const BUILD_DAY = new Date().toISOString().slice(0,10);
+// 한국 사이트라 날짜는 KST 기준이어야 한다. toISOString 은 UTC 라
+// KST 새벽에 빌드하면 lastmod 가 하루 뒤로 밀린다.
+const KST_NOW = new Date(Date.now() + 9 * 3600 * 1000);
+const BUILD_DAY = KST_NOW.toISOString().slice(0,10);
 const smUrl = path => `<url><loc>${DOMAIN}/${path}</loc><lastmod>${BUILD_DAY}</lastmod></url>`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
   smUrl("")+"\n"+meta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
@@ -1887,7 +1890,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
   MANSE_PAGES.map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
-const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml`;
+const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
 
 // llms.txt — 생성형 검색(ChatGPT·Perplexity 등)이 사이트를 정확히 인용하도록 돕는 안내 파일
 const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tarot","namematch"];
@@ -1997,6 +2000,45 @@ ILJU_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"ilju-"+p.en+".html"), ilju
 fs.writeFileSync(path.join(OUT,"iljin.html"), iljinHubPage());
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
+/* RSS 2.0 — 네이버 서치어드바이저가 사이트맵과 별개로 받는 수집 경로.
+   전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
+   추려 100개로 묶는다. 피드가 길수록 좋은 것이 아니라, 무엇이 새것인지
+   알려주는 것이 목적이다. */
+const RSS_DESC = "무료 사주팔자 만세력과 오늘의 운세·별자리 운세·띠별 운세, 그리고 실수령액·퇴직금·대출 계산기까지. 태양황경을 직접 계산하는 만세력 엔진으로 풀이합니다.";
+const rssItem = (loc, title, desc) =>
+  "<item><title>" + esc(title) + "</title>" +
+  "<link>" + loc + "</link><guid isPermaLink=\"true\">" + loc + "</guid>" +
+  "<pubDate>" + new Date().toUTCString() + "</pubDate>" +
+  "<description>" + esc(desc) + "</description></item>";
+
+const rssRows = [
+  [DOMAIN + "/", "동네보살 — 무료 사주·운세와 계산기 " + meta.length + "가지", RSS_DESC],
+  // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
+  // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
+  ...(() => {
+    const now = new Date(Date.now() + 9 * 3600 * 1000);   // KST 기준 현재 달
+    const i = MANSE_PAGES.findIndex(p => p.y === now.getUTCFullYear() && p.mo === now.getUTCMonth() + 1);
+    const at = i < 0 ? 0 : Math.max(0, i - 6);
+    return MANSE_PAGES.slice(at, at + 24);
+  })().map(p => [
+    `${DOMAIN}/manse-${p.en}.html`, `${p.y}년 ${p.mo}월 만세력`,
+    `${p.y}년 ${p.mo}월 날짜별 일진과 음력, ${MANSE_SRC.MONTH_TERMS[p.mo].join("·")} 절기 시각.`]),
+  ...ILJU_PAGES.map(p => [
+    `${DOMAIN}/ilju-${p.en}.html`, `${p.ko}일주 성격`,
+    `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
+  ...ILGAN_PAGES.map(g => [
+    `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
+].slice(0, 100);
+
+const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
+  `<rss version="2.0"><channel>` +
+  `<title>동네보살</title><link>${DOMAIN}/</link>` +
+  `<description>${esc(RSS_DESC)}</description>` +
+  `<language>ko</language><lastBuildDate>${new Date().toUTCString()}</lastBuildDate>` +
+  rssRows.map(r => rssItem(r[0], r[1], r[2])).join("") +
+  `</channel></rss>`;
+fs.writeFileSync(path.join(OUT,"rss.xml"), rss);
+
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
 // 홈 화면에 추가했을 때 쓰이는 아이콘·이름

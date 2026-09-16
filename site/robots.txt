@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
 Sitemap: https://dongnebosal.com/sitemap.xml
+Sitemap: https://dongnebosal.com/rss.xml
