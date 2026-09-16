@@ -20,11 +20,22 @@
       "destination": "https://dongnebosal.com/$1",
       "statusCode": 301
     },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "salary-calc-zeta-plum.vercel.app" }],
+      "destination": "https://dongnebosal.com/$1",
+      "statusCode": 301
+    },
     { "source": "/lotto.html", "destination": "/", "statusCode": 301 },
     { "source": "/draw.html", "destination": "/", "statusCode": 301 },
     { "source": "/ladder.html", "destination": "/", "statusCode": 301 }
   ],
   "headers": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": { "neq": "dongnebosal.com" } }],
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
     {
       "source": "/img/(.*)",
       "headers": [{ "key": "Cache-Control", "value": "public, max-age=2592000" }]
