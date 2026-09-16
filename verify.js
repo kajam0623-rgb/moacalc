@@ -300,6 +300,22 @@ t("일간·십성 이미지 파일 존재", ILGAN_PAGES.every(g=>fs.existsSync("
 t("일간·십성 페이지 생성기 배선", /ILGAN_PAGES\.forEach/.test(bs) && /SIPSEONG_PAGES\.forEach/.test(bs), true);
 t("일간·십성 sitemap 포함", /smUrl\("ilgan-"\+g\.en\+"\.html"\)/.test(bs) && /smUrl\("sipseong-"\+s\.en\+"\.html"\)/.test(bs), true);
 t("사주 페이지에서 일간·십성으로 내부링크", /ilganChips\(null\)/.test(bs) && /sipseongChips\(null\)/.test(bs), true);
+
+// ── 타로 카드 뜻 22장 ──
+const TAROT_PAGES = require("./content_tarot.js");
+const tarotTool = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"todayfortune"'));
+const toolNames = new Function(tarotTool.slice(tarotTool.indexOf("var M="), tarotTool.indexOf("// 분야별 해석")) + "; return M.map(x=>x[1]);")();
+t("타로 원고 22장 · 번호 0~21 순서", TAROT_PAGES.length === 22 && TAROT_PAGES.every((c, i) => c.no === i), true);
+t("타로 원고 카드 이름이 도구 M과 일치", TAROT_PAGES.every((c, i) => c.ko === toolNames[i]), true);
+t("타로 카드 그림 파일 22장 존재", TAROT_PAGES.every(c => fs.existsSync(`img/char/tarot-${String(c.no).padStart(2, "0")}-${c.en}.webp`)), true);
+const TK = { symbol: 280, up: 280, rev: 280, love: 280, reunion: 200, work: 250, advice: 70, yesnoWhy: 60 };
+const tarotShort = TAROT_PAGES.flatMap(c => Object.keys(TK).filter(k => typeof c[k] !== "string" || c[k].replace(/\s/g, "").length < TK[k]).map(k => c.ko + "." + k));
+t("타로 원고 항목별 최소 분량", tarotShort.join(","), "");
+t("타로 키워드 정·역 4개씩 · 예/아니오 값", TAROT_PAGES.every(c => c.upWords.length === 4 && c.revWords.length === 4 && ["예", "아니오", "조건부"].includes(c.yesno)), true);
+const tSents = TAROT_PAGES.flatMap(c => Object.keys(TK).flatMap(k => c[k].split(/(?<=[.!?])\s*/).filter(x => x.length > 15)));
+t("타로 원고 카드 간 중복 문장 없음", tSents.length - new Set(tSents).size, 0);
+t("타로 원고는 존댓말 (자네 없음)", TAROT_PAGES.every(c => !/자네/.test(Object.keys(TK).map(k => c[k]).join(""))), true);
+t("타로 페이지 생성·사이트맵·도구 페이지 링크 배선", /TAROT_PAGES\.forEach/.test(bs) && /TAROT_PAGES\.map\(c=>smUrl\("tarot-/.test(bs) && /tarotChips\(null\)/.test(bs), true);
 // 십성 이름은 받침이 섞여 있다(비견/겁재). 하드코딩 조사가 남으면 "겁재과 연애"가 출력된다
 const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const FUN_TOP"));
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);

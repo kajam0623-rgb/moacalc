@@ -22,6 +22,7 @@ const ZODIAC_PAGES = require("./content_zodiac.js");
 const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
+const TAROT_PAGES = require("./content_tarot.js");       // 타로 메이저 아르카나 22장 — 카드 뜻
 const ILJIN_SRC = require("./content_iljin.js");
 
 // 페이지별 기준표. 계산 결과가 아니라 고정 해설이라 정적 HTML로 내보낸다.
@@ -951,6 +952,7 @@ ${tagHtml}
 ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
  : t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
  : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>'
+ : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 아르카나 22장의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
 ${introHtml}
@@ -984,6 +986,8 @@ const ilganChips = cur => '<div class="sibs">'+ILGAN_PAGES.map(g=>g.en===cur
   ? `<span class="cur">${g.ko}${g.el} 일간</span>` : `<a href="ilgan-${g.en}.html">${g.ko}${g.el} 일간</a>`).join("")+'</div>';
 const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===cur
   ? `<span class="cur">${s.ko} 뜻</span>` : `<a href="sipseong-${s.en}.html">${s.ko} 뜻</a>`).join("")+'</div>';
+const tarotChips = cur => '<div class="sibs">'+TAROT_PAGES.map(c=>c.en===cur
+  ? `<span class="cur">${c.ko} 카드</span>` : `<a href="tarot-${c.en}.html">${c.ko} 카드</a>`).join("")+'</div>';
 
 /* ── 일진 60갑자 ─────────────────────────────────────────────────
    "오늘 일진", "경진일", "갑자일 운세" 같은 검색어는 도구 페이지 하나로 받을 수 없다.
@@ -1383,6 +1387,42 @@ function sipseongPage(s){
       [`${s.ko}${josa(s.ko,"과/와")} ${s.pair}${josa(s.pair,"은/는")} 뭐가 다른가요?`,`둘 다 ${s.group}에 속하지만 음양이 다릅니다. 같은 계열이라도 ${s.ko}${josa(s.ko,"은/는")} ${s.keyword}로 나타나고, ${s.pair}${josa(s.pair,"은/는")} 결이 다르게 작용합니다. 두 글자가 함께 있으면 성격이 겹쳐 보이므로 어느 쪽이 더 강한지를 봅니다.`]],
     sibTitle:"다른 십성도 보기", sibs:sipseongChips(s.en),
     related:["saju","todayfortune","newyear","gunghap"]});
+}
+
+/* 타로 카드 뜻 — "연인 카드 역방향", "죽음 카드 뜻" 같은 검색어를 받는다.
+   카드 뜻은 어느 사이트나 비슷하므로, 연애·재회·일로 나눈 풀이와 그림 해설을 카드마다 따로 쓴다. */
+const ROMAN = ["0","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX","XXI"];
+const tarotArt = c => `img/char/tarot-${String(c.no).padStart(2,"0")}-${c.en}.webp`;
+function tarotPage(c){
+  const long = `타로 ${c.ko} 카드 뜻 — 정방향·역방향·연애 | 동네보살`;
+  const sec = (h, t) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`;
+  return seoPage({
+    crumb:`${c.ko} 카드`,
+    title: long.length <= 33 ? long : long.slice(3),
+    desc:`${c.ko} 카드 정방향은 ${c.upWords.slice(0,2).join("·")}, 역방향은 ${c.revWords.slice(0,2).join("·")}. 연애·재회·일에서 나왔을 때 뜻까지.`,
+    url:`${DOMAIN}/tarot-${c.en}.html`, img:tarotArt(c), hero:"img/tool/h-tarot.webp",
+    h1:`${ROMAN[c.no]} ${c.ko} 카드 — ${c.keyword}`,
+    sub:`메이저 아르카나 ${c.no}번 · ${c.eng} · 예/아니오 ${c.yesno}`,
+    parent:"tarot.html", parentName:"타로 카드",
+    tool:"tarot",
+    tags:[`${c.ko} 카드 뜻`,`${c.ko} 역방향`,`타로 ${c.ko} 연애`,`${c.ko} 카드 재회`,`${c.ko} 예스노`],
+    body:`<div class="exbox"><h3>${c.ko} 카드 한눈에 보기</h3>`+
+      [["번호",`메이저 아르카나 ${c.no}번 (${ROMAN[c.no]})`],["영문 이름",c.eng],["정방향",c.upWords.join(" · ")],["역방향",c.revWords.join(" · ")],["예/아니오",c.yesno]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>조언</span><b>${esc(c.advice)}</b></div></div>`+
+      `<section class="guide" style="display:flow-root"><h2>${c.ko} 카드 상징 읽기</h2><img class="tr-art" width="480" height="720" src="${tarotArt(c)}" alt="${esc(c.ko)} 타로 카드 그림" loading="lazy" onerror="this.remove()"><div class="intro" style="margin-top:0"><p style="margin-bottom:10px;color:var(--muted);font-size:12.5px">동네보살의 카드 그림은 전통 라이더–웨이트 덱의 뜻을 새 그림으로 옮긴 것입니다. 아래 상징 설명은 전통 덱의 그림을 기준으로 합니다.</p>${para(c.symbol)}</div></section>`+
+      sec(`${c.ko} 카드 정방향 뜻`, c.up)+
+      sec(`${c.ko} 카드 역방향 뜻`, c.rev)+
+      sec(`연애에서 ${c.ko} 카드`, c.love)+
+      sec(`재회·속마음 질문에서 ${c.ko} 카드`, c.reunion)+
+      sec(`일·금전에서 ${c.ko} 카드`, c.work)+
+      sec(`${c.ko} 카드는 예일까 아니오일까`, c.yesnoWhy),
+    faq:[
+      [`${c.ko} 카드 역방향은 나쁜 뜻인가요?`, c.rev.split("\n")[0]],
+      [`${c.ko} 카드가 연애 질문에 나오면요?`, c.love.split("\n")[0]],
+      ["타로 카드는 어떻게 뽑나요?","타로 카드 페이지에서 카드를 섞으면 메이저 아르카나 22장이 펼쳐집니다. 마음이 가는 세 장을 고르면 과거·현재·미래 자리에 놓이고, 한 장씩 뒤집어 자리와 방향에 맞는 풀이를 읽습니다. 정방향과 역방향은 섞는 순간 정해집니다."]],
+    sibTitle:"메이저 아르카나 22장", sibs:tarotChips(c.en),
+    related:["tarot","todayfortune","gunghap","horoscope"]});
 }
 
 /* 만세력 월력 페이지 — "2026년 9월 만세력" 같은 검색어를 받는다.
@@ -1794,6 +1834,8 @@ function indexPage(){
       ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
     ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
       SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
+    ["타로 22", "메이저 아르카나 22장. 정방향·역방향과 연애·재회·일에서의 뜻.",
+      TAROT_PAGES.map(c=>[`tarot-${c.en}.html`, `${c.ko} 카드 뜻`, c.keyword])],
     ["만세력 월력 " + MANSE_PAGES.length, "달마다 한 장. 날짜별 일진·음력과 절기 절입 시각이 들어 있다.",
       Array.from({length:MANSE_Y1-MANSE_Y0+1},(_,i)=>MANSE_Y0+i).map(y=>
         [`manse-${y}-01.html`, `${y}년 만세력`, `1월부터 12월까지 · 절기 24개와 날짜별 간지`])],
@@ -1928,6 +1970,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
+  TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
@@ -1972,6 +2015,10 @@ ${ILGAN_PAGES.map(g=>`- [${g.ko}${g.el}(${g.han})](${DOMAIN}/ilgan-${g.en}.html)
 
 ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html): ${s.rule} · ${s.keyword}`).join("\n")}
 
+## 타로 카드별 상세 (22) — 메이저 아르카나
+
+${TAROT_PAGES.map(c=>`- [${c.ko} 카드(${c.eng})](${DOMAIN}/tarot-${c.en}.html): ${c.keyword} · 정방향 ${c.upWords.join("·")} · 역방향 ${c.revWords.join("·")}`).join("\n")}
+
 ## 일진별 상세 (60) — 날에 붙는 간지
 
 일진은 60일마다 돌아온다. 같은 일진이라도 사람마다 결과가 갈리는 것은, 그날 천간이 각자의 일간에게 다른 십성이 되기 때문이다. 아래 각 페이지에 일간 열 가지의 십성·점수·십이운성이 계산되어 있다.
@@ -2009,6 +2056,8 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `border-left:2px solid var(--fun);padding-left:10px;}`+
   `\n.hero-art.mascot{border:0;border-radius:0;box-shadow:none;width:auto;max-width:100%;max-height:430px;margin:0 auto;filter:drop-shadow(0 14px 32px color-mix(in srgb,var(--fun) 28%,transparent));}`+
   `\n@media (max-width:600px){.hero-art.mascot{max-height:240px;object-fit:contain;object-position:center;}}`+
+  `\n.tr-art{float:right;width:180px;height:auto;border-radius:10px;border:1px solid var(--line-2);margin:4px 0 12px 16px;}`+
+  `\n@media (max-width:600px){.tr-art{width:40%;}}`+
   `\n.fortune4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 2px;}`+
   `\n@media (max-width:720px){.fortune4{grid-template-columns:1fr 1fr;gap:10px;}}`+
   // 모바일은 한 줄로 쌓여 카드가 히어로 그림 밑(첫 화면 밖)으로 밀린다. 부제 바로 아래로 끌어올린다
@@ -2051,6 +2100,7 @@ STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), 
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
+TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
 ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
 MANSE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"manse-"+p.en+".html"), mansePage(p)));
 ILJU_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"ilju-"+p.en+".html"), iljuPage(p)));
@@ -2070,6 +2120,7 @@ const rssItem = (loc, title, desc) =>
 
 const rssRows = [
   [DOMAIN + "/", "동네보살 — 무료 사주·운세와 계산기 " + meta.length + "가지", RSS_DESC],
+  ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
   // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
   // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
   ...(() => {
@@ -2085,7 +2136,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 100);
+].slice(0, 120);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
@@ -2120,6 +2171,6 @@ if (fs.existsSync(IMG_SRC)) {
   console.log("   이미지 복사:", n, "개");
 }
 
-console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", ILJIN_PAGES.length, "일진(+달력 1) +", ILJU_PAGES.length, "일주 +", MANSE_PAGES.length, "월력");
+console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", TAROT_PAGES.length, "타로 +", ILJIN_PAGES.length, "일진(+달력 1) +", ILJU_PAGES.length, "일주 +", MANSE_PAGES.length, "월력");
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
