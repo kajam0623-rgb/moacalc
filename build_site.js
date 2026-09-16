@@ -815,7 +815,14 @@ const FAVICON = `<link rel="icon" href="/img/favicon.ico" sizes="any">`+
   `<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">`+
   `<link rel="manifest" href="/site.webmanifest">`+
   `<meta name="theme-color" content="#101b3d">`;
-const headExtra = FAVICON+(GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
+/* og:site_name 은 구글이 검색결과 사이트 이름을 정할 때 보는 두 번째 신호다
+   (1순위는 홈페이지의 WebSite 구조화 데이터, 그건 이미 "동네보살"로 넣어뒀다).
+   전에는 about/privacy/terms 세 장에만 있었고 나머지 353장에 없었다. 그 사이
+   구글은 사이트 이름을 "별자리 운세"로 잡아 대출 계산기 제목에까지 붙였다.
+   신호를 한 군데서 전 페이지에 내보낸다. */
+const SITE_NAME = "동네보살";
+const headExtra = FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
+  (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
     `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');</script>`:"")+
@@ -1216,7 +1223,6 @@ function sitePage(o){
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.desc)}">
 <meta property="og:url" content="${url}">
-<meta property="og:site_name" content="동네보살">
 ${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">
 ${headExtra}
