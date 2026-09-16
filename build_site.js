@@ -1751,7 +1751,7 @@ function iljinHubPage(){
 <meta property="og:description" content="오늘 일진을 바로 확인하고 60갑자 60가지를 각각 풀이합니다."><meta property="og:url" content="${url}">
 <meta property="og:image" content="${DOMAIN}/img/tool/h-todayfortune.webp">
 <link rel="stylesheet" href="style.css?v=${styleV}">
-<script type="application/ld+json">${JSON.stringify(ld)}</script>
+<script type="application/ld+json">${JSON.stringify(ld)}</script>${crumbLd([["홈",DOMAIN+"/"],["오늘의 운세",`${DOMAIN}/todayfortune.html`],["일진 달력",url]])}
 <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
   mainEntity:faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})}</script>${headExtra}
 </head><body><div class="wrap">
