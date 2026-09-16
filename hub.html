@@ -414,7 +414,7 @@
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
   /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
-  .tr-b,.tr-dk{background:radial-gradient(circle at 50% 50%,rgba(230,178,90,.22),transparent 55%),repeating-linear-gradient(45deg,#1b2550 0 6px,#152042 6px 12px);
+  .tr-b,.tr-dk{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
     color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
   .tr-b{font-size:26px;border-color:#2c3a6e;}
   .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
@@ -470,6 +470,23 @@
   .tr-read .one{border-left:3px solid var(--fun);padding:2px 0 2px 12px;margin:12px 0;}
   .tr-read .one b{font-size:13.5px;}
   .tr-read .one p{font-size:13px;color:var(--muted);line-height:1.75;margin-top:3px;}
+  /* 대화형 타로 — 보살 말풍선과 선택지 */
+  .bs-chat{display:flex;flex-direction:column;gap:10px;}
+  .bs-say{display:flex;gap:10px;align-items:flex-start;}
+  .bs-say img{width:44px;height:45px;flex:none;border-radius:50%;object-fit:contain;padding:2px;background:var(--surface-2);border:1px solid color-mix(in srgb,var(--fun) 45%,var(--line));}
+  .bs-say p{margin:0;max-width:88%;background:var(--surface-2);border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:14px;line-height:1.7;}
+  .bs-me{align-self:flex-end;max-width:80%;background:var(--fun);color:#1b1405;font-weight:700;font-size:13.5px;border-radius:14px 4px 14px 14px;padding:8px 13px;}
+  .bs-opts{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .bs-opt{display:block;text-align:center;padding:12px 14px;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;background:var(--surface);color:var(--ink);transition:.15s;}
+  .bs-opt:hover,.bs-opt:focus-visible{border-color:var(--fun);background:color-mix(in srgb,var(--fun) 10%,var(--surface));outline:none;}
+  .bs-birth{display:flex;flex-direction:column;gap:6px;margin-left:54px;}
+  .tr-rh{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px;}
+  .tr-rh a{font-size:12px;color:var(--accent-ink);white-space:nowrap;}
+  .tr-read .one p:not(.st){color:var(--ink);}
+  .tr-read .one p.st{font-size:12.5px;}
+  .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .tr-quote{margin:12px 0;padding:12px 14px;border-left:3px solid var(--fun);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--fun) 10%,transparent);color:var(--fun-ink);font-weight:700;font-size:14.5px;line-height:1.6;}
+  @media (prefers-reduced-motion:reduce){.bs-opt{transition:none;}}
   /* 인쇄 = 결과지. 종이에 남는 건 풀이뿐이고 화면용 장치는 전부 뺀다.
      다크 모드로 보던 사람이 그대로 인쇄하면 검은 바탕이 찍히므로
      변수를 밝은 값으로 덮어 테마와 상관없이 흰 종이가 나오게 한다. */
@@ -1934,7 +1951,7 @@
       askFx(el,{});}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우고","일간의 힘부터 재어 본다","격국과 신살을 짚는다"],"명식을 아직 안 뽑았네.");birthDial(el,"#d");}},
 
-  {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"과거·현재·미래 3장",render:function(el){
+  {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"보살에게 묻고 뽑는 타로",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
     ["I","마법사","🎩","의지와 재능이 갖춰진 때. 원하는 것을 현실로 만들 도구가 이미 손안에 있습니다.","재주를 속임수에 쓰거나, 시작만 하고 마무리를 못 하는 산만함."],
     ["II","여사제","🌙","직관과 내면의 지혜. 서두르지 말고 마음의 소리를 들을 때입니다.","감을 무시한 선택, 혹은 비밀이 드러나며 생기는 혼란."],
@@ -1957,63 +1974,6 @@
     ["XIX","태양","☀️","성공과 기쁨, 명료함. 있는 그대로 빛나도 되는 시기입니다.","일시적 구름. 성과가 늦어질 뿐 방향은 틀리지 않았습니다."],
     ["XX","심판","🎺","부활과 소명. 과거를 정리하고 한 단계 올라설 부름이 옵니다.","과거에 매인 자책. 용서(특히 자신에 대한)가 열쇠입니다."],
     ["XXI","세계","🌍","완성과 성취. 하나의 사이클이 아름답게 닫힙니다.","마무리 직전의 지연. 마지막 조각 하나만 채우면 됩니다."]];
-    // 분야별 해석 — [연애·관계, 일·금전] (카드 순서는 M과 동일)
-    var FLD=[
-    ["설레지만 아직 형태가 없는 감정입니다. 재고 따지면 놓치고, 무작정 뛰어들면 다칩니다.","새 일을 벌이기 좋은 때. 다만 계약서와 자금 계획 없이 시작하면 대가를 치릅니다."],
-    ["마음을 움직일 수단이 이미 손에 있습니다. 먼저 연락하는 쪽이 흐름을 쥡니다.","실력을 보여줄 무대가 열립니다. 준비된 것을 꺼내 놓기만 하면 됩니다."],
-    ["말하지 않은 마음이 오갑니다. 캐묻기보다 기다리는 편이 관계를 지킵니다.","드러나지 않은 정보가 열쇠입니다. 겉으로 보이는 조건만으로 판단하지 마세요."],
-    ["애정이 무르익고 돌보는 마음이 커집니다. 결혼·동거 등 다음 단계 이야기가 나옵니다.","투자한 것이 열매를 맺습니다. 사람을 키우는 일에서 특히 성과가 납니다."],
-    ["안정을 원하는 마음이 강합니다. 규칙을 정하면 편해지지만 강요하면 숨이 막힙니다.","체계와 직위가 힘이 됩니다. 원칙대로 처리한 일이 신뢰로 돌아옵니다."],
-    ["주변의 조언이나 양가의 의견이 관계에 개입합니다. 전통적인 절차가 도움이 됩니다.","멘토·선배·기존 시스템의 도움을 받으세요. 혼자 새로 만들 필요가 없습니다."],
-    ["선택의 순간입니다. 두 사람 사이든 두 사람 중이든, 미루면 상황이 대신 결정합니다.","협업과 계약의 카드. 함께할 상대를 고르는 판단이 성패를 가릅니다."],
-    ["밀어붙이면 이깁니다. 다만 상대의 속도를 무시하면 이기고도 잃습니다.","추진력이 최고조입니다. 방향만 맞다면 지금이 속도를 낼 때입니다."],
-    ["힘으로 누르지 말고 다정함으로 다가가세요. 인내가 관계를 바꿉니다.","조급함을 이기는 사람이 가져갑니다. 꾸준히 밀고 간 쪽이 결국 인정받습니다."],
-    ["거리를 두고 마음을 정리할 시간이 필요합니다. 혼자만의 답을 먼저 찾으세요.","혼자 파고드는 작업에 유리합니다. 사람을 모으는 일은 잠시 미루세요."],
-    ["예기치 못한 만남이나 재회가 있습니다. 흐름이 바뀌는 시점입니다.","운때가 도는 카드. 준비된 상태라면 우연처럼 기회가 붙습니다."],
-    ["공평함이 관건입니다. 한쪽만 참고 있었다면 그 사실이 드러납니다.","계약·정산·법적 문제에서 정확한 쪽이 이깁니다. 문서를 남기세요."],
-    ["기다림의 시기입니다. 지금 애써 끌어당기면 오히려 멀어집니다.","일이 멈춰 보이지만 숙성 중입니다. 관점을 바꾸면 새 길이 보입니다."],
-    ["한 관계의 형태가 끝나고 다른 형태로 바뀝니다. 이별이 아니라 변화일 수 있습니다.","낡은 방식을 정리해야 합니다. 붙잡고 있는 것을 놓아야 다음이 들어옵니다."],
-    ["서로 다른 속도를 맞춰가는 시기입니다. 극단적인 요구는 관계를 해칩니다.","분산과 균형이 답입니다. 한쪽에 몰아넣지 말고 나눠서 가세요."],
-    ["끊어야 할 집착이나 소모적인 관계가 보입니다. 익숙함이 곧 사랑은 아닙니다.","단기 이익의 유혹이 큽니다. 조건이 지나치게 좋다면 대가가 숨어 있습니다."],
-    ["갑작스러운 충돌이나 이별의 조짐. 감춰둔 문제가 한 번에 터집니다.","예상 밖의 변수로 계획이 무너집니다. 무너진 자리가 진짜 문제를 보여줍니다."],
-    ["조용한 회복과 치유. 서두르지 않아도 마음이 다시 열립니다.","장기적으로 좋아지는 흐름. 지금 뿌린 것이 나중에 크게 돌아옵니다."],
-    ["오해와 불안이 섞입니다. 확인하지 않은 추측이 관계를 흔듭니다.","정보가 불확실합니다. 큰 결정은 사실 확인이 끝난 뒤로 미루세요."],
-    ["관계가 밝게 드러납니다. 숨길 것 없이 표현해도 되는 시기입니다.","성과가 눈에 보이는 형태로 나옵니다. 인정받고 알려지기 좋은 때입니다."],
-    ["관계를 다시 정의할 때입니다. 지난 일을 정리하면 새 국면이 열립니다.","묵혀둔 일이 다시 살아납니다. 과거의 인연이나 프로젝트에서 기회가 옵니다."],
-    ["하나의 여정이 완성됩니다. 결실을 맺거나, 잘 마무리하고 다음으로 갑니다.","목표 달성과 확장. 여기까지 온 것을 정리해 다음 무대로 옮길 때입니다."]];
-    var POS=["과거","현재","미래"];
-    // 메이저 아르카나의 여정 단계 — 카드 번호대가 뜻하는 삶의 구간 (0~7 / 8~14 / 15~21)
-    var ARC=["번호 0~7번대 카드입니다. 메이저 아르카나의 첫 구간으로, 나를 이루는 기본 재료가 정해지는 단계입니다. 아직 형태가 잡히기 전이라 선택의 여지가 가장 큰 자리이기도 합니다.",
-    "번호 8~14번대 카드입니다. 여정의 중반으로, 가진 것을 시험받고 방향이 정해지는 단계입니다. 이 구간의 카드는 대개 참고 견디는 힘이나 관점을 바꾸는 일에 대해 말합니다.",
-    "번호 15~21번대 카드입니다. 여정의 후반으로, 정리하고 완성하는 단계입니다. 무너뜨릴 것과 남길 것을 가르는 힘이 강한 구간이라 변화의 폭도 큽니다."];
-    // 포지션 자체의 성격 — 카드와 무관하게 그 자리가 뜻하는 것 (읽는 법 안내)
-    var POS_GUIDE=["과거 자리는 바꿀 수 없는 사건이 아니라, 지금 상황을 만든 원인을 가리킵니다. 이 카드가 마음에 들지 않아도 문제가 아닙니다. 여기서 무엇이 시작됐는지만 확인하면 됩니다.",
-    "현재 자리는 지금 이 순간 작동하고 있는 힘입니다. 세 장 중 내가 직접 손댈 수 있는 유일한 자리라, 오늘의 선택은 전부 여기서 나옵니다.",
-    "미래 자리는 확정된 결말이 아니라 지금 흐름이 그대로 이어졌을 때의 도착점입니다. 현재 자리를 바꾸면 이 카드의 모양도 함께 바뀝니다."];
-    // 포지션별 해석 — [과거, 현재, 미래] (카드 순서는 M과 동일, 역방향은 접미로 처리)
-    var POSM=[
-    ["과거의 무모한 시작이 지금 상황의 뿌리입니다.","지금 계산 없이 뛰어들고 싶은 마음이 움직이고 있습니다.","곧 새로운 출발선에 서게 됩니다. 준비물은 용기 하나면 됩니다."],
-    ["이미 가진 재능으로 시작한 일이 지금까지 이어지고 있습니다.","원하는 것을 만들 도구가 지금 손안에 모여 있습니다.","실력을 펼칠 무대가 곧 열립니다. 준비한 것을 꺼내면 됩니다."],
-    ["말하지 못한 마음이나 감춰진 사정이 지금 상황의 배경입니다.","직감이 유난히 예리한 때입니다. 마음의 소리부터 들으세요.","시간이 지나면 감춰졌던 것이 드러나 답이 선명해집니다."],
-    ["정성 들여 돌보고 가꿔온 것이 지금의 토대가 되었습니다.","애정과 창조력이 무르익어 결실을 향해 자라는 중입니다.","돌본 만큼 풍요로운 결실이 돌아오는 시기가 옵니다."],
-    ["원칙과 책임으로 쌓아 올린 기반이 지금을 받치고 있습니다.","질서를 세우고 중심을 잡아야 할 자리에 서 있습니다.","기반이 단단해지고 주도권을 쥐는 위치로 올라섭니다."],
-    ["어른이나 전통의 가르침이 지금 선택의 밑그림이 되었습니다.","검증된 길과 조언자의 말에 힘이 실리는 때입니다.","믿을 만한 조력자가 나타나 검증된 길을 안내합니다."],
-    ["과거의 한 선택이 지금 관계와 상황의 방향을 정했습니다.","마음이 향하는 쪽과 조건 사이에서 선택이 진행 중입니다.","중요한 갈림길이 다가옵니다. 마음이 향하는 쪽에 답이 있습니다."],
-    ["밀어붙여 얻어낸 승리의 경험이 지금의 추진력입니다.","고삐를 쥐고 달리는 중입니다. 방향만 맞다면 그대로 가세요.","속도가 붙어 목표에 빠르게 다가섭니다. 핸들만 놓치지 마세요."],
-    ["힘이 아니라 인내로 버텨온 시간이 지금을 만들었습니다.","부드러운 용기로 상황을 길들이는 중입니다. 조급함만 조심하세요.","서두르지 않은 다정함이 결국 상대와 상황을 움직입니다."],
-    ["혼자 고민하며 답을 찾던 시간이 지금 상황의 출발점입니다.","잠시 물러나 정리할 때입니다. 소음을 줄이면 답이 보입니다.","혼자만의 시간을 지나며 스스로 답을 찾게 됩니다."],
-    ["예상 못 한 사건이 흐름을 바꿔 지금에 이르렀습니다.","운의 바퀴가 도는 중입니다. 흐름을 타는 쪽이 이깁니다.","전환점이 다가옵니다. 우연처럼 보이는 기회를 놓치지 마세요."],
-    ["그때의 판단과 선택이 지금 결과로 정산되고 있습니다.","공정함이 관건인 때입니다. 기록과 근거를 남기세요.","뿌린 대로 거두는 결말이 옵니다. 정확한 쪽이 이깁니다."],
-    ["멈춰 있던 시간이 사실은 관점을 바꾸는 숙성기였습니다.","지금은 기다림의 구간입니다. 억지로 당기면 멀어집니다.","기다림 끝에 관점이 뒤집히며 새 길이 보입니다."],
-    ["한 시절의 끝이 지금 상황의 진짜 시작점이었습니다.","낡은 것을 보내는 중입니다. 붙잡을수록 이별이 길어집니다.","하나의 형태가 끝나고 완전히 새로운 국면이 열립니다."],
-    ["극단을 피하고 섞어 온 균형 감각이 지금의 자산입니다.","서로 다른 것을 조율하는 중입니다. 중용이 답입니다.","균형을 되찾고 서로 다른 것이 어우러지는 때가 옵니다."],
-    ["끊지 못한 집착이나 달콤한 유혹이 지금까지 이어졌습니다.","익숙함에 묶여 있는 때입니다. 사슬은 생각보다 느슨합니다.","유혹이 커지는 구간이 옵니다. 조건이 좋을수록 대가를 살피세요."],
-    ["갑작스러운 충격이나 붕괴가 지금 상황의 원점입니다.","쌓아온 것이 흔들리는 중입니다. 근본부터 다시 보세요.","급격한 변화가 올 수 있습니다. 무너진 자리가 기초를 보여줍니다."],
-    ["어두운 터널을 지나온 경험이 지금의 희망을 만들었습니다.","조용한 회복이 진행 중입니다. 서두르지 않아도 됩니다.","치유와 희망의 시기가 옵니다. 뿌린 것이 천천히 돌아옵니다."],
-    ["모호했던 상황과 오해가 지금까지 그림자를 드리웠습니다.","안개 속을 걷는 중입니다. 추측 대신 확인이 필요합니다.","불확실한 구간을 지나면 안개가 걷히고 진실이 드러납니다."],
-    ["성취와 인정의 경험이 지금의 자신감이 되었습니다.","가장 밝은 구간에 서 있습니다. 숨기지 말고 드러내세요.","성과가 눈에 보이는 형태로 드러나는 밝은 시기가 옵니다."],
-    ["과거의 일이 완전히 끝나지 않고 지금을 부르고 있습니다.","지난 일을 정리하고 다시 일어서라는 부름이 온 때입니다.","과거의 인연이나 일이 되살아나 한 단계 올라섭니다."],
-    ["하나의 여정을 완주한 경험이 지금의 밑천입니다.","한 사이클이 완성 직전입니다. 마지막 조각만 채우면 됩니다.","여정이 아름답게 완성되고 다음 무대가 열립니다."]];
     // 카드 상징 스토리 — 그림의 의미 1~2문장 (아트 이미지와 함께 읽힘)
     var STORY=[
     "절벽 끝에서 하늘을 보며 걷는 젊은이. 어리석음이 아니라 아직 결과를 모르는 순수한 가능성입니다.",
@@ -2039,42 +1999,94 @@
     "천사의 나팔 소리에 관에서 일어나는 사람들. 끝난 줄 알았던 것이 다시 부름을 받는 장면입니다.",
     "월계수 화환 속에서 춤추는 사람. 한 바퀴를 온전히 돈 자만이 추는 완성의 춤입니다."];
     var ART={0:"tarot-00-fool",1:"tarot-01-magician",2:"tarot-02-priestess",3:"tarot-03-empress",4:"tarot-04-emperor",5:"tarot-05-hierophant",6:"tarot-06-lovers",7:"tarot-07-chariot",8:"tarot-08-strength",9:"tarot-09-hermit",10:"tarot-10-wheel",11:"tarot-11-justice",12:"tarot-12-hanged",13:"tarot-13-death",14:"tarot-14-temperance",15:"tarot-15-devil",16:"tarot-16-tower",17:"tarot-17-star",18:"tarot-18-moon",19:"tarot-19-sun",20:"tarot-20-judgement",21:"tarot-21-world"};
-    var FLDN=["연애·관계","일·금전","전체 흐름"];
-    el.innerHTML='<label>무엇에 대해 묻고 싶으세요?</label><select id="f"><option value="0">연애·관계</option><option value="1">일·금전</option><option value="2">전체 흐름</option></select>'+
-    '<p class="note tr-hint" id="hint" style="margin-top:12px" aria-live="polite"></p>'+
-    '<div class="tr-table" id="tb"></div>'+
-    '<div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>'+
-    '<button id="re" style="margin-top:16px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">처음부터 다시 섞기</button>';
-    // 세 장을 엮는 종합 해석 — 역방향 수·여정 단계·결과 카드 방향으로 조합
-    function summary(pk,fi){
-      var revN=pk.filter(function(x){return x.rev;}).length;
-      var avg=(pk[0].i+pk[1].i+pk[2].i)/3;
-      var flow=revN===0?"세 장 모두 정방향입니다. 지금 흐름에 큰 저항이 없다는 뜻이라, 망설이는 시간이 가장 큰 손해입니다."
-        :revN===1?"한 장이 역방향입니다. 전체 흐름은 살아 있고, 한 지점에서만 속도가 걸립니다. 그 자리를 먼저 손보세요."
-        :revN===2?"두 장이 역방향입니다. 방향보다 방식에 문제가 있습니다. 목표는 그대로 두고 접근을 바꿀 때입니다."
-        :"세 장 모두 역방향입니다. 지금은 밀어붙일 때가 아니라 전제를 다시 볼 때입니다. 한 발 물러서면 오히려 빨라집니다.";
-      var stage=avg<7?"뽑힌 카드들이 메이저 아르카나 앞쪽에 몰려 있습니다. 아직 형태가 잡히기 전, 시작과 선택의 구간입니다."
-        :avg<15?"카드들이 여정의 중반에 놓여 있습니다. 시련을 통과하며 방향이 정해지는 구간입니다."
-        :"카드들이 여정의 후반에 있습니다. 정리하고 매듭짓는 힘이 강한 구간입니다.";
-      var fut=pk[2].rev
-        ? "미래 자리의 "+pk[2].c[1]+"가 역방향으로 나왔습니다. 결말이 나쁘다는 뜻이 아니라, 지금 방식 그대로 가면 결과가 늦거나 다른 모양으로 온다는 신호입니다."
-        : "미래 자리의 "+pk[2].c[1]+"가 정방향입니다. 현재 흐름을 유지했을 때 도달하는 지점이 이 카드의 방향입니다.";
-      var end=fi==="0"?"관계에 관한 질문이라면, 오늘 뽑은 세 장은 상대의 마음보다 내가 어떤 자리에 서 있는지를 먼저 보여줍니다."
-        :fi==="1"?"일과 돈에 관한 질문이라면, 세 장의 흐름은 결과보다 지금 손봐야 할 조건을 가리킵니다."
-        :"질문을 더 좁혀서 한 번 더 보면, 같은 카드라도 훨씬 구체적인 답이 나옵니다.";
-      var span=Math.max(pk[0].i,pk[1].i,pk[2].i)-Math.min(pk[0].i,pk[1].i,pk[2].i);
-      var spread=span>=14?"세 장의 번호가 넓게 흩어져 있습니다. 서로 다른 단계의 힘이 한꺼번에 걸린 상황이라, 한 가지 기준으로 정리하려 들면 오히려 꼬입니다. 자리마다 따로 판단하세요."
-        :span<=6?"세 장의 번호가 가까이 모여 있습니다. 과거·현재·미래가 같은 주제로 이어져 있다는 뜻이라, 지금 붙잡고 있는 문제 하나가 세 자리를 모두 지배하고 있습니다."
-        :"세 장의 번호가 적당한 간격으로 놓여 있습니다. 흐름이 한 방향으로 천천히 이동하는 중이라, 급하게 바꾸기보다 지금 속도를 유지하는 편이 낫습니다.";
-      return '<div class="sj-sec"><h3>세 장을 함께 보면</h3><p>'+flow+' '+stage+'</p>'+
-        '<p style="margin-top:10px">'+spread+'</p>'+
-        '<p style="margin-top:10px">'+fut+' '+end+'</p>'+
-        '<p style="margin-top:10px">이 스프레드는 메이저 아르카나 22장 중 세 장을 뽑아 과거·현재·미래 자리에 놓은 결과입니다. 같은 카드라도 어느 자리에 놓이느냐에 따라 뜻이 달라지므로, 카드 이름의 인상보다 자리와 방향을 함께 읽어야 합니다. 오늘 답이 흐릿하게 느껴진다면 카드가 아니라 질문이 넓어서일 가능성이 큽니다. 질문을 한 문장으로 좁혀 다시 뽑아보세요.</p></div>';}
+    // 카드 원소(전통 대응: 불·물·흙·바람)를 오행으로 옮긴다. 바람은 검의 원소라 금으로 본다 (목화토금수=01234)
+    var CARD_EL=[3,3,4,2,1,2,3,4,1,2,1,3,4,4,1,2,1,3,4,1,1,2];
+    // 예/아니오 성향 — content_tarot.js 의 yesno 와 같아야 한다
+    var YN=["예","예","조건부","예","예","조건부","예","예","예","조건부","예","조건부","아니오","아니오","예","아니오","아니오","예","조건부","예","예","예"];
+    var YN_LINE={"예":["패가 고개를 끄덕이네. 답은 '예' 쪽이야. 다만 움직이는 건 자네 몫이지.","'예'로 기우는 패인데 거꾸로 나왔어. 되긴 되는데 늦어지거나 조건이 붙는 게야."],
+      "아니오":["패가 고개를 젓는구먼. 지금은 '아니오' 쪽이야. 억지로 밀면 더 꼬이네.","'아니오'로 기우는 패가 뒤집혔으니 막힌 게 조금씩 풀리는 중이야. 당장은 아니어도 때를 기다리면 길이 보이네."],
+      "조건부":["답이 반반이야. 조건을 갖추면 '예'가 되는 패지. 무엇이 모자란지부터 챙기게.","아직은 답이 안개 속이야. 확인할 것부터 확인하고 다시 물어보게."]};
+    // 고민 → 질문 → 스프레드. sp 의 첫 값은 TAROT_READ 의 role 키, 두 번째는 자리 이름
+    var TOPICS=[
+      {k:"love",name:"연애·인연",hi:"그래, 마음 쓰이는 사람이 있구먼. 무엇이 제일 궁금한지 골라 보게.",qs:[
+        {q:"그 사람 속마음이 궁금해요",say:"속마음은 말보다 패가 먼저 알지. 자네 마음, 그 사람 마음, 둘의 앞날을 차례로 놓아 보겠네.",sp:[["mine","내 마음"],["theirs","그 사람 마음"],["future","둘의 앞날"]]},
+        {q:"다시 만날 수 있을까요",say:"끊어진 줄도 다시 이어질 수 있는 법이야. 지난 인연부터 앞으로까지 세 장으로 짚어 보겠네.",sp:[["past","지난 인연"],["now","지금"],["future","앞으로"]]},
+        {q:"새 인연은 언제 올까요",say:"인연은 서두른다고 빨리 오지 않네. 지금의 자네와 다가올 인연, 두 장만 보겠네.",sp:[["now","지금의 나"],["future","다가올 인연"]]},
+        {q:"이 관계, 계속해도 될까요",say:"갈지 말지 망설여지는 게 당연하지. 지금 관계와 걸림돌, 그리고 내 조언을 한 장씩 놓겠네.",sp:[["now","지금 관계"],["block","걸림돌"],["advice","보살의 조언"]]}]},
+      {k:"money",name:"재물·돈",hi:"돈 문제구먼. 어디가 제일 답답한지 골라 보게.",qs:[
+        {q:"막힌 돈줄은 언제 트일까요",say:"막힌 데가 있으면 뚫는 데도 있는 법이야. 원인과 푸는 길, 두 장이면 충분하네.",sp:[["cause","막힌 원인"],["fix","푸는 길"]]},
+        {q:"돈이 어디로 새는 걸까요",say:"버는 것보다 새는 걸 먼저 막아야 하네. 새는 곳과 막는 법을 짚어 보겠네.",sp:[["cause","새는 곳"],["fix","막는 법"]]},
+        {q:"큰돈 쓸 결정, 해도 될까요",say:"큰돈은 패만 믿고 쓰면 안 되네. 흐름을 보고 조심할 것을 챙기는 데만 쓰게. 세 장 놓겠네.",sp:[["now","지금 흐름"],["block","조심할 것"],["advice","보살의 조언"]]},
+        {q:"빌려준 돈, 받을 수 있을까요",say:"받을 돈이 안 들어오면 속이 타지. 지금 상황, 그 사람 사정, 앞으로를 차례로 보겠네.",sp:[["now","지금 상황"],["theirs","그 사람 사정"],["future","앞으로"]]}]},
+      {k:"work",name:"일·직장",hi:"일 때문에 속을 끓이는구먼. 무엇이 제일 걸리는지 골라 보게.",qs:[
+        {q:"이직해도 될까요",say:"옮길지 버틸지는 자네가 정하는 게야. 나는 지금 자리와 걸림돌, 그리고 조언을 보여 주겠네.",sp:[["now","지금 자리"],["block","걸림돌"],["advice","보살의 조언"]]},
+        {q:"인정받을 수 있을까요",say:"애쓴 만큼 알아주지 않으면 서운하지. 지금 위치부터 앞으로까지 세 장으로 보겠네.",sp:[["now","지금 위치"],["block","가로막는 것"],["future","앞으로"]]},
+        {q:"시험·합격 운이 궁금해요",say:"합격은 결국 자네 손에 달렸지만 흐름은 짚어 줄 수 있네. 준비 상태와 변수, 흐름을 보겠네.",sp:[["now","준비 상태"],["block","변수"],["future","흐름"]]},
+        {q:"사람 때문에 힘들어요",say:"일보다 사람이 더 힘든 법이야. 자네 마음, 그 사람 마음, 그리고 풀 방법을 보겠네.",sp:[["mine","내 마음"],["theirs","그 사람 마음"],["advice","보살의 조언"]]}]},
+      {k:"day",name:"오늘·요즘 흐름",hi:"딱히 고민이 있다기보다 흐름이 궁금한 게로구먼. 어떻게 볼지 골라 보게.",qs:[
+        {q:"오늘 하루 어떨까요",say:"오늘 하루는 한 장이면 족하네. 마음 가는 카드 하나만 뽑게.",sp:[["now","오늘의 기운"]]},
+        {q:"요즘 흐름 전체가 궁금해요",say:"지난 흐름과 지금, 앞으로를 한 줄로 이어 보겠네.",sp:[["past","지난 흐름"],["now","지금"],["future","앞으로"]]},
+        {q:"예, 아니오로 답해 주세요",say:"마음속으로 물음 하나를 분명히 떠올리게. 한 장으로 예인지 아니오인지 짚어 주겠네.",sp:[["answer","보살의 답"]]}]}];
+    var TK=["love","money","work","day"];
+    // 일간과 핵심 카드 오행의 관계 × 고민 — [비겁, 식상, 재성, 관성, 인성]
+    var REL=[
+      ["패가 자네와 같은 기운이야. 닮은 만큼 편하지만 서로 고집이 붙으면 한 치도 안 물러서지. 먼저 반 발짝 물러서는 쪽이 이기네.",
+       "같은 기운이 겹쳤으니 돈도 사람을 따라 움직이네. 혼자 쥐려 들기보다 믿을 만한 사람과 맞춰 갈 때 새는 게 줄어드네.",
+       "패가 자네 기운을 거드니 스스로 밀고 나갈 힘은 충분하네. 다만 같은 편끼리 공을 다투는 일은 피하게.",
+       "자네 기운에 같은 기운이 보태지니 뚝심이 서는 때야. 고집과 뚝심은 한 끗 차이니 그것만 살피게."],
+      ["자네 기운이 패로 흘러나가는 모양이야. 마음을 표현하고 먼저 챙겨 주는 쪽으로 풀리는 인연이지. 아끼던 말을 꺼내 보게.",
+       "자네 재주가 밖으로 나가 돈을 부르는 모양이네. 솜씨를 드러내면 들어오는 길이 생기지만, 기분 따라 쓰는 돈도 같이 커지니 조심하게.",
+       "머릿속 생각을 손으로 꺼내 보일 때라는 뜻이야. 말과 결과물로 보여 주면 자리가 따라오네.",
+       "속에 담아 둔 것을 풀어내기 좋은 때야. 말 한마디, 글 한 줄이 기운을 돌려놓네."],
+      ["자네가 이끌고 챙기는 자리에 선 패야. 마음 가는 대로 붙잡을 수 있지만 쥐려 할수록 상대는 숨이 막히지. 손아귀 힘을 조금 풀게.",
+       "자네 손이 닿는 곳에 돈이 걸린 모양이야. 움직인 만큼 거둘 수 있으니 계산은 꼼꼼히 하고 욕심은 한 뼘 덜어 두게.",
+       "자네가 일을 쥐고 다룰 수 있는 때라는 뜻이네. 벌여 놓은 것을 하나씩 마무리해 결과로 바꾸게.",
+       "손에 잡히는 성과를 챙기기 좋은 때야. 미뤄 둔 정리나 계산부터 끝내게."],
+      ["패의 기운이 자네를 누르는 쪽이야. 상대나 상황이 자네를 시험하는 모양이니, 끌려가지 말고 지킬 선부터 분명히 하게.",
+       "나갈 돈이나 책임이 자네를 조여 오는 모양이네. 새로 벌이기보다 나갈 돈과 약속부터 줄 세워 정리하게.",
+       "위에서 누르는 무게가 느껴지는 때야. 버거워도 이 무게를 견디면 자리가 단단해지니 규칙과 기한부터 지키게.",
+       "뜻대로 안 풀리는 일이 한둘 끼는 때야. 부딪히기보다 한 박자 늦춰 받아 넘기면 탈이 없네."],
+      ["패가 자네를 품어 주는 기운이야. 기대도 되는 사람이 곁에 있거나 그런 인연이 다가오는 모양이지. 받는 것도 복이니 사양 말게.",
+       "도와주는 손이 있는 모양이야. 혼자 끙끙대지 말고 조언을 구하면 막힌 데가 풀리네. 다만 공짜처럼 보이는 것엔 뒤를 살피게.",
+       "배우고 채우는 쪽에 힘이 실리는 때야. 당장 성과보다 실력과 자격을 쌓아 두면 나중에 크게 쓰이네.",
+       "쉬어 가며 채우기 좋은 때야. 무리해서 달리기보다 배우고 정리하는 데 시간을 쓰게."]];
+    var REVL=["뽑힌 패가 모두 바로 섰어. 흐름에 막힘이 없으니 망설이는 시간이 가장 아까운 게야.",
+      "바로 선 패와 거꾸로 선 패가 섞였네. 큰 방향은 살아 있으니 거꾸로 나온 자리만 손보면 되네.",
+      "패가 모두 거꾸로 섰구먼. 지금은 밀어붙일 때가 아니라 한 발 물러서 판을 다시 볼 때야.",
+      "거꾸로 나왔으니 속도를 한 번 늦추라는 뜻도 섞여 있네."];
+    var CLOSE=["사람 마음은 패로 다 알 수 없네. 오늘 본 것은 자네가 한 걸음 내디딜 용기로만 쓰게.",
+      "돈 일은 패보다 숫자가 먼저야. 오늘 본 흐름은 계획을 다잡는 데만 쓰게.",
+      "일은 결국 자네가 쌓은 만큼 가네. 패는 방향만 짚어 줄 뿐이야.",
+      "패는 길을 비춰 줄 뿐, 걷는 건 자네 발이야. 편하게 참고만 하게."];
+    el.innerHTML='<div class="bs-chat" id="chat"></div><div class="tr-table" id="tb"></div><div class="tr-board" id="b"></div><div class="tr-read" id="r"></div>';
     // 섞기 → 펼치기 → 고르기 → 뒤집기. 덱 순서와 정·역은 섞는 순간 정해지고, 고른 카드는 그 자리의 카드다
-    var tb=el.querySelector("#tb"),bd=el.querySelector("#b"),rd=el.querySelector("#r"),hint=el.querySelector("#hint");
+    var chat=el.querySelector("#chat"),tb=el.querySelector("#tb"),bd=el.querySelector("#b"),rd=el.querySelector("#r");
     var RM=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-    var deck,picks,opened,dk,stage,run=0;
+    var deck,picks,opened,dk,stage="chat",run=0,topic,ques,birth=null;
     function later(ms,fn){var id=run;window.setTimeout(function(){if(id===run)fn.call(null);},RM?0:ms);}
+    function say(t){return '<div class="bs-say"><img src="img/mascot.webp" alt="" width="44" height="45" onerror="this.remove()"><p>'+t+'</p></div>';}
+    // button 을 쓰면 .tool button 의 !important 배경에 먹힌다. span 으로 피한다
+    function opts(list){return '<div class="bs-opts">'+list.map(function(o,i){return '<span class="bs-opt" role="button" tabindex="0" data-i="'+i+'">'+o+'</span>';}).join("")+'</div>';}
+    function keyClick(b,fn){b.addEventListener("click",fn);
+      b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();fn.call(null);}});}
+    function bindOpts(fn){[].slice.call(chat.querySelectorAll(".bs-opt")).forEach(function(b){keyClick(b,function(){fn.call(null,+b.dataset.i);});});}
+    function hint(t){var h=el.querySelector("#hint");if(h)h.textContent=t;}
+    function start(){
+      run++;stage="chat";topic=null;ques=null;tb.innerHTML="";tb.style.height="0px";tb.classList.remove("done");bd.innerHTML="";rd.innerHTML="";
+      chat.innerHTML=say("어서 오게. 먼 길 오느라 애썼네. 패를 펼치기 전에 무엇이 고민인지부터 들어 보겠네.")+opts(TOPICS.map(function(t){return t.name;}));
+      bindOpts(function(i){topic=TOPICS[i];askQ();});}
+    function askQ(){
+      chat.innerHTML='<div class="bs-me">'+topic.name+'</div>'+say(topic.hi)+opts(topic.qs.map(function(q){return q.q;}).concat(["‹ 다른 고민 고르기"]));
+      bindOpts(function(i){if(i===topic.qs.length){start();return;}ques=topic.qs[i];askBirth();});}
+    function askBirth(){
+      chat.innerHTML='<div class="bs-me">'+ques.q+'</div>'+say(ques.say)+say("생일을 알려 주면 자네 사주와 패를 같이 놓고 보겠네. 싫으면 그냥 넘어가도 되네.")+
+        '<div class="bs-birth"><label for="tr-bd">생년월일 (양력)</label><input type="date" id="tr-bd" value="'+escH(loadPrefs().birth||"")+'"></div>'+
+        opts(["사주도 같이 볼게요","카드만 볼게요"]);
+      bindOpts(function(i){
+        var inp=el.querySelector("#tr-bd"),v=inp.value;
+        if(i===0){if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){inp.focus();return;}birth=v;savePrefs({birth:v});}
+        else birth=null;
+        idle();});}
     function geo(){var W=tb.clientWidth||320,cw=Math.max(44,Math.min(74,Math.floor(W/7.2)));
       tb.style.setProperty("--cw",cw+"px");return {W:W,cw:cw,ch:cw*1.6};}
     function put(d,x,y,r){d.style.transform="translate("+x+"px,"+y+"px) rotate("+(r||0)+"deg)";}
@@ -2087,19 +2099,25 @@
         d.style.transitionDelay=(RM?0:i*18)+"ms";
         put(d,x,(two?Math.floor(i/11)*rowH:0)+10+t*t*(two?10:22),t*(two?8:14));});}
     function idle(){
-      run++;stage="idle";picks=[];opened=0;rd.innerHTML="";el.querySelector("#re").hidden=true;
-      bd.innerHTML=POS.map(function(p){return '<div class="tr-slot"><div class="tr-pos">'+p+'</div><div class="tr-empty"></div></div>';}).join("");
+      run++;stage="idle";picks=[];opened=0;rd.innerHTML="";
+      var N=ques.sp.length;
+      chat.innerHTML='<div class="bs-me">'+(birth?"사주도 같이 볼게요":"카드만 볼게요")+'</div>'+
+        say("마음속으로 물음을 되뇌면서 패를 섞게. "+(N===1?"한 장":N===2?"두 장":"세 장")+"을 고르면 되네.")+
+        '<p class="note tr-hint" id="hint" aria-live="polite"></p>';
+      bd.style.gridTemplateColumns="repeat("+N+",1fr)";bd.style.maxWidth=N===1?"200px":N===2?"400px":"";
+      bd.innerHTML=ques.sp.map(function(s){return '<div class="tr-slot"><div class="tr-pos">'+s[1]+'</div><div class="tr-empty"></div></div>';}).join("");
       tb.classList.remove("done");
-      var h="";for(var i=0;i<22;i++)h+='<div class="tr-dk" aria-hidden="true"><span>✦</span></div>';
-      tb.innerHTML=h+'<button type="button" class="tr-go">카드 섞기</button>';
+      var h="";for(var i=0;i<22;i++)h+='<div class="tr-dk" aria-hidden="true"></div>';
+      tb.innerHTML=h+'<span class="tr-go" role="button" tabindex="0">카드 섞기</span>';
       dk=[].slice.call(tb.querySelectorAll(".tr-dk"));stack();
-      hint.textContent="질문 하나를 마음에 품고 카드를 섞으세요.";
-      tb.querySelector(".tr-go").addEventListener("click",shuffle);}
+      hint("질문 하나를 마음에 품고 카드를 섞으세요.");
+      keyClick(tb.querySelector(".tr-go"),shuffle);}
     function shuffle(){
-      stage="shuffle";tb.querySelector(".tr-go").remove();el.querySelector("#re").hidden=false;hint.textContent="카드를 섞는 중…";
+      if(stage!=="idle")return;
+      stage="shuffle";tb.querySelector(".tr-go").remove();hint("카드를 섞는 중…");
       var idx=[];for(var i=0;i<22;i++)idx.push(i);
       for(i=21;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=idx[i];idx[i]=idx[j];idx[j]=tmp;}
-      deck=idx.map(function(n){return {c:M[n],i:n,rev:Math.random()<0.4};});
+      deck=idx.map(function(n){return {i:n,rev:Math.random()<0.4};});
       var g=geo(),cx=(g.W-g.cw)/2,round=0;
       (function riffle(){
         dk.forEach(function(d,i){var s=(i+round)%2?-1:1;d.style.transitionDelay="0ms";
@@ -2112,45 +2130,70 @@
       dk.forEach(function(d,k){
         d.removeAttribute("aria-hidden");d.setAttribute("role","button");d.tabIndex=0;
         d.setAttribute("aria-label",(k+1)+"번째 카드 고르기");d.classList.add("pick");
-        d.addEventListener("click",function(){choose(d,k);});
-        d.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();choose(d,k);}});});
-      hint.textContent="마음이 가는 카드를 고르세요. 첫 장은 과거 자리에 놓입니다 (0/3)";}
+        keyClick(d,function(){choose(d,k);});});
+      hint("마음이 가는 카드를 고르세요. 첫 장은 '"+ques.sp[0][1]+"' 자리에 놓입니다 (0/"+ques.sp.length+")");}
     function choose(d,k){
+      var N=ques.sp.length;
       if(stage!=="pick"||d.classList.contains("gone"))return;
       d.classList.add("gone");d.tabIndex=-1;
       var i=picks.length;picks.push(deck[k]);
-      bd.children[i].innerHTML='<div class="tr-pos">'+POS[i]+'</div>'+slotCard(i);
+      bd.children[i].innerHTML='<div class="tr-pos">'+ques.sp[i][1]+'</div>'+slotCard(i);
       bindFlip(bd.children[i].querySelector(".tr-card"));
-      if(picks.length<3){hint.textContent="다음 장은 "+POS[picks.length]+" 자리에 놓입니다 ("+picks.length+"/3)";return;}
-      stage="read";hint.textContent="세 장을 모두 골랐습니다. 카드를 눌러 한 장씩 뒤집으세요.";
+      if(picks.length<N){hint("다음 장은 '"+ques.sp[picks.length][1]+"' 자리에 놓입니다 ("+picks.length+"/"+N+")");return;}
+      stage="read";hint(N===1?"카드를 눌러 뒤집으세요.":"다 골랐습니다. 카드를 눌러 한 장씩 뒤집으세요.");
       dk.forEach(function(x){x.classList.add("gone");x.tabIndex=-1;});
       later(450,function(){tb.classList.add("done");});}
     function slotCard(i){
-        var pk=picks[i],art=ART[pk.i];
-        var face=art
-          ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+pk.c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
-          : '<div class="tr-f"><span class="no">'+pk.c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+pk.c[2]+'</span><span class="nm">'+pk.c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
-        return '<div class="tr-card dealt" data-i="'+i+'" tabindex="0" role="button" aria-label="'+POS[i]+' 카드 뒤집기"><div class="tr-b">✦</div>'+face+'</div>';}
+      var pk=picks[i],art=ART[pk.i],c=M[pk.i];
+      var face=art
+        ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
+        : '<div class="tr-f"><span class="no">'+c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+c[2]+'</span><span class="nm">'+c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
+      return '<div class="tr-card dealt" data-i="'+i+'" tabindex="0" role="button" aria-label="'+ques.sp[i][1]+' 카드 뒤집기"><div class="tr-b"></div>'+face+'</div>';}
     function bindFlip(card){
-        card.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();card.click();}});
-        card.addEventListener("click",function(){
+      keyClick(card,function(){
         if(stage!=="read"||card.classList.contains("flip"))return;card.classList.add("flip");
-        var i=+card.dataset.i,pk=picks[i],fi=el.querySelector("#f").value;
-        // FLD는 카드의 정방향 주제다. 역방향이면 그 흐름이 지연·반전된다고 덧붙여야 해석이 어긋나지 않는다
-        var ext=(fi==="2")?"":" <b style=\"color:var(--fun-ink)\">"+FLDN[fi]+"</b> — 이 카드가 가리키는 자리는 “"+FLD[pk.i][+fi]+"”"+
-          (pk.rev?" 다만 역방향이라 이 흐름이 지연되거나 반대 방향으로 나타납니다.":"");
-        var posLine=POSM[pk.i][i]+(pk.rev?" 다만 역방향이라 이 흐름이 뒤집히거나 지연됩니다.":"");
-        el.querySelector("#r").innerHTML+='<div class="one"><b>'+POS[i]+' — '+pk.c[1]+(pk.rev?" (역방향)":"")+'</b>'+
-          '<p style="color:var(--muted);font-size:12.5px">'+STORY[pk.i]+'</p>'+
-          '<p style="margin-top:8px"><b style="color:var(--fun-ink)">'+POS[i]+'의 자리</b> — '+posLine+'</p>'+
-          '<p style="margin-top:8px">'+(pk.rev?pk.c[4]:pk.c[3])+ext+'</p>'+
-          '<p style="margin-top:8px;color:var(--muted);font-size:12.5px">'+ARC[pk.i<8?0:pk.i<15?1:2]+' '+POS_GUIDE[i]+(pk.rev?" 역방향으로 나온 카드는 그 힘이 사라졌다는 뜻이 아니라, 안으로 향하거나 속도가 걸려 있다는 신호입니다.":" 정방향으로 나온 카드는 그 힘이 밖으로 자연스럽게 흐르고 있다는 뜻입니다.")+'</p></div>';
-        if(++opened===3)el.querySelector("#r").innerHTML+=summary(picks,fi);});}
+        if(++opened===picks.length)later(700,read);});}
+    // 사주 대조 — 생년월일로 여섯 글자(시주 제외)를 세워 오행을 세고, 마지막 자리 카드의 오행과 일간의 생극을 본다
+    function sajuPart(ti,pk,pos){
+      var a=birth.split("-"),p=sjPillars(+a[0],+a[1],+a[2],null,0,false);
+      var cnt=[0,0,0,0,0];
+      [p.y.s,p.m.s,p.d.s].forEach(function(s){cnt[SJ_ES[s]]++;});
+      [p.y.b,p.m.b,p.d.b].forEach(function(b){cnt[SJ_EB[b]]++;});
+      var de=SJ_ES[p.d.s],top=cnt.indexOf(Math.max.apply(null,cnt)),miss=[];
+      cnt.forEach(function(n,e){if(!n)miss.push(e);});
+      var ce=CARD_EL[pk.i],r=(ce-de+5)%5,nm=M[pk.i][1];
+      var fillEl=-1;picks.forEach(function(x){if(fillEl<0&&miss.indexOf(CARD_EL[x.i])>=0)fillEl=CARD_EL[x.i];});
+      var t1="자네 일간은 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 시주를 뺀 여섯 글자 중에선 "+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
+        (miss.length?miss.map(function(e){return SJ_EL[e];}).join("·")+" 기운은 한 글자도 없어.":"다섯 기운이 고루 들어 있어.");
+      var t2="'"+pos+"' 자리에 나온 "+nm+josa(nm,"가/이")+" 품은 기운은 "+SJ_EL[ce]+josa(SJ_EL[ce],"야/이야")+". "+REL[r][ti];
+      var t3=fillEl>=0?"자네 사주에 비어 있던 "+SJ_EL[fillEl]+" 기운을 이번 패가 채우러 왔네. 이번 일에선 그 빈자리를 메우는 쪽으로 움직이면 한결 수월할 게야."
+        :ce===top?"다만 이미 넘치는 "+SJ_EL[top]+" 기운을 패가 또 부르니, 한쪽으로 과하게 몰아붙이지는 말게."
+        :"패의 기운과 자네 사주가 크게 부딪히지 않으니, 패가 말한 대로 차근차근 가면 되네.";
+      return '<div class="sj-sec"><h3>사주와 패를 함께 보면</h3><p>'+t1+'</p><p>'+t2+'</p><p>'+t3+'</p>'+
+        '<p class="note">생년월일로 사주 여섯 글자(시주 제외)를 세워 오행을 셉니다. 카드의 원소는 전통 대응(불·물·흙·바람)을 따르고, 동네보살은 불=화, 물=수, 흙=토, 바람=금으로 옮겨 일간과의 생극을 봅니다.</p></div>';}
+    function read(){
+      var R=(typeof TAROT_READ!=="undefined")?TAROT_READ:null;
+      if(!R){rd.innerHTML='<p class="note">풀이 원고를 불러오지 못했습니다.</p>';return;}
+      var ti=TK.indexOf(topic.k),N=picks.length,h=say(N===1?"패가 열렸네. 짚어 주겠네.":"패가 다 열렸네. 한 장씩 짚어 주겠네.");
+      picks.forEach(function(pk,j){
+        var role=ques.sp[j][0],c=R[pk.i],slug=ART[pk.i].replace(/^tarot-\d\d-/,"");
+        var roleLine=role==="answer"?YN_LINE[YN[pk.i]][pk.rev?1:0]:c.role[role];
+        h+='<div class="one"><div class="tr-rh"><b>'+ques.sp[j][1]+' — '+M[pk.i][1]+(pk.rev?' (역방향)':'')+'</b><a href="tarot-'+slug+'.html">카드 뜻 자세히 →</a></div>'+
+          '<p class="st">'+STORY[pk.i]+'</p><p>'+roleLine+'</p><p>'+c.topic[topic.k][pk.rev?1:0]+'</p></div>';});
+      var revN=picks.filter(function(p){return p.rev;}).length,last=picks[N-1];
+      var rl=N===1?(last.rev?REVL[3]:""):revN===0?REVL[0]:revN===N?REVL[2]:REVL[1];
+      h+='<div class="sj-sec"><h3>보살의 종합</h3>'+(rl?'<p>'+rl+'</p>':'')+'<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>';
+      if(birth)h+=sajuPart(ti,last,ques.sp[N-1][1]);
+      h+='<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
+        '<div class="bs-opts"><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>';
+      rd.innerHTML=h;
+      bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
+      var sb=rd.querySelector(".share-btn");sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});
+      keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
+      track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});}
     var rz;window.addEventListener("resize",function(){window.clearTimeout(rz);rz=window.setTimeout(function(){
       if(stage==="idle")stack();else if(stage==="pick")fan();},150);});
-    el.querySelector("#re").addEventListener("click",idle);
-    el.querySelector("#f").addEventListener("change",function(){if(stage!=="idle")idle();});idle();}},
-
+    start();}},
   {id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운세",desc:"일진×일간 명리 풀이",render:function(el){
     // 오늘 일진 천간이 내 일간에 대해 갖는 십성
     // → [기본점수, 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정], 애정운, 직장·학업운, 건강운]

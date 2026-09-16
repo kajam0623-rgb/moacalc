@@ -125,25 +125,33 @@ t("취득세 9억(3%)", acq(9e8), 3);
 t("국민연금 300만", Math.round(3e6*0.0475), 142500);
 t("건강보험 300만", Math.round(3e6*0.03595), 107850);
 
-// ── 타로: 카드 데이터와 분야별 해석 배열의 길이가 어긋나면 undefined가 화면에 뜬다 ──
+// ── 타로: 대화형 리딩 — 카드 데이터·스프레드·풀이 원고가 어긋나면 undefined가 화면에 뜬다 ──
 const tarotSrc = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"todayfortune"'));
-const mArr = tarotSrc.slice(tarotSrc.indexOf("var M="), tarotSrc.indexOf("// 분야별 해석"));
-const fArr = tarotSrc.slice(tarotSrc.indexOf("var FLD="), tarotSrc.indexOf("var POS="));
-const countRows = s => (s.match(/\["/g) || []).length; // 각 행은 ["로 시작하고 행 안에는 다시 나오지 않는다
-t("타로 메이저 아르카나 22장", countRows(mArr), 22);
-t("타로 분야별 해석 22장 (M과 동일)", countRows(fArr), 22);
-t("타로 아트 매핑 22장", (tarotSrc.slice(tarotSrc.indexOf("var ART=")).match(/tarot-\d\d-/g) || []).length, 22);
-// T2: 포지션별 해석 66문장 + 상징 스토리 22개
-const posmCode = tarotSrc.slice(tarotSrc.indexOf("var POSM="), tarotSrc.indexOf("// 카드 상징 스토리"));
-const storyCode = tarotSrc.slice(tarotSrc.indexOf("var STORY="), tarotSrc.indexOf("var ART="));
-const POSM = new Function(posmCode + "; return POSM;")();
-const STORY = new Function(storyCode + "; return STORY;")();
-t("타로 포지션 해석 22장 × 3포지션", POSM.length === 22 && POSM.every(r => r.length === 3 && r.every(s => typeof s === "string" && s.length >= 20)), true);
-t("타로 포지션 문장은 카드 안에서 서로 다름", POSM.every(r => new Set(r).size === 3), true);
-t("타로 상징 스토리 22개", STORY.length === 22 && STORY.every(s => s.length >= 25), true);
-t("타로 출력에 스토리·포지션 조립", tarotSrc.includes("STORY[pk.i]") && tarotSrc.includes("POSM[pk.i][i]"), true);
-const guideCode = tarotSrc.slice(tarotSrc.indexOf("var POS_GUIDE="), tarotSrc.indexOf("// 포지션별 해석"));
-t("타로 포지션 안내 3종", new Function(guideCode + "; return POS_GUIDE;")().length, 3);
+const tarotData = new Function(tarotSrc.slice(tarotSrc.indexOf("var M="), tarotSrc.indexOf("el.innerHTML=")) +
+  "; return {M:M,STORY:STORY,ART:ART,CARD_EL:CARD_EL,YN:YN,YN_LINE:YN_LINE,TOPICS:TOPICS,REL:REL,REVL:REVL,CLOSE:CLOSE};")();
+const TREAD = require("./content_tarot_read.js");
+t("타로 메이저 아르카나 22장", tarotData.M.length, 22);
+t("타로 아트 매핑 22장", Object.keys(tarotData.ART).length, 22);
+t("타로 상징 스토리 22개", tarotData.STORY.length === 22 && tarotData.STORY.every(s => s.length >= 25), true);
+t("타로 카드 오행 22장 (0~4)", tarotData.CARD_EL.length === 22 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
+t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.qs.every(q => q.sp.length >= 1 && q.sp.length <= 3 &&
+  q.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined))), true);
+const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","day"];
+t("타로 고민 키는 원고 topic 키와 일치", tarotData.TOPICS.map(tp => tp.k).join(","), TOPIC_K.join(","));
+t("타로 풀이 원고 22장 · 자리 9 · 고민 4×정역 · 한마디", TREAD.length === 22 && TREAD.every((c, i) => c.no === i &&
+  ROLE_K.every(k => typeof c.role[k] === "string" && c.role[k].length >= 30) &&
+  TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
+const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
+const bosalLines = readLines.concat(tarotData.REVL, tarotData.CLOSE, [].concat(...tarotData.REL), [].concat(...Object.values(tarotData.YN_LINE)),
+  tarotData.TOPICS.flatMap(tp => [tp.hi].concat(tp.qs.map(q => q.say))));
+t("타로 대화 원고에 존댓말 없음", bosalLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x)).length, 0);
+t("타로 대화 원고가 보살 어미 사용", bosalLines.filter(x => !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
+t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x => /반드시|틀림없|정확하게|신령|부적|굿을/.test(x)).length, 0);
+t("타로 관계 풀이 5관계 × 4고민", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === 4), true);
+t("타로 예/아니오 성향은 카드 뜻 페이지와 같음", tarotData.YN.join(","), require("./content_tarot.js").map(c => c.yesno).join(","));
+t("타로 예/아니오 줄은 성향 3종 × 정역", ["예","아니오","조건부"].every(k => tarotData.YN_LINE[k] && tarotData.YN_LINE[k].length === 2), true);
+t("타로 풀이 원고가 청크에 주입됨", /c\.id === "tarot" \? "var TAROT_READ="/.test(bs), true);
+t("타로 풀이 조립에 스토리·자리·고민 사용", tarotSrc.includes("STORY[pk.i]") && tarotSrc.includes("c.role[role]") && tarotSrc.includes("c.topic[topic.k][pk.rev?1:0]"), true);
 
 // ── 오늘의 운세: 십성 10종 모두 9개 필드(총운·애정·직장·건강 포함)를 갖는가 ──
 const tfSrc = inner.slice(inner.indexOf('id:"todayfortune"'), inner.indexOf('id:"horoscope"'));
@@ -304,7 +312,7 @@ t("사주 페이지에서 일간·십성으로 내부링크", /ilganChips\(null\
 // ── 타로 카드 뜻 22장 ──
 const TAROT_PAGES = require("./content_tarot.js");
 const tarotTool = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"todayfortune"'));
-const toolNames = new Function(tarotTool.slice(tarotTool.indexOf("var M="), tarotTool.indexOf("// 분야별 해석")) + "; return M.map(x=>x[1]);")();
+const toolNames = tarotData.M.map(x=>x[1]);
 t("타로 원고 22장 · 번호 0~21 순서", TAROT_PAGES.length === 22 && TAROT_PAGES.every((c, i) => c.no === i), true);
 t("타로 원고 카드 이름이 도구 M과 일치", TAROT_PAGES.every((c, i) => c.ko === toolNames[i]), true);
 t("타로 카드 그림 파일 22장 존재", TAROT_PAGES.every(c => fs.existsSync(`img/char/tarot-${String(c.no).padStart(2, "0")}-${c.en}.webp`)), true);

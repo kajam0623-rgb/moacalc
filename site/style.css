@@ -413,7 +413,7 @@
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
   /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
-  .tr-b,.tr-dk{background:radial-gradient(circle at 50% 50%,rgba(230,178,90,.22),transparent 55%),repeating-linear-gradient(45deg,#1b2550 0 6px,#152042 6px 12px);
+  .tr-b,.tr-dk{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
     color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
   .tr-b{font-size:26px;border-color:#2c3a6e;}
   .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
@@ -469,6 +469,23 @@
   .tr-read .one{border-left:3px solid var(--fun);padding:2px 0 2px 12px;margin:12px 0;}
   .tr-read .one b{font-size:13.5px;}
   .tr-read .one p{font-size:13px;color:var(--muted);line-height:1.75;margin-top:3px;}
+  /* 대화형 타로 — 보살 말풍선과 선택지 */
+  .bs-chat{display:flex;flex-direction:column;gap:10px;}
+  .bs-say{display:flex;gap:10px;align-items:flex-start;}
+  .bs-say img{width:44px;height:45px;flex:none;border-radius:50%;object-fit:contain;padding:2px;background:var(--surface-2);border:1px solid color-mix(in srgb,var(--fun) 45%,var(--line));}
+  .bs-say p{margin:0;max-width:88%;background:var(--surface-2);border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:10px 13px;font-size:14px;line-height:1.7;}
+  .bs-me{align-self:flex-end;max-width:80%;background:var(--fun);color:#1b1405;font-weight:700;font-size:13.5px;border-radius:14px 4px 14px 14px;padding:8px 13px;}
+  .bs-opts{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .bs-opt{display:block;text-align:center;padding:12px 14px;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;background:var(--surface);color:var(--ink);transition:.15s;}
+  .bs-opt:hover,.bs-opt:focus-visible{border-color:var(--fun);background:color-mix(in srgb,var(--fun) 10%,var(--surface));outline:none;}
+  .bs-birth{display:flex;flex-direction:column;gap:6px;margin-left:54px;}
+  .tr-rh{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px 10px;}
+  .tr-rh a{font-size:12px;color:var(--accent-ink);white-space:nowrap;}
+  .tr-read .one p:not(.st){color:var(--ink);}
+  .tr-read .one p.st{font-size:12.5px;}
+  .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .tr-quote{margin:12px 0;padding:12px 14px;border-left:3px solid var(--fun);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--fun) 10%,transparent);color:var(--fun-ink);font-weight:700;font-size:14.5px;line-height:1.6;}
+  @media (prefers-reduced-motion:reduce){.bs-opt{transition:none;}}
   /* 인쇄 = 결과지. 종이에 남는 건 풀이뿐이고 화면용 장치는 전부 뺀다.
      다크 모드로 보던 사람이 그대로 인쇄하면 검은 바탕이 찍히므로
      변수를 밝은 값으로 덮어 테마와 상관없이 흰 종이가 나오게 한다. */
