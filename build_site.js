@@ -12,8 +12,8 @@ const DOMAIN = "https://dongnebosal.com"; // 배포 도메인(브랜드명과 �
 const GSC_VERIFY = "RIS-m_ipKnwt5ve7kht--_MhedXjirSLqlv-JQ0Qvos";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
 const NAVER_VERIFY = "839a2a3a55c3cfa5392e350cbdc1be1a66be45ac";    // 네이버 서치어드바이저 소유확인 메타의 content 값 (dongnebosal.com 등록분)
 const ANALYTICS_ID = "G-8HPPE0MCHD";  // GA4 측정 ID. 채우면 전 페이지에 gtag 로더 삽입
-const ADSENSE_CLIENT = "";  // 애드센스 게시자 ID (예: ca-pub-1234567890123456)
-const ADSENSE_SLOT = "";    // 애드센스 광고 단위 슬롯 ID
+const ADSENSE_CLIENT = "ca-pub-2579933973121542";  // 애드센스 게시자 ID
+const ADSENSE_SLOT = "";    // 광고 단위 슬롯 ID. 승인 후 광고 단위를 만들면 채운다
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 // 프로그래매틱 SEO 원고 — 별자리 12 + 띠 12 개별 페이지
@@ -860,7 +860,11 @@ const footer = `<footer class="sfoot">
 // 애드센스 승인 전에는 아무것도 그리지 않는다.
 // 빈 자리 표시는 사용자에게 광고를 보여주지도 못하면서 완성도만 깎고,
 // 심사에서도 '준비 중인 사이트'로 읽힌다.
-const adSlot = () => ADSENSE_CLIENT
+/* 광고 단위(<ins>)는 슬롯 ID 가 있어야 의미가 있다. 슬롯은 승인 후에 만드는 것이라
+   신청~심사 구간에는 비어 있다. 빈 data-ad-slot 을 내보내면 채워지지 않는 빈 자리와
+   콘솔 오류만 남으므로, 그 구간에는 <head> 로더만 두고 자리는 내보내지 않는다.
+   (자동 광고를 켜면 구글이 로더만으로 알아서 자리를 잡는다.) */
+const adSlot = () => (ADSENSE_CLIENT && ADSENSE_SLOT)
   ? `<ins class="adsbygoogle" style="display:block" data-ad-client="${ADSENSE_CLIENT}" data-ad-slot="${ADSENSE_SLOT}" data-ad-format="auto" data-full-width-responsive="true"></ins><script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>`
   : "";
 
