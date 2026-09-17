@@ -78,6 +78,15 @@
 - [편인(偏印)](https://dongnebosal.com/sipseong-pyeonin.html): 나를 낳는 오행 중 음양이 같은 글자 · 직관과 사색의 기운
 - [정인(正印)](https://dongnebosal.com/sipseong-jeongin.html): 나를 낳는 오행 중 음양이 다른 글자 · 귀인과 배움의 기운
 
+## 명리 개념 해설 (6) — 용어의 뜻과 근거
+
+- [음양오행(陰陽五行)](https://dongnebosal.com/concept-eumyang-ohaeng.html): 음양은 기운의 두 방향, 오행은 그 기운이 도는 다섯 단계입니다
+- [천간지지(天干地支)](https://dongnebosal.com/concept-cheongan-jiji.html): 천간 열 글자와 지지 열두 글자가 짝을 지어 육십갑자가 됩니다
+- [절기와 사주(節氣)](https://dongnebosal.com/concept-jeolgi.html): 사주의 월은 절기가 바뀌는 순간에 넘어갑니다
+- [십이운성(十二運星)](https://dongnebosal.com/concept-sibiunseong.html): 사람의 한살이에 빗대 기운의 강약을 열두 칸으로 나눈 것입니다
+- [용신(用神)](https://dongnebosal.com/concept-yongsin.html): 넘치면 덜어내고 모자라면 채우는, 균형을 잡는 글자입니다
+- [합충(合沖)](https://dongnebosal.com/concept-hapchung.html): 합은 묶여 성질이 바뀌는 것, 충은 부딪혀 흔들리는 것입니다
+
 ## 타로 카드별 상세 (22) — 메이저 아르카나
 
 - [바보 카드(The Fool)](https://dongnebosal.com/tarot-fool.html): 새로운 출발과 순수한 가능성 · 정방향 새로운 시작·자유·모험·순수함 · 역방향 무모함·준비 부족·현실 도피·경솔한 결정
