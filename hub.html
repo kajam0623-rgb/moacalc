@@ -414,25 +414,52 @@
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
   /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
-  .tr-b,.tr-dk{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
+  .tr-b,.tr-dk i{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
     color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
   .tr-b{font-size:26px;border-color:#2c3a6e;}
   .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
   .tr-table.done{height:0 !important;opacity:0;margin-top:0;overflow:hidden;}
-  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;border-radius:7px;border:1px solid #2c3a6e;
-    display:flex;align-items:center;justify-content:center;font-size:calc(var(--cw,70px)*.3);
-    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s,box-shadow .2s;}
+  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;
+    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s;}
+  .tr-dk i{position:absolute;inset:0;border-radius:7px;border:1px solid #2c3a6e;transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .12s,box-shadow .2s;}
+  .tr-dk.deal{transition:transform .6s cubic-bezier(.18,1.4,.4,1),translate .25s,opacity .3s;}
   .tr-dk.pick{cursor:pointer;}
-  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -14px;outline:none;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 10px 22px rgba(0,0,0,.35);}
-  .tr-dk.gone{translate:0 -46px;opacity:0;pointer-events:none;}
+  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -16px;outline:none;}
+  .tr-dk.pick:hover i,.tr-dk.pick:focus-visible i{box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 12px 26px rgba(0,0,0,.4),0 0 22px rgba(230,178,90,.45);}
+  .tr-dk.gone{translate:0 -60px;opacity:0;pointer-events:none;}
+  .tr-table.rub{touch-action:none;cursor:grab;}
+  .tr-table.rub:active{cursor:grabbing;}
+  .tr-table.busy .tr-dk{pointer-events:none;}
+  .tr-table.glow{filter:drop-shadow(0 0 18px rgba(230,178,90,.7));}
+  .tr-ctl{position:absolute;left:0;right:0;bottom:6px;z-index:40;text-align:center;}
+  .tr-charge{width:180px;height:8px;margin:0 auto 10px;border-radius:9px;background:var(--line);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line-2);}
+  .tr-charge i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98a3a,#E6B25A,#fff1c7);transition:width .15s;}
+  .tool .tr-ctl .tr-go{position:static;transform:none;display:inline-block;}
+  .tr-fx{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:60;}
+  .tr-fly{position:fixed;z-index:61;border-radius:8px;pointer-events:none;background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;box-shadow:0 0 0 1.5px #E6B25A,0 0 30px rgba(230,178,90,.65);}
+  .tr-card.landing{opacity:0;}
+  .tr-card.thunk{animation:trThunk .4s cubic-bezier(.2,1.6,.4,1);}
+  @keyframes trThunk{0%{transform:scale(1.16);}100%{transform:scale(1);}}
+  .tr-card.shine .tr-f{box-shadow:0 0 0 2px #E6B25A,0 0 26px rgba(230,178,90,.55);}
+  .tr-card.shine .tr-f::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,240,200,.6) 50%,transparent 70%);transform:translateX(-130%);animation:trShine .9s ease-out forwards;}
+  @keyframes trShine{to{transform:translateX(130%);}}
+  .tr-seer{position:relative;overflow:hidden;text-align:center;padding:26px 16px 24px;border:1px solid var(--line-2);border-radius:18px;background:radial-gradient(circle at 50% 40%,rgba(230,178,90,.16),transparent 62%),var(--surface-2);}
+  .tr-aura{position:absolute;left:50%;top:38%;width:320px;height:320px;margin:-160px 0 0 -160px;border-radius:50%;filter:blur(20px);
+    background:conic-gradient(from 0deg,transparent,rgba(230,178,90,.4),transparent 30%,rgba(147,164,255,.28),transparent 60%,rgba(230,178,90,.35),transparent);animation:seerSpin 4s linear infinite;}
+  .tr-seer img{position:relative;display:block;height:250px;width:auto;margin:0 auto;animation:seerBreath 2.4s ease-in-out infinite;}
+  .tr-seer-t{position:relative;margin:14px 0 4px;font-size:17px;font-weight:900;color:var(--fun-ink);}
+  .tr-seer-s{position:relative;min-height:1.7em;margin:0 0 12px;font-size:13.5px;color:var(--muted);}
+  .tr-seer-bar{position:relative;max-width:260px;height:6px;margin:0 auto;border-radius:9px;background:var(--line);overflow:hidden;}
+  .tr-seer-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98a3a,#E6B25A,#fff1c7);}
+  @keyframes seerSpin{to{transform:rotate(360deg);}}
+  @keyframes seerBreath{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.02);}}
+  @media (prefers-reduced-motion:reduce){.tr-aura,.tr-seer img,.tr-card.thunk,.tr-card.shine .tr-f::after{animation:none;}.tr-dk i{transition:none;}}
   .tool .tr-go{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);z-index:40;padding:11px 26px;border:none;border-radius:100px;
     font:inherit;font-weight:800;background:var(--fun) !important;color:#1b1405 !important;border-radius:100px !important;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);}
   .tr-f.art .cap .nm,.tr-f.art .cap .rv{display:block;}
   .tr-board{max-width:600px;margin-left:auto;margin-right:auto;}
   .tr-empty{width:100%;aspect-ratio:5/8;border:1.5px dashed var(--line-2);border-radius:8px;}
-  .tr-card.dealt{animation:trDeal .45s cubic-bezier(.2,.7,.3,1) backwards;}
-  @keyframes trDeal{from{transform:translateY(-44px) scale(.86);opacity:0;}}
-  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}.tr-card.dealt{animation:none;}}
+  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}}
   .tr-f{background:var(--surface);transform:rotateY(180deg);}
   .tr-f .no{font-family:var(--mono);font-size:10px;color:var(--muted);}
   .tr-f .sym{font-size:34px;margin:6px 0;}
@@ -2111,72 +2138,163 @@
         if(i===0){if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){inp.focus();return;}birth=v;savePrefs({birth:v});}
         else birth=null;
         idle();});}
-    function geo(){var W=tb.clientWidth||320,cw=Math.max(44,Math.min(74,Math.floor(W/7.2)));
+    // ── 게임 연출 ── 금빛 입자는 화면 전체를 덮는 캔버스 하나에 그린다. 남은 입자가 없으면 그리기를 멈춘다
+    var fx=null,parts=[],fxOn=false,charge=0,rubbing=false,lastPt=null,settleT;
+    function fxInit(){
+      if(fx)return;
+      fx=document.createElement("canvas");fx.className="tr-fx";fx.setAttribute("aria-hidden","true");document.body.appendChild(fx);
+      function size(){var d=window.devicePixelRatio||1;fx.width=window.innerWidth*d;fx.height=window.innerHeight*d;fx.getContext("2d").setTransform(d,0,0,d,0,0);}
+      size();window.addEventListener("resize",size);}
+    function burst(x,y,n,spd){
+      if(RM)return;fxInit();
+      for(var i=0;i<n;i++){var ang=Math.random()*Math.PI*2,v=(spd||3)*(0.4+Math.random());
+        parts.push({x:x,y:y,vx:Math.cos(ang)*v,vy:Math.sin(ang)*v-1.2,life:1,r:1+Math.random()*2.2,hot:Math.random()<0.25});}
+      if(!fxOn){fxOn=true;window.requestAnimationFrame(tick);}}
+    function tick(){
+      var c=fx.getContext("2d");c.clearRect(0,0,window.innerWidth,window.innerHeight);
+      parts=parts.filter(function(p){return p.life>0;});
+      parts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=0.08;p.vx*=0.98;p.life-=0.022;
+        c.globalAlpha=Math.max(0,p.life);c.fillStyle=p.hot?"#fff6d8":"#E6B25A";c.beginPath();c.arc(p.x,p.y,p.r,0,6.283);c.fill();});
+      c.globalAlpha=1;
+      if(parts.length)window.requestAnimationFrame(tick);else fxOn=false;}
+    function mid(node){var r=node.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2};}
+    function buzz(ms){try{if(navigator.vibrate)navigator.vibrate(ms);}catch(e){}}
+    function geo(){var W=tb.clientWidth||320,cw=Math.max(46,Math.min(78,Math.floor(W/7)));
       tb.style.setProperty("--cw",cw+"px");return {W:W,cw:cw,ch:cw*1.6};}
     function put(d,x,y,r){d.style.transform="translate("+x+"px,"+y+"px) rotate("+(r||0)+"deg)";}
-    function stack(){var g=geo();tb.style.height=(g.ch+70)+"px";
-      dk.forEach(function(d,i){d.style.transitionDelay="0ms";put(d,(g.W-g.cw)/2-i*0.5,8-i*0.5);});}
-    function fan(){var g=geo(),two=g.W<520,rowH=g.ch*0.62;
-      tb.style.height=(two?rowH+g.ch+30:g.ch+44)+"px";
-      dk.forEach(function(d,i){
-        var j=two?i%11:i,n=two?10:21,t=(j-n/2)/(n/2),x=4+j*(g.W-g.cw-8)/n;
-        d.style.transitionDelay=(RM?0:i*18)+"ms";
-        put(d,x,(two?Math.floor(i/11)*rowH:0)+10+t*t*(two?10:22),t*(two?8:14));});}
+    // 덱은 반듯한 사각형이 아니라 손으로 쌓은 더미처럼 조금씩 어긋나게 놓는다
+    function deckPos(g,i){return {x:(g.W-g.cw)/2+Math.sin(i*1.7)*2.5-i*0.35,y:22-i*0.45,r:Math.sin(i*2.3)*2.5};}
+    function fanPos(g,i){var two=g.W<520,rowH=g.ch*0.62,j=two?i%11:i,n=two?10:21,t=(j-n/2)/(n/2);
+      return {x:4+j*(g.W-g.cw-8)/n,y:(two?Math.floor(i/11)*rowH:0)+14+t*t*(two?10:22),r:t*(two?8:14)};}
+    function stack(){var g=geo();tb.style.height=(g.ch+120)+"px";
+      dk.forEach(function(d,i){var p=deckPos(g,i);d.style.transitionDelay="0ms";put(d,p.x,p.y,p.r);});}
+    function fan(){var g=geo();tb.style.height=(g.W<520?g.ch*0.62+g.ch+40:g.ch+54)+"px";
+      dk.forEach(function(d,i){var p=fanPos(g,i);d.style.transitionDelay="0ms";put(d,p.x,p.y,p.r);});}
     function idle(){
-      run++;stage="idle";picks=[];opened=0;rd.innerHTML="";
+      run++;stage="idle";picks=[];opened=0;charge=0;rubbing=false;rd.innerHTML="";
       var N=ques.sp.length;
       chat.innerHTML='<div class="bs-me">'+(birth?"사주도 같이 볼게요":"카드만 볼게요")+'</div>'+
-        say("마음속으로 물음을 되뇌면서 패를 섞게. "+(N===1?"한 장":N===2?"두 장":"세 장")+"을 고르면 되네.")+
+        say("마음속으로 물음을 되뇌면서 패를 섞게. 덱을 손가락이나 마우스로 문지르면 기운이 차오르고, 다 차면 패가 펼쳐지네. "+(N===1?"한 장":N===2?"두 장":"세 장")+"을 고르면 되네.")+
         '<p class="note tr-hint" id="hint" aria-live="polite"></p>';
       bd.style.gridTemplateColumns="repeat("+N+",1fr)";bd.style.maxWidth=N===1?"200px":N===2?"400px":"";
-      bd.innerHTML=ques.sp.map(function(s){return '<div class="tr-slot"><div class="tr-pos">'+s[1]+'</div><div class="tr-empty"></div></div>';}).join("");
-      tb.classList.remove("done");
-      var h="";for(var i=0;i<22;i++)h+='<div class="tr-dk" aria-hidden="true"></div>';
-      tb.innerHTML=h+'<span class="tr-go" role="button" tabindex="0">카드 섞기</span>';
+      bd.innerHTML=ques.sp.map(function(x){return '<div class="tr-slot"><div class="tr-pos">'+x[1]+'</div><div class="tr-empty"></div></div>';}).join("");
+      tb.classList.remove("done");tb.classList.add("rub");
+      var h="";for(var i=0;i<22;i++)h+='<div class="tr-dk" aria-hidden="true"><i></i></div>';
+      tb.innerHTML=h+'<div class="tr-ctl"><div class="tr-charge" role="progressbar" aria-label="섞인 정도" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>'+
+        '<span class="tr-go" role="button" tabindex="0">한 번에 섞기</span></div>';
       dk=[].slice.call(tb.querySelectorAll(".tr-dk"));stack();
-      hint("질문 하나를 마음에 품고 카드를 섞으세요.");
-      keyClick(tb.querySelector(".tr-go"),shuffle);}
+      hint("덱을 문질러 섞으세요. 버튼을 누르면 한 번에 섞습니다.");
+      keyClick(tb.querySelector(".tr-go"),shuffle);
+      bindRub();}
+    function setCharge(v){charge=Math.min(100,v);var c=tb.querySelector(".tr-charge");if(!c)return;
+      c.firstChild.style.width=charge+"%";c.setAttribute("aria-valuenow",String(Math.round(charge)));}
+    // 문질러 섞기 — 손길이 지나간 만큼 위쪽 카드가 끌려갔다 돌아오고, 게이지가 차면 섞기로 넘어간다
+    function bindRub(){
+      tb.onpointerdown=function(e){if(stage!=="idle"||e.target.closest(".tr-ctl"))return;rubbing=true;lastPt={x:e.clientX,y:e.clientY};
+        try{tb.setPointerCapture(e.pointerId);}catch(er){}};
+      tb.onpointermove=function(e){
+        if(!rubbing||stage!=="idle")return;
+        var dx=e.clientX-lastPt.x,dy=e.clientY-lastPt.y,dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<3)return;
+        lastPt={x:e.clientX,y:e.clientY};
+        var g=geo();
+        for(var k=0;k<4;k++){var n=21-Math.floor(Math.random()*9),p=deckPos(g,n);
+          dk[n].style.transitionDelay="0ms";put(dk[n],p.x+dx*(2+Math.random()*2),p.y+dy*(1+Math.random()),p.r+dx*0.9);}
+        if(Math.random()<0.4)burst(e.clientX,e.clientY,3,2);
+        setCharge(charge+dist*0.12);
+        window.clearTimeout(settleT);settleT=window.setTimeout(function(){if(stage==="idle")stack();},110);
+        if(charge>=100){rubbing=false;shuffle();}};
+      tb.onpointerup=tb.onpointercancel=function(){rubbing=false;};}
     function shuffle(){
       if(stage!=="idle")return;
-      stage="shuffle";tb.querySelector(".tr-go").remove();hint("카드를 섞는 중…");
+      stage="shuffle";tb.classList.remove("rub");setCharge(100);buzz(20);
+      var ctl=tb.querySelector(".tr-ctl");if(ctl)ctl.remove();
+      hint("카드를 섞는 중…");
       var idx=[];for(var i=0;i<22;i++)idx.push(i);
       for(i=21;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=idx[i];idx[i]=idx[j];idx[j]=tmp;}
       deck=idx.map(function(n){return {i:n,rev:Math.random()<0.4};});
+      if(RM){spread();return;}
       var g=geo(),cx=(g.W-g.cw)/2,round=0;
+      tb.classList.add("busy");
+      // 1) 두 더미로 갈라 번갈아 떨어뜨리는 리플 셔플 두 번
       (function riffle(){
-        dk.forEach(function(d,i){var s=(i+round)%2?-1:1;d.style.transitionDelay="0ms";
-          put(d,cx+s*(g.cw*0.7+Math.random()*10),6+Math.random()*8,s*(5+Math.random()*6));});
-        later(300,function(){
-          dk.forEach(function(d){d.style.zIndex=Math.floor(Math.random()*22);});stack();
-          if(++round<3)later(300,riffle);else later(380,spread);});})();}
+        dk.forEach(function(d,i){var sd=(i+round)%2?-1:1;d.style.transitionDelay="0ms";put(d,cx+sd*(g.cw*0.95+10),30-i*0.3,sd*(9+i*0.25));});
+        later(340,function(){
+          dk.forEach(function(d,i){d.style.transitionDelay=(i*16)+"ms";d.style.zIndex=String(Math.floor(Math.random()*22));var p=deckPos(g,i);put(d,p.x,p.y,p.r);});
+          later(22*16+300,function(){var c=mid(dk[21]);burst(c.x,c.y,10,2.5);if(++round<2)riffle();else vortex();});});})();
+      // 2) 회오리 — 카드가 원을 그리며 돌다가 가운데로 빨려 들어가 번쩍인다
+      function vortex(){
+        var rx=Math.min(g.W*0.38,170),ry=Math.min(g.ch*0.45,46),turn=0;
+        (function spin(){
+          dk.forEach(function(d,i){var ang=i/22*Math.PI*2+turn*0.95;d.style.transitionDelay=(turn?0:i*12)+"ms";
+            put(d,cx+Math.cos(ang)*rx,42+Math.sin(ang)*ry,ang*57.3+90);});
+          later(turn?250:420,function(){if(++turn<5)spin();else collapse();});})();}
+      function collapse(){
+        dk.forEach(function(d,i){d.style.transitionDelay="0ms";d.style.zIndex="";var p=deckPos(g,i);put(d,p.x,p.y,p.r);});
+        later(430,function(){var c=mid(dk[21]);burst(c.x,c.y,48,4.8);buzz(35);tb.classList.remove("busy");tb.classList.add("glow");
+          later(300,function(){tb.classList.remove("glow");spread();});});}}
+    // 3) 딜링 — 한 장씩 튕기듯 날아가 부채꼴로 펼쳐진다
     function spread(){
-      stage="pick";dk.forEach(function(d){d.style.zIndex="";});fan();
+      stage="pick";var g=geo();
+      tb.style.height=(g.W<520?g.ch*0.62+g.ch+40:g.ch+54)+"px";
+      dk.forEach(function(d,i){var p=fanPos(g,i);d.classList.add("deal");d.style.transitionDelay=(RM?0:i*45)+"ms";put(d,p.x,p.y,p.r);});
+      later(22*45+650,function(){dk.forEach(function(d){d.classList.remove("deal");d.style.transitionDelay="0ms";});});
       dk.forEach(function(d,k){
         d.removeAttribute("aria-hidden");d.setAttribute("role","button");d.tabIndex=0;
         d.setAttribute("aria-label",(k+1)+"번째 카드 고르기");d.classList.add("pick");
-        keyClick(d,function(){choose(d,k);});});
+        keyClick(d,function(){choose(d,k);});
+        // 손끝을 따라 카드가 기울어진다
+        d.addEventListener("pointermove",function(e){if(stage!=="pick")return;var r=d.getBoundingClientRect();
+          d.style.setProperty("--ry",(((e.clientX-r.left)/r.width-0.5)*26)+"deg");d.style.setProperty("--rx",((0.5-(e.clientY-r.top)/r.height)*26)+"deg");});
+        d.addEventListener("pointerleave",function(){d.style.setProperty("--rx","0deg");d.style.setProperty("--ry","0deg");});});
       hint("마음이 가는 카드를 고르세요. 첫 장은 '"+ques.sp[0][1]+"' 자리에 놓입니다 (0/"+ques.sp.length+")");}
+    // 고른 카드는 부채에서 튀어나와 빙글 돌며 제 자리로 날아가 꽂힌다
     function choose(d,k){
       var N=ques.sp.length;
       if(stage!=="pick"||d.classList.contains("gone"))return;
-      d.classList.add("gone");d.tabIndex=-1;
       var i=picks.length;picks.push(deck[k]);
-      bd.children[i].innerHTML='<div class="tr-pos">'+ques.sp[i][1]+'</div>'+slotCard(i);
-      bindFlip(bd.children[i].querySelector(".tr-card"));
+      var from=d.getBoundingClientRect();
+      d.classList.add("gone");d.tabIndex=-1;buzz(15);
+      var slot=bd.children[i];
+      slot.innerHTML='<div class="tr-pos">'+ques.sp[i][1]+'</div>'+slotCard(i);
+      var card=slot.querySelector(".tr-card");
+      bindFlip(card);
+      if(!RM&&card.animate){
+        card.classList.add("landing");
+        var to=card.getBoundingClientRect(),fly=document.createElement("div");
+        fly.className="tr-fly";
+        fly.style.cssText="left:"+from.left+"px;top:"+from.top+"px;width:"+from.width+"px;height:"+from.height+"px;";
+        document.body.appendChild(fly);
+        var dx=(to.left+to.width/2)-(from.left+from.width/2),dy=(to.top+to.height/2)-(from.top+from.height/2);
+        var sx=to.width/from.width,sy=to.height/from.height;
+        var an=fly.animate([
+          {transform:"translate(0px,0px) scale(1) rotate(0deg)"},
+          {transform:"translate("+(dx*0.45)+"px,"+(dy*0.45-90)+"px) scale("+((1+sx)/2*1.2)+") rotate(200deg)",offset:0.55},
+          {transform:"translate("+dx+"px,"+dy+"px) scale("+sx+","+sy+") rotate(360deg)"}],
+          {duration:650,easing:"cubic-bezier(.3,.7,.3,1)"});
+        var trail=window.setInterval(function(){var c=mid(fly);burst(c.x,c.y,2,1.2);},45);
+        an.onfinish=function(){window.clearInterval(trail);fly.remove();card.classList.remove("landing");card.classList.add("thunk");
+          var c=mid(card);burst(c.x,c.y,20,3.2);buzz(10);};
+      }
       if(picks.length<N){hint("다음 장은 '"+ques.sp[picks.length][1]+"' 자리에 놓입니다 ("+picks.length+"/"+N+")");return;}
-      stage="read";hint(N===1?"카드를 눌러 뒤집으세요.":"다 골랐습니다. 카드를 눌러 한 장씩 뒤집으세요.");
-      dk.forEach(function(x){x.classList.add("gone");x.tabIndex=-1;});
-      later(450,function(){tb.classList.add("done");});}
+      stage="placing";hint("패가 자리를 잡는 중…");
+      dk.forEach(function(x,n){if(!x.classList.contains("gone")){x.style.transitionDelay=(RM?0:n*12)+"ms";x.classList.add("gone");x.tabIndex=-1;}});
+      later(RM?0:760,function(){stage="read";tb.classList.add("done");
+        hint(N===1?"카드를 눌러 뒤집으세요.":"다 골랐습니다. 카드를 눌러 한 장씩 뒤집으세요.");});}
     function slotCard(i){
       var pk=picks[i],art=ART[pk.i],c=M[pk.i];
       var face=art
         ? '<div class="tr-f art"><img src="img/char/'+art+'.webp" alt="'+c[1]+' 타로 카드" class="'+(pk.rev?"rev":"")+'" loading="lazy" onerror="this.parentNode.classList.remove(\'art\');this.remove()"><span class="cap"><span class="nm">'+c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</span></div>'
         : '<div class="tr-f"><span class="no">'+c[0]+'</span><span class="sym" style="display:inline-block'+(pk.rev?';transform:rotate(180deg)':'')+'">'+c[2]+'</span><span class="nm">'+c[1]+'</span>'+(pk.rev?'<span class="rv">역방향</span>':'')+'</div>';
-      return '<div class="tr-card dealt" data-i="'+i+'" tabindex="0" role="button" aria-label="'+ques.sp[i][1]+' 카드 뒤집기"><div class="tr-b"></div>'+face+'</div>';}
+      return '<div class="tr-card" data-i="'+i+'" tabindex="0" role="button" aria-label="'+ques.sp[i][1]+' 카드 뒤집기"><div class="tr-b"></div>'+face+'</div>';}
+    // 뒤집을 때 빛이 한 번 스치고 금빛이 튄다. 역방향은 조금 약하게
     function bindFlip(card){
       keyClick(card,function(){
-        if(stage!=="read"||card.classList.contains("flip"))return;card.classList.add("flip");
-        if(++opened===picks.length)later(600,read);});}
+        if(stage!=="read"||card.classList.contains("flip"))return;
+        card.classList.remove("thunk");card.classList.add("flip");buzz(25);
+        var pk=picks[+card.dataset.i];
+        later(RM?0:360,function(){var c=mid(card);burst(c.x,c.y,pk.rev?20:36,pk.rev?2.6:4.2);card.classList.add("shine");});
+        if(++opened===picks.length)later(900,read);});}
     // 사주 대조 — 생년월일로 여섯 글자(시주 제외)를 세워 오행을 세고, 마지막 자리 카드의 오행과 일간의 생극을 본다
     function sajuPart(ti,pk,pos){
       var a=birth.split("-"),p=sjPillars(+a[0],+a[1],+a[2],null,0,false);
@@ -2200,11 +2318,20 @@
       if(!R){rd.innerHTML='<p class="note">풀이 원고를 불러오지 못했습니다.</p>';return;}
       hint("");
       var N=picks.length;
-      rd.innerHTML=say(N===1?"패를 뒤집었구먼. 잠깐 기다리게, 찬찬히 들여다보겠네.":"패를 다 뒤집었구먼. 잠깐 기다리게, 한 장씩 찬찬히 들여다보겠네.")+'<div id="tr-think"></div>';
       var steps=picks.map(function(pk,j){return "'"+ques.sp[j][1]+"' 자리의 "+M[pk.i][1]+" 살피는 중";})
         .concat([N===1?"패가 건네는 말 고르는 중":"패와 패 사이의 흐름 잇는 중"]).concat(birth?["사주 여섯 글자와 맞대 보는 중"]:[]).concat(["보살의 한마디 고르는 중"]);
       if(RM){render();return;}
-      askThink(rd.querySelector("#tr-think"),null,steps,function(){later(700,render);});}
+      var total=Math.max(3600,steps.length*750),per=total/steps.length,n=0;
+      rd.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
+        '<img src="img/mascot-serious.webp" alt="패를 진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
+        '<p class="tr-seer-t">보살이 패를 들여다보는 중일세</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
+      try{rd.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
+      var sEl=rd.querySelector(".tr-seer-s"),bar=rd.querySelector(".tr-seer-bar i"),img=rd.querySelector(".tr-seer img");
+      bar.style.transition="width "+total+"ms linear";
+      later(40,function(){bar.style.width="100%";});
+      (function next(){
+        if(n<steps.length){sEl.textContent=steps[n++];if(img){var c=mid(img);burst(c.x,c.y-20,8,1.8);}later(per,next);}
+        else render();})();}
     function render(){
       var R=TAROT_READ,ti=TK.indexOf(topic.k),N=picks.length,last=picks[N-1],blocks=[];
       blocks.push(say(N===1?"패가 열렸네. 짚어 주겠네.":"패가 다 열렸네. 한 장씩 짚어 주겠네."));

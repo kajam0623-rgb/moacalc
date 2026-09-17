@@ -151,10 +151,12 @@ t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x =>
 const healthLines = TREAD.flatMap(c => c.topic.health);
 t("타로 건강 풀이에 병·증상·치료 표현 없음", healthLines.filter(x => /질환|증상|암에|수술|약을|약이|진단|통증|아프|낫는|낫게|회복|치료|감기|염증|부상|다치/.test(x)).length, 0);
 t("타로 건강 고민은 병원 안내를 먼저 한다", /병원/.test(tarotData.TOPICS.find(tp => tp.k === "health").hi) && /병원/.test(tarotData.CLOSE[tarotData.TOPICS.findIndex(tp => tp.k === "health")]), true);
-t("타로 카드 설명 22장 × 정역 (130자 이상)", TREAD.every(c => c.desc && ["up","rev"].every(k => typeof c.desc[k] === "string" && c.desc[k].replace(/\s/g, "").length >= 130)), true);
+t("타로 카드 설명 22장 × 정역 (250자 이상)", TREAD.every(c => c.desc && ["up","rev"].every(k => typeof c.desc[k] === "string" && c.desc[k].replace(/\s/g, "").length >= 250)), true);
 t("타로 핵심어는 카드 뜻 페이지 keyword와 같음", tarotData.KW.join("|"), require("./content_tarot.js").map(c => c.keyword).join("|"));
 t("타로 종합 원소 문장 5 · 여정 구간 3", tarotData.EL_LINE.length === 5 && tarotData.STAGE.length === 3, true);
-t("타로 결과는 짚는 중 연출 뒤에 차례로 띄운다", tarotSrc.includes("askThink(") && tarotSrc.includes("tr-in"), true);
+t("타로 결과는 진지한 보살 로딩(최소 3.6초) 뒤에 차례로 띄운다", tarotSrc.includes("mascot-serious.webp") && /Math\.max\(3600,/.test(tarotSrc) && tarotSrc.includes("tr-in"), true);
+t("타로 진지한 보살 이미지 파일 존재", fs.existsSync("img/mascot-serious.webp"), true);
+t("타로 게임 연출: 문질러 섞기·입자·날아가 꽂히기", tarotSrc.includes("bindRub()") && tarotSrc.includes("function burst(") && tarotSrc.includes("tr-fly"), true);
 t("타로 첫 화면 고민 8칸 (두 줄 격자에 빈칸 없음)", tarotData.TOPICS.length, 8);
 t("타로 관계 풀이 5관계 × 고민 수", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === tarotData.TOPICS.length) && tarotData.CLOSE.length === tarotData.TOPICS.length, true);
 t("타로 예/아니오 성향은 카드 뜻 페이지와 같음", tarotData.YN.join(","), require("./content_tarot.js").map(c => c.yesno).join(","));

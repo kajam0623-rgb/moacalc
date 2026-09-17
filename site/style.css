@@ -413,25 +413,52 @@
   @media (prefers-reduced-motion:reduce){.tr-card{transition:none;}}
   .tr-f,.tr-b{position:absolute;inset:0;backface-visibility:hidden;border-radius:8px;border:1.5px solid var(--line-2);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;}
   /* 카드 뒷면은 인쇄물이라 테마와 무관하게 같은 색 */
-  .tr-b,.tr-dk{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
+  .tr-b,.tr-dk i{background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;
     color:#E6B25A;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55);}
   .tr-b{font-size:26px;border-color:#2c3a6e;}
   .tr-table{position:relative;margin-top:14px;transition:height .4s,opacity .4s,margin .4s;}
   .tr-table.done{height:0 !important;opacity:0;margin-top:0;overflow:hidden;}
-  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;border-radius:7px;border:1px solid #2c3a6e;
-    display:flex;align-items:center;justify-content:center;font-size:calc(var(--cw,70px)*.3);
-    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s,box-shadow .2s;}
+  .tr-dk{position:absolute;left:0;top:0;width:var(--cw,70px);aspect-ratio:5/8;
+    transition:transform .45s cubic-bezier(.2,.7,.3,1),translate .25s,opacity .3s;}
+  .tr-dk i{position:absolute;inset:0;border-radius:7px;border:1px solid #2c3a6e;transform:perspective(520px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .12s,box-shadow .2s;}
+  .tr-dk.deal{transition:transform .6s cubic-bezier(.18,1.4,.4,1),translate .25s,opacity .3s;}
   .tr-dk.pick{cursor:pointer;}
-  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -14px;outline:none;box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 10px 22px rgba(0,0,0,.35);}
-  .tr-dk.gone{translate:0 -46px;opacity:0;pointer-events:none;}
+  .tr-dk.pick:hover,.tr-dk.pick:focus-visible{translate:0 -16px;outline:none;}
+  .tr-dk.pick:hover i,.tr-dk.pick:focus-visible i{box-shadow:inset 0 0 0 3px #10183a,inset 0 0 0 4px rgba(230,178,90,.55),0 0 0 2px var(--fun),0 12px 26px rgba(0,0,0,.4),0 0 22px rgba(230,178,90,.45);}
+  .tr-dk.gone{translate:0 -60px;opacity:0;pointer-events:none;}
+  .tr-table.rub{touch-action:none;cursor:grab;}
+  .tr-table.rub:active{cursor:grabbing;}
+  .tr-table.busy .tr-dk{pointer-events:none;}
+  .tr-table.glow{filter:drop-shadow(0 0 18px rgba(230,178,90,.7));}
+  .tr-ctl{position:absolute;left:0;right:0;bottom:6px;z-index:40;text-align:center;}
+  .tr-charge{width:180px;height:8px;margin:0 auto 10px;border-radius:9px;background:var(--line);overflow:hidden;box-shadow:inset 0 0 0 1px var(--line-2);}
+  .tr-charge i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98a3a,#E6B25A,#fff1c7);transition:width .15s;}
+  .tool .tr-ctl .tr-go{position:static;transform:none;display:inline-block;}
+  .tr-fx{position:fixed;left:0;top:0;width:100vw;height:100vh;pointer-events:none;z-index:60;}
+  .tr-fly{position:fixed;z-index:61;border-radius:8px;pointer-events:none;background:#141c3a url(img/char/tarot-back.webp) center/cover no-repeat;box-shadow:0 0 0 1.5px #E6B25A,0 0 30px rgba(230,178,90,.65);}
+  .tr-card.landing{opacity:0;}
+  .tr-card.thunk{animation:trThunk .4s cubic-bezier(.2,1.6,.4,1);}
+  @keyframes trThunk{0%{transform:scale(1.16);}100%{transform:scale(1);}}
+  .tr-card.shine .tr-f{box-shadow:0 0 0 2px #E6B25A,0 0 26px rgba(230,178,90,.55);}
+  .tr-card.shine .tr-f::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,240,200,.6) 50%,transparent 70%);transform:translateX(-130%);animation:trShine .9s ease-out forwards;}
+  @keyframes trShine{to{transform:translateX(130%);}}
+  .tr-seer{position:relative;overflow:hidden;text-align:center;padding:26px 16px 24px;border:1px solid var(--line-2);border-radius:18px;background:radial-gradient(circle at 50% 40%,rgba(230,178,90,.16),transparent 62%),var(--surface-2);}
+  .tr-aura{position:absolute;left:50%;top:38%;width:320px;height:320px;margin:-160px 0 0 -160px;border-radius:50%;filter:blur(20px);
+    background:conic-gradient(from 0deg,transparent,rgba(230,178,90,.4),transparent 30%,rgba(147,164,255,.28),transparent 60%,rgba(230,178,90,.35),transparent);animation:seerSpin 4s linear infinite;}
+  .tr-seer img{position:relative;display:block;height:250px;width:auto;margin:0 auto;animation:seerBreath 2.4s ease-in-out infinite;}
+  .tr-seer-t{position:relative;margin:14px 0 4px;font-size:17px;font-weight:900;color:var(--fun-ink);}
+  .tr-seer-s{position:relative;min-height:1.7em;margin:0 0 12px;font-size:13.5px;color:var(--muted);}
+  .tr-seer-bar{position:relative;max-width:260px;height:6px;margin:0 auto;border-radius:9px;background:var(--line);overflow:hidden;}
+  .tr-seer-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#b98a3a,#E6B25A,#fff1c7);}
+  @keyframes seerSpin{to{transform:rotate(360deg);}}
+  @keyframes seerBreath{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-5px) scale(1.02);}}
+  @media (prefers-reduced-motion:reduce){.tr-aura,.tr-seer img,.tr-card.thunk,.tr-card.shine .tr-f::after{animation:none;}.tr-dk i{transition:none;}}
   .tool .tr-go{position:absolute;left:50%;bottom:4px;transform:translateX(-50%);z-index:40;padding:11px 26px;border:none;border-radius:100px;
     font:inherit;font-weight:800;background:var(--fun) !important;color:#1b1405 !important;border-radius:100px !important;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.25);}
   .tr-f.art .cap .nm,.tr-f.art .cap .rv{display:block;}
   .tr-board{max-width:600px;margin-left:auto;margin-right:auto;}
   .tr-empty{width:100%;aspect-ratio:5/8;border:1.5px dashed var(--line-2);border-radius:8px;}
-  .tr-card.dealt{animation:trDeal .45s cubic-bezier(.2,.7,.3,1) backwards;}
-  @keyframes trDeal{from{transform:translateY(-44px) scale(.86);opacity:0;}}
-  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}.tr-card.dealt{animation:none;}}
+  @media (prefers-reduced-motion:reduce){.tr-dk,.tr-table{transition:none;}}
   .tr-f{background:var(--surface);transform:rotateY(180deg);}
   .tr-f .no{font-family:var(--mono);font-size:10px;color:var(--muted);}
   .tr-f .sym{font-size:34px;margin:6px 0;}
