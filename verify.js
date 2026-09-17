@@ -340,7 +340,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -469,6 +469,16 @@ if (leakyShare.length) console.log("   ⚠ 공유 인자에 생일:", leakyShare
 const sajuToolSrc = toolsSrc.slice(toolsSrc.indexOf('{id:"saju"'), toolsSrc.indexOf('{id:"tarot"'));
 t("사주 결과에 공유 버튼 있음", /shareBtn\(\)/.test(sajuToolSrc), true);
 t("사주 결과에 bindShare 배선됨", /bindShare\(/.test(sajuToolSrc), true);
+// 사주도 진지한 보살 로딩(최소 4초 이상)과 느린 등장을 쓴다
+t("사주 물어보기는 보살 로딩 옵션으로 배선", /askWire\(el,go,\[[\s\S]*?\{min:(\d+)/.test(sajuToolSrc) && +sajuToolSrc.match(/\{min:(\d+)/)[1] >= 4000, true);
+t("사주 결과는 느린 등장(slowReveal)", /slowReveal\(outEl\)/.test(sajuToolSrc), true);
+const GUNG = require("./content_saju_gung.js"), TEN = ["비견","겁재","식신","상관","편재","정재","편관","정관","편인","정인"];
+const gungLines = ["year","month","day","hour"].flatMap(k => TEN.map(tg => GUNG[k] && GUNG[k][tg]));
+t("사주 자리 읽기 원고 4자리 × 10십성", gungLines.filter(x => typeof x === "string" && x.replace(/\s/g, "").length >= 110).length, 40);
+t("사주 자리 읽기 원고는 보살 말투", gungLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x) || !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
+t("사주 자리 읽기 원고가 사주 청크에 주입됨", /c\.id === "saju" \? "var SAJU_GUNG="/.test(bs), true);
+t("사주 새 풀이(오행 3종·신강 구간) 보살 말투", (() => { const d = new Function(sajuToolSrc.slice(sajuToolSrc.indexOf("var EL_HI="), sajuToolSrc.indexOf("var EL_TITLE=")) + "return [].concat(Object.values(EL_HI),Object.values(EL_LO),Object.values(EL_FILL),[0.8,0.6,0.4,0.1].map(strengthBand));")();
+  return d.length === 19 && d.every(x => !/습니다|합니다|하세요|입니다|십시오/.test(x) && /일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)); })(), true);
 
 // .tool button 의 !important 배경이 공유·저장 버튼을 강조색으로 덮어쓴 적이 있다.
 // 되받지 않으면 외곽선 스타일이 화면에 아예 안 나온다.

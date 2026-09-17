@@ -512,6 +512,9 @@
   .tr-read .one p:not(.st){color:var(--ink);}
   .tr-read .one p.st{font-size:12.5px;}
   .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .sj-wait{opacity:0;transform:translateY(16px);}
+  @media print{.sj-wait,.tr-in{opacity:1 !important;transform:none !important;animation:none !important;}}
+  @media (prefers-reduced-motion:reduce){.sj-wait{opacity:1;transform:none;}}
   .tr-lb{display:block;font-size:12px;font-weight:800;color:var(--fun-ink);margin-bottom:2px;}
   .tr-read .one p+p{margin-top:10px;}
   .tr-read .sj-sec p+p{margin-top:12px;}

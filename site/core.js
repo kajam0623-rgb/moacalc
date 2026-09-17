@@ -356,10 +356,37 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var top=out.querySelector(".out");
     if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
   // 물어보기 배선 — 초기엔 대기 화면, 버튼을 눌러야 짚어 보고 답이 나온다
-  function askWire(el,go,steps,waitMsg){
+  function askWire(el,go,steps,waitMsg,seer){
     var btn=el.querySelector("#go"),out=el.querySelector("#out");
     if(out)out.innerHTML=askWait(waitMsg);
-    if(btn)btn.addEventListener("click",function(){askThink(out,btn,steps,go);});}
+    if(btn)btn.addEventListener("click",function(){if(seer)seerThink(out,btn,steps,go,seer);else askThink(out,btn,steps,go);});}
+  // 풀이가 긴 도구 — 진지한 보살이 짚어 보는 시간을 최소 o.min 동안 둔다. 짧으면 긴 풀이가 가볍게 읽힌다
+  function seerThink(out,btn,steps,done,o){
+    o=o||{};
+    var total=Math.max(o.min||4000,steps.length*600),per=total/steps.length,n=0,was=btn?btn.textContent:"";
+    if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
+    out.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
+      '<img src="img/mascot-serious.webp" alt="진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
+      '<p class="tr-seer-t">'+(o.title||"보살이 짚어 보는 중일세")+'</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
+    try{out.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
+    var sEl=out.querySelector(".tr-seer-s"),bar=out.querySelector(".tr-seer-bar i");
+    bar.style.transition="width "+total+"ms linear";
+    setTimeout(function(){bar.style.width="100%";},40);
+    (function tick(){
+      if(n<steps.length){sEl.textContent=steps[n++];setTimeout(tick,per);return;}
+      if(btn){btn.disabled=false;btn.textContent=was;}
+      done();})();}
+  // 긴 결과는 앞 몇 덩어리만 차례로 띄우고, 나머지는 스크롤해 닿을 때 떠오르게 한다.
+  // 스무 덩어리를 전부 줄 세워 띄우면 끝까지 기다리다 지친다
+  function slowReveal(out,first,gap){
+    first=first||6;gap=gap||380;
+    var kids=Array.prototype.slice.call(out.children);
+    var io=(typeof IntersectionObserver!=="undefined")?new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove("sj-wait");e.target.classList.add("tr-in");io.unobserve(e.target);}});},
+      {rootMargin:"0px 0px -8% 0px"}):null;
+    kids.forEach(function(k,i){
+      if(i<first){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";}
+      else if(io){k.classList.add("sj-wait");io.observe(k);}});}
   // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
   // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
   function birthDial(el,sel,onChange){

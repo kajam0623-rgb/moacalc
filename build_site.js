@@ -2103,6 +2103,7 @@ chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"),
   (c.id === "lunar" ? VENDOR_LUNAR + "\n" : "") +
   // 대화형 타로 풀이 원고는 타로 청크만 받는다
   (c.id === "tarot" ? "var TAROT_READ=" + JSON.stringify(require("./content_tarot_read.js")) + ";\n" : "") +
+  (c.id === "saju" ? "var SAJU_GUNG=" + JSON.stringify(require("./content_saju_gung.js")) + ";\n" : "") +
   "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));

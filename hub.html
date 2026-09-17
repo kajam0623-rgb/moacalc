@@ -513,6 +513,9 @@
   .tr-read .one p:not(.st){color:var(--ink);}
   .tr-read .one p.st{font-size:12.5px;}
   .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .sj-wait{opacity:0;transform:translateY(16px);}
+  @media print{.sj-wait,.tr-in{opacity:1 !important;transform:none !important;animation:none !important;}}
+  @media (prefers-reduced-motion:reduce){.sj-wait{opacity:1;transform:none;}}
   .tr-lb{display:block;font-size:12px;font-weight:800;color:var(--fun-ink);margin-bottom:2px;}
   .tr-read .one p+p{margin-top:10px;}
   .tr-read .sj-sec p+p{margin-top:12px;}
@@ -909,10 +912,37 @@
     var top=out.querySelector(".out");
     if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
   // 물어보기 배선 — 초기엔 대기 화면, 버튼을 눌러야 짚어 보고 답이 나온다
-  function askWire(el,go,steps,waitMsg){
+  function askWire(el,go,steps,waitMsg,seer){
     var btn=el.querySelector("#go"),out=el.querySelector("#out");
     if(out)out.innerHTML=askWait(waitMsg);
-    if(btn)btn.addEventListener("click",function(){askThink(out,btn,steps,go);});}
+    if(btn)btn.addEventListener("click",function(){if(seer)seerThink(out,btn,steps,go,seer);else askThink(out,btn,steps,go);});}
+  // 풀이가 긴 도구 — 진지한 보살이 짚어 보는 시간을 최소 o.min 동안 둔다. 짧으면 긴 풀이가 가볍게 읽힌다
+  function seerThink(out,btn,steps,done,o){
+    o=o||{};
+    var total=Math.max(o.min||4000,steps.length*600),per=total/steps.length,n=0,was=btn?btn.textContent:"";
+    if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
+    out.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
+      '<img src="img/mascot-serious.webp" alt="진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
+      '<p class="tr-seer-t">'+(o.title||"보살이 짚어 보는 중일세")+'</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
+    try{out.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
+    var sEl=out.querySelector(".tr-seer-s"),bar=out.querySelector(".tr-seer-bar i");
+    bar.style.transition="width "+total+"ms linear";
+    setTimeout(function(){bar.style.width="100%";},40);
+    (function tick(){
+      if(n<steps.length){sEl.textContent=steps[n++];setTimeout(tick,per);return;}
+      if(btn){btn.disabled=false;btn.textContent=was;}
+      done();})();}
+  // 긴 결과는 앞 몇 덩어리만 차례로 띄우고, 나머지는 스크롤해 닿을 때 떠오르게 한다.
+  // 스무 덩어리를 전부 줄 세워 띄우면 끝까지 기다리다 지친다
+  function slowReveal(out,first,gap){
+    first=first||6;gap=gap||380;
+    var kids=Array.prototype.slice.call(out.children);
+    var io=(typeof IntersectionObserver!=="undefined")?new IntersectionObserver(function(es){
+      es.forEach(function(e){if(e.isIntersecting){e.target.classList.remove("sj-wait");e.target.classList.add("tr-in");io.unobserve(e.target);}});},
+      {rootMargin:"0px 0px -8% 0px"}):null;
+    kids.forEach(function(k,i){
+      if(i<first){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";}
+      else if(io){k.classList.add("sj-wait");io.observe(k);}});}
   // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
   // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
   function birthDial(el,sel,onChange){
@@ -1678,6 +1708,28 @@
     var ILGAN_EN=["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"];
     var ELDESC={목:"성장·시작·인정",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·저장"};
     var EL_EN={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"};
+    // 오행 균형 풀이 — 가장 센 기운일 때, 가장 모자랄 때, 채우는 법
+    var EL_HI={목:"나무 기운이 두터우면 뻗어 나가려는 힘과 자존심이 세지. 새 일을 벌이는 데는 거침없지만 벌여 놓은 걸 거두는 데는 약한 편일세.",
+      화:"불 기운이 두터우면 말과 표정에 힘이 넘쳐 사람을 끌지. 대신 한번 달아오르면 식을 줄 몰라 성급한 말이 앞서기 쉬워.",
+      토:"흙 기운이 두터우면 믿음직하고 버티는 힘이 좋지. 그만큼 변화를 꺼려 고집으로 보이기 쉬우니 한 번씩 문을 열어 두게.",
+      금:"쇠 기운이 두터우면 맺고 끊음이 분명하고 판단이 빠르지. 다만 날이 선 말이 사람을 베기 쉬우니 한마디씩 무디게 하게.",
+      수:"물 기운이 두터우면 생각이 깊고 사람 속을 잘 읽지. 대신 생각이 꼬리를 물어 걱정이 많고 몸이 더디게 움직이기 쉬워."};
+    var EL_LO={목:"나무 기운이 모자라면 시작하는 힘이 약해 생각만 하다 때를 놓치기 쉽네. 계획은 서는데 첫발이 무거운 게야.",
+      화:"불 기운이 모자라면 속은 뜨거워도 겉으로 잘 드러내지 못하네. 알아주는 사람이 적어 혼자 서운한 일이 생기지.",
+      토:"흙 기운이 모자라면 마음이 이리저리 흔들려 중심 잡기가 어렵네. 벌여 놓은 일이 흩어지기 쉬운 게야.",
+      금:"쇠 기운이 모자라면 정에 끌려 끊을 걸 못 끊고 우물쭈물하기 쉽네. 결정을 미루다 손해를 보는 게야.",
+      수:"물 기운이 모자라면 앞만 보고 달리다 쉬어 갈 줄을 모르네. 여유가 없어 작은 일에도 쉽게 지치는 게야."};
+    var EL_FILL={목:"나무를 채우려면 아침 일찍 걷고, 새로 배우는 일 하나를 붙들게. 초록빛 화분 하나 곁에 두는 것도 좋네.",
+      화:"불을 채우려면 햇볕을 쬐고 사람 앞에서 말할 자리를 일부러 만들게. 붉은빛 소품도 도움이 되네.",
+      토:"흙을 채우려면 끼니와 잠을 일정하게 지키고, 약속 하나를 끝까지 지켜 보게. 누런빛 그릇 같은 걸 곁에 두어도 좋네.",
+      금:"쇠를 채우려면 할 일을 적어 하나씩 지워 나가고, 정리정돈으로 하루를 여닫게. 흰빛이나 은빛 물건도 도움이 되네.",
+      수:"물을 채우려면 물을 자주 마시고 잠들기 전 조용히 생각을 정리하는 시간을 두게. 검푸른빛 소품도 곁에 두면 좋네."};
+    // 신강·신약이 얼마나 치우쳤는지 — 돕는 기운 비율 구간
+    function strengthBand(r){
+      return r>=0.7?"돕는 기운이 칠 할을 넘으니 꽤 치우친 신강일세. 제 뜻대로 밀고 가는 힘은 강하지만 남의 말을 잘 안 들어 부딪히기 쉬우니, 힘을 덜어 쓸 곳을 늘 마련해 두게."
+        :r>=0.5?"신강 쪽으로 기울었으되 지나치지는 않네. 스스로 서는 힘이 있으면서도 남과 어울릴 여지가 남은 짜임일세."
+        :r>=0.3?"신약 쪽이지만 크게 기울지는 않았네. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이야."
+        :"돕는 기운이 삼 할에 못 미치니 꽤 기운이 얇은 신약일세. 혼자 다 짊어지면 금세 지치니, 기댈 사람과 쉬어 갈 자리부터 챙기게.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
@@ -1917,6 +1969,15 @@
       var EL_STRONG={목:"뻗어 오르는 나무",화:"타오르는 불",토:"두텁게 쌓인 흙",금:"벼려진 쇠",수:"깊이 흐르는 물"};
       var EL_NEED={목:"뿌리내릴 나무",화:"데워줄 불",토:"붙잡아줄 흙",금:"맺고 끊을 쇠",수:"식혀줄 물"};
       // 오행이 고르면 최강과 최약이 같은 글자로 나온다. 그때는 다른 제목을 쓴다
+      // 여덟 글자 자리 읽기 — 각 기둥 지지의 본기가 일간에게 어떤 십성인지를 그 자리의 뜻과 함께 읽는다
+      function gungSec(){
+        if(typeof SAJU_GUNG==="undefined")return "";
+        var rows=[["year","연주","뿌리와 어린 시절",p.y],["month","월주","부모와 사회의 무대",p.m],["day","일지","배우자 자리와 속마음",p.d],["hour","시주","자녀와 말년의 결실",p.h]];
+        return '<div class="sj-sec"><h3>여덟 글자 자리 읽기</h3><p>'+
+          rows.filter(function(r){return r[3];}).map(function(r){var tg=sjTenGod(ds,SJ_BMAIN[r[3].b]);
+            return '<b>'+r[1]+' '+SJ_B[r[3].b]+'('+SJ_BH[r[3].b]+') — '+tg+'</b> · '+r[2]+'<br>'+SAJU_GUNG[r[0]][tg];}).join("<br><br>")+
+          (p.h?'':'<br><br>태어난 시각을 모르니 시주 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
+          '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 일주의 천간은 자기 자신이라 일지만 읽습니다.</span></p></div>';}
       var headTxt=(mx===mn)?"기운이 고르게 퍼진 사주"
         :EL_STRONG[mx]+' 사이에서<br>'+EL_NEED[mn]+josa(EL_NEED[mn],"를/을")+' 찾는 사주';
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
@@ -1951,14 +2012,17 @@
         (sinsal.length?'<div class="sj-sec"><h3>신살 — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>신살</h3><p>두드러진 신살이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
         '<div class="sj-sec"><h3>십이운성 — 일지 '+ilUn+'</h3><p>자네 일간 '+SJ_S[ds]+'는 일지 '+SJ_B[p.d.b]+'에서 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">십이운성은 일간의 기운이 각 자리에서 어느 단계에 있는지를 사람의 일생에 빗대어 본 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
+        gungSec()+
         '<div class="sj-sec"><h3>신강·신약과 용신</h3><p>일간을 돕는 기운이 '+Math.round(st.ratio*100)+'%로 <b>'+(st.strong?"신강":"신약")+'</b>한 사주일세. '+
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
-        ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.</p></div>'+
+        ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.<br><br>'+strengthBand(st.ratio)+'</p></div>'+
         '<div class="sj-sec"><h3>용신 '+yEl+' 활용법</h3><p>'+yongWhy+'<br><br>'+
         '· 색: <b>'+Y.color+'</b>  · 방향: <b>'+Y.dir+'</b>  · 계절: '+Y.season+'<br>· 잘 맞는 일: '+Y.job+'<br>· 도움이 되는 활동: '+Y.act+'<br><br>'+
         yongHow+'</p></div>'+
         secFortune+
-        '<div class="sj-sec"><h3>오행 균형</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.</p></div>'+
+        '<div class="sj-sec"><h3>오행 균형</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')이 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.'+
+        '<br><br>여덟 글자를 오행으로 나누면 '+SJ_EL.map(function(e,i){return e+' '+cnt[i];}).join(" · ")+'일세. '+EL_HI[mx]+
+        '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?mn+' 기운은 한 자리도 들지 않았네. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
         '<div class="sj-sec"><h3>십성 분포</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br><br>'+
         gTxt+'<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         seSec+
@@ -1981,8 +2045,10 @@
       bindSave(el,{file:"사주팔자",tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간",
         headline:EL_TITLE[SJ_EL[SJ_ES[ds]]][1],
         body:SJ_EL[SJ_ES[ds]]+" 일간 · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" · "+mx+" 기운이 가장 강함"});
-      askFx(el,{});}
-    askWire(el,go,["생년월일로 사주 여덟 글자를 세우고","일간의 힘부터 재어 본다","격국과 신살을 짚는다"],"명식을 아직 안 뽑았네.");birthDial(el,"#d");}},
+      var outEl=el.querySelector("#out");fillBars(outEl);slowReveal(outEl);
+      try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
+    askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
+      "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"보살에게 묻고 뽑는 타로",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
