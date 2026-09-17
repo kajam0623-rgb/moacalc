@@ -23,6 +23,7 @@ const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
 const TAROT_PAGES = require("./content_tarot.js");       // 타로 메이저 아르카나 22장 — 카드 뜻
+const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const ILJIN_SRC = require("./content_iljin.js");
 
 // 페이지별 기준표. 계산 결과가 아니라 고정 해설이라 정적 HTML로 내보낸다.
@@ -986,6 +987,8 @@ const ilganChips = cur => '<div class="sibs">'+ILGAN_PAGES.map(g=>g.en===cur
   ? `<span class="cur">${g.ko}${g.el} 일간</span>` : `<a href="ilgan-${g.en}.html">${g.ko}${g.el} 일간</a>`).join("")+'</div>';
 const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===cur
   ? `<span class="cur">${s.ko} 뜻</span>` : `<a href="sipseong-${s.en}.html">${s.ko} 뜻</a>`).join("")+'</div>';
+const conceptChips = cur => '<div class="sibs">'+CONCEPT_PAGES.map(c=>c.en===cur
+  ? `<span class="cur">${c.ko}</span>` : `<a href="concept-${c.en}.html">${c.ko}</a>`).join("")+'</div>';
 const tarotChips = cur => '<div class="sibs">'+TAROT_PAGES.map(c=>c.en===cur
   ? `<span class="cur">${c.ko} 카드</span>` : `<a href="tarot-${c.en}.html">${c.ko} 카드</a>`).join("")+'</div>';
 
@@ -1360,6 +1363,32 @@ function ilganPage(g){
     related:["saju","todayfortune","gunghap","newyear"]});
 }
 
+/* 개념 해설 페이지 — 질문형.
+   본문은 h2 질문 + 긴 답변으로 눈에 보이게 싣고, 아코디언 FAQ 는 기존 관례대로 따로 3문항 둔다.
+   FAQPage 스키마는 seoPage 가 o.faq 로만 만들므로, 보이는 아코디언과 스키마가 1:1 로 맞는다.
+   sources 는 표제어와 200 응답을 확인한 기관 링크만 — rel=nofollow 없이 정직하게 내보낸다. */
+function conceptPage(c){
+  return seoPage({
+    crumb:`${c.ko}`,
+    title:`${c.ko}${josa(c.ko,"이란/란")}? — 뜻과 보는 법 | 동네보살`,
+    desc:`${c.oneline} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 풀어 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
+    url:`${DOMAIN}/concept-${c.en}.html`, hero:"img/tool/h-saju.webp",
+    h1:`${c.han} ${c.ko} — ${c.keyword}`,
+    sub:c.oneline,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:c.tags,
+    body:`<div class="exbox"><h3>${c.ko} 한눈에 보기</h3>`+
+      c.facts.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `</div>`+
+      c.qa.map(x=>`<section class="guide"><h2>${esc(x.q)}</h2><div class="intro" style="margin-top:0">${para(x.a)}</div></section>`).join("")+
+      `<section class="guide"><h2>참고한 자료</h2><div class="intro" style="margin-top:0"><p>`+
+      c.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)}</a> — ${esc(x.org)}`).join("<br>")+
+      `</p><p style="color:var(--muted);font-size:12.5px">사주는 전통적인 해석 체계입니다. 위 자료는 개념의 유래와 정의를 확인한 출처이며, 사주 풀이의 적중을 보증하지 않습니다.</p></div></section>`,
+    faq:c.faq,
+    sibTitle:"다른 개념도 보기", sibs:conceptChips(c.en),
+    related:["saju","todayfortune","gunghap","newyear"]});
+}
 function sipseongPage(s){
   return seoPage({
     crumb:`${s.ko}`,
@@ -1834,6 +1863,8 @@ function indexPage(){
       ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
     ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
       SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
+    ["개념 6", "사주에 나오는 말의 뜻. 기관 자료 출처를 밝힌 질문형 해설이다.",
+      CONCEPT_PAGES.map(c=>[`concept-${c.en}.html`, c.ko, c.keyword])],
     ["타로 22", "메이저 아르카나 22장. 정방향·역방향과 연애·재회·일에서의 뜻.",
       TAROT_PAGES.map(c=>[`tarot-${c.en}.html`, `${c.ko} 카드 뜻`, c.keyword])],
     ["만세력 월력 " + MANSE_PAGES.length, "달마다 한 장. 날짜별 일진·음력과 절기 절입 시각이 들어 있다.",
@@ -1972,6 +2003,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
+  CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
@@ -2015,6 +2047,10 @@ ${ILGAN_PAGES.map(g=>`- [${g.ko}${g.el}(${g.han})](${DOMAIN}/ilgan-${g.en}.html)
 ## 십성별 상세 (10) — 나와 다른 글자의 관계
 
 ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html): ${s.rule} · ${s.keyword}`).join("\n")}
+
+## 명리 개념 해설 (6) — 용어의 뜻과 근거
+
+${CONCEPT_PAGES.map(c=>`- [${c.ko}(${c.han})](${DOMAIN}/concept-${c.en}.html): ${c.oneline}`).join("\n")}
 
 ## 타로 카드별 상세 (22) — 메이저 아르카나
 
@@ -2112,6 +2148,7 @@ ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
+CONCEPT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"concept-"+c.en+".html"), conceptPage(c)));
 ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
 MANSE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"manse-"+p.en+".html"), mansePage(p)));
 ILJU_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"ilju-"+p.en+".html"), iljuPage(p)));
