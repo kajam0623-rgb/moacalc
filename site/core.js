@@ -623,22 +623,26 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var b=el.querySelector(".save-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("image_save",{tool:location.pathname});
-      var c=fortuneCard(typeof opts==="function"?opts():opts);if(!c)return;
       var name=(opts&&opts.file||"dongnebosal")+".png";
+      function reset(){b.textContent="이미지로 저장";}
+      function finish(c){
+        if(!c){reset();return;}
+        try{c.toBlob(function(blob){
+          if(!blob){b.textContent="저장 실패";return;}
+          var f=null;
+          try{f=new File([blob],name,{type:"image/png"});}catch(e){}
+          if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
+            navigator.share({files:[f]}).catch(function(){}).then(reset);
+          }else{
+            var u=URL.createObjectURL(blob),a=document.createElement("a");
+            a.href=u;a.download=name;document.body.appendChild(a);a.click();
+            document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);
+            reset();}
+        },"image/png");}catch(e){b.textContent="저장 실패";}}
       b.textContent="만드는 중...";
-      c.toBlob(function(blob){
-        if(!blob){b.textContent="저장 실패";return;}
-        var f=null;
-        try{f=new File([blob],name,{type:"image/png"});}catch(e){}
-        if(f&&navigator.canShare&&navigator.canShare({files:[f]})){
-          navigator.share({files:[f]}).catch(function(){}).then(reset);
-        }else{
-          var u=URL.createObjectURL(blob),a=document.createElement("a");
-          a.href=u;a.download=name;document.body.appendChild(a);a.click();
-          document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);
-          reset();}
-        function reset(){b.textContent="이미지로 저장";}
-      },"image/png");});}
+      // 카드 그림처럼 불러와야 그릴 수 있는 이미지는 draw 가 다 그린 뒤 캔버스를 넘긴다
+      if(opts&&opts.draw){opts.draw(finish);return;}
+      finish(fortuneCard(typeof opts==="function"?opts():opts));});}
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});

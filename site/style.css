@@ -512,6 +512,9 @@
   .tr-read .one p:not(.st){color:var(--ink);}
   .tr-read .one p.st{font-size:12.5px;}
   .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .sj-glance{border:1px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:14px;padding:14px 16px !important;background:color-mix(in srgb,var(--fun) 7%,transparent);}
+  .sj-glance p{line-height:1.9;}
+  .sj-gloss p{font-size:13px;color:var(--muted);line-height:1.85;}
   .sj-wait{opacity:0;transform:translateY(16px);}
   @media print{.sj-wait,.tr-in{opacity:1 !important;transform:none !important;animation:none !important;}}
   @media (prefers-reduced-motion:reduce){.sj-wait{opacity:1;transform:none;}}

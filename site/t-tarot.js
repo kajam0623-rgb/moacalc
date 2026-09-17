@@ -347,6 +347,46 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       (function next(){
         if(n<steps.length){sEl.textContent=steps[n++];if(img){var c=mid(img);burst(c.x,c.y-20,8,1.8);}later(per,next);}
         else render();})();}
+    // 결과 공유 이미지 1080×1350 — 뽑은 카드 그림, 보살의 한마디, 출처 주소를 한 장에 담는다
+    function drawShare(cb){
+      var W=1080,H=1350,N=picks.length,R=TAROT_READ,last=picks[N-1];
+      var srcs=picks.map(function(p){return "img/char/"+ART[p.i]+".webp";}).concat(["img/mascot.webp"]),imgs=[],left=srcs.length;
+      srcs.forEach(function(src,i){var im=new Image();im.onload=im.onerror=function(){imgs[i]=im.naturalWidth?im:null;if(--left===0)paint();};im.src=src;});
+      function rr(x,px,py,w,h,r){x.beginPath();x.moveTo(px+r,py);x.arcTo(px+w,py,px+w,py+h,r);x.arcTo(px+w,py+h,px,py+h,r);x.arcTo(px,py+h,px,py,r);x.arcTo(px,py,px+w,py,r);x.closePath();}
+      function fit(x,t,w,size,weight,F){var z=size;x.font=weight+" "+z+"px "+F;while(x.measureText(t).width>w&&z>20){z-=2;x.font=weight+" "+z+"px "+F;}}
+      function paint(){
+        var c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");
+        var g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#0d1424");g.addColorStop(.5,"#141c3a");g.addColorStop(1,"#0a0f1a");
+        x.fillStyle=g;x.fillRect(0,0,W,H);
+        x.fillStyle="rgba(255,255,255,.5)";
+        for(var i=0;i<80;i++){x.beginPath();x.arc((i*137.5)%W,(i*89.3)%H,(i%3)*.7+.6,0,6.283);x.fill();}
+        x.strokeStyle="rgba(230,178,90,.55)";x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
+        var F='"Noto Sans KR","Malgun Gothic",sans-serif';x.textAlign="center";
+        x.fillStyle="#E6B25A";x.font="700 34px "+F;x.fillText("동네보살 타로 · "+topic.name,W/2,118);
+        x.fillStyle="#ffffff";x.font="800 50px "+F;
+        var ql=wrapText(x,ques.q,W-200);for(var q=0;q<ql.length&&q<2;q++)x.fillText(ql[q],W/2,188+q*64);
+        var cw=N===3?268:300,ch=cw*1.5,gap=N===1?0:40,x0=(W-(N*cw+(N-1)*gap))/2,y0=ql.length>1?290:236;
+        picks.forEach(function(p,j){
+          var px=x0+j*(cw+gap),im=imgs[j];
+          x.save();rr(x,px,y0,cw,ch,18);x.clip();
+          if(im){if(p.rev){x.translate(px+cw/2,y0+ch/2);x.rotate(Math.PI);x.drawImage(im,-cw/2,-ch/2,cw,ch);}else x.drawImage(im,px,y0,cw,ch);}
+          else{x.fillStyle="#1d2540";x.fillRect(px,y0,cw,ch);}
+          x.restore();
+          rr(x,px,y0,cw,ch,18);x.strokeStyle="#E6B25A";x.lineWidth=4;x.stroke();
+          x.fillStyle="#E6B25A";fit(x,ques.sp[j][1],cw+20,30,"700",F);x.fillText(ques.sp[j][1],px+cw/2,y0+ch+48);
+          var nm=M[p.i][1]+(p.rev?" (역)":"");x.fillStyle="#ffffff";fit(x,nm,cw+20,36,"800",F);x.fillText(nm,px+cw/2,y0+ch+94);});
+        // 보살의 한마디
+        var one=R[last.i].one;x.font="700 44px "+F;
+        var ol=wrapText(x,"“"+one+"”",W-300).slice(0,3),qy=y0+ch+160,bh=ol.length*62+56;
+        x.fillStyle="rgba(230,178,90,.12)";rr(x,120,qy-20,W-240,bh,22);x.fill();
+        x.fillStyle="#E6B25A";for(var k=0;k<ol.length;k++)x.fillText(ol[k],W/2,qy+44+k*62);
+        x.fillStyle="#aeb7c6";x.font="400 32px "+F;x.fillText("'"+KW[last.i]+"'",W/2,qy+bh+46);
+        // 보살 캐릭터와 출처 — 퍼져 나간 이미지가 다시 사이트로 돌아오는 길
+        var mi=imgs[N];if(mi){var mh=120,mw=mi.naturalWidth/mi.naturalHeight*mh;x.drawImage(mi,W/2-mw/2,H-300,mw,mh);}
+        x.fillStyle="#E6B25A";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-136);
+        x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText("보살에게 묻고 뽑는 무료 타로",W/2,H-94);
+        x.fillStyle="#E6B25A";x.font="600 34px "+F;x.fillText(BRAND_URL+"/tarot.html",W/2,H-50);
+        cb.call(null,c);}}
     function render(){
       var R=TAROT_READ,ti=TK.indexOf(topic.k),N=picks.length,last=picks[N-1],blocks=[];
       blocks.push(say(N===1?"패가 열렸네. 짚어 주겠네.":"패가 다 열렸네. 한 장씩 짚어 주겠네."));
@@ -376,7 +416,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
         '<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>');
       if(birth)blocks.push(sajuPart(ti,last,ques.sp[N-1][1]));
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
-        '<div class="bs-opts"><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
+        '<div class="bs-opts"><span class="bs-opt save-btn" role="button" tabindex="0">이미지로 저장</span><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
       rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
       // 한 덩어리씩 천천히 띄운다. 애니메이션이 돌지 않는 환경(백그라운드 탭)에서 숨은 채 남지 않게 끝나면 클래스를 걷는다
       var kids=[].slice.call(rd.children),gap=RM?0:650;
@@ -384,7 +424,8 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       later(kids.length*gap+700,function(){kids.forEach(function(k){k.classList.remove("tr-in");k.style.animationDelay="";});});
       try{rd.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});}catch(e){}
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
-      var sb=rd.querySelector(".share-btn");sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});
+      bindSave(rd,{file:"동네보살-타로",draw:drawShare});
+      [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
       track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});}
     var rz;window.addEventListener("resize",function(){window.clearTimeout(rz);rz=window.setTimeout(function(){
