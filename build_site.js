@@ -1900,11 +1900,12 @@ function indexPage(){
 <img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div>
 <nav class="fortune4" aria-label="주요 운세">${[
-  ["saju","사주팔자","생년월일로 타고난 기운"],
-  ["todayfortune","오늘의 운세","오늘 일진으로 보는 하루"],
-  ["gunghap","궁합","두 사람 오행·합충"],
-  ["horoscope","별자리 운세","12별자리 오늘·이번주"],
-].map(([id,n,d])=>`<a href="${id}.html"><img src="img/tool/h-${id}.webp" alt="" decoding="async" onerror="this.remove()"><span class="t"><b>${n}</b><small>${d}</small></span></a>`).join("")}</nav>
+  ["saju","사주팔자","생년월일로 여덟 글자를 세우고 오행·십성·대운까지 풀어 드립니다. 절기는 태양황경으로 직접 계산합니다."],
+  ["todayfortune","오늘의 운세","오늘 일진이 내 일간에게 어떤 날인지 봅니다. 애정·직장·금전을 점수와 함께 풀어 드립니다."],
+  ["gunghap","궁합","두 사람의 사주 오행과 합·충으로 봅니다. 서로 채워 주는 기운과 부딪히는 자리까지 짚습니다."],
+  ["horoscope","별자리 운세","12별자리의 오늘과 이번 주 운세. 태양 황경으로 판정해 경계일에 태어난 사람도 정확합니다."],
+  ["tarot","타로","보살에게 고민을 말하고 카드를 직접 섞어 뽑습니다. 연애·금전·시험·가족 등 여덟 가지 고민을 봅니다."],
+].map(([id,n,d],i)=>`<a href="${id}.html"><img src="img/tool/h-${id}.webp" alt="" decoding="async"${i>1?' loading="lazy"':''} onerror="this.remove()"><span class="t"><small>0${i+1}</small><b>${n}</b><span class="d">${d}</span><span class="go">바로 보기 →</span></span></a>`).join("")}</nav>
 </header>
 ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
@@ -2058,17 +2059,23 @@ const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;m
   `\n@media (max-width:600px){.hero-art.mascot{max-height:240px;object-fit:contain;object-position:center;}}`+
   `\n.tr-art{float:right;width:180px;height:auto;border-radius:10px;border:1px solid var(--line-2);margin:4px 0 12px 16px;}`+
   `\n@media (max-width:600px){.tr-art{width:40%;}}`+
-  `\n.fortune4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 2px;}`+
-  `\n@media (max-width:720px){.fortune4{grid-template-columns:1fr 1fr;gap:10px;}}`+
+  // 주력 운세 5개 — 한 줄에 하나씩 크게. 그림과 설명의 좌우를 번갈아 놓아 다섯 줄이 단조롭지 않게 한다
+  `\n.fortune4{display:flex;flex-direction:column;gap:16px;margin:26px 0 4px;}`+
   // 모바일은 한 줄로 쌓여 카드가 히어로 그림 밑(첫 화면 밖)으로 밀린다. 부제 바로 아래로 끌어올린다
   `\n@media (max-width:600px){.hero{display:flex;flex-direction:column;}.hero-wrap,.hero-wrap>div{display:contents;}`+
   `.fortune4{order:1;margin:16px 0 4px;}.hero-trust,.console,.pop{order:2;}.hero-art{order:3;margin-top:16px;}}`+
-  `\n.fortune4 a{display:block;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:14px;background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .16s,border-color .16s,box-shadow .16s;}`+
-  `\n.fortune4 a:hover{transform:translateY(-3px);border-color:var(--fun);box-shadow:0 8px 24px color-mix(in srgb,var(--fun) 28%,transparent);}`+
-  `\n.fortune4 img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface-2);}`+
-  `\n.fortune4 .t{display:block;padding:10px 12px 12px;}`+
-  `\n.fortune4 b{display:block;font-size:19px;font-weight:900;letter-spacing:-.6px;color:var(--fun-ink);}`+
-  `\n.fortune4 small{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}`+
+  `\n.fortune4 a{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);overflow:hidden;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:18px;background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .16s,border-color .16s,box-shadow .16s;}`+
+  `\n.fortune4 a:nth-child(even){grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);}`+
+  `\n.fortune4 a:nth-child(even) img{order:2;}`+
+  `\n.fortune4 a:hover{transform:translateY(-3px);border-color:var(--fun);box-shadow:0 10px 28px color-mix(in srgb,var(--fun) 28%,transparent);}`+
+  `\n.fortune4 img{display:block;width:100%;height:100%;aspect-ratio:16/8;object-fit:cover;background:var(--surface-2);}`+
+  `\n.fortune4 .t{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:26px 32px;}`+
+  `\n.fortune4 small{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--muted);}`+
+  `\n.fortune4 b{font-size:36px;font-weight:900;letter-spacing:-1.4px;line-height:1.1;color:var(--fun-ink);}`+
+  `\n.fortune4 .d{font-size:15px;color:var(--muted);line-height:1.75;}`+
+  `\n.fortune4 .go{margin-top:4px;font-size:14px;font-weight:800;color:var(--accent-ink);}`+
+  `\n@media (max-width:720px){.fortune4{gap:12px;}.fortune4 a,.fortune4 a:nth-child(even){grid-template-columns:1fr;}`+
+  `.fortune4 a:nth-child(even) img{order:0;}.fortune4 .t{padding:16px 18px 18px;gap:6px;}.fortune4 b{font-size:25px;}.fortune4 .d{font-size:14px;}}`+
   `\n@media (prefers-reduced-motion:reduce){.fortune4 a{transition:none;}.fortune4 a:hover{transform:none;}}`+
   `\n.sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}`+
   `\n.sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}`+

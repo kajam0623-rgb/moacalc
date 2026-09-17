@@ -486,6 +486,11 @@
   .tr-read .one p:not(.st){color:var(--ink);}
   .tr-read .one p.st{font-size:12.5px;}
   .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .tr-lb{display:block;font-size:12px;font-weight:800;color:var(--fun-ink);margin-bottom:2px;}
+  .tr-read .one p+p{margin-top:10px;}
+  .tr-read .sj-sec p+p{margin-top:12px;}
+  .tr-in{opacity:0;transform:translateY(12px);animation:rvup .55s ease-out forwards;}
+  @media (prefers-reduced-motion:reduce){.tr-in{animation:none;opacity:1;transform:none;}}
   .tr-quote{margin:12px 0;padding:12px 14px;border-left:3px solid var(--fun);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--fun) 10%,transparent);color:var(--fun-ink);font-weight:700;font-size:14.5px;line-height:1.6;}
   @media (prefers-reduced-motion:reduce){.bs-opt{transition:none;}}
   /* 인쇄 = 결과지. 종이에 남는 건 풀이뿐이고 화면용 장치는 전부 뺀다.
@@ -2045,6 +2050,19 @@
         {q:"요즘 흐름",say:"지난 흐름과 지금, 앞으로를 한 줄로 이어 보겠네.",sp:[["past","지난 흐름"],["now","지금"],["future","앞으로"]]},
         {q:"예/아니오 한 장",say:"마음속으로 물음 하나를 분명히 떠올리게. 한 장으로 예인지 아니오인지 짚어 주겠네.",sp:[["answer","보살의 답"]]}]}];
     var TK=["love","money","work","exam","family","friend","health","day"];
+    // 카드 핵심어 — content_tarot.js 의 keyword 와 같아야 한다. 종합에서 흐름을 이을 때 쓴다
+    var KW=["새로운 출발과 순수한 가능성","의지를 현실로 바꾸는 힘","고요한 직관과 숨은 지혜","풍요로운 결실과 따뜻한 돌봄","질서와 책임으로 세운 기반","전통의 가르침과 믿음직한 조언","사랑과 선택의 갈림길","의지로 이끄는 추진력과 승리","다정함으로 길들이는 용기","홀로 밝히는 내면의 등불","돌고 도는 흐름의 전환점","무게로 재고 가르는 판단","거꾸로 볼 때 보이는 새 길","끝을 보내고 맞는 새 국면","섞고 맞추어 만드는 조화","익숙한 사슬을 알아보는 때","무너진 뒤에 드러나는 기초","폭풍 뒤의 조용한 희망","안개 속에서는 확인이 먼저","숨김없이 환하게 빛나는 때","과거를 딛고 일어서라는 부름","한 바퀴를 온전히 완주하는 때"];
+    // 뽑힌 패에 가장 많이 나온 원소 (CARD_EL 오행 번호) — 목화토금수
+    var EL_LINE=["나무의 기운이 짙은 패일세. 새로 뻗어 나가려는 힘이 크니, 시작은 하되 뿌리 내릴 자리부터 살피게.",
+      "불의 기운이 짙은 패일세. 마음이 앞서고 일이 빨리 움직이는 때라, 추진력은 살리되 성급한 말 한마디는 한 번 삼키게.",
+      "흙의 기운이 짙은 패일세. 당장 드러나는 변화보다 차곡차곡 쌓는 쪽에 복이 있으니, 조급해하지 말고 기반부터 다지게.",
+      "바람의 기운이 짙은 패일세. 머리로 따지고 말로 풀어야 할 일이 많다는 뜻이니, 생각을 정리해 분명한 말로 꺼내 보게.",
+      "물의 기운이 짙은 패일세. 겉보다 속마음과 감정이 일을 움직이는 때라, 자네 마음이 어디로 흐르는지부터 들여다보게."];
+    var EL_MIX="패마다 기운이 제각각이구먼. 한 가지 방식으로 밀어붙이기보다 자리마다 다르게 대하는 게 맞네.";
+    // 메이저 아르카나 여정 구간 — 번호 0~7 / 8~14 / 15~21
+    var STAGE=["뽑힌 패들이 여정의 앞쪽에 몰려 있네. 아직 판이 짜이는 중이라 자네 선택에 따라 모양이 크게 달라질 수 있어.",
+      "패들이 여정의 한가운데에 놓였네. 시험받고 버티는 구간이라, 지금 겪는 답답함은 방향을 잡아 가는 과정이야.",
+      "패들이 여정의 끝자락에 모였네. 매듭짓고 정리하는 힘이 강하니, 붙들고 있던 것을 마무리할 때가 가까워진 게야."];
     // 일간과 핵심 카드 오행의 관계 × 고민 — [비겁, 식상, 재성, 관성, 인성]
     var REL=[["패가 자네와 같은 기운이야. 닮은 만큼 편하지만 서로 고집이 붙으면 한 치도 안 물러서지. 먼저 반 발짝 물러서는 쪽이 이기네.","같은 기운이 겹쳤으니 돈도 사람을 따라 움직이네. 혼자 쥐려 들기보다 믿을 만한 사람과 맞춰 갈 때 새는 게 줄어드네.","패가 자네 기운을 거드니 스스로 밀고 나갈 힘은 충분하네. 다만 같은 편끼리 공을 다투는 일은 피하게.","패가 자네와 같은 기운이라 혼자 버티는 힘은 넉넉하네. 다만 남과 견주며 조급해지면 제 실력이 흔들리니 자기 속도를 지키게.","같은 기운끼리 만났으니 식구끼리 닮은 고집이 부딪히는 모양이야. 누가 옳은지 따지기보다 먼저 한마디 누그러뜨리는 쪽이 집안을 살리네.","패가 자네와 같은 기운이야. 마음 맞는 벗이 곁에 있다는 뜻이지만, 가까울수록 견주는 마음도 붙으니 그 점만 조심하게.","같은 기운이 겹쳐 한쪽으로 몰리는 모양이야. 한 가지만 무리해서 하기보다 쉬는 것과 움직이는 것을 고루 섞게.","자네 기운에 같은 기운이 보태지니 뚝심이 서는 때야. 고집과 뚝심은 한 끗 차이니 그것만 살피게."],
       ["자네 기운이 패로 흘러나가는 모양이야. 마음을 표현하고 먼저 챙겨 주는 쪽으로 풀리는 인연이지. 아끼던 말을 꺼내 보게.","자네 재주가 밖으로 나가 돈을 부르는 모양이네. 솜씨를 드러내면 들어오는 길이 생기지만, 기분 따라 쓰는 돈도 같이 커지니 조심하게.","머릿속 생각을 손으로 꺼내 보일 때라는 뜻이야. 말과 결과물로 보여 주면 자리가 따라오네.","자네 기운이 밖으로 흘러나가는 패야. 머릿속에 넣기만 하지 말고 문제를 풀고 말로 설명해 보면 실력이 붙네.","자네가 먼저 챙기고 표현하는 쪽으로 풀리는 모양이야. 서운함은 쌓아 두지 말고 부드럽게 꺼내 보게.","마음을 먼저 건네면 돌아오는 패야. 연락을 기다리지 말고 자네가 먼저 안부를 물어보게.","기운이 밖으로 새어 나가는 모양이야. 할 일을 줄이고 잠과 끼니부터 챙겨 새는 기운을 막게.","속에 담아 둔 것을 풀어내기 좋은 때야. 말 한마디, 글 한 줄이 기운을 돌려놓네."],
@@ -2158,7 +2176,7 @@
     function bindFlip(card){
       keyClick(card,function(){
         if(stage!=="read"||card.classList.contains("flip"))return;card.classList.add("flip");
-        if(++opened===picks.length)later(700,read);});}
+        if(++opened===picks.length)later(600,read);});}
     // 사주 대조 — 생년월일로 여섯 글자(시주 제외)를 세워 오행을 세고, 마지막 자리 카드의 오행과 일간의 생극을 본다
     function sajuPart(ti,pk,pos){
       var a=birth.split("-"),p=sjPillars(+a[0],+a[1],+a[2],null,0,false);
@@ -2180,19 +2198,49 @@
     function read(){
       var R=(typeof TAROT_READ!=="undefined")?TAROT_READ:null;
       if(!R){rd.innerHTML='<p class="note">풀이 원고를 불러오지 못했습니다.</p>';return;}
-      var ti=TK.indexOf(topic.k),N=picks.length,h=say(N===1?"패가 열렸네. 짚어 주겠네.":"패가 다 열렸네. 한 장씩 짚어 주겠네.");
+      hint("");
+      var N=picks.length;
+      rd.innerHTML=say(N===1?"패를 뒤집었구먼. 잠깐 기다리게, 찬찬히 들여다보겠네.":"패를 다 뒤집었구먼. 잠깐 기다리게, 한 장씩 찬찬히 들여다보겠네.")+'<div id="tr-think"></div>';
+      var steps=picks.map(function(pk,j){return "'"+ques.sp[j][1]+"' 자리의 "+M[pk.i][1]+" 살피는 중";})
+        .concat([N===1?"패가 건네는 말 고르는 중":"패와 패 사이의 흐름 잇는 중"]).concat(birth?["사주 여섯 글자와 맞대 보는 중"]:[]).concat(["보살의 한마디 고르는 중"]);
+      if(RM){render();return;}
+      askThink(rd.querySelector("#tr-think"),null,steps,function(){later(700,render);});}
+    function render(){
+      var R=TAROT_READ,ti=TK.indexOf(topic.k),N=picks.length,last=picks[N-1],blocks=[];
+      blocks.push(say(N===1?"패가 열렸네. 짚어 주겠네.":"패가 다 열렸네. 한 장씩 짚어 주겠네."));
       picks.forEach(function(pk,j){
-        var role=ques.sp[j][0],c=R[pk.i],slug=ART[pk.i].replace(/^tarot-\d\d-/,"");
+        var role=ques.sp[j][0],pos=ques.sp[j][1],c=R[pk.i],slug=ART[pk.i].replace(/^tarot-\d\d-/,"");
         var roleLine=role==="answer"?YN_LINE[YN[pk.i]][pk.rev?1:0]:c.role[role];
-        h+='<div class="one"><div class="tr-rh"><b>'+ques.sp[j][1]+' — '+M[pk.i][1]+(pk.rev?' (역방향)':'')+'</b><a href="tarot-'+slug+'.html">카드 뜻 자세히 →</a></div>'+
-          '<p class="st">'+STORY[pk.i]+'</p><p>'+roleLine+'</p><p>'+c.topic[topic.k][pk.rev?1:0]+'</p></div>';});
-      var revN=picks.filter(function(p){return p.rev;}).length,last=picks[N-1];
+        blocks.push('<div class="one"><div class="tr-rh"><b>'+pos+' — '+M[pk.i][1]+(pk.rev?' (역방향)':'')+'</b><a href="tarot-'+slug+'.html">카드 뜻 자세히 →</a></div>'+
+          '<p class="st">'+STORY[pk.i]+'</p>'+
+          '<p><span class="tr-lb">'+(pk.rev?"거꾸로 나온 ":"")+M[pk.i][1]+'</span>'+c.desc[pk.rev?"rev":"up"]+'</p>'+
+          '<p><span class="tr-lb">\''+pos+'\' 자리에서</span>'+roleLine+'</p>'+
+          '<p><span class="tr-lb">'+topic.name+'에 비춰 보면</span>'+c.topic[topic.k][pk.rev?1:0]+'</p></div>');});
+      // 보살의 종합 — 흐름 잇기 · 정역 · 원소 · 여정 구간 · 조언 · 한마디 · 마무리
+      var nm=function(p){return M[p.i][1]+(p.rev?"(역방향)":"");};
+      var flow=N===1
+        ? "이번에 뽑힌 패는 "+nm(last)+" 한 장일세. '"+KW[last.i]+"', 이것이 오늘 패가 자네에게 건네는 말이야."
+        : "'"+ques.sp[0][1]+"' 자리의 "+nm(picks[0])+"에서 시작해 '"+ques.sp[N-1][1]+"' 자리의 "+nm(last)+"까지 이어졌네. '"+KW[picks[0].i]+"'에서 '"+KW[last.i]+"' 쪽으로 흐름이 옮겨 가는 모양이야.";
+      var revN=picks.filter(function(p){return p.rev;}).length;
       var rl=N===1?(last.rev?REVL[3]:""):revN===0?REVL[0]:revN===N?REVL[2]:REVL[1];
-      h+='<div class="sj-sec"><h3>보살의 종합</h3>'+(rl?'<p>'+rl+'</p>':'')+'<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>';
-      if(birth)h+=sajuPart(ti,last,ques.sp[N-1][1]);
-      h+='<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
-        '<div class="bs-opts"><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>';
-      rd.innerHTML=h;
+      var cnt=[0,0,0,0,0];picks.forEach(function(p){cnt[CARD_EL[p.i]]++;});
+      var topEl=cnt.indexOf(Math.max.apply(null,cnt));
+      var elLine=(N===1||cnt[topEl]>=2)?EL_LINE[topEl]:EL_MIX;
+      var avg=picks.reduce(function(t,p){return t+p.i;},0)/N;
+      var stage=N===1?"":STAGE[avg<8?0:avg<15?1:2];
+      var hasAdvice=ques.sp.some(function(x){return x[0]==="advice";});
+      var adv=hasAdvice&&N>1?"첫 장의 "+M[picks[0].i][1]+"도 한마디 거드네. "+R[picks[0].i].role.advice:"그래서 내가 해 줄 말은 이것일세. "+R[last.i].role.advice;
+      blocks.push('<div class="sj-sec"><h3>보살의 종합</h3><p>'+flow+'</p>'+(rl?'<p>'+rl+'</p>':'')+'<p>'+elLine+(stage?' '+stage:'')+'</p><p>'+adv+'</p>'+
+        '<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>');
+      if(birth)blocks.push(sajuPart(ti,last,ques.sp[N-1][1]));
+      blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
+        '<div class="bs-opts"><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
+      rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
+      // 한 덩어리씩 천천히 띄운다. 애니메이션이 돌지 않는 환경(백그라운드 탭)에서 숨은 채 남지 않게 끝나면 클래스를 걷는다
+      var kids=[].slice.call(rd.children),gap=RM?0:650;
+      kids.forEach(function(k,i){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";});
+      later(kids.length*gap+700,function(){kids.forEach(function(k){k.classList.remove("tr-in");k.style.animationDelay="";});});
+      try{rd.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});}catch(e){}
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
       var sb=rd.querySelector(".share-btn");sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});

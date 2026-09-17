@@ -485,6 +485,11 @@
   .tr-read .one p:not(.st){color:var(--ink);}
   .tr-read .one p.st{font-size:12.5px;}
   .tr-read .sj-sec p.note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .tr-lb{display:block;font-size:12px;font-weight:800;color:var(--fun-ink);margin-bottom:2px;}
+  .tr-read .one p+p{margin-top:10px;}
+  .tr-read .sj-sec p+p{margin-top:12px;}
+  .tr-in{opacity:0;transform:translateY(12px);animation:rvup .55s ease-out forwards;}
+  @media (prefers-reduced-motion:reduce){.tr-in{animation:none;opacity:1;transform:none;}}
   .tr-quote{margin:12px 0;padding:12px 14px;border-left:3px solid var(--fun);border-radius:0 10px 10px 0;background:color-mix(in srgb,var(--fun) 10%,transparent);color:var(--fun-ink);font-weight:700;font-size:14.5px;line-height:1.6;}
   @media (prefers-reduced-motion:reduce){.bs-opt{transition:none;}}
   /* 인쇄 = 결과지. 종이에 남는 건 풀이뿐이고 화면용 장치는 전부 뺀다.
@@ -519,15 +524,19 @@
 @media (max-width:600px){.hero-art.mascot{max-height:240px;object-fit:contain;object-position:center;}}
 .tr-art{float:right;width:180px;height:auto;border-radius:10px;border:1px solid var(--line-2);margin:4px 0 12px 16px;}
 @media (max-width:600px){.tr-art{width:40%;}}
-.fortune4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 2px;}
-@media (max-width:720px){.fortune4{grid-template-columns:1fr 1fr;gap:10px;}}
+.fortune4{display:flex;flex-direction:column;gap:16px;margin:26px 0 4px;}
 @media (max-width:600px){.hero{display:flex;flex-direction:column;}.hero-wrap,.hero-wrap>div{display:contents;}.fortune4{order:1;margin:16px 0 4px;}.hero-trust,.console,.pop{order:2;}.hero-art{order:3;margin-top:16px;}}
-.fortune4 a{display:block;overflow:hidden;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:14px;background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .16s,border-color .16s,box-shadow .16s;}
-.fortune4 a:hover{transform:translateY(-3px);border-color:var(--fun);box-shadow:0 8px 24px color-mix(in srgb,var(--fun) 28%,transparent);}
-.fortune4 img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:var(--surface-2);}
-.fortune4 .t{display:block;padding:10px 12px 12px;}
-.fortune4 b{display:block;font-size:19px;font-weight:900;letter-spacing:-.6px;color:var(--fun-ink);}
-.fortune4 small{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4;}
+.fortune4 a{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);overflow:hidden;border:1.5px solid color-mix(in srgb,var(--fun) 55%,var(--line));border-radius:18px;background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .16s,border-color .16s,box-shadow .16s;}
+.fortune4 a:nth-child(even){grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);}
+.fortune4 a:nth-child(even) img{order:2;}
+.fortune4 a:hover{transform:translateY(-3px);border-color:var(--fun);box-shadow:0 10px 28px color-mix(in srgb,var(--fun) 28%,transparent);}
+.fortune4 img{display:block;width:100%;height:100%;aspect-ratio:16/8;object-fit:cover;background:var(--surface-2);}
+.fortune4 .t{display:flex;flex-direction:column;justify-content:center;gap:8px;padding:26px 32px;}
+.fortune4 small{font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--muted);}
+.fortune4 b{font-size:36px;font-weight:900;letter-spacing:-1.4px;line-height:1.1;color:var(--fun-ink);}
+.fortune4 .d{font-size:15px;color:var(--muted);line-height:1.75;}
+.fortune4 .go{margin-top:4px;font-size:14px;font-weight:800;color:var(--accent-ink);}
+@media (max-width:720px){.fortune4{gap:12px;}.fortune4 a,.fortune4 a:nth-child(even){grid-template-columns:1fr;}.fortune4 a:nth-child(even) img{order:0;}.fortune4 .t{padding:16px 18px 18px;gap:6px;}.fortune4 b{font-size:25px;}.fortune4 .d{font-size:14px;}}
 @media (prefers-reduced-motion:reduce){.fortune4 a{transition:none;}.fortune4 a:hover{transform:none;}}
 .sitenav{margin-top:36px;border-top:1px solid var(--line);padding-top:18px;}
 .sitenav h2{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-ink);margin:16px 0 7px;font-weight:700;}
