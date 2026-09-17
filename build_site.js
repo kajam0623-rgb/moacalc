@@ -1900,11 +1900,11 @@ function indexPage(){
 <img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div>
 <nav class="fortune4" aria-label="주요 운세">${[
+  ["tarot","타로","보살에게 고민을 말하고 카드를 직접 섞어 뽑습니다. 연애·금전·시험·가족 등 여덟 가지 고민을 봅니다."],
   ["saju","사주팔자","생년월일로 여덟 글자를 세우고 오행·십성·대운까지 풀어 드립니다. 절기는 태양황경으로 직접 계산합니다."],
   ["todayfortune","오늘의 운세","오늘 일진이 내 일간에게 어떤 날인지 봅니다. 애정·직장·금전을 점수와 함께 풀어 드립니다."],
   ["gunghap","궁합","두 사람의 사주 오행과 합·충으로 봅니다. 서로 채워 주는 기운과 부딪히는 자리까지 짚습니다."],
   ["horoscope","별자리 운세","12별자리의 오늘과 이번 주 운세. 태양 황경으로 판정해 경계일에 태어난 사람도 정확합니다."],
-  ["tarot","타로","보살에게 고민을 말하고 카드를 직접 섞어 뽑습니다. 연애·금전·시험·가족 등 여덟 가지 고민을 봅니다."],
 ].map(([id,n,d],i)=>`<a href="${id}.html"><img src="img/tool/h-${id}.webp" alt="" decoding="async"${i>1?' loading="lazy"':''} onerror="this.remove()"><span class="t"><small>0${i+1}</small><b>${n}</b><span class="d">${d}</span><span class="go">바로 보기 →</span></span></a>`).join("")}</nav>
 </header>
 ${kpis}
