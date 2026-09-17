@@ -2235,7 +2235,7 @@
           later(300,function(){tb.classList.remove("glow");spread();});});}}
     // 3) 딜링 — 한 장씩 튕기듯 날아가 부채꼴로 펼쳐진다
     function spread(){
-      stage="pick";var g=geo();
+      stage="pick";var g=geo();(new Image()).src="img/mascot-serious.webp";
       tb.style.height=(g.W<520?g.ch*0.62+g.ch+40:g.ch+54)+"px";
       dk.forEach(function(d,i){var p=fanPos(g,i);d.classList.add("deal");d.style.transitionDelay=(RM?0:i*45)+"ms";put(d,p.x,p.y,p.r);});
       later(22*45+650,function(){dk.forEach(function(d){d.classList.remove("deal");d.style.transitionDelay="0ms";});});
