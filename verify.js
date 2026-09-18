@@ -469,6 +469,11 @@ if (leakyShare.length) console.log("   ⚠ 공유 인자에 생일:", leakyShare
 const sajuToolSrc = toolsSrc.slice(toolsSrc.indexOf('{id:"saju"'), toolsSrc.indexOf('{id:"tarot"'));
 t("사주 결과에 공유 버튼 있음", /shareBtn\(\)/.test(sajuToolSrc), true);
 t("사주 결과에 bindShare 배선됨", /bindShare\(/.test(sajuToolSrc), true);
+// 만세력 입구 두 장 — "만세력"(월 16.9만) 검색어를 받는 페이지
+t("만세력 입구·보는법 페이지 생성 배선", /manseHubPage\(\)/.test(bs) && /manseHowtoPage\(\)/.test(bs), true);
+t("만세력 입구·보는법 사이트맵 포함", /smUrl\("manse\.html"\)/.test(bs) && /smUrl\("manse-howto\.html"\)/.test(bs), true);
+t("월별 만세력의 상위는 무료 만세력", /parent:"manse\.html", parentName:"무료 만세력"/.test(bs), true);
+t("만세력 보는법 예시 조사는 josa() 사용", /\)\$\{josa\(E\.SJ_EL\[E\.SJ_ES\[ds\]\],"이\/가"\)\} 이 사람 자신/.test(bs), true);
 // 사주도 진지한 보살 로딩(최소 4초 이상)과 느린 등장을 쓴다
 t("사주 물어보기는 보살 로딩 옵션으로 배선", /askWire\(el,go,\[[\s\S]*?\{min:(\d+)/.test(sajuToolSrc) && +sajuToolSrc.match(/\{min:(\d+)/)[1] >= 4000, true);
 t("사주 결과는 느린 등장(slowReveal)", /slowReveal\(outEl\)/.test(sajuToolSrc), true);

@@ -131,13 +131,13 @@ caffeine:"음료 종류와 잔 수로 하루 카페인 섭취량을 계산하고
 sleep:"기상 시각을 기준으로 90분 수면주기에 맞춘 추천 취침 시각을 알려줍니다.",
 calorie:"운동 종류와 시간, 체중으로 소모 칼로리를 계산합니다.",
 bmr:"성별·키·몸무게·나이로 기초대사량(BMR)과 하루 권장 칼로리를 계산합니다.",
-saju:"생년월일로 사주팔자를 뽑고 신강신약·용신·격국과 재물·직업·애정·건강운, 대운 흐름까지 무료로 풀이합니다.",
-tarot:"고민과 질문을 고르고 카드를 직접 섞어 뽑으면 보살이 자리마다 풀어 줍니다. 메이저 아르카나 22장, 생일을 넣으면 사주와 함께 봅니다.",
+saju:"무료 사주풀이. 생년월일시만 넣으면 사주팔자 만세력과 재물·직업·애정·건강운, 10년 대운까지 쉬운 말로 풀어 드립니다.",
+tarot:"무료 타로 사이트. 고민과 질문을 고르고 카드를 직접 섞어 뽑으면 보살이 자리마다 풀어 줍니다. 생일을 넣으면 사주와 함께 봅니다.",
 todayfortune:"생년월일만 넣으면 오늘 일진과 내 일간의 관계로 총운·애정·재물·직장·건강운과 행운의 색·방위를 풀이합니다.",
 horoscope:"생년월일로 별자리를 판정하고, 오늘 태양과 이루는 각도로 총운·애정·재물운과 이번주 흐름을 봅니다.",
 zodiacfortune:"내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2026 병오년 흐름까지 무료로.",
 stargunghap:"두 별자리의 원소 관계와 황도 각도, 수호성 친화로 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다.",
-gunghap:"두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합한 무료 사주 궁합을 봅니다.",
+gunghap:"무료 사주궁합. 두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합해 봅니다.",
 newyear:"생년월일만 넣으면 2026 병오년 연간(丙)과 내 일간의 십성 관계, 태세(午)와 내 띠·일지의 합충으로 한 해의 흐름과 전략을 풀이하는 무료 신년운세입니다.",
 namematch:"두 사람의 이름 획수를 번갈아 더해가는 전통 이름궁합 놀이입니다. 획수 피라미드와 점수, 풀이까지 무료로 확인하세요.",
 };
@@ -886,10 +886,10 @@ todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
 horoscope:"별자리 운세 — 오늘·이번주 12별자리 무료",
 zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
-saju:"무료 사주 — 사주팔자 만세력·사주계산기",
-gunghap:"궁합 보기 — 무료 사주 궁합·띠 궁합",
+saju:"무료 사주풀이 — 인터넷 사주·사주 만세력",
+gunghap:"무료 사주궁합 — 사주 궁합·띠 궁합 보기",
 newyear:"2026 신년운세 — 병오년 무료 운세",
-tarot:"타로 카드 — 보살에게 묻는 무료 타로점",
+tarot:"무료 타로 사이트 — 보살에게 묻고 뽑는 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
 };
 function toolPage(t){
@@ -1494,7 +1494,7 @@ function mansePage(p){
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${p.y}년 ${p.mo}월 만세력 — ${T.season}, ${T.ji}월`,
     sub:`${jeol.name} ${termAt(jeol)} · ${jung.name} ${termAt(jung)} · ${lunSpan}`,
-    parent:"saju.html", parentName:"사주팔자 만세력",
+    parent:"manse.html", parentName:"무료 만세력",
     tool:"saju",
     tags:[`${p.y}년 ${p.mo}월 만세력`, `${p.y} ${p.mo}월 음력 달력`, `${p.mo}월 일진`,
           `${jeol.name} ${p.y}`, `${jung.name} ${p.y}`, `${p.y}년 ${p.mo}월 절기`],
@@ -1576,6 +1576,101 @@ function mansePage(p){
        "날짜를 간지로 바꿔 적은 책입니다. 예전에는 두꺼운 책을 넘겨 찾았지만 이 사이트는 태양 황경과 음력 변환을 그때그때 계산합니다. 같은 날짜를 언제 열어도 같은 값이 나옵니다."]],
     sibTitle:`${p.y}년 다른 달 만세력`, sibs:manseChips(p),
     related:["saju","lunar","todayfortune","newyear"]});
+}
+
+/* 무료 만세력 입구 — "만세력"(월 16.9만, 문서/검색 0.38)·"만세력 사이트"·"무료 만세력 사이트"·"만세력 계산기"를 받는다.
+   월력 132장과 엔진은 있었는데 이 검색어를 받는 입구가 없었다. 첫 문단은 질문에 바로 답하는 문장으로 쓴다(AEO). */
+function manseHubPage(){
+  const url = `${DOMAIN}/manse.html`;
+  const cy = KST_NOW.getUTCFullYear(), cm = KST_NOW.getUTCMonth() + 1;
+  const cur = MANSE_PAGES.find(p => p.y === cy && p.mo === cm) || MANSE_PAGES[0];
+  const CM = manseData(cur), jeol = CM.terms[0], jung = CM.terms[1];
+  const at = t => `${cur.mo}월 ${t.at.d}일 ${hhmm(t.at)}`;
+  const years = Array.from({length:MANSE_Y1-MANSE_Y0+1},(_,i)=>MANSE_Y0+i);
+  const grid = years.map(y => `<div class="row"><span>${y}년</span><b>`+
+    Array.from({length:12},(_,j)=>{const mo=j+1,en=`${y}-${String(mo).padStart(2,"0")}`;
+      return `<a href="manse-${en}.html">${mo}월</a>`;}).join(" · ")+`</b></div>`).join("");
+  return seoPage({
+    crumb:"무료 만세력",
+    title:"무료 만세력 — 사주 만세력 계산기·보는법 | 동네보살",
+    desc:"생년월일시를 넣으면 사주 여덟 글자와 대운이 바로 나오는 무료 만세력. 절기는 태양황경으로 계산하고 월별 만세력 132장도 있습니다.",
+    url, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
+    h1:"무료 만세력 — 생년월일로 뽑는 사주 원국",
+    sub:`만세력 계산기 · 대운 · 절입 시각 · 월별 만세력 ${MANSE_PAGES.length}장`,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:["만세력","무료 만세력","만세력 사이트","만세력 계산기","사주 만세력","만세력 보는법"],
+    body:
+      `<div class="intro"><p style="margin-bottom:10px"><b>만세력</b>은 날짜마다 연·월·일·시의 간지(천간과 지지)를 적어 둔 달력입니다. 사주를 볼 때 태어난 순간을 여덟 글자, 곧 사주팔자로 바꾸는 데 씁니다. 위 칸에 생년월일과 태어난 시각을 넣으면 여덟 글자와 오행 분포, 10년 단위 대운 여덟 구간을 바로 계산합니다. 가입도 결제도 없습니다.</p>`+
+      `<p style="margin-bottom:10px">결과 위쪽에는 재물·직업·애정·건강 풀이가 먼저 나오고, 아래쪽에 명식표(만세력 원국)와 대운 표가 이어집니다. 명식표를 읽는 순서는 <a href="manse-howto.html">만세력 보는법</a>에 예시와 함께 정리했습니다.</p></div>`+
+      `<section class="guide"><h2>무료 만세력 사이트를 고를 때 확인할 세 가지</h2><div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px"><b>1. 절기를 어떻게 정하는가.</b> 월주는 달력의 1일이 아니라 절기가 드는 순간에 바뀝니다. 절입 시각은 해마다 달라서, 절기가 드는 3~9일 무렵에 태어난 사람은 날짜표만 쓰는 곳과 계산하는 곳의 월주가 갈릴 수 있습니다. 동네보살은 태양 황경이 입춘 315도, 경칩 345도 같은 각도에 닿는 순간을 분 단위로 직접 계산합니다.</p>`+
+      `<p style="margin-bottom:10px"><b>2. 태어난 시각을 어떻게 보정하는가.</b> 한국 표준시는 동경 135도 기준이라 서울의 실제 태양 시각보다 약 30분 빠릅니다. 그래서 시진을 23:30~01:29(자시)처럼 30분 밀어 나누는 방식을 쓰며, 보정을 끄고 볼 수도 있습니다. 시각을 모르면 시주를 뺀 여섯 글자로 봅니다.</p>`+
+      `<p style="margin-bottom:10px"><b>3. 음력은 무엇을 기준으로 바꾸는가.</b> 음력 날짜는 한국천문연구원 기준 음양력 변환으로 계산합니다. 음력 생일만 안다면 <a href="lunar.html">음력 변환</a>에서 양력으로 바꾼 뒤 넣으면 됩니다.</p></div></section>`+
+      `<section class="guide"><h2>이번 달 만세력 — ${cur.y}년 ${cur.mo}월</h2><div class="exbox" style="margin-top:0">`+
+      [["절기", `${jeol.name} · ${at(jeol)}`],["중기", `${jung.name} · ${at(jung)}`],
+       ["1일 일진", `${CM.first.ko}(${CM.first.han})일`],["말일 일진", `${CM.last.ko}(${CM.last.han})일`]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>날짜별 일진·음력 표</span><b><a href="manse-${cur.en}.html">${cur.y}년 ${cur.mo}월 만세력 보기 →</a></b></div></div></section>`+
+      `<section class="guide"><h2>월별 만세력 ${MANSE_Y0}~${MANSE_Y1}년</h2>`+
+      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">달마다 한 장씩, 날짜별 일진과 음력, 절입 시각, 그 달의 연주·월주가 들어 있습니다.</p>`+
+      `<div class="exbox" style="margin-top:0">${grid}</div></section>`,
+    faq:[
+      ["만세력이란 무엇인가요?","날짜를 간지(천간과 지지)로 바꿔 적은 달력입니다. 사주팔자는 태어난 해·달·날·시의 간지 여덟 글자라서, 만세력으로 태어난 순간의 간지를 찾아야 사주를 볼 수 있습니다."],
+      ["무료 만세력은 어디서 볼 수 있나요?","이 페이지 위 칸에 생년월일과 태어난 시각을 넣으면 바로 볼 수 있습니다. 가입이나 결제 없이 사주 여덟 글자, 오행 분포, 대운까지 계산합니다."],
+      ["만세력 계산기는 어떤 기준으로 계산하나요?","연주는 입춘, 월주는 절기가 드는 순간, 일주는 자정, 시주는 12시진 기준으로 나눕니다. 절기는 태양 황경으로 직접 계산해 분 단위까지 맞춥니다."],
+      ["태어난 시간을 모르면 만세력을 못 보나요?","볼 수 있습니다. 시각 칸에서 '모름'을 고르면 시주를 뺀 여섯 글자로 계산합니다. 연주·월주·일주와 대운은 그대로 나옵니다."],
+      ["음력 생일로도 만세력을 볼 수 있나요?","음력 변환 도구에서 양력 날짜로 바꾼 뒤 넣으면 됩니다. 만세력 계산은 양력 날짜와 절기를 기준으로 합니다."],
+      ["사이트마다 만세력 결과가 다른 이유는 무엇인가요?","대부분 절기 경계와 시각 보정에서 갈립니다. 절기가 드는 날이나 자시·오시 같은 경계 시각에 태어났다면 절입 시각을 분 단위로 계산하는지, 진태양시를 보정하는지에 따라 월주나 시주가 달라질 수 있습니다."]],
+    sibTitle:"만세력 함께 보기",
+    sibs:'<div class="sibs"><a href="manse-howto.html">만세력 보는법</a><a href="saju.html">무료 사주풀이</a><a href="lunar.html">음력 변환</a><a href="iljin.html">오늘 일진</a><a href="manse-'+cur.en+'.html">이번 달 만세력</a></div>',
+    related:["saju","lunar","todayfortune","gunghap"]});
+}
+
+/* 만세력 보는법 — "만세력 보는법"(월 9,620, 비율 2.6). 예시 명식은 빌드할 때 엔진으로 계산해 넣는다 */
+function manseHowtoPage(){
+  const url = `${DOMAIN}/manse-howto.html`;
+  const E = ENGINE, P = E.sjPillars(1990, 3, 15, 10, 30, true), ds = P.d.s;
+  const gz = q => `${E.SJ_S[q.s]}${E.SJ_B[q.b]}(${E.SJ_SH[q.s]}${E.SJ_BH[q.b]})`;
+  const cols = [["시주",P.h],["일주",P.d],["월주",P.m],["연주",P.y]];
+  const cnt = [0,0,0,0,0]; cols.forEach(([,q])=>{cnt[E.SJ_ES[q.s]]++;cnt[E.SJ_EB[q.b]]++;});
+  const tg = (q, stem) => stem ? (q===P.d ? "나(일간)" : E.sjTenGod(ds, q.s)) : E.sjTenGod(ds, E.SJ_BMAIN[q.b]);
+  const kyeong = jdToKst(E.sjTermJd(1990, 345));
+  const table = `<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th></th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>`+
+    `<tr><td>천간(위)</td>${cols.map(([,q])=>`<td>${E.SJ_SH[q.s]} ${E.SJ_S[q.s]} · ${E.SJ_EL[E.SJ_ES[q.s]]}</td>`).join("")}</tr>`+
+    `<tr><td>지지(아래)</td>${cols.map(([,q])=>`<td>${E.SJ_BH[q.b]} ${E.SJ_B[q.b]} · ${E.SJ_EL[E.SJ_EB[q.b]]}</td>`).join("")}</tr>`+
+    `<tr><td>천간 십성</td>${cols.map(([,q])=>`<td>${tg(q,true)}</td>`).join("")}</tr>`+
+    `<tr><td>지지 십성</td>${cols.map(([,q])=>`<td>${tg(q,false)}</td>`).join("")}</tr></tbody></table></div>`;
+  const top = cnt.indexOf(Math.max(...cnt)), miss = E.SJ_EL.filter((_,i)=>cnt[i]===0);
+  const step = (n, h, t) => `<section class="guide"><h2>${n}단계 — ${h}</h2><div class="intro" style="margin-top:0">${t}</div></section>`;
+  return seoPage({
+    crumb:"만세력 보는법",
+    title:"만세력 보는법 — 사주 원국표 읽는 순서 | 동네보살",
+    desc:"만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운까지 1990년 3월 15일생 예시로 한 단계씩 풀었습니다.",
+    url, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
+    h1:"만세력 보는법 — 원국표를 읽는 여섯 단계",
+    sub:"예시 1990년 3월 15일 오전 10시 30분생 · 표 읽는 방향부터 대운까지",
+    parent:"manse.html", parentName:"무료 만세력",
+    tool:"saju",
+    tags:["만세력 보는법","만세력 읽는 법","사주 원국표","일간 찾기","사주 오행 보는법","대운 보는법"],
+    body:
+      `<div class="intro"><p style="margin-bottom:10px"><b>만세력은 오른쪽에서 왼쪽으로, 위에서 아래로 읽습니다.</b> 오른쪽부터 연주·월주·일주·시주가 놓이고, 기둥마다 위 칸이 천간, 아래 칸이 지지입니다. 그중 일주의 위 글자(일간)가 나 자신이고, 나머지 일곱 글자는 모두 일간과의 관계로 읽습니다.</p>`+
+      `<p style="margin-bottom:10px">아래는 1990년 3월 15일 오전 10시 30분에 태어난 사람의 원국을 이 사이트의 만세력 엔진으로 계산한 것입니다(진태양시 보정 적용). 표를 옆에 두고 단계를 따라가면 됩니다.</p></div>`+
+      `<section class="guide"><h2>예시 원국표 — 1990년 3월 15일 10:30생</h2>${table}</section>`+
+      step(1,"읽는 방향 — 오른쪽이 연주", `<p style="margin-bottom:10px">만세력 원국표는 오른쪽 끝이 연주, 왼쪽 끝이 시주입니다. 예시의 연주는 ${gz(P.y)}, 월주는 ${gz(P.m)}, 일주는 ${gz(P.d)}, 시주는 ${gz(P.h)}입니다. 연주는 조상과 어린 시절, 월주는 부모와 사회, 일주는 나와 배우자, 시주는 자녀와 말년을 뜻한다고 봅니다.</p>`)+
+      step(2,"일간 찾기 — 일주의 위 글자가 나", `<p style="margin-bottom:10px">일주의 천간인 ${E.SJ_SH[ds]}(${E.SJ_S[ds]}${E.SJ_EL[E.SJ_ES[ds]]})${josa(E.SJ_EL[E.SJ_ES[ds]],"이/가")} 이 사람 자신, 곧 일간입니다. 사주 풀이는 모두 이 글자를 기준으로 합니다. 같은 날 태어난 사람은 일간이 같아서, 일간별 성격 풀이가 따로 있습니다. 예시의 일간은 <a href="ilgan-${["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"][ds]}.html">${E.SJ_S[ds]}${E.SJ_EL[E.SJ_ES[ds]]} 일간</a> 풀이에서 더 볼 수 있습니다.</p>`)+
+      step(3,"오행 세기 — 여덟 글자를 다섯 기운으로", `<p style="margin-bottom:10px">천간 넷과 지지 넷을 목·화·토·금·수로 나눠 셉니다. 예시는 ${E.SJ_EL.map((e,i)=>e+" "+cnt[i]).join(" · ")}입니다. 가장 많은 기운은 ${E.SJ_EL[top]}${miss.length ? "이고 " + miss.join("·") + " 기운은 한 글자도 없습니다" : "이며 다섯 기운이 모두 들어 있습니다"}. 많은 기운은 타고난 성향으로, 없는 기운은 채워야 할 자리로 읽습니다.</p>`)+
+      step(4,"십성 붙이기 — 일간과 나머지 글자의 관계", `<p style="margin-bottom:10px">나머지 일곱 글자가 일간을 돕는지, 일간이 누르는지, 일간을 누르는지에 따라 열 가지 이름이 붙습니다. 이것이 십성입니다. 비견·겁재는 나와 같은 기운, 식신·상관은 내가 만들어 내는 기운, 편재·정재는 내가 다루는 돈, 편관·정관은 나를 다스리는 책임, 편인·정인은 나를 돕는 배움입니다. 예시의 월지 십성은 ${tg(P.m,false)}입니다. 지지는 속에 든 기운이 여럿이라 그중 본기(本氣)로 십성을 붙입니다.</p>`)+
+      step(5,"월주 확인 — 절기 경계에 태어났는가", `<p style="margin-bottom:10px">월주는 절기가 드는 순간에 바뀝니다. 1990년 3월의 절기인 경칩은 ${kyeong.mo}월 ${kyeong.d}일 ${hhmm(kyeong)}에 들었습니다. 예시는 3월 15일생이라 경칩 뒤이므로 묘월(卯月)을 씁니다. 절입 시각 전에 태어났다면 앞 달의 월지를 씁니다. 다른 해는 <a href="manse.html">월별 만세력</a>에서 절입 시각을 확인할 수 있습니다.</p>`)+
+      step(6,"대운 읽기 — 10년마다 바뀌는 흐름", `<p style="margin-bottom:10px">대운은 월주에서 시작해 10년마다 한 칸씩 나아가는 흐름입니다. 연간이 양이고 남자이거나 연간이 음이고 여자면 순서대로, 반대면 거꾸로 셉니다. 첫 대운이 시작하는 나이(대운수)는 태어난 날부터 다음(또는 이전) 절기까지의 날수를 3으로 나눠 정합니다. 위 칸에 생년월일을 넣으면 여덟 구간이 나이와 함께 계산됩니다.</p>`),
+    faq:[
+      ["만세력은 어느 쪽부터 읽나요?","오른쪽부터 읽습니다. 오른쪽 끝이 연주, 그다음이 월주·일주, 왼쪽 끝이 시주입니다. 기둥마다 위 칸이 천간, 아래 칸이 지지입니다."],
+      ["만세력에서 나를 뜻하는 글자는 어디 있나요?","일주의 위 칸, 곧 태어난 날의 천간입니다. 이 글자를 일간이라 하고 사주 풀이는 모두 일간을 기준으로 합니다."],
+      ["대운수는 어떻게 정하나요?","태어난 날부터 다음 절기(역행이면 이전 절기)까지의 날수를 3으로 나눠 정합니다. 사흘이 1년에 해당한다고 보는 전통 계산입니다."],
+      ["절기가 바뀌는 날 태어났으면 어떻게 보나요?","절입 시각과 태어난 시각을 비교합니다. 절입 전이면 앞 달의 월주, 절입 뒤면 그 달의 월주를 씁니다. 그래서 절입 시각을 분 단위로 계산하는 만세력이 필요합니다."]],
+    sibTitle:"만세력 함께 보기",
+    sibs:'<div class="sibs"><a href="manse.html">무료 만세력</a><a href="saju.html">무료 사주풀이</a><a href="lunar.html">음력 변환</a></div>',
+    related:["saju","lunar","todayfortune","gunghap"]});
 }
 
 /* 일진 페이지 — 하루의 간지 하나를 통째로 푼다.
@@ -1908,10 +2003,10 @@ function indexPage(){
       '<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")+'</section>';
   const homeFaqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:HOME_FAQ.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
-  const desc="무료 사주팔자 만세력부터 오늘의 운세·별자리 운세·띠별 운세·궁합·타로까지. 실수령액·퇴직금·대출 계산기도 함께 "+meta.length+"가지. 2026년 기준, 가입 없이 무료.";
+  const desc="가입 없는 인터넷 무료사주 사이트. 사주풀이·만세력·타로·궁합부터 오늘의 운세까지, 계산기 포함 "+meta.length+"가지 모두 무료입니다.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>무료 사주·오늘의 운세·별자리 운세 | 동네보살</title>
+<title>무료사주·사주풀이·만세력·타로 사이트 | 동네보살</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${DOMAIN}/">
 <meta property="og:title" content="무료 사주는 동네보살">
@@ -1924,7 +2019,7 @@ function indexPage(){
 <h1 class="hero-h">990원도 아까워~<br>무료로 사주, 운세, 궁합<br><b>제대로 봐주는 '동네보살'</b></h1>
 <div class="hero-sub">생일만 넣으면 바로. 별자리 운세·타로부터 실수령액·퇴직금 계산기까지 ${meta.length}가지.</div>
 <div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
-<nav class="pop"><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
+<nav class="pop"><a class="f" href="manse.html">✦ 만세력</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
 <img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div>
@@ -2002,6 +2097,7 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   smUrl("iljin.html")+"\n"+
   ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
+  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+
   MANSE_PAGES.map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
@@ -2063,6 +2159,11 @@ ${ILJIN_PAGES.map(p=>`- [${p.ko}일(${p.han})](${DOMAIN}/iljin-${p.en}.html): ${
 일진과 같은 60갑자를 쓰지만 보는 대상이 다르다. 일진은 그 날의 기운이고, 일주는 그 간지로 태어난 사람이다. 일간(위 글자)은 나 자신, 일지(아래 글자)는 배우자 자리로 읽는다. 주소는 ${DOMAIN}/ilju-천간지지.html 형식이며 철자는 일진과 같다(예: ilju-gapja.html ↔ iljin-gapja.html). 각 페이지에는 그 일주의 십이운성, 일지 지장간 본기로 본 십성, 삼합·육합·충 띠가 계산되어 있고 성격·배우자 자리·여자와 남자의 차이가 적혀 있다.
 
 ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DOMAIN}/ilju-${p.en}.html): 일간 ${p.gan.ko}${p.gan.el} · 일지 ${p.ji.ko}${p.ji.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`).join("\n")}
+
+## 무료 만세력
+
+- [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [만세력 보는법](${DOMAIN}/manse-howto.html): 원국표는 오른쪽이 연주, 왼쪽이 시주. 일주의 천간(일간)이 나 자신. 오행 세기 → 십성 → 절기 경계 확인 → 대운 순서로 읽는다. 대운수는 절기까지 날수 ÷ 3.
 
 ## 만세력 월력 (${MANSE_PAGES.length}) — 날짜별 일진·음력·절기
 
@@ -2146,6 +2247,8 @@ TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), ta
 CONCEPT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"concept-"+c.en+".html"), conceptPage(c)));
 ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
 MANSE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"manse-"+p.en+".html"), mansePage(p)));
+fs.writeFileSync(path.join(OUT,"manse.html"), manseHubPage());
+fs.writeFileSync(path.join(OUT,"manse-howto.html"), manseHowtoPage());
 ILJU_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"ilju-"+p.en+".html"), iljuPage(p)));
 fs.writeFileSync(path.join(OUT,"iljin.html"), iljinHubPage());
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
@@ -2163,6 +2266,8 @@ const rssItem = (loc, title, desc) =>
 
 const rssRows = [
   [DOMAIN + "/", "동네보살 — 무료 사주·운세와 계산기 " + meta.length + "가지", RSS_DESC],
+  [DOMAIN + "/manse.html", "무료 만세력 — 사주 만세력 계산기", "생년월일시로 사주 여덟 글자와 대운을 계산하는 무료 만세력. 절기는 태양황경으로 직접 계산합니다."],
+  [DOMAIN + "/manse-howto.html", "만세력 보는법 — 원국표 읽는 여섯 단계", "만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운을 예시로 풀었습니다."],
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
   // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
   // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
