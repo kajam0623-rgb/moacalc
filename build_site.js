@@ -1924,8 +1924,6 @@ function indexPage(){
 <h1 class="hero-h">990원도 아까워~<br>무료로 사주, 운세, 궁합<br><b>제대로 봐주는 '동네보살'</b></h1>
 <div class="hero-sub">생일만 넣으면 바로. 별자리 운세·타로부터 실수령액·퇴직금 계산기까지 ${meta.length}가지.</div>
 <div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
-<div class="console"><div class="prompt">&gt; 무엇이 궁금하세요<span class="cur"></span></div>
-<div class="sbar"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input class="search" id="q" placeholder="사주, 오늘의 운세, 퇴직금…"><kbd>⌘K</kbd></div></div>
 <nav class="pop"><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
 </div>
 <img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
@@ -1957,10 +1955,7 @@ ${footer}
 </div>
 ${homeFaqLd}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
-<script>var q=document.getElementById("q");
-if(q)addEventListener("keydown",function(e){if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();q.focus();q.select();}else if(e.key==="/"&&document.activeElement!==q){e.preventDefault();q.focus();}});
-if(q)q.addEventListener("input",function(){var v=this.value.trim();document.querySelectorAll(".grp").forEach(function(g){var any=false;g.querySelectorAll(".idxrow").forEach(function(r){var m=r.querySelector(".ix-n").textContent.indexOf(v)>=0;r.style.display=m?"":"none";if(m)any=true;});g.style.display=any?"":"none";});});
-if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
+<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;
 }
 
