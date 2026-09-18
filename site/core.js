@@ -589,7 +589,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var BRAND_URL="dongnebosal.com";
   function fortuneCard(o){
     if(typeof document==="undefined")return null;
-    var W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;
+    // 사주 카드(명식 있음)는 3:4 로 키워 그림·명식·본문을 한 장에 담는다. 나머지 도구는 1080x1350 그대로
+    var W=1080,H=o.pillars?1440:1350,c=document.createElement("canvas");c.width=W;c.height=H;
     var x=c.getContext("2d");
     var g=x.createLinearGradient(0,0,0,H);
     g.addColorStop(0,"#0d1424");g.addColorStop(.55,"#131c30");g.addColorStop(1,"#0a0f1a");
@@ -602,22 +603,65 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var F='"Noto Sans KR","Malgun Gothic",sans-serif';
     x.textAlign="center";
     x.fillStyle="#d4af6e";x.font="600 34px "+F;
-    x.fillText(o.tool||"오늘의 운세",W/2,168);
-    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,224);}
-    if(o.score!=null){
-      x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470);
-      x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556);}
-    x.fillStyle="#fff";x.font="800 54px "+F;
-    var hl=wrapText(x,o.headline||"",W-200),hy=o.score!=null?700:520;
-    for(var j=0;j<hl.length&&j<3;j++){x.fillText(hl[j],W/2,hy+j*74);}
-    if(o.body){
-      x.fillStyle="#c3ccd9";x.font="400 38px "+F;
-      var bl=wrapText(x,o.body,W-220),by=hy+hl.length*74+56;
-      for(var k=0;k<bl.length&&k<6;k++){x.fillText(bl[k],W/2,by+k*60);}}
+    // 사주 카드만 위로 당겨 공간을 번다. 다른 도구 카드는 예전 좌표 그대로
+    x.fillText(o.tool||"오늘의 운세",W/2,o.pillars?150:168);
+    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,o.pillars?204:224);}
+    if(o.pillars&&o.pillars.length){
+      // 그림(왼쪽) + 명식 네 기둥(오른쪽). 그림을 못 불러오면 기둥이 폭 전체를 쓴다
+      var top=252,side=300,px0=o.art?96+side+28:100,pwid=o.art?W-100-px0:W-200;
+      if(o.art){
+        x.save();x.beginPath();
+        if(x.roundRect)x.roundRect(96,top,side,side,20);else x.rect(96,top,side,side);
+        x.clip();x.drawImage(o.art,96,top,side,side);x.restore();
+        x.strokeStyle="rgba(212,175,110,.4)";x.lineWidth=2;
+        x.beginPath();if(x.roundRect)x.roundRect(96,top,side,side,20);else x.rect(96,top,side,side);x.stroke();}
+      var pw=pwid/o.pillars.length;
+      for(var q=0;q<o.pillars.length;q++){
+        var col=o.pillars[q], cx=px0+pw*q+pw/2, bx=px0+pw*q+5;
+        x.fillStyle="rgba(255,255,255,.045)";x.fillRect(bx,top,pw-10,side);
+        x.strokeStyle="rgba(212,175,110,.28)";x.lineWidth=1;x.strokeRect(bx,top,pw-10,side);
+        x.fillStyle="#8b95a6";x.font="600 23px "+F;x.fillText(col[0],cx,top+42);
+        x.fillStyle=col[3]||"#fff";x.font="800 66px "+F;x.fillText(col[1],cx,top+156);
+        x.fillStyle=col[4]||"#fff";x.font="800 66px "+F;x.fillText(col[2],cx,top+262);}
+      // 오행 분포 한 줄 — 어느 기운이 많고 비었는지
+      if(o.bars&&o.bars.length){
+        var bw=(W-200)/o.bars.length, byy=top+side+64;
+        for(var z=0;z<o.bars.length;z++){
+          var e=o.bars[z], ex=100+bw*z+bw/2;
+          x.textAlign="right";x.fillStyle=e[2]||"#8b95a6";x.font="700 30px "+F;x.fillText(e[0],ex-4,byy);
+          x.textAlign="left";x.fillStyle="#fff";x.font="800 34px "+F;x.fillText(String(e[1]),ex+6,byy);}
+        x.textAlign="center";}
+      x.strokeStyle="rgba(212,175,110,.25)";x.lineWidth=1;
+      x.beginPath();x.moveTo(140,top+side+104);x.lineTo(W-140,top+side+104);x.stroke();
+      // 핵심 문장 — 결과 맨 위 한 줄. 원문의 줄 나눔(<br>)을 그대로 살린다
+      x.fillStyle="#fff";x.font="800 46px "+F;
+      var hs=String(o.headline||"").split("\n"),hl=[];
+      for(var h=0;h<hs.length;h++)hl=hl.concat(wrapText(x,hs[h],W-200));
+      hl=hl.slice(0,3);
+      var hy=top+side+176;
+      for(var j=0;j<hl.length;j++)x.fillText(hl[j],W/2,hy+j*60);
+      // 본문 200자 내외 — 줄 수를 넘기면 마지막 줄을 말줄임한다
+      if(o.body){
+        x.fillStyle="#c3ccd9";x.font="400 30px "+F;
+        var bl=wrapText(x,o.body,W-220),by=hy+hl.length*60+34,cap=9;
+        if(bl.length>cap){bl=bl.slice(0,cap);bl[cap-1]=bl[cap-1].replace(/.$/,"…");}
+        for(var k=0;k<bl.length;k++)x.fillText(bl[k],W/2,by+k*45);}
+    }else{
+      if(o.score!=null){
+        x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470);
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556);}
+      x.fillStyle="#fff";x.font="800 54px "+F;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=o.score!=null?700:520;
+      for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
+      if(o.body){
+        x.fillStyle="#c3ccd9";x.font="400 38px "+F;
+        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56;
+        for(var k2=0;k2<bl2.length&&k2<6;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}}
     // 저장 이미지는 출처를 달고 돌아다닌다. 도메인이 안 보이면 퍼져도 유입이 없다
-    x.fillStyle="#d4af6e";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-142);
-    x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText("무료 사주 · 오늘의 운세",W/2,H-100);
-    x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-52);
+    // 주소 기준선이 테두리(H-48)와 4px 떨어져 'g' 꼬리가 선을 넘었다. 블록째 올려 테두리와 띄운다
+    x.fillStyle="#d4af6e";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-158);
+    x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText("무료 사주 · 오늘의 운세",W/2,H-118);
+    x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-76);
     return c;}
   function bindSave(el,opts){
     var b=el.querySelector(".save-btn");if(!b)return;
@@ -653,7 +697,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         document.body.appendChild(ta);ta.select();
         try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
         document.body.removeChild(ta);}
-      if(navigator.share){navigator.share(d).catch(function(){});}
+      // url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버린다. 본문에 url 을 녹여 통째로 넘긴다
+      if(navigator.share){navigator.share({title:d.title,text:full}).catch(function(){});}
       else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
       else legacy();});}
 

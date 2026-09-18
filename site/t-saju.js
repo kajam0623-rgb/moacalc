@@ -367,9 +367,29 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
-      bindSave(el,{file:"사주팔자",tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간",
-        headline:EL_TITLE[SJ_EL[SJ_ES[ds]]][1],
-        body:SJ_EL[SJ_ES[ds]]+" 일간 · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" · "+mx+" 기운이 가장 강함"});
+      // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
+      // 본문은 결과에 이미 있는 글(일간 성격·적성 두 문단 + 맺는 말 첫머리)을 이어 붙인다
+      var EL_HEX={목:"#5fbe84",화:"#e57468",토:"#d9a648",금:"#a9b0ba",수:"#5f9de0"};
+      function elHexS(i){return EL_HEX[SJ_EL[SJ_ES[i]]];}
+      function elHexB(i){return EL_HEX[SJ_EL[SJ_EB[i]]];}
+      var ilP=ILGAN[ds].split("<br><br>").map(function(t){return t.replace(/<[^>]+>/g,"").trim();});
+      var cardData={tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간 · "+p.tti+"띠 · 용신 "+yEl,
+        headline:headTxt.replace(/<br>/g,"\n"),
+        body:ilP[0]+" "+ilP[1]+" "+(st.strong
+          ?"자네는 기운이 넘치는 사람일세. 여태 남한테 기대지 않고 제 힘으로 밀고 온 값이 그 안에 있어."
+          :"자네는 기운이 얇은 사람일세. 그래서 여태 남보다 몇 배로 애를 썼을 게야."),
+        pillars:[["시주",p.h?SJ_SH[p.h.s]:"?",p.h?SJ_BH[p.h.b]:"?",p.h?elHexS(p.h.s):"#4a5260",p.h?elHexB(p.h.b):"#4a5260"],
+                 ["일주(나)",SJ_SH[p.d.s],SJ_BH[p.d.b],elHexS(p.d.s),elHexB(p.d.b)],
+                 ["월주",SJ_SH[p.m.s],SJ_BH[p.m.b],elHexS(p.m.s),elHexB(p.m.b)],
+                 ["연주",SJ_SH[p.y.s],SJ_BH[p.y.b],elHexS(p.y.s),elHexB(p.y.b)]],
+        bars:SJ_EL.map(function(e,i){return [e,cnt[i],EL_HEX[e]];})};
+      // 그림은 결과가 뜰 때 미리 불러 둔다(결과 화면도 같은 그림을 쓴다). 저장을 누를 때 다 불렀으면 싣고,
+      // 아직이거나 실패했으면 그림 없이 만든다. cardData 를 그대로 넘기므로 onload 로 채운 art 가 그 순간 반영된다
+      var cardArt=new Image();
+      cardArt.onload=function(){cardData.art=cardArt;};
+      cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
+      cardData.file="사주팔자";
+      bindSave(el,cardData);
       var outEl=el.querySelector("#out");fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
