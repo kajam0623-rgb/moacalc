@@ -1271,6 +1271,26 @@ ${footer}
 </div></body></html>`;
 }
 
+/* 없는 주소로 들어온 사람에게 보여줄 404. /a/b/c 처럼 깊은 경로에서도 뜨므로
+   링크·스타일·이미지는 전부 / 로 시작하는 절대 경로다. 검색엔진에는 싣지 않는다. */
+function notFoundPage(){
+  const links = [["tarot.html","🃏 타로 카드"],["saju.html","☯ 사주팔자 만세력"],["todayfortune.html","🌙 오늘의 운세"],
+                 ["gunghap.html","💞 궁합 보기"],["manse.html","📅 무료 만세력"],["","🏠 동네보살 처음으로"]];
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>페이지를 찾을 수 없습니다 | 동네보살</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="/style.css?v=${styleV}">
+${FAVICON}</head><body>
+<div class="wrap" style="text-align:center;padding-top:40px">
+<img src="/img/mascot.webp" alt="동네보살" width="160" height="160" style="width:160px;height:auto">
+<h1 style="font-size:26px;font-weight:900;margin:14px 0 8px">찾으시는 페이지가 없습니다</h1>
+<p style="color:var(--muted);font-size:14.5px;margin-bottom:22px">주소가 바뀌었거나 잘못 입력된 것 같습니다. 아래에서 보고 싶은 풀이를 골라 주세요.</p>
+<div style="display:grid;gap:10px;max-width:360px;margin:0 auto">`+
+  links.map(([h,t])=>`<a class="btn" href="/${h}" style="display:block;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-weight:700">${t}</a>`).join("")+
+`</div></div></body></html>`;
+}
+
 function starPage(s, i){
   return seoPage({
     crumb:`${s.ko}`,
@@ -1372,7 +1392,7 @@ function conceptPage(c){
   return seoPage({
     crumb:`${c.ko}`,
     title:`${c.ko}${josa(c.ko,"이란/란")}? — 뜻과 보는 법 | 동네보살`,
-    desc:`${c.oneline} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
+    desc:`${c.oneline}${/[.!?]$/.test(c.oneline)?"":"."} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
     url:`${DOMAIN}/concept-${c.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${c.han} ${c.ko} — ${c.keyword}`,
     sub:c.oneline,
@@ -2311,7 +2331,9 @@ fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
 // 호스트 리다이렉트(www→apex)는 이 파일로 안 되고 Cloudflare 대시보드 Redirect Rule 몫이다.
 // html_handling:"none" 은 / 에서 index.html 을 못 찾는다 — 200 재작성으로 붙인다
 fs.writeFileSync(path.join(OUT,"_redirects"), "/ /index.html 200\n/lotto.html / 301\n/draw.html / 301\n/ladder.html / 301\n");
+fs.writeFileSync(path.join(OUT,"404.html"), notFoundPage());
 fs.writeFileSync(path.join(OUT,"_headers"),
+  "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n" +
   "/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=86400\n/*.css\n  Cache-Control: public, max-age=86400\n");
 // img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)
 if (fs.existsSync(IMG_SRC)) {

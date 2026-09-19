@@ -4,7 +4,9 @@
   "assets": {
     "directory": "./site",
     // 기본값(auto-trailing-slash)은 /saju.html 을 /saju 로 돌려보낸다. 캐노니컬이 전부 .html 이라 끈다.
-    "html_handling": "none"
+    "html_handling": "none",
+    // 없는 주소는 site/404.html 을 404 상태로 보여준다
+    "not_found_handling": "404-page"
   },
   // dongnebosal.com 하나로만 서빙 — *.workers.dev 중복 호스트를 만들지 않는다
   "workers_dev": false,
