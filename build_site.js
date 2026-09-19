@@ -826,9 +826,6 @@ const SITE_NAME = "동네보살";
 const headExtra = FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
-  // 광고·분석 스크립트가 늦게 부르는 서버라 미리 연결해 둔다(Lighthouse 추정 약 0.4초)
-  (ADSENSE_CLIENT?`<link rel="preconnect" href="https://googleads.g.doubleclick.net">`:"")+
-  (ANALYTICS_ID?`<link rel="preconnect" href="https://www.google-analytics.com">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
     `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');</script>`:"")+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
