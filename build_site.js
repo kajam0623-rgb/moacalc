@@ -826,6 +826,9 @@ const SITE_NAME = "동네보살";
 const headExtra = FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
+  // 광고·분석 스크립트가 늦게 부르는 서버라 미리 연결해 둔다(Lighthouse 추정 약 0.4초)
+  (ADSENSE_CLIENT?`<link rel="preconnect" href="https://googleads.g.doubleclick.net">`:"")+
+  (ANALYTICS_ID?`<link rel="preconnect" href="https://www.google-analytics.com">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
     `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');</script>`:"")+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
@@ -2088,7 +2091,10 @@ const chunks = markers.map((mk, i) => {
   return { id: mk.id, src };
 });
 const coreJs = `${helpers}\nvar TOOLS=[];\n`+
-  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(t)t.render(document.getElementById(elId));};`;
+  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);`+
+  // 도구들은 <label>이름</label><input id=…> 로 쓰고 for 를 안 붙였다. 바로 뒤 입력칸과 이어 준다(스크린리더·라벨 클릭)
+  // 생년월일은 이름표와 입력칸 사이에 연대 칩이 끼어 있어, 다음 이름표 전까지 형제를 따라가며 첫 입력칸을 찾는다
+  `var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};`;
 // 구문 파손 즉시 빌드 실패 (파싱만, 실행 안 함)
 new Function(coreJs);
 chunks.forEach(c => { try { new Function("TOOLS.push(" + c.src + ");"); } catch (e) { throw new Error("도구 청크 구문 오류: " + c.id + " — " + e.message); } });
@@ -2203,6 +2209,8 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
+  // 본문 속 맨 링크가 브라우저 기본 #0000ee 로 떠서 다크 배경에서 안 보였다(명암비 1.65). :where 로 우선순위 0 — 칩·버튼 링크 규칙이 이긴다
+  `\n:where(.intro,.exbox,.guide) :where(a){color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;}`+
   `\n.trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}`+
   `\n.trust span{font-size:11.5px;font-weight:700;letter-spacing:0;color:var(--fun-ink);`+
   `background:color-mix(in srgb,var(--fun) 9%,transparent);border:1px solid color-mix(in srgb,var(--fun) 35%,transparent);border-radius:100px;padding:5px 11px;}`+
