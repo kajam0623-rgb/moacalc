@@ -2306,6 +2306,12 @@ fs.writeFileSync(path.join(OUT,"site.webmanifest"), JSON.stringify({
 }, null, 1));
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
 fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
+// Cloudflare(wrangler.jsonc) 용 — vercel.json 의 경로 리다이렉트·캐시 헤더를 옮긴 것.
+// 호스트 리다이렉트(www→apex)는 이 파일로 안 되고 Cloudflare 대시보드 Redirect Rule 몫이다.
+// html_handling:"none" 은 / 에서 index.html 을 못 찾는다 — 200 재작성으로 붙인다
+fs.writeFileSync(path.join(OUT,"_redirects"), "/ /index.html 200\n/lotto.html / 301\n/draw.html / 301\n/ladder.html / 301\n");
+fs.writeFileSync(path.join(OUT,"_headers"),
+  "/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=86400\n/*.css\n  Cache-Control: public, max-age=86400\n");
 // img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)
 if (fs.existsSync(IMG_SRC)) {
   let n = 0;
