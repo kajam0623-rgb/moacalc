@@ -1169,6 +1169,7 @@ const crumbLd = rows => '<script type="application/ld+json">'+JSON.stringify({
 
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
+  if(!o.img) throw new Error("seoPage: img 없음(og:image 가 /undefined 가 된다) — "+o.url);
   const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
   /* 홈 → 부모 도구 → 이 페이지. o.parent 는 "saju.html" 같은 상대 경로다.
@@ -1371,8 +1372,8 @@ function conceptPage(c){
   return seoPage({
     crumb:`${c.ko}`,
     title:`${c.ko}${josa(c.ko,"이란/란")}? — 뜻과 보는 법 | 동네보살`,
-    desc:`${c.oneline} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 풀어 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
-    url:`${DOMAIN}/concept-${c.en}.html`, hero:"img/tool/h-saju.webp",
+    desc:`${c.oneline} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
+    url:`${DOMAIN}/concept-${c.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${c.han} ${c.ko} — ${c.keyword}`,
     sub:c.oneline,
     parent:"saju.html", parentName:"사주팔자 만세력",
