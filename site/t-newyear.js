@@ -56,7 +56,7 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",d
       '<div class="sj-sec"><h3>하반기 (하지~입춘 전)</h3><p>'+E[2]+'</p></div>'+
       '<div class="sj-sec"><h3>올해 조심할 것</h3><p>'+E[3]+'</p></div>'+
       '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
-      (notes.length?'<div class="sj-sec"><h3>합·충 포인트</h3><p>'+notes.join(" ")+'</p></div>':"")+
+      (notes.length?'<div class="sj-sec"><h3>붙는 자리와 부딪히는 자리</h3><p>'+notes.join(" ")+'</p></div>':"")+
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';

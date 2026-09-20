@@ -1976,8 +1976,8 @@
       // 십성 카운트
       var tgc={};chars.forEach(function(c,ci){if(!(ci===2)){var g1=sjTenGod(ds,c.s);tgc[g1]=(tgc[g1]||0)+1;}var g2=sjTenGod(ds,SJ_BMAIN[c.b]);tgc[g2]=(tgc[g2]||0)+1;});
       var tgTop=Object.entries(tgc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0]+" "+x[1];}).join(" · ");
-      var cols=[["시주",p.h?cell(p.h.s,p.h.b,ds):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
-                ["일주(나)",cell(p.d.s,p.d.b,ds)],["월주",cell(p.m.s,p.m.b,ds)],["연주",cell(p.y.s,p.y.b,ds)]];
+      var cols=[["시각 자리",p.h?cell(p.h.s,p.h.b,ds):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
+                ["날 자리(나)",cell(p.d.s,p.d.b,ds)],["달 자리",cell(p.m.s,p.m.b,ds)],["해 자리",cell(p.y.s,p.y.b,ds)]];
       // 신강·신약 / 용신 / 격국 / 신살 / 십이운성
       var st=sjStrength(p),yEl=SJ_EL[st.yong],y2El=SJ_EL[st.yong2],Y=SJ_YONG[yEl];
       var wolTg=sjTenGod(ds,SJ_BMAIN[p.m.b]),gyeok=SJ_GYEOK[wolTg],sinsal=sjSinsal(p),ilUn=sjUnseong(ds,p.d.b);
@@ -2143,7 +2143,7 @@
         DUTXT[seTg]+' '+duFit(seEl,"해")+'<br><br>'+
         '대운이 십 년의 큰 결이라면 세운은 그해의 결일세. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, '+
         '큰 흐름이 얇아도 그해가 받쳐주면 일이 되네. 두 개를 겹쳐 봐야 그해의 무게가 나오는 게야.'+
-        '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 연주를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
+        '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 그해 글자를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
         (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p></div>';
 
       // 십성 분포는 숫자만 나열돼 있었다. 어느 축으로 사는 사람인지까지 읽어준다
@@ -2175,12 +2175,12 @@
       // 여덟 글자 자리 읽기 — 각 기둥 지지의 본기가 일간에게 어떤 십성인지를 그 자리의 뜻과 함께 읽는다
       function gungSec(){
         if(typeof SAJU_GUNG==="undefined")return "";
-        var rows=[["year","연주","뿌리와 어린 시절",p.y],["month","월주","부모와 사회의 무대",p.m],["day","일지","배우자 자리와 속마음",p.d],["hour","시주","자녀와 말년의 결실",p.h]];
+        var rows=[["year","태어난 해 자리","뿌리와 어린 시절",p.y],["month","태어난 달 자리","부모와 사회의 무대",p.m],["day","태어난 날 자리","배우자 자리와 속마음",p.d],["hour","태어난 시각 자리","자녀와 말년의 결실",p.h]];
         return '<div class="sj-sec"><h3>여덟 글자, 어느 자리가 무엇인가</h3><p>'+
           rows.filter(function(r){return r[3];}).map(function(r){var tg=sjTenGod(ds,SJ_BMAIN[r[3].b]);
             return '<b>'+r[1]+' '+SJ_B[r[3].b]+'('+SJ_BH[r[3].b]+') — '+tg+'</b> · '+r[2]+'<br>'+SAJU_GUNG[r[0]][tg];}).join("<br><br>")+
-          (p.h?'':'<br><br>태어난 시각을 모르니 시주 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
-          '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 일주의 천간은 자기 자신이라 일지만 읽습니다.</span></p></div>';}
+          (p.h?'':'<br><br>태어난 시각을 모르니 그 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
+          '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 태어난 날의 하늘 글자는 자기 자신이라 아래 글자만 읽습니다.</span></p></div>';}
       var headTxt=(mx===mn)?"기운이 고르게 퍼진 사주"
         :EL_STRONG[mx]+' 사이에서<br>'+EL_NEED[mn]+josa(EL_NEED[mn],"를/을")+' 찾는 사주';
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
@@ -2221,7 +2221,7 @@
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운 (신살)</h3><p>따로 튀는 기운이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
-        '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
+        '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 위 여덟 글자 표의 아래 글자마다 적어 두었습니다.</span></p></div>'+
         gungSec()+
         '<div class="sj-sec"><h3>타고난 힘의 세기</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 힘이 <b>'+(st.strong?"센 편":"약한 편")+'</b>일세. '+
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
@@ -2985,7 +2985,7 @@
     function pts(a,b){ // [점수증감, 설명] 목록
       var out=[],sc=60;
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
-      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;out.push(["기운이 딱 맞물림","두 사람의 일간("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")이 천간합 — 명리에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
+      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;out.push(["기운이 딱 맞물림","두 사람을 뜻하는 글자("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")가 서로 짝을 이루는 사이입니다. 사주에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
       else{
         var r1=sjTenGod(a.d.s,b.d.s);
         if(r1==="정재"||r1==="정관"){sc+=10;out.push(["서로를 아껴 주는 기운","상대가 나의 "+r1+" — 서로 아껴주고 책임지는 안정형 조합입니다."]);}
@@ -2995,10 +2995,10 @@
       }
       // 2. 띠(연지) 합충
       var ab=a.y.b,bb=b.y.b,d=Math.abs(ab-bb);
-      if(ab%4===bb%4&&ab!==bb){sc+=12;out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")가 삼합 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
-      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;out.push(["띠끼리 편안","두 띠가 육합 — 서로를 편안하게 만드는 찰떡 조합."]);}
-      else if(d===6){sc-=12;out.push(["띠끼리 부딪힘","두 띠가 충(沖) — 처음엔 강하게 끌리지만 부딪히기도 쉬운 관계. 생활 패턴 조율이 관건."]);}
-      else{out.push(["띠끼리 무난","띠 사이 특별한 합·충 없음 — 무난한 흐름입니다."]);}
+      if(ab%4===bb%4&&ab!==bb){sc+=12;out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")는 셋이 뭉치는 짝일세 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
+      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;out.push(["띠끼리 편안","두 띠는 둘이 맞는 짝 — 서로를 편안하게 만드는 찰떡 조합."]);}
+      else if(d===6){sc-=12;out.push(["띠끼리 부딪힘","두 띠는 서로 부딪히는 짝 — 처음엔 강하게 끌리지만 다투기도 쉬운 관계. 생활 방식을 맞추는 게 관건."]);}
+      else{out.push(["띠끼리 무난","띠끼리 맞부딪히거나 붙는 자리가 없어 — 무난한 흐름입니다."]);}
       // 3. 오행 보완 (서로 부족한 오행 채워주는지)
       function cnt6(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
       var ca=cnt6(a),cb=cnt6(b),fill=0;
@@ -3008,9 +3008,9 @@
       else{out.push(["닮은 기운","오행 구성이 비슷 — 닮아서 편하지만 약점도 같이 겹칠 수 있어요."]);}
       // 4. 일지 합충 (배우자궁)
       var da=a.d.b,db=b.d.b,dd=Math.abs(da-db);
-      if(da%4===db%4&&da!==db){sc+=8;out.push(["같이 사는 호흡","일지(배우자 자리)끼리 삼합 — 일상 속 호흡이 잘 맞습니다."]);}
-      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;out.push(["같이 사는 호흡","일지끼리 육합 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
-      else if(dd===6){sc-=8;out.push(["생활 습관은 조율 필요","일지끼리 충 — 애정과 별개로 생활 습관 충돌이 잦을 수 있습니다."]);}
+      if(da%4===db%4&&da!==db){sc+=8;out.push(["같이 사는 호흡","배우자 자리끼리 뭉치는 짝 — 일상 속 호흡이 잘 맞습니다."]);}
+      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;out.push(["같이 사는 호흡","배우자 자리끼리 맞는 짝 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
+      else if(dd===6){sc-=8;out.push(["생활 습관은 조율 필요","배우자 자리끼리 부딪히는 짝 — 애정과 별개로 생활 습관이 자주 엇갈릴 수 있습니다."]);}
       return [Math.max(35,Math.min(99,sc)),out];
     }
     function go(){
@@ -3118,7 +3118,7 @@
       '<div class="sj-sec"><h3>하반기 (하지~입춘 전)</h3><p>'+E[2]+'</p></div>'+
       '<div class="sj-sec"><h3>올해 조심할 것</h3><p>'+E[3]+'</p></div>'+
       '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
-      (notes.length?'<div class="sj-sec"><h3>합·충 포인트</h3><p>'+notes.join(" ")+'</p></div>':"")+
+      (notes.length?'<div class="sj-sec"><h3>붙는 자리와 부딪히는 자리</h3><p>'+notes.join(" ")+'</p></div>':"")+
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
