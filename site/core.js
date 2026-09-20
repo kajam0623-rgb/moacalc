@@ -458,16 +458,34 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
          마크업째 훑으면 문장 끝을 못 찾는다. 뽑은 만큼은 텍스트 노드에서 지워 중복을 없앤다. */
       var key="",first=sec.querySelector("p");
       if(first){
-        var txt=first.textContent.replace(/^\s+/,"");
-        var m=/^([\s\S]{6,120}?[.!?])(\s|$)/.exec(txt);
+        /* <br>은 textContent에서 사라져 "…있네.기운이…"처럼 두 문장이 붙는다.
+           그러면 첫 문장 찾기가 문장 경계를 놓치고 두 문장을 한꺼번에 집어 올린다.
+           훑을 때는 <br>을 줄바꿈으로 세고, 지울 때는 글자 노드에서만 뺀다. */
+        var segs=[],scan="";
+        (function collect(node){
+          for(var c=node.firstChild;c;c=c.nextSibling){
+            if(c.nodeType===3){segs.push({n:c,len:c.nodeValue.length});scan+=c.nodeValue;}
+            else if(c.nodeName==="BR"){segs.push({br:1,len:1});scan+="\n";}
+            else if(c.nodeType===1)collect(c);
+          }
+        })(first);
+        var lead=scan.length-scan.replace(/^\s+/,"").length;
+        var m=/^([\s\S]{6,120}?[.!?])(\s|$)/.exec(scan.slice(lead));
         if(m){
           key=m[1].trim();
-          var left=first.textContent.indexOf(m[1])+m[1].length;
-          var walk=document.createTreeWalker(first,NodeFilter.SHOW_TEXT,null,false),tn;
-          while(left>0&&(tn=walk.nextNode())){
-            var s=tn.nodeValue;
-            if(s.length<=left){left-=s.length;tn.nodeValue="";}
-            else{tn.nodeValue=s.slice(left).replace(/^\s+/,"");left=0;}
+          var left=lead+m[1].length;
+          for(var i=0;i<segs.length&&left>0;i++){
+            var sg=segs[i];
+            if(sg.br){left-=1;continue;}
+            if(sg.len<=left){left-=sg.len;sg.n.nodeValue="";}
+            else{sg.n.nodeValue=sg.n.nodeValue.slice(left).replace(/^\s+/,"");left=0;}
+          }
+          // 앞에 남은 빈 태그와 줄바꿈을 걷어낸다. 안 그러면 본문이 빈 줄로 시작한다
+          while(first.firstChild){
+            var f=first.firstChild;
+            if(f.nodeName==="BR"||(f.nodeType===3&&!f.nodeValue.trim())||
+               (f.nodeType===1&&!f.textContent.trim()&&!f.querySelector("img"))){first.removeChild(f);continue;}
+            break;
           }
           if(!first.textContent.trim()&&!first.querySelector("img,a"))first.parentNode.removeChild(first);
         }
