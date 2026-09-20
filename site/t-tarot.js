@@ -393,11 +393,14 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       picks.forEach(function(pk,j){
         var role=ques.sp[j][0],pos=ques.sp[j][1],c=R[pk.i],slug=ART[pk.i].replace(/^tarot-\d\d-/,"");
         var roleLine=role==="answer"?YN_LINE[YN[pk.i]][pk.rev?1:0]:c.role[role];
-        blocks.push('<div class="one"><div class="tr-rh"><b>'+pos+' — '+M[pk.i][1]+(pk.rev?' (역방향)':'')+'</b><a href="tarot-'+slug+'.html">카드 뜻 자세히 →</a></div>'+
-          '<p class="st">'+STORY[pk.i]+'</p>'+
+        // 카드마다 [자리 — 카드이름] + 그림 속 한 줄만 보이고, 누르면 세 갈래 풀이가 펼쳐진다
+        blocks.push('<details class="fold one"'+(j===0?" open":"")+'><summary>'+
+          '<span class="fold-lab">'+pos+' — '+M[pk.i][1]+(pk.rev?' (역방향)':'')+'</span>'+
+          '<b class="fold-key">'+STORY[pk.i]+'</b></summary><div class="fold-body">'+
           '<p><span class="tr-lb">'+(pk.rev?"거꾸로 나온 ":"")+M[pk.i][1]+'</span>'+c.desc[pk.rev?"rev":"up"]+'</p>'+
           '<p><span class="tr-lb">\''+pos+'\' 자리에서</span>'+roleLine+'</p>'+
-          '<p><span class="tr-lb">'+topic.name+'에 비춰 보면</span>'+c.topic[topic.k][pk.rev?1:0]+'</p></div>');});
+          '<p><span class="tr-lb">'+topic.name+'에 비춰 보면</span>'+c.topic[topic.k][pk.rev?1:0]+'</p>'+
+          '<p><a href="tarot-'+slug+'.html">'+M[pk.i][1]+' 카드 뜻 자세히 →</a></p></div></details>');});
       // 보살의 종합 — 흐름 잇기 · 정역 · 원소 · 여정 구간 · 조언 · 한마디 · 마무리
       var nm=function(p){return M[p.i][1]+(p.rev?"(역방향)":"");};
       var flow=N===1
@@ -418,6 +421,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
         '<div class="bs-opts"><span class="bs-opt save-btn" role="button" tabindex="0">이미지로 저장</span><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
       rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
+      foldAll(rd,{open:1});   // 종합·사주 대조도 같은 접이식으로
       // 한 덩어리씩 천천히 띄운다. 애니메이션이 돌지 않는 환경(백그라운드 탭)에서 숨은 채 남지 않게 끝나면 클래스를 걷는다
       var kids=[].slice.call(rd.children),gap=RM?0:650;
       kids.forEach(function(k,i){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";});

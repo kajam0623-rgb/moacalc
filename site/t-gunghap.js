@@ -6,32 +6,32 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
     function pts(a,b){ // [점수증감, 설명] 목록
       var out=[],sc=60;
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
-      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;out.push(["일간 천간합","두 사람의 일간("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")이 천간합 — 명리에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
+      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;out.push(["기운이 딱 맞물림","두 사람의 일간("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")이 천간합 — 명리에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
       else{
         var r1=sjTenGod(a.d.s,b.d.s);
-        if(r1==="정재"||r1==="정관"){sc+=10;out.push(["일간 상생","상대가 나의 "+r1+" — 서로 아껴주고 책임지는 안정형 조합입니다."]);}
-        else if(r1==="정인"||r1==="식신"){sc+=8;out.push(["일간 상생","상대가 나의 "+r1+" — 한쪽이 기르고 한쪽이 자라는 순환이 좋은 관계."]);}
-        else if(r1==="편관"||r1==="상관"){sc-=6;out.push(["일간 긴장","상대가 나의 "+r1+" — 자극이 강한 만큼 다툼도 잦을 수 있는 스파크형. 존중의 거리가 필요합니다."]);}
-        else{out.push(["일간 관계","상대가 나의 "+r1+" — 무난하게 어울리는 조합입니다."]);}
+        if(r1==="정재"||r1==="정관"){sc+=10;out.push(["서로를 아껴 주는 기운","상대가 나의 "+r1+" — 서로 아껴주고 책임지는 안정형 조합입니다."]);}
+        else if(r1==="정인"||r1==="식신"){sc+=8;out.push(["한쪽이 키워 주는 기운","상대가 나의 "+r1+" — 한쪽이 기르고 한쪽이 자라는 순환이 좋은 관계."]);}
+        else if(r1==="편관"||r1==="상관"){sc-=6;out.push(["부딪히기 쉬운 기운","상대가 나의 "+r1+" — 자극이 강한 만큼 다툼도 잦을 수 있는 스파크형. 존중의 거리가 필요합니다."]);}
+        else{out.push(["무난하게 만나는 기운","상대가 나의 "+r1+" — 무난하게 어울리는 조합입니다."]);}
       }
       // 2. 띠(연지) 합충
       var ab=a.y.b,bb=b.y.b,d=Math.abs(ab-bb);
-      if(ab%4===bb%4&&ab!==bb){sc+=12;out.push(["띠 삼합","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")가 삼합 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
-      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;out.push(["띠 육합","두 띠가 육합 — 서로를 편안하게 만드는 찰떡 조합."]);}
-      else if(d===6){sc-=12;out.push(["띠 충","두 띠가 충(沖) — 처음엔 강하게 끌리지만 부딪히기도 쉬운 관계. 생활 패턴 조율이 관건."]);}
-      else{out.push(["띠 관계","띠 사이 특별한 합·충 없음 — 무난한 흐름입니다."]);}
+      if(ab%4===bb%4&&ab!==bb){sc+=12;out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")가 삼합 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
+      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;out.push(["띠끼리 편안","두 띠가 육합 — 서로를 편안하게 만드는 찰떡 조합."]);}
+      else if(d===6){sc-=12;out.push(["띠끼리 부딪힘","두 띠가 충(沖) — 처음엔 강하게 끌리지만 부딪히기도 쉬운 관계. 생활 패턴 조율이 관건."]);}
+      else{out.push(["띠끼리 무난","띠 사이 특별한 합·충 없음 — 무난한 흐름입니다."]);}
       // 3. 오행 보완 (서로 부족한 오행 채워주는지)
       function cnt6(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
       var ca=cnt6(a),cb=cnt6(b),fill=0;
       for(var i=0;i<5;i++){if(ca[i]===0&&cb[i]>=2)fill++;if(cb[i]===0&&ca[i]>=2)fill++;}
-      if(fill>=2){sc+=10;out.push(["오행 보완","서로 없는 오행을 상대가 넉넉히 갖고 있어 — 함께 있을 때 완성되는 보완형."]);}
-      else if(fill===1){sc+=5;out.push(["오행 보완","부족한 오행 하나를 상대가 채워줍니다."]);}
-      else{out.push(["오행 구성","오행 구성이 비슷 — 닮아서 편하지만 약점도 같이 겹칠 수 있어요."]);}
+      if(fill>=2){sc+=10;out.push(["서로 채워 주는 기운","서로 없는 오행을 상대가 넉넉히 갖고 있어 — 함께 있을 때 완성되는 보완형."]);}
+      else if(fill===1){sc+=5;out.push(["서로 채워 주는 기운","부족한 오행 하나를 상대가 채워줍니다."]);}
+      else{out.push(["닮은 기운","오행 구성이 비슷 — 닮아서 편하지만 약점도 같이 겹칠 수 있어요."]);}
       // 4. 일지 합충 (배우자궁)
       var da=a.d.b,db=b.d.b,dd=Math.abs(da-db);
-      if(da%4===db%4&&da!==db){sc+=8;out.push(["배우자궁 삼합","일지(배우자 자리)끼리 삼합 — 일상 속 호흡이 잘 맞습니다."]);}
-      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;out.push(["배우자궁 육합","일지끼리 육합 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
-      else if(dd===6){sc-=8;out.push(["배우자궁 충","일지끼리 충 — 애정과 별개로 생활 습관 충돌이 잦을 수 있습니다."]);}
+      if(da%4===db%4&&da!==db){sc+=8;out.push(["같이 사는 호흡","일지(배우자 자리)끼리 삼합 — 일상 속 호흡이 잘 맞습니다."]);}
+      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;out.push(["같이 사는 호흡","일지끼리 육합 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
+      else if(dd===6){sc-=8;out.push(["생활 습관은 조율 필요","일지끼리 충 — 애정과 별개로 생활 습관 충돌이 잦을 수 있습니다."]);}
       return [Math.max(35,Math.min(99,sc)),out];
     }
     function go(){
@@ -71,7 +71,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
       '<div class="gh-pair">'+zoCard(A.y.b,"나")+zoCard(B.y.b,"상대")+'</div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
-      '<div class="sj-sec"><h3>오행 구성 비교</h3><p>여섯 글자(연·월·일주)에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
+      '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>여섯 글자(연·월·일주)에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+

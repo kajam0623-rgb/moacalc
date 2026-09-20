@@ -352,6 +352,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       var sb=out.querySelector(".share-btn");
       if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
       else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
+    // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
+    foldAll(out,{open:1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
     if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
@@ -387,6 +389,62 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     kids.forEach(function(k,i){
       if(i<first){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";}
       else if(io){k.classList.add("sj-wait");io.observe(k);}});}
+  /* [분류] + 핵심 한 문장만 보이고, 누르면 자세한 풀이가 펼쳐진다.
+     핵심은 본문 첫 문장을 끌어올려 쓴다 — 도구마다 요약을 따로 쓰지 않아도 된다.
+     opts.key 로 직접 정할 수도 있고, opts.open 이면 처음부터 펼쳐 둔다. */
+  /* 그려진 결과의 .sj-sec 단락들을 [분류] + 핵심 한 문장 + 펼쳐보기로 바꾼다.
+     제목(h3)이 분류가 되고 본문 첫 문장이 핵심으로 올라간다. 도구마다 원고를 고칠 필요 없이
+     렌더 끝에서 한 번만 부르면 된다. opts.open = 처음부터 펼쳐 둘 앞쪽 개수. */
+  function foldAll(out,opts){
+    if(!out||typeof document==="undefined")return;
+    opts=opts||{};
+    var secs=Array.prototype.slice.call(out.querySelectorAll(".sj-sec")),n=0;
+    secs.forEach(function(sec){
+      var h3=sec.querySelector("h3");
+      if(!h3||sec.classList.contains("sj-glance")||sec.classList.contains("fold-skip"))return;
+      var label=h3.textContent.trim();
+      h3.parentNode.removeChild(h3);
+      /* 첫 문장 뽑기는 글자(textContent)로 한다. 문단이 <img>나 <span>으로 시작하는 곳이 있어
+         마크업째 훑으면 문장 끝을 못 찾는다. 뽑은 만큼은 텍스트 노드에서 지워 중복을 없앤다. */
+      var key="",first=sec.querySelector("p");
+      if(first){
+        var txt=first.textContent.replace(/^\s+/,"");
+        var m=/^([\s\S]{6,120}?[.!?])(\s|$)/.exec(txt);
+        if(m){
+          key=m[1].trim();
+          var left=first.textContent.indexOf(m[1])+m[1].length;
+          var walk=document.createTreeWalker(first,NodeFilter.SHOW_TEXT,null,false),tn;
+          while(left>0&&(tn=walk.nextNode())){
+            var s=tn.nodeValue;
+            if(s.length<=left){left-=s.length;tn.nodeValue="";}
+            else{tn.nodeValue=s.slice(left).replace(/^\s+/,"");left=0;}
+          }
+          if(!first.textContent.trim()&&!first.querySelector("img,a"))first.parentNode.removeChild(first);
+        }
+      }
+      var body=document.createElement("div");
+      body.className="fold-body";
+      while(sec.firstChild)body.appendChild(sec.firstChild);
+      // 접을 내용이 없으면 화살표가 헛돈다. 그때는 details 대신 펼쳐진 한 줄로 둔다
+      var has=body.textContent.trim().length>0||!!body.querySelector("img,table,.chips,.sj-daeun");
+      var d=document.createElement(has?"details":"div");
+      d.className="fold"+(has?"":" fold-flat");
+      if(has&&n++<(opts.open||0))d.open=true;
+      var s=document.createElement(has?"summary":"div");
+      s.className=has?"":"fold-sum";
+      s.innerHTML='<span class="fold-lab"></span><b class="fold-key"></b>';
+      s.querySelector(".fold-lab").textContent=label;
+      s.querySelector(".fold-key").textContent=key||label;
+      d.appendChild(s);
+      if(has)d.appendChild(body);
+      sec.parentNode.replaceChild(d,sec);
+    });
+  }
+  // 인쇄할 때는 접힌 것도 모두 펼쳐 준다. 접힌 채로 인쇄하면 핵심 문장만 찍힌다
+  if(typeof window!=="undefined"&&window.addEventListener)
+    window.addEventListener("beforeprint",function(){
+      var d=document.querySelectorAll("details.fold");
+      for(var i=0;i<d.length;i++)d[i].open=true;});
   // 생년월일 다이얼. 기존 input[type=date]를 감춘 채 값만 갱신하므로 각 도구의 계산 로직은 그대로다.
   // sel = 감출 input의 선택자, 돌릴 때마다 그 날짜의 일진 간지를 보여준다.
   function birthDial(el,sel,onChange){
