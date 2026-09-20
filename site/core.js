@@ -353,7 +353,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
       else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
     // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
-    foldAll(out,{open:1});
+    plainWords(out);foldAll(out,{open:1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
     if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
@@ -392,6 +392,56 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   /* [분류] + 핵심 한 문장만 보이고, 누르면 자세한 풀이가 펼쳐진다.
      핵심은 본문 첫 문장을 끌어올려 쓴다 — 도구마다 요약을 따로 쓰지 않아도 된다.
      opts.key 로 직접 정할 수도 있고, opts.open 이면 처음부터 펼쳐 둔다. */
+  /* 명리 용어 → 쉬운 말. 처음 나올 때만 "쉬운 말(용어)"로 한 번 알려주고,
+     그 뒤부터는 쉬운 말만 쓴다. 조사(은·는·이·가…)가 붙은 꼴만 바꾸므로
+     "편관격"처럼 다른 낱말에 붙은 글자는 건드리지 않는다. */
+  var PLAIN_WORDS=[
+    ["십이운성","기운의 단계"],["신강","힘이 센 편"],["신약","힘이 약한 편"],
+    ["용신","나를 받쳐 주는 기운"],["기신","나를 눌러 힘 빼는 기운"],
+    ["일간","나를 뜻하는 글자"],["일지","태어난 날 글자"],["월지","태어난 달 글자"],["연지","태어난 해 글자"],
+    ["천간","하늘 글자"],["지지","날짜 글자"],["본기","속 글자"],
+    ["대운","10년 흐름"],["세운","올해 흐름"],["격국","타고난 그릇"],["신살","눈에 띄는 기운"],
+    ["명식","사주 여덟 글자"],["원국","사주 여덟 글자"],["십성","열 가지 역할"],
+    ["비겁","경쟁·자립의 기운"],["비견","나와 나란한 기운"],["겁재","나눠 갖는 기운"],
+    ["식상","표현·재주의 기운"],["식신","느긋한 재주"],["상관","튀는 재주"],
+    ["재성","돈 기운"],["정재","꾸준한 돈 기운"],["편재","크게 도는 돈 기운"],
+    ["관성","일·책임의 기운"],["정관","반듯한 자리 기운"],["편관","밀어붙이는 기운"],
+    ["인성","배움·도움의 기운"],["정인","기대게 해 주는 기운"],["편인","한발 물러서는 기운"],
+    ["오행","다섯 기운"],["상생","서로 살리는 사이"],["상극","서로 누르는 사이"],
+    ["삼합","셋이 뭉치는 짝"],["육합","둘이 맞는 짝"]];
+  // 용어 풀이 상자와 표·칩은 그대로 둔다. 풀이 상자는 용어를 설명하는 곳이고,
+  // 표는 칸이 좁아 긴 풀어쓴 말이 들어가면 줄이 깨진다
+  // 조사 짝 — hub의 josa()는 "무받침/받침" 순서다
+  var PLAIN_JOSA={"은":"는/은","는":"는/은","이":"가/이","가":"가/이","을":"를/을","를":"를/을",
+    "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
+    "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
+  var PLAIN_SKIP="a,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  function plainWords(root){
+    if(!root||typeof document==="undefined")return;
+    var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];
+    while((tn=w.nextNode()))nodes.push(tn);
+    nodes.forEach(function(t){
+      var s=t.nodeValue;
+      if(!s||!/[가-힣]/.test(s))return;
+      if(t.parentElement&&t.parentElement.closest(PLAIN_SKIP))return;
+      PLAIN_WORDS.forEach(function(pair){
+        var term=pair[0],plain=pair[1];
+        /* 앞에 한글이 붙지 않은 자리에서만 바꾼다("편관격"은 건드리지 않는다).
+           뒤에 붙은 조사는 함께 붙잡아 바꿔 넣을 말에 맞게 다시 고른다
+           — 그러지 않으면 "천간이"가 "위 글자이"가 된다. */
+        // 조사 뒤에 "는/도/만"이 한 번 더 붙는 꼴(…에게는, …으로도)까지 받는다
+        var re=new RegExp("(^|[^가-힣])"+term+"(에게서|에서|에게|까지|부터|처럼|보다|으로|이라|이란|이야|이며|이고|일세|은|는|이|가|을|를|과|와|의|에|로|라|란|야|며|고|도|만)?(는|도|만|은)?(?=[^가-힣]|$)","g");
+        s=s.replace(re,function(m,pre,jo,jo2,off,str){
+          if(pre==="("&&str.charAt(off+m.length)===")")return m;
+          var first=!seen[term],word=first?plain+"("+term+")":plain;
+          seen[term]=1;
+          // 조사는 소리 나는 마지막 낱말 기준 — 괄호를 붙인 첫 등장은 괄호 안 용어로 고른다
+          var base=first?term:plain;
+          return pre+word+(jo?(PLAIN_JOSA[jo]?josa(base,PLAIN_JOSA[jo]):jo):"")+(jo2||"");});
+      });
+      if(s!==t.nodeValue)t.nodeValue=s;
+    });
+  }
   /* 그려진 결과의 .sj-sec 단락들을 [분류] + 핵심 한 문장 + 펼쳐보기로 바꾼다.
      제목(h3)이 분류가 되고 본문 첫 문장이 핵심으로 올라간다. 도구마다 원고를 고칠 필요 없이
      렌더 끝에서 한 번만 부르면 된다. opts.open = 처음부터 펼쳐 둘 앞쪽 개수. */

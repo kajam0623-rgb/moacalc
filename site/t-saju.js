@@ -255,7 +255,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var seYear=seBefore?nowD.getFullYear()-1:nowD.getFullYear();
       var seSec='<div class="sj-sec"><h3>올해 흐름 (세운) — '+seYear+' '+
         SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</h3>'+
-        '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+')일세. 자네 일간에게는 <b>'+seTg+'</b>에 해당하네.<br><br>'+
+        '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+')일세. 자네에게는 <b>'+seTg+'</b>에 해당하네.<br><br>'+
         DUTXT[seTg]+' '+duFit(seEl,"해")+'<br><br>'+
         '대운이 십 년의 큰 결이라면 세운은 그해의 결일세. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, '+
         '큰 흐름이 얇아도 그해가 받쳐주면 일이 되네. 두 개를 겹쳐 봐야 그해의 무게가 나오는 게야.'+
@@ -318,7 +318,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<br><br>'+
         (st.strong
           ?'모자란 '+mn+'의 자리를 채우고, 넘치는 힘은 밖으로 쓸 길을 열어두게. 그러면 그 힘이 짐이 아니라 연장이 되네.'
-          :'혼자 다 지려 말게. 용신 '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
+          :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
       el.querySelector("#out").innerHTML=
         headline+glance+secFortune+focusBlock()+glossary+
@@ -330,16 +330,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 일간 더 자세히 보기 →</a></p></div>'+
-        '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>격국은 타고난 그릇의 모양일세. '+
+        '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
                   :'자네는 힘이 얇으니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.')+
-        '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 격국은 사주 전체의 뼈대이자 타고난 그릇의 모양입니다.</span></p></div>'+
+        '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운 (신살)</h3><p>따로 튀는 기운이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
-        '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">십이운성은 일간의 기운이 각 자리에서 어느 단계에 있는지를 사람의 일생에 빗대어 본 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
+        '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 명식표의 지지 아래에 각각 표시했습니다.</span></p></div>'+
         gungSec()+
-        '<div class="sj-sec"><h3>타고난 힘의 세기 (신강·신약)</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 힘이 <b>'+(st.strong?"센 편":"약한 편")+'</b>일세. '+
+        '<div class="sj-sec"><h3>타고난 힘의 세기</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 힘이 <b>'+(st.strong?"센 편":"약한 편")+'</b>일세. '+
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.<br><br>'+strengthBand(st.ratio)+'</p></div>'+
         '<div class="sj-sec"><h3>나를 받쳐 주는 기운 (용신) — '+yEl+'</h3><p>'+yongWhy+'<br><br>'+
@@ -390,7 +390,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
       cardData.file="사주팔자";
       bindSave(el,cardData);
-      var outEl=el.querySelector("#out");foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");}});

@@ -320,7 +320,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       cnt.forEach(function(n,e){if(!n)miss.push(e);});
       var ce=CARD_EL[pk.i],r=(ce-de+5)%5,nm=M[pk.i][1];
       var fillEl=-1;picks.forEach(function(x){if(fillEl<0&&miss.indexOf(CARD_EL[x.i])>=0)fillEl=CARD_EL[x.i];});
-      var t1="자네 일간은 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 시주를 뺀 여섯 글자 중에선 "+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
+      var t1="자네를 뜻하는 글자는 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 시주를 뺀 여섯 글자 중에선 "+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
         (miss.length?miss.map(function(e){return SJ_EL[e];}).join("·")+" 기운은 한 글자도 없어.":"다섯 기운이 고루 들어 있어.");
       var t2="'"+pos+"' 자리에 나온 "+nm+josa(nm,"가/이")+" 품은 기운은 "+SJ_EL[ce]+josa(SJ_EL[ce],"야/이야")+". "+REL[r][ti];
       var t3=fillEl>=0?"자네 사주에 비어 있던 "+SJ_EL[fillEl]+" 기운을 이번 패가 채우러 왔네. 이번 일에선 그 빈자리를 메우는 쪽으로 움직이면 한결 수월할 게야."
@@ -421,7 +421,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
         '<div class="bs-opts"><span class="bs-opt save-btn" role="button" tabindex="0">이미지로 저장</span><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
       rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
-      foldAll(rd,{open:1});   // 종합·사주 대조도 같은 접이식으로
+      plainWords(rd);foldAll(rd,{open:1});   // 종합·사주 대조도 같은 접이식으로
       // 한 덩어리씩 천천히 띄운다. 애니메이션이 돌지 않는 환경(백그라운드 탭)에서 숨은 채 남지 않게 끝나면 클래스를 걷는다
       var kids=[].slice.call(rd.children),gap=RM?0:650;
       kids.forEach(function(k,i){k.classList.add("tr-in");k.style.animationDelay=(i*gap)+"ms";});

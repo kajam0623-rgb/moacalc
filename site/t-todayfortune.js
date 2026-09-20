@@ -34,9 +34,9 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       var today=sjPillars(ty,tm,td,null,0,false);
       var rel=sjTenGod(me.d.s,today.d.s),T=TXT[rel],score=T[0];
       var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",bonusArt="",diff=Math.abs(myB-tB);
-      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 일지와 오늘 지지가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
-      else if(diff===6){score-=10;bonusArt="충";bonus="자네 일지와 오늘 지지가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
-      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 일지와 오늘 지지가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
+      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
+      else if(diff===6){score-=10;bonusArt="충";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
+      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
       // 용신 판정: 오늘 일진 천간의 오행이 내 억부용신인지 / 용신을 극하는지
       var st=sjStrength(me),todayEl=SJ_ES[today.d.s],EL_HAN="木火土金水";
       var yongHit=(todayEl===st.yong),yongClash=((todayEl+2)%5===st.yong);
@@ -51,8 +51,8 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       // 내 사주의 신살 — 오늘 하루에 어떻게 쓰이는지 (없으면 오행 균형으로 대체)
       var mySin=sjSinsal(me),sinLine;
       if(mySin.length){var s1=mySin[0];
-        sinLine="자네 명식에는 <b>"+s1+"</b>이 앉아 있네.<br><br>"+SJ_SINSAL_DESC[s1]+"<br><br>그런데 오늘처럼 "+rel+"의 기운이 도는 날엔 이 성질이 겉으로 확 드러나. 모르고 두면 휘둘리고, 알고 쓰면 하루 방향이 달라지네.";}
-      else sinLine="자네 명식에는 두드러진 신살이 없네.<br><br>특정한 기운에 끌려다니지 않는 담백한 짜임이야. 그러니 오늘 같은 날엔 바깥 변수보다 자네가 무엇을 고르느냐가 결과를 더 크게 가르네.";
+        sinLine="자네 사주에는 <b>"+s1+"</b>이 앉아 있네.<br><br>"+SJ_SINSAL_DESC[s1]+"<br><br>그런데 오늘처럼 "+rel+"의 기운이 도는 날엔 이 성질이 겉으로 확 드러나. 모르고 두면 휘둘리고, 알고 쓰면 하루 방향이 달라지네.";}
+      else sinLine="자네 사주에는 두드러진 신살이 없네.<br><br>특정한 기운에 끌려다니지 않는 담백한 짜임이야. 그러니 오늘 같은 날엔 바깥 변수보다 자네가 무엇을 고르느냐가 결과를 더 크게 가르네.";
       var yongLine=yongHit?("오늘 일진 천간이 바로 그 "+SJ_EL[st.yong]+"일세. 용신이 제 발로 들어오는 날이야. 판단이 평소보다 선명하고 몸도 가벼울 걸세. 미뤄둔 결정이 있거든 오늘 내리게."):
         yongClash?("오늘 일진 천간의 "+SJ_EL[todayEl]+" 기운이 자네 용신 "+SJ_EL[st.yong]+josa(SJ_EL[st.yong],"를/을")+" 치는 날일세. 판단이 평소보다 무겁게 느껴지네. 큰 결정은 하루 미루는 게 낫겠어."):
         ("오늘 일진의 "+SJ_EL[todayEl]+" 기운은 용신과 부딪히지도, 돕지도 않는 중립일세. 밀어주지도 막지도 않으니 평소 걸음이면 충분해.");
@@ -60,10 +60,10 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       var un=sjUnseong(me.d.s,tB);
       // 이달의 운세: 이번 달 월간(月干)이 내 일간에 갖는 십성 + 월지-일지 합충
       var mRel=sjTenGod(me.d.s,today.m.s),mB=today.m.b,mNote="";
-      if(myB%4===mB%4&&myB!==mB)mNote=" 자네 일지와 이달 월지가 삼합일세. 사람의 도움이 이 달 내내 힘을 보태네.";
-      else if(Math.abs(myB-mB)===6)mNote=" 자네 일지와 이달 월지가 충이야. 달 전체에 변동수가 깔려 있으니 일정에 여유분을 두게.";
-      else if(sjYukhap(myB)===mB)mNote=" 자네 일지와 이달 월지가 육합일세. 사람 사이가 부드럽게 풀리는 달이야.";
-      else mNote=" 자네 일지와 이달 월지 사이엔 뚜렷한 합충이 없네. 바깥이 흔들어주지 않는다는 뜻이라, 이 달은 자네가 세운 계획이 그대로 결과가 되는 구간일세.";
+      if(myB%4===mB%4&&myB!==mB)mNote=" 자네 태어난 날 글자와 이달 달 글자가 삼합일세. 사람의 도움이 이 달 내내 힘을 보태네.";
+      else if(Math.abs(myB-mB)===6)mNote=" 자네 태어난 날 글자와 이달 달 글자가 충이야. 달 전체에 변동수가 깔려 있으니 일정에 여유분을 두게.";
+      else if(sjYukhap(myB)===mB)mNote=" 자네 태어난 날 글자와 이달 달 글자가 육합일세. 사람 사이가 부드럽게 풀리는 달이야.";
+      else mNote=" 자네 태어난 날 글자와 이달 달 글자 사이엔 뚜렷한 합충이 없네. 바깥이 흔들어주지 않는다는 뜻이라, 이 달은 자네가 세운 계획이 그대로 결과가 되는 구간일세.";
       // 내일 미리보기 — 재방문 훅
       var tmr=new Date(ty,tm-1,td+1),tp=sjPillars(tmr.getFullYear(),tmr.getMonth()+1,tmr.getDate(),null,0,false);
       var tRel=sjTenGod(me.d.s,tp.d.s);
@@ -71,20 +71,20 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
       '<div class="tf-hl">'+T[9]+hlSuf+'</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">자네 일간 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">자네를 뜻하는 글자 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
       '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
-      '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 일지와 오늘 지지는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
+      '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 태어난 날 글자와 오늘 날짜 글자는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
       '<div class="sj-sec"><h3>애정운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[0]+'점</span></h3><p>'+T[6]+'</p></div>'+
       '<div class="sj-sec"><h3>재물운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[1]+'점</span></h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+
       '<div class="sj-sec"><h3>건강운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[3]+'점</span></h3><p>'+T[8]+'</p></div>'+
-      '<div class="sj-sec"><h3>용신으로 보는 오늘</h3><p>'+(yongClash?conceptArt(ART_GEUK[st.yong],SJ_EL[todayEl]+"극"+SJ_EL[st.yong]):(yongHit?conceptArt(ART_SAENG[st.yong],SJ_EL[st.yong]+josa(SJ_EL[st.yong],"를/을")+" 낳는 상생"):""))+'자네 사주는 '+(st.strong?"신강일세. 기운이 두텁다는 뜻이야. 그럴 땐 넘치는 걸 덜어내는 기운을 써야 하는데":"신약일세. 기운이 얇다는 뜻이야. 그럴 땐 나를 받쳐주는 기운을 써야 하는데")+', 자네한텐 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')'+josa(SJ_EL[st.yong],"가/이")+' 그 자리네. 억부용신이라 부르는 것일세.<br><br>'+yongLine+'<br><br>용신 '+SJ_EL[st.yong]+josa(SJ_EL[st.yong],"는/은")+' '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻는 기운이야. 오늘 하루 중에 이런 결의 일에 시간을 좀 쓰게. 그게 자네 빈 데를 채워주네.<br><br>방향은 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 자네를 돕네. 일로 치면 '+SJ_YONG[SJ_EL[st.yong]].job+'이 자네와 결이 맞아.</p></div>'+
-      '<div class="sj-sec"><h3>내 명식이 오늘 쓰는 힘</h3><p>'+sinLine+'</p></div>'+
+      '<div class="sj-sec"><h3>나를 받쳐 주는 기운으로 보는 오늘</h3><p>'+(yongClash?conceptArt(ART_GEUK[st.yong],SJ_EL[todayEl]+"극"+SJ_EL[st.yong]):(yongHit?conceptArt(ART_SAENG[st.yong],SJ_EL[st.yong]+josa(SJ_EL[st.yong],"를/을")+" 낳는 상생"):""))+'자네 사주는 '+(st.strong?"신강일세. 기운이 두텁다는 뜻이야. 그럴 땐 넘치는 걸 덜어내는 기운을 써야 하는데":"신약일세. 기운이 얇다는 뜻이야. 그럴 땐 나를 받쳐주는 기운을 써야 하는데")+', 자네한텐 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')'+josa(SJ_EL[st.yong],"가/이")+' 그 자리네. 억부용신이라 부르는 것일세.<br><br>'+yongLine+'<br><br>용신 '+SJ_EL[st.yong]+josa(SJ_EL[st.yong],"는/은")+' '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻는 기운이야. 오늘 하루 중에 이런 결의 일에 시간을 좀 쓰게. 그게 자네 빈 데를 채워주네.<br><br>방향은 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 자네를 돕네. 일로 치면 '+SJ_YONG[SJ_EL[st.yong]].job+'이 자네와 결이 맞아.</p></div>'+
+      '<div class="sj-sec"><h3>내 사주가 오늘 쓰는 힘</h3><p>'+sinLine+'</p></div>'+
       '<div class="sj-sec"><h3>오늘 기운의 단계 — '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+'오늘 자네 기운은 열두 단계 가운데 <b>'+un+'</b> 자리에 섰네. 하루 동안 몸으로 느끼는 결이 여기서 나오네.<br><br>오늘 날짜의 글자 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 그 자리를 주는 걸세.<br><br>'+SJ_UN_DESC[un]+'<br><br>십이운성이란 게 장생에서 시작해 제왕에서 정점 찍고 절·태·양으로 돌아가는 열두 계단이야. '+un+josa(un,"는/은")+' 그중 '+(SJ_UN.indexOf(un)+1)+'번째 자리, '+(SJ_UN.indexOf(un)<=4?"아직 기운이 차오르는 오르막":SJ_UN.indexOf(un)<=8?"정점을 지나 힘을 거두는 내리막":"비우고 다시 채비하는 자리")+'일세.</p></div>'+
-      '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 자네 일간에게 '+mRel+'일세. '+mRel+'의 기운을 하루로 줄이면 이런 결이 되네.<br><br>'+TXT[mRel][1]+'<br><br>그게 이 달 내내 밑에 깔린다고 보면 되네.'+mNote+'<br><br>절기가 바뀌면 월주도 같이 바뀌네. 달의 흐름은 다음 절입일에 다시 보러 오게.</p></div>'+
+      '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 자네에게 '+mRel+'일세. '+mRel+'의 기운을 하루로 줄이면 이런 결이 되네.<br><br>'+TXT[mRel][1]+'<br><br>그게 이 달 내내 밑에 깔린다고 보면 되네.'+mNote+'<br><br>절기가 바뀌면 월주도 같이 바뀌네. 달의 흐름은 다음 절입일에 다시 보러 오게.</p></div>'+
       '<div class="sj-sec"><h3>오늘 피해야 할 것</h3><p>'+T[4]+'</p></div>'+
-      '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'<br><br>그리고 '+score+'점 말인데, 이건 그냥 나온 숫자가 아닐세. 십성 '+rel+'의 기본값에 자네 일지와 오늘 지지의 관계, 용신 판정을 얹어서 나온 값이야.<br><br>숫자만 보고 좋다 나쁘다 하지 말게. 뭐가 깎았는지를 봐야지. 오늘은 <b>'+SUB_LBL[loI]+'</b>이 제일 낮고('+sub[loI]+'점) <b>'+SUB_LBL[hiI]+'</b>이 제일 높네('+sub[hiI]+'점). '+SUB_LBL[loI]+' 쪽만 조심하고 '+SUB_LBL[hiI]+' 쪽에 힘을 실으면, 오늘 하루는 자네 편일세.</p></div>'+
+      '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'<br><br>그리고 '+score+'점 말인데, 이건 그냥 나온 숫자가 아닐세. 십성 '+rel+'의 기본값에 자네 태어난 날 글자와 오늘 날짜 글자의 관계, 용신 판정을 얹어서 나온 값이야.<br><br>숫자만 보고 좋다 나쁘다 하지 말게. 뭐가 깎았는지를 봐야지. 오늘은 <b>'+SUB_LBL[loI]+'</b>이 제일 낮고('+sub[loI]+'점) <b>'+SUB_LBL[hiI]+'</b>이 제일 높네('+sub[hiI]+'점). '+SUB_LBL[loI]+' 쪽만 조심하고 '+SUB_LBL[hiI]+' 쪽에 힘을 실으면, 오늘 하루는 자네 편일세.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네 억부용신인 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
@@ -95,4 +95,4 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
       askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
-    askWire(el,go,["오늘 일진부터 짚는다","자네 일간과 견주어 본다","일지의 합충과 용신을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}});
+    askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}});
