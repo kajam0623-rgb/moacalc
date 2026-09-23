@@ -59,7 +59,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
       shareBtn()+
-      '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
+      '<p class="note">띠 글자와 오늘 날짜 글자가 뭉치는지, 맞는지, 부딪히는지를 보고 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
     askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
     }});

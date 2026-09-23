@@ -64,7 +64,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       // 첫 화면 헤드라인 — 네 축 중 가장 높은 축이 이 관계의 성격을 요약한다
       var topAx=subs.slice().sort(function(x,y){return y[1]-x[1];})[0];
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+SJ_S[A.d.s]+' 일간 × '+SJ_S[B.d.s]+' 일간 — 두 사람의 명식 비교</div>'+
+      '<div class="tf-id">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
       '<div class="tf-hl">'+SJ_TTI[A.y.b]+'띠 × '+SJ_TTI[B.y.b]+'띠 — '+grade+'. '+topAx[0]+'이 가장 강한 축.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
@@ -77,6 +77,6 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
       shareBtn()+
-      '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
+      '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
     askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}});

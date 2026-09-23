@@ -2247,7 +2247,7 @@
         'background:var(--surface-2);color:var(--ink);font:inherit;font-weight:700;border-radius:10px;cursor:pointer">'+
         'PDF로 저장 · 인쇄</button>'+
         '<div style="color:var(--muted);font-size:12px;margin-top:6px">인쇄 창에서 대상을 “PDF로 저장”으로 고르면 됩니다.</div></div>'+
-        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
+        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 모자라면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
@@ -2607,7 +2607,7 @@
         :ce===top?"다만 이미 넘치는 "+SJ_EL[top]+" 기운을 패가 또 부르니, 한쪽으로 과하게 몰아붙이지는 말게."
         :"패의 기운과 자네 사주가 크게 부딪히지 않으니, 패가 말한 대로 차근차근 가면 되네.";
       return '<div class="sj-sec"><h3>사주와 패를 함께 보면</h3><p>'+t1+'</p><p>'+t2+'</p><p>'+t3+'</p>'+
-        '<p class="note">생년월일로 사주 여섯 글자(시주 제외)를 세워 오행을 셉니다. 카드의 원소는 전통 대응(불·물·흙·바람)을 따르고, 동네보살은 불=화, 물=수, 흙=토, 바람=금으로 옮겨 일간과의 생극을 봅니다.</p></div>';}
+        '<p class="note">생년월일로 사주 여섯 글자(시주 제외)를 세워 오행을 셉니다. 카드의 원소는 전통 대응(불·물·흙·바람)을 따르고, 동네보살은 불=화, 물=수, 흙=토, 바람=금으로 옮겨 나를 뜻하는 글자와 서로 살리는지 누르는지를 봅니다.</p></div>';}
     function read(){
       var R=(typeof TAROT_READ!=="undefined")?TAROT_READ:null;
       if(!R){rd.innerHTML='<p class="note">풀이 원고를 불러오지 못했습니다.</p>';return;}
@@ -2806,7 +2806,7 @@
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네 억부용신인 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
       shareBtn()+
-      '<p class="note">오늘의 일진(일 간지)과 내 일간의 십성 관계, 일지의 삼합·육합·충, 십이운성, 억부용신을 함께 보는 정통 명리 방식입니다. 용신은 신강한 사주면 기운을 덜어내는 오행, 신약한 사주면 돕는 오행을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
+      '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 센 편이면 덜어내는 쪽, 약한 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
@@ -2972,7 +2972,7 @@
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
       shareBtn()+
-      '<p class="note">띠(연지)와 오늘 일진 지지의 삼합·육합·충·형·해 관계로 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
+      '<p class="note">띠 글자와 오늘 날짜 글자가 뭉치는지, 맞는지, 부딪히는지를 보고 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
     askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
     }},
@@ -3043,7 +3043,7 @@
       // 첫 화면 헤드라인 — 네 축 중 가장 높은 축이 이 관계의 성격을 요약한다
       var topAx=subs.slice().sort(function(x,y){return y[1]-x[1];})[0];
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+SJ_S[A.d.s]+' 일간 × '+SJ_S[B.d.s]+' 일간 — 두 사람의 명식 비교</div>'+
+      '<div class="tf-id">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
       '<div class="tf-hl">'+SJ_TTI[A.y.b]+'띠 × '+SJ_TTI[B.y.b]+'띠 — '+grade+'. '+topAx[0]+'이 가장 강한 축.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
@@ -3056,7 +3056,7 @@
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
       shareBtn()+
-      '<p class="note">일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완을 종합한 정통 명리 궁합입니다. 끌림은 일간 관계, 안정은 띠 합충, 소통은 십성, 생활은 일지(배우자궁)에서 나옵니다. 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 명식을 확인해보세요. 참고용.</p>';
+      '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
     askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}},
 
@@ -3121,7 +3121,7 @@
       (notes.length?'<div class="sj-sec"><h3>붙는 자리와 부딪히는 자리</h3><p>'+notes.join(" ")+'</p></div>':"")+
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
-      '<p class="note">병오년의 연간(丙)과 내 일간의 십성, 태세 지지(午)와 내 띠·일지의 합충, 십이운성을 함께 보는 정통 명리 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
+      '<p class="note">올해 하늘 글자(丙)와 나를 뜻하는 글자가 맺는 관계, 올해 아래 글자(午)가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
     askWire(el,go,["병오년 태세를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 

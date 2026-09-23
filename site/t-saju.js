@@ -363,7 +363,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         'background:var(--surface-2);color:var(--ink);font:inherit;font-weight:700;border-radius:10px;cursor:pointer">'+
         'PDF로 저장 · 인쇄</button>'+
         '<div style="color:var(--muted);font-size:12px;margin-top:6px">인쇄 창에서 대상을 “PDF로 저장”으로 고르면 됩니다.</div></div>'+
-        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 신강·신약은 월령·득지 가중으로, 용신은 억부(抑扶) 기준으로 산출했습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
+        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 모자라면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
