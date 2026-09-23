@@ -320,14 +320,14 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       cnt.forEach(function(n,e){if(!n)miss.push(e);});
       var ce=CARD_EL[pk.i],r=(ce-de+5)%5,nm=M[pk.i][1];
       var fillEl=-1;picks.forEach(function(x){if(fillEl<0&&miss.indexOf(CARD_EL[x.i])>=0)fillEl=CARD_EL[x.i];});
-      var t1="자네를 뜻하는 글자는 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 시주를 뺀 여섯 글자 중에선 "+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
+      var t1="자네를 뜻하는 글자는 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 태어난 시각을 뺀 여섯 글자 중에선"+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
         (miss.length?miss.map(function(e){return SJ_EL[e];}).join("·")+" 기운은 한 글자도 없어.":"다섯 기운이 고루 들어 있어.");
       var t2="'"+pos+"' 자리에 나온 "+nm+josa(nm,"가/이")+" 품은 기운은 "+SJ_EL[ce]+josa(SJ_EL[ce],"야/이야")+". "+REL[r][ti];
       var t3=fillEl>=0?"자네 사주에 비어 있던 "+SJ_EL[fillEl]+" 기운을 이번 패가 채우러 왔네. 이번 일에선 그 빈자리를 메우는 쪽으로 움직이면 한결 수월할 게야."
         :ce===top?"다만 이미 넘치는 "+SJ_EL[top]+" 기운을 패가 또 부르니, 한쪽으로 과하게 몰아붙이지는 말게."
         :"패의 기운과 자네 사주가 크게 부딪히지 않으니, 패가 말한 대로 차근차근 가면 되네.";
       return '<div class="sj-sec"><h3>사주와 패를 함께 보면</h3><p>'+t1+'</p><p>'+t2+'</p><p>'+t3+'</p>'+
-        '<p class="note">생년월일로 사주 여섯 글자(시주 제외)를 세워 오행을 셉니다. 카드의 원소는 전통 대응(불·물·흙·바람)을 따르고, 동네보살은 불=화, 물=수, 흙=토, 바람=금으로 옮겨 나를 뜻하는 글자와 서로 살리는지 누르는지를 봅니다.</p></div>';}
+        '<p class="note">생년월일로 태어난 시각을 뺀 사주 여섯 글자를 세워 오행을 셉니다. 카드의 원소는 전통 대응(불·물·흙·바람)을 따르고, 동네보살은 불=화, 물=수, 흙=토, 바람=금으로 옮겨 나를 뜻하는 글자와 서로 살리는지 누르는지를 봅니다.</p></div>';}
     function read(){
       var R=(typeof TAROT_READ!=="undefined")?TAROT_READ:null;
       if(!R){rd.innerHTML='<p class="note">풀이 원고를 불러오지 못했습니다.</p>';return;}
