@@ -2600,7 +2600,7 @@
       cnt.forEach(function(n,e){if(!n)miss.push(e);});
       var ce=CARD_EL[pk.i],r=(ce-de+5)%5,nm=M[pk.i][1];
       var fillEl=-1;picks.forEach(function(x){if(fillEl<0&&miss.indexOf(CARD_EL[x.i])>=0)fillEl=CARD_EL[x.i];});
-      var t1="자네를 뜻하는 글자는 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 태어난 시각을 뺀 여섯 글자 중에선"+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
+      var t1="자네를 뜻하는 글자는 "+SJ_S[p.d.s]+SJ_EL[de]+"일세. 태어난 시각을 뺀 여섯 글자 중에선 "+SJ_EL[top]+" 기운이 "+cnt[top]+"글자로 가장 세고, "+
         (miss.length?miss.map(function(e){return SJ_EL[e];}).join("·")+" 기운은 한 글자도 없어.":"다섯 기운이 고루 들어 있어.");
       var t2="'"+pos+"' 자리에 나온 "+nm+josa(nm,"가/이")+" 품은 기운은 "+SJ_EL[ce]+josa(SJ_EL[ce],"야/이야")+". "+REL[r][ti];
       var t3=fillEl>=0?"자네 사주에 비어 있던 "+SJ_EL[fillEl]+" 기운을 이번 패가 채우러 왔네. 이번 일에선 그 빈자리를 메우는 쪽으로 움직이면 한결 수월할 게야."
