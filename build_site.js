@@ -203,7 +203,7 @@ namematch:["이름 궁합","이름 궁합 테스트","획수 궁합"],
 // 핵심 10개 심화 콘텐츠: 긴 해설 + 예시계산 + 주의사항
 const deep = {
 salary:{
- intro:`연봉 4,000만원이면 매달 통장에 얼마가 들어올까요. 세전 금액을 12로 나눈 333만원이라고 생각했다면 실제와 40만원 넘게 차이가 납니다. 급여에서는 국민연금·건강보험·장기요양보험·고용보험 등 4대보험과 소득세·지방소득세가 먼저 빠져나가기 때문입니다.
+ intro:`연봉 4,000만원의 월 실수령액은 약 291만원입니다(2026년 요율, 부양가족 1명, 비과세 식대 월 20만원 기준). 세전 금액을 12로 나눈 333만원이라고 생각했다면 실제와 40만원 넘게 차이가 납니다. 급여에서는 국민연금·건강보험·장기요양보험·고용보험 등 4대보험과 소득세·지방소득세가 먼저 빠져나가기 때문입니다.
  이 계산기는 2026년 기준 요율(국민연금 4.75%, 건강보험 3.595%, 장기요양 건강보험료의 13.14%, 고용보험 0.9%)과 근로소득공제·인적공제·근로소득세액공제를 반영해 월 실수령액을 계산합니다. 식대 같은 비과세 항목과 부양가족 수까지 넣을 수 있어 실제 급여명세서에 가까운 금액이 나옵니다.
  연봉 협상 전, 이직 조건을 비교할 때, 대출 상환 계획을 세울 때 기준이 되는 것은 세전 연봉이 아니라 이 실수령액입니다.`,
  example:{t:"연봉 4,000만원 · 부양가족 1인 · 비과세 20만원",rows:[["세전 월급","3,333,333원"],["국민연금 (4.75%)","-148,833원"],["건강보험 (3.595%)","-112,643원"],["장기요양 (건보료 13.14%)","-14,801원"],["고용보험 (0.9%)","-28,200원"],["소득세 + 지방소득세","-120,398원"]],res:["월 실수령액","2,908,457원"]},
@@ -422,7 +422,7 @@ installment:{
  "<b>할부는 신용도에 영향을 줄 수 있습니다.</b> 잔액이 부채로 잡힙니다.",
  "<b>카드사마다 계산 방식이 조금씩 다릅니다.</b> 이 값은 근사치입니다."]},
 savegoal:{
- intro:`"2년 안에 1,000만원 모으기" 같은 목표를 세웠다면 매달 얼마씩 넣어야 할까요. 단순히 1,000만원을 24로 나누면 41만 7천원이지만, 이자가 붙는 상품이라면 그보다 조금 적게 넣어도 목표에 도달합니다.
+ intro:`2년 안에 1,000만원을 모으려면 매달 약 41만 7천원을 넣으면 됩니다(1,000만원 ÷ 24개월, 이자 제외). 이자가 붙는 상품이라면 그보다 조금 적게 넣어도 목표에 도달합니다.
  이 계산기는 적립식 복리 공식을 써서 <b>목표 금액에 정확히 도달하는 월 저축액</b>을 역산합니다. 이율을 0으로 두면 단순 나누기와 같은 값이 나옵니다.
  목표 달성의 핵심은 이율보다 <b>기간과 금액</b>입니다. 이율 3%와 4%의 차이보다, 매달 10만원을 더 넣는 것이 훨씬 큰 영향을 줍니다.`,
  example:{t:"목표 1,000만원 · 24개월 · 연 3%",rows:[["단순 나누기(이율 0)","416,667원"],["복리 반영",""]],res:["매달 저축액","404,600원"]},
@@ -431,7 +431,7 @@ savegoal:{
  "<b>우대금리 조건을 확인하세요.</b> 조건 미달 시 기본금리만 적용됩니다.",
  "<b>비상금은 따로 두세요.</b> 목표 저축과 비상금을 섞으면 둘 다 실패합니다."]},
 realreturn:{
- intro:`연 5% 수익을 냈는데 물가가 3% 올랐다면 실제로 얼마를 번 걸까요. 단순히 2%라고 생각하기 쉽지만 정확한 계산은 <b>(1+명목)÷(1+물가) − 1</b>입니다. 이 경우 약 1.94%가 됩니다.
+ intro:`연 5% 수익을 냈는데 물가가 3% 올랐다면 실질 수익률은 약 1.94%입니다. 단순히 2%라고 생각하기 쉽지만 정확한 계산은 <b>(1+명목)÷(1+물가) − 1</b>입니다.
  이것이 <b>실질 수익률</b>입니다. 돈의 액수가 아니라 그 돈으로 살 수 있는 것의 양이 얼마나 늘었는지를 보여줍니다. 예금 이자가 2%인데 물가가 3% 오르면 통장 숫자는 늘어도 실제 구매력은 줄어든 것입니다.
  장기 자산 계획에서는 반드시 실질 수익률로 봐야 합니다. 명목 수익률만 보면 30년 뒤 자산을 크게 과대평가하게 됩니다.`,
  example:{t:"명목 수익률 5% · 물가상승률 3%",rows:[["1.05 ÷ 1.03","1.0194"],["−1",""]],res:["실질 수익률","약 1.94%"]},
@@ -575,7 +575,7 @@ calorie:{
  "<b>먹는 것이 더 중요합니다.</b> 30분 달리기로 태운 열량은 과자 한 봉지 수준입니다.",
  "<b>무리한 운동은 부상 위험이 있습니다.</b> 강도를 서서히 올리세요."]},
 water:{
- intro:`하루에 물을 얼마나 마셔야 할까요. 흔히 "하루 2리터"라고 하지만 체격에 따라 필요량이 다릅니다. 일반적인 기준은 <b>체중 1kg당 30~35ml</b>입니다. 60kg이면 약 1.8~2.1리터입니다.
+ intro:`하루 물 섭취량은 <b>체중 1kg당 30~35ml</b>가 일반적인 기준으로, 60kg이면 약 1.8~2.1리터입니다. 흔히 "하루 2리터"라고 하지만 체격에 따라 필요량이 다릅니다.
  다만 이 양을 전부 물로 마셔야 하는 건 아닙니다. 음식에 포함된 수분이 하루 섭취량의 20~30%를 차지합니다. 국물 요리를 자주 먹는 한국 식단은 특히 그렇습니다.
  운동을 하거나 더운 날, 카페인·알코올을 많이 마신 날에는 더 필요합니다. 소변 색이 연한 노란색이면 적절하고, 진하면 부족하다는 신호입니다.`,
  example:{t:"체중 60kg 기준",rows:[["60 × 33ml",""],["하루 권장","약 1,980ml"],["물컵(200ml)","약 10잔"]],res:["약 2.0리터","식품 수분 포함"]},
@@ -629,7 +629,7 @@ gpa:{
  "<b>재수강 반영 방식이 학교마다 다릅니다.</b> 최종 성적만 반영하는 곳과 평균 내는 곳이 있습니다.",
  "<b>전공 평점을 따로 보는 곳도 많습니다.</b> 대학원·취업에서는 전공 GPA를 요구하기도 합니다."]},
 discount:{
- intro:`정가 5만원짜리에 30% 할인이면 얼마일까요. 할인 금액은 1만 5천원, 최종 가격은 3만 5천원입니다. 계산식은 <b>정가 × (1 − 할인율)</b>입니다.
+ intro:`정가 5만원짜리를 30% 할인하면 최종 가격은 3만 5천원입니다(할인 금액 1만 5천원). 계산식은 <b>정가 × (1 − 할인율)</b>입니다.
  헷갈리는 건 <b>이중 할인</b>입니다. "30% 할인 후 추가 10% 할인"은 40% 할인이 아닙니다. 3만 5천원에서 다시 10%를 빼므로 3만 1,500원, 즉 실질 할인율은 37%입니다. 이중 할인은 항상 단순 합보다 작습니다.
  반대로 "얼마 이상 구매 시 할인"이나 쿠폰이 섞이면 순서에 따라 최종 금액이 달라질 수 있으니 결제 전에 확인하는 것이 좋습니다.`,
  example:{t:"정가 50,000원 · 할인율 30%",rows:[["할인 금액","15,000원"],["50,000 × 0.7",""]],res:["할인가","35,000원"]},
@@ -2027,6 +2027,7 @@ function indexPage(){
   const desc="가입 없는 인터넷 무료사주 사이트. 사주풀이·만세력·타로·궁합부터 오늘의 운세까지, 계산기 포함 "+meta.length+"가지 모두 무료입니다.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="msvalidate.01" content="48BD13CC2AC85521A610E698CEA02DF3">
 <title>무료사주·사주풀이·만세력·타로 사이트 | 동네보살</title>
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${DOMAIN}/">
@@ -2109,8 +2110,15 @@ chunks.forEach(c => c.v = hash8(c.id === "lunar"
 // KST 새벽에 빌드하면 lastmod 가 하루 뒤로 밀린다.
 const KST_NOW = new Date(Date.now() + 9 * 3600 * 1000);
 const BUILD_DAY = KST_NOW.toISOString().slice(0,10);
-const smUrl = path => `<url><loc>${DOMAIN}/${path}</loc><lastmod>${BUILD_DAY}</lastmod></url>`;
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
+// 단, 빌드일을 전 페이지에 일괄로 찍으면 lastmod 가 전부 같아져 구글이 신호를 무시한다.
+// 그래서 페이지의 보이는 글자(스크립트·스타일·태그 제외)가 바뀐 날만 새로 찍는다.
+// 해시와 날짜는 lastmod.json 에 남긴다. 사이트맵 문자열은 페이지를 다 쓴 뒤 채운다.
+// 전 페이지 공통 문구의 "자동 검증 N개"는 테스트가 늘 때마다 바뀌므로 해시에서 뺀다.
+const LASTMOD_FILE = path.join(__dirname, "lastmod.json");
+const pageText = html => html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
+  .replace(/<[^>]+>/g, " ").replace(/자동 검증 \d+개/g, "자동 검증 N개").replace(/\s+/g, " ").trim();
+const smUrl = p => `<url><loc>${DOMAIN}/${p}</loc><lastmod>@@LASTMOD:${p}@@</lastmod></url>`;
+let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
   smUrl("")+"\n"+meta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
@@ -2321,8 +2329,19 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `</channel></rss>`;
 fs.writeFileSync(path.join(OUT,"rss.xml"), rss);
 
+const lastmod = fs.existsSync(LASTMOD_FILE) ? JSON.parse(fs.readFileSync(LASTMOD_FILE, "utf8")) : {};
+sitemap = sitemap.replace(/@@LASTMOD:([^@]*)@@/g, (_, p) => {
+  const file = p || "index.html";
+  const h = hash8(pageText(fs.readFileSync(path.join(OUT, file), "utf8")));
+  if (!lastmod[file] || lastmod[file].h !== h) lastmod[file] = { h, d: BUILD_DAY };
+  return lastmod[file].d;
+});
+fs.writeFileSync(LASTMOD_FILE, JSON.stringify(lastmod, null, 1) + "\n");
 fs.writeFileSync(path.join(OUT,"sitemap.xml"), sitemap);
 fs.writeFileSync(path.join(OUT,"robots.txt"), robots);
+// 빙 웹마스터 도구 소유권 확인 파일(2026-09-23). 지우면 확인이 풀린다
+fs.writeFileSync(path.join(OUT,"BingSiteAuth.xml"),
+  '<?xml version="1.0"?><users><user>48BD13CC2AC85521A610E698CEA02DF3</user></users>');
 // 홈 화면에 추가했을 때 쓰이는 아이콘·이름
 fs.writeFileSync(path.join(OUT,"site.webmanifest"), JSON.stringify({
   name:"동네보살", short_name:"동네보살",

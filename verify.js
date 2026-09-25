@@ -281,7 +281,7 @@ t("모바일 입력창 16px (iOS 확대 방지)", /input,select,textarea[^}]*fon
 const smalls = [...mqBlock.matchAll(/font-size:(\d+(?:\.\d+)?)px/g)].map(m => +m[1]);
 t("모바일 글자 최소 12.5px", smalls.length > 10 && Math.min(...smalls) >= 12.5, true);
 
-t("sitemap에 lastmod", /<lastmod>\$\{BUILD_DAY\}<\/lastmod>/.test(bs), true);
+t("sitemap lastmod는 본문이 바뀐 날(lastmod.json)", /<lastmod>@@LASTMOD:\$\{p\}@@<\/lastmod>/.test(bs) && /lastmod\[file\]\.h !== h/.test(bs), true);
 t("일일 갱신 도구에만 dateModified", /const DAILY = \["todayfortune","horoscope","zodiacfortune"\]/.test(bs) && /ld\.dateModified = BUILD_DAY/.test(bs), true);
 t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.test(bs) && /\$\{s\.ko\} 뜻<\/a>/.test(bs), true);
 
