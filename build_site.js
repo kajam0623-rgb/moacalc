@@ -24,6 +24,7 @@ const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사�
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
 const TAROT_PAGES = require("./content_tarot.js");       // 타로 메이저 아르카나 22장 — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
+const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
 // 페이지별 기준표. 계산 결과가 아니라 고정 해설이라 정적 HTML로 내보낸다.
@@ -888,7 +889,7 @@ const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
-<div><h4>사이트</h4><a href="about.html">동네보살 소개</a><a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><h4>사이트</h4><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
 </footer>
 <div class="foot">© 2026 동네보살</div>`;
@@ -1222,6 +1223,9 @@ function seoPage(o){
     inLanguage:"ko",url:o.url,image:DOMAIN+"/"+o.img,
     publisher:{"@type":"Organization",name:"동네보살",url:DOMAIN+"/"},
     isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"}};
+  // 칼럼처럼 날짜가 있는 글은 작성일과 작성 주체를 밝힌다
+  if (o.date) { ld.datePublished = o.date; ld.dateModified = o.dateModified || o.date;
+    ld.author = {"@type":"Organization",name:"동네보살 편집팀",url:DOMAIN+"/about.html"}; }
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(o.title)}</title>
@@ -1449,6 +1453,37 @@ function conceptPage(c){
     faq:c.faq,
     sibTitle:"다른 개념도 보기", sibs:conceptChips(c.en),
     related:["saju","todayfortune","gunghap","newyear"]});
+}
+// 보살 칼럼 — 한 편씩 따로 쓴 글. 관련 도구를 같이 띄워 읽고 바로 해 볼 수 있게 한다
+const columnChips = cur => '<div class="sibs">'+COLUMN_PAGES.map(c=>c.en===cur
+  ? `<span class="cur">${esc(c.crumb)}</span>` : `<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("")+'</div>';
+const ymdKo = d => { const [y, m, dd] = d.split("-").map(Number); return `${y}년 ${m}월 ${dd}일`; };
+function columnPage(c){
+  return seoPage({
+    crumb:c.crumb,
+    title:`${c.title} | 동네보살`,
+    desc:c.desc,
+    url:`${DOMAIN}/column-${c.en}.html`, img:`img/tool/h-${c.tool}.webp`, hero:`img/tool/h-${c.tool}.webp`,
+    h1:c.title, sub:c.lead,
+    parent:"column.html", parentName:"보살 칼럼",
+    tool:c.tool, tags:c.tags, date:c.date, dateModified:c.dateModified,
+    body:`<p style="color:var(--muted);font-size:12.5px;margin:4px 0 14px">동네보살 편집팀 · ${ymdKo(c.date)} 작성${c.dateModified ? " · " + ymdKo(c.dateModified) + " 고침" : ""}</p>`+
+      c.sections.map(([h, t])=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("")+
+      (c.sources && c.sources.length ? `<section class="guide"><h2>참고한 자료</h2><div class="intro" style="margin-top:0"><p>`+
+        c.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)}</a> — ${esc(x.org)}`).join("<br>")+`</p></div></section>` : ""),
+    faq:c.faq,
+    sibTitle:"다른 칼럼도 보기", sibs:columnChips(c.en),
+    related:c.related});
+}
+function columnHubPage(){
+  return sitePage({
+    id:"column", title:"보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들",
+    h1:"보살 칼럼",
+    sub:`사주·운세를 볼 때 실제로 헷갈리는 것들을 한 편씩 풀었습니다. ${COLUMN_PAGES.length}편`,
+    desc:`태어난 시각을 모를 때, 자정 무렵에 태어났을 때, 띠가 바뀌는 날처럼 사주·운세를 볼 때 헷갈리는 것들을 한 편씩 풀어 쓴 동네보살 칼럼 ${COLUMN_PAGES.length}편입니다.`,
+    body:[["칼럼 목록", COLUMN_PAGES.map(c=>`<a href="column-${c.en}.html"><b>${esc(c.title)}</b></a> — ${esc(c.lead)}`).join("\n")]],
+    faq:[["칼럼은 누가 쓰나요?","동네보살 편집팀이 씁니다. 사주 계산 방식은 사이트의 만세력 엔진과 같은 기준을 따르고, 편마다 작성일을 적어 둡니다."],
+         ["칼럼 내용과 도구 결과가 다르면 어느 쪽을 보나요?","도구 결과가 기준입니다. 칼럼은 계산 방식과 읽는 법을 설명하는 글이고, 틀린 곳을 발견하면 고친 날짜와 함께 바로잡습니다."]]});
 }
 function sipseongPage(s){
   return seoPage({
@@ -2097,6 +2132,9 @@ ${kpis}
 <div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
 <div class="bento">${catCards}</div>
 ${basisHtml}
+${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
+<div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
+  `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
 <div class="sect"><h2>용어부터 알고 보기</h2><p>사주·운세에 나오는 말이 낯설다면 여기부터. 별자리·띠·일간·십성을 하나씩 풀어뒀습니다</p></div>
 <div class="alllist">${conceptHtml}</div>
 <!-- 일주 60은 .idxrow로 늘어놓으면 홈이 두 배로 길어진다. 도구 페이지의 일진 칩 스트립과 같은 방식으로
@@ -2171,6 +2209,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
   smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+
   MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
+  (COLUMN_PAGES.length ? smUrl("column.html")+"\n"+COLUMN_PAGES.map(c=>smUrl("column-"+c.en+".html")).join("\n")+"\n" : "")+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
 
@@ -2242,7 +2281,11 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ${MANSE_Y0}년 1월부터 ${MANSE_Y1}년 12월까지 달마다 한 장씩 있다. URL은 ${DOMAIN}/manse-연도-월.html 형식이고 월은 두 자리다(예: manse-2026-09.html). 132개를 전부 나열하지 않는 이유는 주소가 이 규칙 하나로 정해지기 때문이다. 각 페이지에는 그 달의 절기 두 개와 절입 시각(분 단위), 날짜별 일진 간지, 음력 날짜, 절기·명절, 그 달의 연주·월주가 계산되어 들어 있다. 월주는 달의 앞 절기 시각에 바뀌므로 절입 이전에 태어났다면 앞 달의 월지를 쓴다.
 
 ${MANSE_PAGES.filter(p=>p.y===2026).map(p=>`- [${p.y}년 ${p.mo}월 만세력](${DOMAIN}/manse-${p.en}.html): ${MANSE_SRC.MONTH_TERMS[p.mo].join("·")} · ${MANSE_SRC.MONTH_TEXT[p.mo].ji}월`).join("\n")}
+${COLUMN_PAGES.length ? `
+## 보살 칼럼 (${COLUMN_PAGES.length}) — 사주·운세 볼 때 헷갈리는 것들
 
+${COLUMN_PAGES.map(c=>`- [${c.title}](${DOMAIN}/column-${c.en}.html): ${c.lead}`).join("\n")}
+` : ""}
 ## 사이트 정보
 
 ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`).join("\n")}
@@ -2326,6 +2369,10 @@ fs.writeFileSync(path.join(OUT,"manse-howto.html"), manseHowtoPage());
 ILJU_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"ilju-"+p.en+".html"), iljuPage(p)));
 fs.writeFileSync(path.join(OUT,"iljin.html"), iljinHubPage());
 SITE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,p.id+".html"), sitePage(p)));
+if (COLUMN_PAGES.length) {
+  fs.writeFileSync(path.join(OUT,"column.html"), columnHubPage());
+  COLUMN_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"column-"+c.en+".html"), columnPage(c)));
+}
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 /* RSS 2.0 — 네이버 서치어드바이저가 사이트맵과 별개로 받는 수집 경로.
    전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
@@ -2343,6 +2390,7 @@ const rssRows = [
   [DOMAIN + "/manse.html", "무료 만세력 — 사주 만세력 계산기", "생년월일시로 사주 여덟 글자와 대운을 계산하는 무료 만세력. 절기는 태양황경으로 직접 계산합니다."],
   [DOMAIN + "/manse-howto.html", "만세력 보는법 — 원국표 읽는 여섯 단계", "만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운을 예시로 풀었습니다."],
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
+  ...COLUMN_PAGES.map(c => [`${DOMAIN}/column-${c.en}.html`, c.title, c.desc]),
   // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
   // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
   ...(() => {

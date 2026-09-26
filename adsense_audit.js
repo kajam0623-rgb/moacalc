@@ -31,7 +31,7 @@ const typeOf = id => {
   if (TOOL_CAT[id]) return TOOL_CAT[id] === "재미·운세" ? "운세도구" : id === "lunar" ? "음력" : "계산기";
   if (/^manse-\d{4}-\d{2}$/.test(id)) return "월력";
   const m = id.match(/^([a-z]+)-/); if (m) return { iljin: "일진", ilju: "일주", tarot: "타로", star: "별자리", zodiac: "띠", ilgan: "일간", sipseong: "십성", concept: "개념", column: "칼럼", manse: "만세력안내" }[m[1]] || m[1];
-  return { index: "홈", "404": "404", about: "소개", privacy: "약관", terms: "약관", iljin: "일진", manse: "만세력안내" }[id] || "기타";
+  return { index: "홈", "404": "404", about: "소개", privacy: "약관", terms: "약관", iljin: "일진", manse: "만세력안내", column: "칼럼목록" }[id] || "기타";
 };
 const TEMPLATED = new Set(["월력", "일진", "일주"]);
 
