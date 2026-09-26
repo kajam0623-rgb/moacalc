@@ -83,6 +83,12 @@ const CATS = ["재미·운세","급여·노동","금융","부동산·세금","�
 const meta = [];
 const re = /\{id:"([^"]+)",cat:"([^"]+)",icon:"[^"]*",name:"([^"]+)",desc:"([^"]+)"/g;
 let m; while ((m = re.exec(toolsArr))) meta.push({ id:m[1], cat:m[2], name:m[3], desc:m[4] });
+// 애드센스 "가치가 별로 없는 콘텐츠" 반려(2026-09) 대응: 검색에 내는 도구는 운세 9개와 음력 변환뿐이다.
+// 생활·금융 계산기 45개는 페이지는 남기되 noindex 로 빼고, 메뉴·홈·푸터·사이트맵·RSS 에서 링크하지 않는다.
+// 음력 변환은 분류가 "생활"이지만 만세력과 한 묶음이라 운세 쪽에 세운다. 검사: adsense_audit.js --phase=2
+const PUB_TOOL = t => t.cat === "재미·운세" || t.id === "lunar";
+const pubMeta = meta.filter(PUB_TOOL);
+const PUB_CATS = ["재미·운세"];
 
 // 페이지별 고유 소개문 (SEO 본문)
 const intro = {
@@ -853,7 +859,7 @@ const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
 const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
-<div><h4>많이 찾는 도구</h4><a href="salary.html">실수령액 계산기</a><a href="severance.html">퇴직금 계산기</a><a href="loan.html">대출 이자 계산기</a><a href="charcount.html">글자수 세기</a></div>
+<div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
 <div><h4>사이트</h4><a href="about.html">동네보살 소개</a><a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
 </footer>
@@ -872,7 +878,7 @@ const adSlot = () => (ADSENSE_CLIENT && ADSENSE_SLOT)
 
 // 전체 도구 내부링크 네비 (모든 페이지에 삽입 → SEO 링크)
 function siteNav(currentId){
-  return '<nav class="sitenav">'+CATS.map(function(c){
+  return '<nav class="sitenav">'+PUB_CATS.map(function(c){
     var items=catItems(c);
     return '<h2>'+c+'</h2>'+items.map(function(t){
       return t.id===currentId ? '<span class="cur">'+t.name+'</span>' : '<a href="'+t.id+'.html">'+t.name+'</a>';
@@ -928,14 +934,15 @@ function toolPage(t){
   const faqHtml = f ? '<section class="faq"><h2>자주 묻는 질문</h2>'+f.map(x=>'<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")+'</section>' : '';
   const faqLd = f ? '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",mainEntity:f.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>' : '';
   // 홈 → 분류 → 도구. 분류는 홈의 해당 묶음(#c-…)으로 보낸다.
+  const crumbCat = PUB_TOOL(t) ? "재미·운세" : t.cat; // 음력 변환은 홈에서 운세 묶음에 있다
   const crumb = crumbLd([["홈", DOMAIN+"/"],
-                         [t.cat, `${DOMAIN}/#c-${CAT_IMG[t.cat]}`],
+                         [crumbCat, `${DOMAIN}/#c-${CAT_IMG[crumbCat]}`],
                          [t.name, url]]);
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(desc)}">
-<link rel="canonical" href="${url}">
+<link rel="canonical" href="${url}">${PUB_TOOL(t) ? "" : '\n<meta name="robots" content="noindex, follow">'}
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">${ogTag(t.id)}
 <link rel="stylesheet" href="style.css?v=${styleV}">
@@ -961,10 +968,10 @@ ${guideHtml}${elemHtml}${exHtml}${cauHtml}${faqHtml}
 ${adSlot()}
 </main>
 <aside class="rail">
-<div class="rcard"><img class="rart" width="1200" height="800" src="img/${CAT_IMG[t.cat]}.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · ${t.cat}</h4>
-${meta.filter(x=>x.cat===t.cat&&x.id!==t.id).slice(0,6).map(x=>`<a href="${x.id}.html">${x.name}<span>→</span></a>`).join("")}</div>
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/${CAT_IMG[crumbCat]}.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · ${crumbCat}</h4>
+${(PUB_TOOL(t) ? pubMeta : meta.filter(x=>x.cat===t.cat)).filter(x=>x.id!==t.id).slice(0,6).map(x=>`<a href="${x.id}.html">${x.name}<span>→</span></a>`).join("")}</div>
 <div class="rcard"><h4>많이 찾는 도구</h4>
-${["todayfortune","horoscope","zodiacfortune","saju","salary","severance","loan"].filter(id=>id!==t.id).slice(0,6).map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
+${["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","newyear"].filter(id=>id!==t.id).slice(0,6).map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 </aside>
 </div>
 ${siteNav(t.id)}
@@ -1209,7 +1216,7 @@ ${adSlot()}
 <div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><h4>함께 보면 좋은 운세</h4>
 ${o.related.map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 <div class="rcard"><h4>많이 찾는 도구</h4>
-${["todayfortune","saju","gunghap","salary","severance"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
+${["todayfortune","saju","gunghap","tarot","horoscope"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 </aside>
 </div>
 ${siteNav(null)}
@@ -1936,8 +1943,8 @@ ${footer}
 }
 
 const FUN_TOP=["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","stargunghap"]; // 검색량 높은 순
-const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다
-  const items = meta.filter(t => t.cat===c);
+const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운다. 음력 변환도 이 묶음 끝에 붙인다(PUB_TOOL)
+  const items = meta.filter(t => t.cat===c || (c==="재미·운세" && t.id==="lunar"));
   if (c !== "재미·운세") return items;
   return items.slice().sort((a,b) => {
     const ia = FUN_TOP.indexOf(a.id), ib = FUN_TOP.indexOf(b.id);
@@ -1945,25 +1952,25 @@ const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운�
   });
 };
 function indexPage(){
-  const rows = CATS.map(function(c){
+  const rows = PUB_CATS.map(function(c){
     var items=catItems(c);
     return '<section class="grp wash'+(c==="재미·운세"?" fun":"")+'" id="c-'+CAT_IMG[c]+'"><div class="cat" data-n="'+items.length+'"><span>'+c+'</span></div>'+items.map(function(t){
       return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
     }).join("")+'</section>';
   }).join("");
   const BENTO=["b-full","b-wide","b-wide","","",""];
-  const catCards = CATS.map(function(c,ci){
+  const catCards = PUB_CATS.map(function(c,ci){
     var items=catItems(c);
     var top=items.slice(0,c==="재미·운세"?6:4);
     return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
-      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" width="1200" height="800" alt="'+c+' 계산기" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
+      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" width="1200" height="800" alt="'+c+' 도구" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
       '<div class="body">'+top.map(function(t){
         return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-a">→</span></a>';}).join("")+'</div>'+
       '<a class="more" href="#c-'+CAT_IMG[c]+'">'+c+' '+items.length+'개 전체 보기 →</a></article>';
   }).join("");
   const kpis = `<div class="kpis">
-<div class="kpi wash"><div class="kl"><i></i>도구</div><div class="kv">${meta.length}</div><div class="kd">계산기 · 운세 <b>전부 무료</b></div></div>
-<div class="kpi wash"><div class="kl"><i></i>기준연도</div><div class="kv">2026</div><div class="kd">세율 <b>최신 반영</b></div></div>
+<div class="kpi wash"><div class="kl"><i></i>도구</div><div class="kv">${pubMeta.length}</div><div class="kd">사주 · 운세 <b>전부 무료</b></div></div>
+<div class="kpi wash"><div class="kl"><i></i>절기</div><div class="kv">24</div><div class="kd">태양황경 <b>직접 계산</b></div></div>
 <div class="kpi wash"><div class="kl"><i></i>가입</div><div class="kv">0</div><div class="kd">로그인 없이 <b>바로 사용</b></div></div>
 <div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
 </div>`;
@@ -2001,7 +2008,6 @@ function indexPage(){
     ["만세력","태양황경을 직접 계산","절기와 입춘 경계를 그 해의 실제 시각으로 가릅니다. 날짜표를 찾아보는 방식이 아니라 경계일에 태어난 경우도 어긋나지 않습니다."],
     ["시주","진태양시 30분 보정","한국 표준시는 동경 135도 기준이라 한반도의 실제 남중 시각과 약 30분 차이가 납니다. 시주를 세울 때 이 차이를 보정합니다."],
     ["음력","한국천문연구원 기준","음력 양력 변환은 KASI 기준 데이터를 씁니다. 윤달이 든 해도 그대로 처리됩니다."],
-    ["계산기","2026년 기준","4대보험 요율과 소득세, 취득세는 2026년 기준으로 반영했습니다."],
     ["검증","자동 검사 "+VERIFY_PASS+"개","배포할 때마다 계산 로직을 전부 다시 검사하고, 하나라도 실패하면 배포가 중단됩니다."],
   ];
   const basisHtml = '<div class="sect"><h2>무엇으로 계산하나</h2><p>운세는 랜덤 문구가 아닙니다. 같은 입력이면 언제 눌러도 같은 결과가 나옵니다</p></div>'+
@@ -2013,18 +2019,18 @@ function indexPage(){
 
   // 홈 전용 FAQ — 도구 페이지 FAQ와 겹치지 않는 것만.
   const HOME_FAQ = [
-    ["정말 전부 무료인가요?",meta.length+"가지 모두 무료입니다. 회원가입도 로그인도 없고 결제 단계가 아예 없습니다. 결과를 더 보려면 돈을 내라는 구간도 없습니다."],
+    ["정말 전부 무료인가요?",pubMeta.length+"가지 모두 무료입니다. 회원가입도 로그인도 없고 결제 단계가 아예 없습니다. 결과를 더 보려면 돈을 내라는 구간도 없습니다."],
     ["생년월일을 넣으면 어디에 저장되나요?","입력한 값은 브라우저 안에만 남습니다. 다음에 왔을 때 다시 넣지 않아도 되도록 저장해 두는 것이고, 서버로 보내지 않습니다. 브라우저 기록을 지우면 함께 사라집니다."],
     ["운세가 랜덤으로 나오는 건 아닌가요?","아닙니다. 생년월일과 날짜로 사주 여덟 글자와 일진을 세운 뒤 그 관계를 읽어 문장을 고릅니다. 같은 사람이 같은 날 몇 번을 눌러도 결과가 같습니다."],
     ["다른 사주 사이트와 결과가 다른데요?","절기 경계와 진태양시를 어떻게 처리하느냐에서 갈립니다. 절기가 바뀌는 날 태어났거나 자시·오시처럼 경계 시각에 태어났으면 사이트마다 월주나 시주가 달라질 수 있습니다."],
-    ["결과가 매일 바뀌나요?","운세는 매일 바뀝니다. 날에 붙는 간지인 일진이 자정마다 넘어가기 때문입니다. 실수령액이나 퇴직금 같은 계산기는 입력이 같으면 언제나 같은 값이 나옵니다."],
+    ["결과가 매일 바뀌나요?","운세는 매일 바뀝니다. 날에 붙는 간지인 일진이 자정마다 넘어가기 때문입니다. 사주 여덟 글자와 만세력은 태어난 순간으로 정해지므로 입력이 같으면 언제나 같은 값이 나옵니다."],
   ];
   const homeFaqHtml = '<div class="sect"><h2>자주 묻는 질문</h2><p>처음 오셨다면 여기부터</p></div>'+
     '<section class="faq" style="margin-top:0">'+HOME_FAQ.map(x=>
       '<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")+'</section>';
   const homeFaqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:HOME_FAQ.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
-  const desc="가입 없는 인터넷 무료사주 사이트. 사주풀이·만세력·타로·궁합부터 오늘의 운세까지, 계산기 포함 "+meta.length+"가지 모두 무료입니다.";
+  const desc="가입 없는 인터넷 무료사주 사이트. 사주풀이·만세력·타로·궁합부터 오늘의 운세까지 "+pubMeta.length+"가지 모두 무료입니다.";
   return `<!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="msvalidate.01" content="48BD13CC2AC85521A610E698CEA02DF3">
@@ -2035,13 +2041,13 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span><span class="meta">2026 · ${meta.length} TOOLS</span></div>
+<header class="hero"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span><span class="meta">2026 · ${pubMeta.length} TOOLS</span></div>
 <div class="hero-wrap">
 <div>
 <h1 class="hero-h">990원도 아까워~<br>무료로 사주, 운세, 궁합<br><b>제대로 봐주는 '동네보살'</b></h1>
-<div class="hero-sub">생일만 넣으면 바로. 별자리 운세·타로부터 실수령액·퇴직금 계산기까지 ${meta.length}가지.</div>
+<div class="hero-sub">생일만 넣으면 바로. 사주·만세력부터 별자리 운세·타로까지 ${pubMeta.length}가지.</div>
 <div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
-<nav class="pop"><a class="f" href="manse.html">✦ 만세력</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="salary.html">실수령액</a><a href="severance.html">퇴직금</a><a href="loan.html">대출이자</a></nav>
+<nav class="pop"><a class="f" href="manse.html">✦ 만세력</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="saju.html">사주팔자</a><a href="iljin.html">오늘 일진</a><a href="lunar.html">음력 변환</a></nav>
 </div>
 <img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
 </div>
@@ -2064,7 +2070,7 @@ ${basisHtml}
 <section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
 <p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 성격·배우자 자리·여자와 남자의 차이를 일주마다 한 장씩 풀었습니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
 ${iljuChips(null)}</section>
-<div class="sect"><h2>전체 ${meta.length}개</h2><p>이름으로 검색하면 더 빠릅니다</p></div>
+<div class="sect"><h2>전체 ${pubMeta.length}개</h2><p>이름으로 검색하면 더 빠릅니다</p></div>
 <div class="alllist">${rows}</div>
 ${homeFaqHtml}
 ${adSlot()}
@@ -2119,7 +2125,7 @@ const pageText = html => html.replace(/<script[\s\S]*?<\/script>/gi, " ").replac
   .replace(/<[^>]+>/g, " ").replace(/자동 검증 \d+개/g, "자동 검증 N개").replace(/\s+/g, " ").trim();
 const smUrl = p => `<url><loc>${DOMAIN}/${p}</loc><lastmod>@@LASTMOD:${p}@@</lastmod></url>`;
 let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
-  smUrl("")+"\n"+meta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
+  smUrl("")+"\n"+pubMeta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
@@ -2209,7 +2215,7 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 
 ## 주의
 
-운세 풀이는 참고 자료다. 건강·투자·법률 판단의 근거로 사용하지 말 것. 계산기 결과는 공개 요율 기준 추정치이며 실제 금액과 다를 수 있다.
+운세 풀이는 참고 자료다. 건강·투자·법률 판단의 근거로 사용하지 말 것.
 `;
 
 // CSS + 페이지 전용 추가 스타일
@@ -2291,7 +2297,7 @@ fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
    전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
    추려 100개로 묶는다. 피드가 길수록 좋은 것이 아니라, 무엇이 새것인지
    알려주는 것이 목적이다. */
-const RSS_DESC = "무료 사주팔자 만세력과 오늘의 운세·별자리 운세·띠별 운세, 그리고 실수령액·퇴직금·대출 계산기까지. 태양황경을 직접 계산하는 만세력 엔진으로 풀이합니다.";
+const RSS_DESC = "무료 사주팔자 만세력과 오늘의 운세·별자리 운세·띠별 운세·타로·궁합. 태양황경을 직접 계산하는 만세력 엔진으로 풀이합니다.";
 const rssItem = (loc, title, desc) =>
   "<item><title>" + esc(title) + "</title>" +
   "<link>" + loc + "</link><guid isPermaLink=\"true\">" + loc + "</guid>" +
@@ -2299,7 +2305,7 @@ const rssItem = (loc, title, desc) =>
   "<description>" + esc(desc) + "</description></item>";
 
 const rssRows = [
-  [DOMAIN + "/", "동네보살 — 무료 사주·운세와 계산기 " + meta.length + "가지", RSS_DESC],
+  [DOMAIN + "/", "동네보살 — 무료 사주·운세 " + pubMeta.length + "가지", RSS_DESC],
   [DOMAIN + "/manse.html", "무료 만세력 — 사주 만세력 계산기", "생년월일시로 사주 여덟 글자와 대운을 계산하는 무료 만세력. 절기는 태양황경으로 직접 계산합니다."],
   [DOMAIN + "/manse-howto.html", "만세력 보는법 — 원국표 읽는 여섯 단계", "만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운을 예시로 풀었습니다."],
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
