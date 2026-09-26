@@ -100,6 +100,7 @@ gate(3, "밖의 월력이 사이트맵에 없다", manse.filter(p => !inKeep(p.i
 
 gate(4, `음력 페이지 본문 ${LUNAR_MIN}자 이상`, byId.lunar && byId.lunar.chars >= LUNAR_MIN ? [] : [`lunar ${byId.lunar ? byId.lunar.chars : "없음"}자`]);
 
+gate(5, `얇은 노출 페이지(<${THIN_MIN}자)가 없다`, thin.map(p => `${p.id}(${p.chars})`));
 const cols = indexable.filter(p => p.type === "칼럼");
 gate(5, `칼럼 ${COLUMN_MIN.count}편 이상`, cols.length >= COLUMN_MIN.count ? [] : [`${cols.length}편`]);
 gate(5, `칼럼마다 ${COLUMN_MIN.chars}자 이상`, cols.filter(p => p.chars < COLUMN_MIN.chars).map(p => `${p.id}(${p.chars})`));
