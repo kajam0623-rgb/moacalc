@@ -116,14 +116,16 @@ for (const r of results) {
 // ---- 라이브 표본 확인 (Cloudflare IP 고정: 이 PC DNS 캐시가 옛 Vercel IP 를 들고 있을 수 있다)
 function get(url) {
   return new Promise((res, rej) => https.get(url, { lookup: (h, o, cb) => o && o.all ? cb(null, [{ address: "104.21.25.207", family: 4 }]) : cb(null, "104.21.25.207", 4) }, r => {
-    let d = ""; r.on("data", c => d += c); r.on("end", () => res({ status: r.statusCode, server: r.headers.server, body: d }));
+    let d = ""; r.on("data", c => d += c); r.on("end", () => res({ status: r.statusCode, server: r.headers.server, age: r.headers.age, cache: r.headers["cf-cache-status"], body: d }));
   }).on("error", rej));
 }
 async function live() {
   console.log("\n== 라이브 표본");
   const sm = await get(`${DOMAIN}/sitemap.xml`);
   const liveIds = new Set([...sm.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1].replace(DOMAIN + "/", "").replace(/\.html$/, "") || "index"));
-  console.log(`사이트맵 ${sm.status} ${sm.server} · 주소 ${liveIds.size}개 (로컬 ${smIds.size}개) · 로컬과 ${[...smIds].every(i => liveIds.has(i)) && liveIds.size === smIds.size ? "같음" : "다름"}`);
+  const same = [...smIds].every(i => liveIds.has(i)) && liveIds.size === smIds.size;
+  console.log(`${same ? "일치" : "불일치"} 사이트맵 ${sm.status} ${sm.server} · 주소 ${liveIds.size}개 (로컬 ${smIds.size}개) · age=${sm.age ?? "-"} cache=${sm.cache ?? "-"}`);
+  if (!same) fail++;
   for (const id of ["salary", "bmi", "manse-2020-05", "manse-2026-09", "lunar", "saju"].filter(i => byId[i])) {
     const r = await get(`${DOMAIN}/${id}.html`);
     const rb = (r.body.match(/<meta name="robots" content="([^"]+)"/i) || [])[1] || "(없음)";
