@@ -497,7 +497,8 @@ t("저장 버튼 배경이 .tool button 을 특이도로 이김", /background:\s
 
 // 월력 페이지가 빌드에 연결됐는지 — 사이트맵에 빠지면 크롤러가 못 찾는다
 t("build_site에 MANSE_PAGES 존재", /const MANSE_PAGES\s*=/.test(bs), true);
-t("사이트맵에 월력 포함", /MANSE_PAGES\.map\(p=>smUrl\("manse-/.test(bs), true);
+// 애드센스 반려 대응(2026-09): 월력은 MANSE_KEEP(2025~2027)만 사이트맵에 낸다
+t("사이트맵에 월력(MANSE_KEEP 범위) 포함", /MANSE_PAGES\.filter\(MANSE_KEEP\)\.map\(p=>smUrl\("manse-/.test(bs), true);
 
 // 일주 60은 일진 60과 같은 간지를 쓴다. 제목이 겹치면 자기잠식이 난다.
 t("build_site에 ILJU_PAGES 존재", /const ILJU_PAGES\s*=/.test(bs), true);

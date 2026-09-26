@@ -1057,6 +1057,10 @@ const MANSE_Y0 = 2020, MANSE_Y1 = 2030;
 const MANSE_PAGES = [];
 for (let y = MANSE_Y0; y <= MANSE_Y1; y++)
   for (let mo = 1; mo <= 12; mo++) MANSE_PAGES.push({ y, mo, en: `${y}-${String(mo).padStart(2,"0")}` });
+// 애드센스 반려 대응(2026-09): 틀에 날짜만 바꾼 월력 132장이 사이트의 3분의 1이었다.
+// 검색에는 지금 앞뒤 3년(2025~2027) 36장만 내고 나머지는 noindex·사이트맵 제외. 페이지와 링크는 남긴다.
+// 검사: adsense_audit.js --phase=3 (MANSE_KEEP 범위를 바꾸면 그쪽 상수도 같이 바꾼다)
+const MANSE_KEEP = p => p.en >= "2025-01" && p.en <= "2027-12";
 
 // JD(KST) → KST 달력. 절기 시각 표시에 쓴다. verify.js의 kst()와 같은 역변환이다.
 function jdToKst(jd){
@@ -1193,7 +1197,7 @@ function seoPage(o){
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(o.title)}</title>
 <meta name="description" content="${esc(o.desc)}">
-<link rel="canonical" href="${o.url}">
+<link rel="canonical" href="${o.url}">${o.noindex ? '\n<meta name="robots" content="noindex, follow">' : ""}
 <meta property="og:type" content="article"><meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.desc)}"><meta property="og:url" content="${o.url}">
 <meta property="og:image" content="${DOMAIN}/${o.img}">
@@ -1516,6 +1520,7 @@ function mansePage(p){
   }).join("");
 
   return seoPage({
+    noindex: !MANSE_KEEP(p),
     crumb:`${p.y}년 ${p.mo}월 만세력`,
     title:`${p.y}년 ${p.mo}월 만세력 — 일진·음력·절기 | 동네보살`,
     desc:`${p.y}년 ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
@@ -2136,7 +2141,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
   smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+
-  MANSE_PAGES.map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
+  MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
 
@@ -2315,7 +2320,7 @@ const rssRows = [
     const now = new Date(Date.now() + 9 * 3600 * 1000);   // KST 기준 현재 달
     const i = MANSE_PAGES.findIndex(p => p.y === now.getUTCFullYear() && p.mo === now.getUTCMonth() + 1);
     const at = i < 0 ? 0 : Math.max(0, i - 6);
-    return MANSE_PAGES.slice(at, at + 24);
+    return MANSE_PAGES.slice(at, at + 24).filter(MANSE_KEEP); // noindex 월력은 피드에 넣지 않는다
   })().map(p => [
     `${DOMAIN}/manse-${p.en}.html`, `${p.y}년 ${p.mo}월 만세력`,
     `${p.y}년 ${p.mo}월 날짜별 일진과 음력, ${MANSE_SRC.MONTH_TERMS[p.mo].join("·")} 절기 시각.`]),

@@ -85,6 +85,7 @@ const gate = (phase, name, bad) => results.push({ phase, name, ok: bad.length ==
 gate(0, "사이트맵 주소가 실제 페이지로 있다", [...smIds].filter(id => !byId[id]));
 gate(0, "사이트맵에 noindex 페이지가 없다", [...smIds].filter(id => byId[id] && byId[id].noindex));
 gate(0, "노출 페이지의 canonical 이 자기 주소다", indexable.filter(p => p.canon !== `${DOMAIN}/${p.id === "index" ? "" : p.f}`).map(p => p.id));
+gate(0, "RSS·llms.txt 에 noindex 페이지 주소가 없다", pages.filter(p => p.noindex && (rss.includes(`/${p.f}<`) || rss.includes(`/${p.f}"`) || llms.includes(`/${p.f})`))).map(p => p.id));
 
 const calcs = pages.filter(p => p.type === "계산기").map(p => p.id);
 gate(2, "계산기 45개가 모두 noindex", calcs.filter(id => !byId[id].noindex).concat(calcs.length === 45 ? [] : [`계산기 수 ${calcs.length}`]));
