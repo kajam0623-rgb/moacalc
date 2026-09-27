@@ -1,7 +1,7 @@
 TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
-    ST_KO.map(function(n,i){return '<option value="'+i+'">'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
+    ST_KO.map(function(n,i){var qs=(location.search.match(/[?&]s=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qs!=null&&+qs===i?" selected":"")+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function hbar(n,v){return rateBar(n,v);}
@@ -12,13 +12,13 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
         savePrefs({birth:el.querySelector("#d").value});}
       track("fortune_view",{tool:"horoscope"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-      var sun=stOf(ty,tm,td),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+      // 점수는 hsScore 한 곳에서 — 홈 "오늘의 별자리 순위"와 같은 값
+      var hs=hsScore(mine,now),sun=hs.sun,dist=hs.dist,A=hs.A;
       var ele=ST_ELE[mine%4],ruler=ST_RULER[mine],fri=ST_ELE_RULERS[ele];
-      var score=A[0],wd=now.getDay(),wdr=WD_RULER[wd],rnote="";
-      if(wdr===ruler){score+=7;rnote="오늘은 "+WD_KO[wd]+"요일 — 내 수호성 "+ruler+"이 다스리는 날입니다. 하루 중 가장 나다운 판단이 나옵니다.";}
-      else if(fri.indexOf(wdr)>=0){score+=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
-      else{score-=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
-      score=Math.max(35,Math.min(98,score));
+      var score=hs.score,wd=now.getDay(),wdr=hs.wdr,rnote="";
+      if(hs.rk===2){rnote="오늘은 "+WD_KO[wd]+"요일 — 내 수호성 "+ruler+"이 다스리는 날입니다. 하루 중 가장 나다운 판단이 나옵니다.";}
+      else if(hs.rk===1){rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
+      else{rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
       var sub=A[6].map(function(v){return Math.max(30,Math.min(99,score+v));});
       var week="";

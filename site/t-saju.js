@@ -51,6 +51,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
+    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value="'+escH(loadPrefs().name||"")+'"></div>'+
     '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
@@ -67,7 +68,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
-      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value});
+      var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
+      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value,name:nm});
       track("fortune_view",{tool:"saju"});
       var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
@@ -308,6 +310,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var img=ILG_IMG[ds],need=st.strong?YONG_OUT[yEl]:YONG_IN[yEl];
       var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
+        (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
         (st.strong?"센 편":"약한 편")+' · 필요한 기운 '+yEl+'</div></div>';
@@ -393,7 +396,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       function elHexS(i){return EL_HEX[SJ_EL[SJ_ES[i]]];}
       function elHexB(i){return EL_HEX[SJ_EL[SJ_EB[i]]];}
       var ilP=ILGAN[ds].split("<br><br>").map(function(t){return t.replace(/<[^>]+>/g,"").trim();});
-      var cardData={tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간 · "+p.tti+"띠 · 용신 "+yEl,
+      var cardData={tool:(nm?nm+" 님의 사주":"사주팔자 만세력"),ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간 · "+p.tti+"띠 · 용신 "+yEl,
         headline:headTxt.replace(/<br>/g,"\n"),
         body:ilP[0]+" "+ilP[1]+" "+(st.strong
           ?"자네는 기운이 넘치는 사람일세. 여태 남한테 기대지 않고 제 힘으로 밀고 온 값이 그 안에 있어."

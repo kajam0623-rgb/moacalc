@@ -2152,6 +2152,8 @@ function indexPage(){
 <nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
 <div class="sect"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="zrank"><li class="zr-wait">순위를 매기는 중…</li></ol>
+<div class="sect"><h2>오늘의 별자리 순위</h2><p>오늘 태양의 자리와 요일의 별로 매긴 12별자리 순위</p></div>
+<ol class="zrank" id="srank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
 <nav class="situ"><a href="tarot.html"><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></a><a href="gunghap.html"><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></a><a href="saju.html"><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></a><a href="newyear.html"><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></a><a href="todayfortune.html"><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></a></nav>
 <div class="sect"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
@@ -2168,7 +2170,8 @@ ${footer}
 ${homeFaqLd}
 <script>(function(){var box=document.getElementById("today");if(!box)return;var form=box.innerHTML;
 function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
-function show(b){load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
+var midT=null;
+function show(b){clearTimeout(midT);var nx=new Date();nx.setHours(24,0,5,0);midT=setTimeout(function(){show(b);},nx-new Date());load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
 box.innerHTML='<div class="today-card"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
 '<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
 '<div class="today-btns"><a class="p" href="todayfortune.html#go">오늘 운세 자세히</a><a href="saju.html#go">내 사주 보기</a><a href="gunghap.html">궁합</a></div>'+
@@ -2179,6 +2182,7 @@ function wire(){var g=document.getElementById("hgo");if(!g)return;g.onclick=func
 try{var c=JSON.parse(localStorage.getItem("dnbs")||"{}");c.birth=v;localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}show(v);};}
 var saved;try{saved=JSON.parse(localStorage.getItem("dnbs")||"{}").birth;}catch(e){}
 load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)return;
+var sl=document.getElementById("srank");if(sl&&window.hsRank)sl.innerHTML=hsRank().map(function(z,i){return '<li><a href="horoscope.html?s='+z.i+'#go"><em>'+(i+1)+'</em><b>'+ST_KO[z.i]+'</b><span>'+HS_LINE[z.dist]+(z.rk===2?' · 수호성의 요일':'')+'</span><i>'+z.score+'</i></a></li>';}).join("");
 ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
 wire();if(saved){var i=document.getElementById("hb");if(i)i.value=saved;show(saved);}})();</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>

@@ -971,6 +971,14 @@
     return"평";}
   function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
     return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
+  /* 별자리 오늘 점수 — 오늘 태양 별자리와 내 별자리의 각도(ST_ASP) + 요일 지배성이 내 수호성(+7)·같은 원소 지배성(+3)·그 밖(−3).
+     별자리 운세와 홈 "오늘의 별자리 순위"가 같이 쓴다. rk: 2 수호성의 요일, 1 결이 맞는 요일, 0 결이 다른 요일 */
+  var HS_LINE=["태양이 내 위를 지나는 날","잔잔하게 흐르는 날","손 뻗으면 기회가 닿는 날","마찰 끝에 자라는 날","순풍이 부는 날","조정과 타협의 날","관계가 주제인 날"];
+  function hsScore(mine,now){now=now||new Date();
+    var sun=stOf(now.getFullYear(),now.getMonth()+1,now.getDate()),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+    var wdr=WD_RULER[now.getDay()],rk=wdr===ST_RULER[mine]?2:ST_ELE_RULERS[ST_ELE[mine%4]].indexOf(wdr)>=0?1:0;
+    return {sun:sun,dist:dist,A:A,wdr:wdr,rk:rk,score:Math.max(35,Math.min(98,A[0]+(rk===2?7:rk===1?3:-3)))};}
+  function hsRank(now){return ST_KO.map(function(n,i){var h=hsScore(i,now);h.i=i;return h;}).sort(function(x,y){return y.score-x.score||x.i-y.i;});}
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
@@ -2170,6 +2178,7 @@
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
+    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value="'+escH(loadPrefs().name||"")+'"></div>'+
     '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
@@ -2186,7 +2195,8 @@
       '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
-      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value});
+      var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
+      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value,name:nm});
       track("fortune_view",{tool:"saju"});
       var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
@@ -2427,6 +2437,7 @@
       var img=ILG_IMG[ds],need=st.strong?YONG_OUT[yEl]:YONG_IN[yEl];
       var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
+        (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
         (st.strong?"센 편":"약한 편")+' · 필요한 기운 '+yEl+'</div></div>';
@@ -2512,7 +2523,7 @@
       function elHexS(i){return EL_HEX[SJ_EL[SJ_ES[i]]];}
       function elHexB(i){return EL_HEX[SJ_EL[SJ_EB[i]]];}
       var ilP=ILGAN[ds].split("<br><br>").map(function(t){return t.replace(/<[^>]+>/g,"").trim();});
-      var cardData={tool:"사주팔자 만세력",ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간 · "+p.tti+"띠 · 용신 "+yEl,
+      var cardData={tool:(nm?nm+" 님의 사주":"사주팔자 만세력"),ident:SJ_S[ds]+"("+SJ_SH[ds]+") 일간 · "+p.tti+"띠 · 용신 "+yEl,
         headline:headTxt.replace(/<br>/g,"\n"),
         body:ilP[0]+" "+ilP[1]+" "+(st.strong
           ?"자네는 기운이 넘치는 사람일세. 여태 남한테 기대지 않고 제 힘으로 밀고 온 값이 그 안에 있어."
@@ -3068,7 +3079,7 @@
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
-    ST_KO.map(function(n,i){return '<option value="'+i+'">'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
+    ST_KO.map(function(n,i){var qs=(location.search.match(/[?&]s=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qs!=null&&+qs===i?" selected":"")+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function hbar(n,v){return rateBar(n,v);}
@@ -3079,13 +3090,13 @@
         savePrefs({birth:el.querySelector("#d").value});}
       track("fortune_view",{tool:"horoscope"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-      var sun=stOf(ty,tm,td),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+      // 점수는 hsScore 한 곳에서 — 홈 "오늘의 별자리 순위"와 같은 값
+      var hs=hsScore(mine,now),sun=hs.sun,dist=hs.dist,A=hs.A;
       var ele=ST_ELE[mine%4],ruler=ST_RULER[mine],fri=ST_ELE_RULERS[ele];
-      var score=A[0],wd=now.getDay(),wdr=WD_RULER[wd],rnote="";
-      if(wdr===ruler){score+=7;rnote="오늘은 "+WD_KO[wd]+"요일 — 내 수호성 "+ruler+"이 다스리는 날입니다. 하루 중 가장 나다운 판단이 나옵니다.";}
-      else if(fri.indexOf(wdr)>=0){score+=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
-      else{score-=3;rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
-      score=Math.max(35,Math.min(98,score));
+      var score=hs.score,wd=now.getDay(),wdr=hs.wdr,rnote="";
+      if(hs.rk===2){rnote="오늘은 "+WD_KO[wd]+"요일 — 내 수호성 "+ruler+"이 다스리는 날입니다. 하루 중 가장 나다운 판단이 나옵니다.";}
+      else if(hs.rk===1){rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
+      else{rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
       var sub=A[6].map(function(v){return Math.max(30,Math.min(99,score+v));});
       var week="";

@@ -360,6 +360,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return"평";}
   function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
     return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
+  /* 별자리 오늘 점수 — 오늘 태양 별자리와 내 별자리의 각도(ST_ASP) + 요일 지배성이 내 수호성(+7)·같은 원소 지배성(+3)·그 밖(−3).
+     별자리 운세와 홈 "오늘의 별자리 순위"가 같이 쓴다. rk: 2 수호성의 요일, 1 결이 맞는 요일, 0 결이 다른 요일 */
+  var HS_LINE=["태양이 내 위를 지나는 날","잔잔하게 흐르는 날","손 뻗으면 기회가 닿는 날","마찰 끝에 자라는 날","순풍이 부는 날","조정과 타협의 날","관계가 주제인 날"];
+  function hsScore(mine,now){now=now||new Date();
+    var sun=stOf(now.getFullYear(),now.getMonth()+1,now.getDate()),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
+    var wdr=WD_RULER[now.getDay()],rk=wdr===ST_RULER[mine]?2:ST_ELE_RULERS[ST_ELE[mine%4]].indexOf(wdr)>=0?1:0;
+    return {sun:sun,dist:dist,A:A,wdr:wdr,rk:rk,score:Math.max(35,Math.min(98,A[0]+(rk===2?7:rk===1?3:-3)))};}
+  function hsRank(now){return ST_KO.map(function(n,i){var h=hsScore(i,now);h.i=i;return h;}).sort(function(x,y){return y.score-x.score||x.i-y.i;});}
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
