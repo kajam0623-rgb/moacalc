@@ -87,7 +87,7 @@
 - [용신(用神)](https://dongnebosal.com/concept-yongsin.html): 넘치면 덜어내고 모자라면 채우는, 균형을 잡는 글자입니다
 - [합충(合沖)](https://dongnebosal.com/concept-hapchung.html): 합은 묶여 성질이 바뀌는 것, 충은 부딪혀 흔들리는 것입니다
 
-## 타로 카드별 상세 (22) — 메이저 아르카나
+## 타로 카드별 상세 (78) — 메이저 22 · 마이너 56
 
 - [바보 카드(The Fool)](https://dongnebosal.com/tarot-fool.html): 새로운 출발과 순수한 가능성 · 정방향 새로운 시작·자유·모험·순수함 · 역방향 무모함·준비 부족·현실 도피·경솔한 결정
 - [마법사 카드(The Magician)](https://dongnebosal.com/tarot-magician.html): 의지를 현실로 바꾸는 힘 · 정방향 실행력·재능·집중·주도권 · 역방향 속임수·산만함·재능 낭비·말뿐인 계획
@@ -111,6 +111,62 @@
 - [태양 카드(The Sun)](https://dongnebosal.com/tarot-sun.html): 숨김없이 환하게 빛나는 때 · 정방향 성공·기쁨·명료함·활력 · 역방향 지연된 성과·일시적 구름·과한 낙관·작아진 자신감
 - [심판 카드(Judgement)](https://dongnebosal.com/tarot-judgement.html): 과거를 딛고 일어서라는 부름 · 정방향 부활·소명·재평가·결단 · 역방향 자책·망설임·과거에 매임·자기 용서
 - [세계 카드(The World)](https://dongnebosal.com/tarot-world.html): 한 바퀴를 온전히 완주하는 때 · 정방향 완성·성취·통합·새 무대 · 역방향 마무리 지연·미완성·마지막 조각·순환의 정체
+- [완드 에이스 카드(Ace of Wands)](https://dongnebosal.com/tarot-wands-ace.html): 새로 붙는 열정의 불씨 · 정방향 새 출발·영감·열정·창조력 · 역방향 망설임·지연·의욕 저하·흩어진 기운
+- [완드 2 카드(Two of Wands)](https://dongnebosal.com/tarot-wands-2.html): 더 넓은 세상을 향한 계획 · 정방향 계획·미래 설계·결단·확장 · 역방향 우유부단·두려움·안주·계획 부족
+- [완드 3 카드(Three of Wands)](https://dongnebosal.com/tarot-wands-3.html): 멀리서 돌아오는 확장의 기회 · 정방향 확장·선견지명·기다림의 결실·해외 기회 · 역방향 지연·좌절·근시안·준비 부족
+- [완드 4 카드(Four of Wands)](https://dongnebosal.com/tarot-wands-4.html): 함께 누리는 안정과 축하 · 정방향 축하·화합·안정·귀향 · 역방향 불화·불안정·미뤄진 경사·소속감 부족
+- [완드 5 카드(Five of Wands)](https://dongnebosal.com/tarot-wands-5.html): 부딪치며 단련되는 경쟁 · 정방향 경쟁·의견 충돌·단련·활기 · 역방향 갈등 회피·내적 갈등·화해·긴장 완화
+- [완드 6 카드(Six of Wands)](https://dongnebosal.com/tarot-wands-6.html): 환호 속에 돌아오는 승리 · 정방향 승리·인정·자신감·좋은 평판 · 역방향 인정 부족·교만·자신감 하락·늦어지는 성공
+- [완드 7 카드(Seven of Wands)](https://dongnebosal.com/tarot-wands-7.html): 높은 자리를 지키는 버팀 · 정방향 방어·끈기·신념·도전 극복 · 역방향 지침·포기·과잉 방어·압박감
+- [완드 8 카드(Eight of Wands)](https://dongnebosal.com/tarot-wands-8.html): 빠른 진전과 반가운 소식 · 정방향 신속함·소식·추진력·이동 · 역방향 지연·엇갈림·조급함·오해
+- [완드 9 카드(Nine of Wands)](https://dongnebosal.com/tarot-wands-9.html): 마지막 고비를 버티는 끈기 · 정방향 끈기·회복력·방어·마지막 고비 · 역방향 탈진·의심·고집·포기 직전
+- [완드 10 카드(Ten of Wands)](https://dongnebosal.com/tarot-wands-10.html): 혼자 짊어진 무거운 책임 · 정방향 책임감·과부하·막바지·성실함 · 역방향 탈진·짐 내려놓기·위임·거절
+- [완드 시종 카드(Page of Wands)](https://dongnebosal.com/tarot-wands-page.html): 호기심이 틔우는 새 불씨 · 정방향 호기심·열정·새 소식·탐험 · 역방향 변덕·조급함·방향 상실·미성숙
+- [완드 기사 카드(Knight of Wands)](https://dongnebosal.com/tarot-wands-knight.html): 불꽃처럼 내달리는 행동력 · 정방향 추진력·모험·열정·이동 · 역방향 성급함·무모함·변덕·분노
+- [완드 여왕 카드(Queen of Wands)](https://dongnebosal.com/tarot-wands-queen.html): 빛나는 자신감과 따뜻한 카리스마 · 정방향 자신감·매력·리더십·따뜻함 · 역방향 자기 의심·질투·고집·지침
+- [완드 왕 카드(King of Wands)](https://dongnebosal.com/tarot-wands-king.html): 큰 그림을 그리는 지도자의 불 · 정방향 리더십·비전·결단력·기업가 정신 · 역방향 독단·성급함·과도한 기대·고압적 태도
+- [컵 에이스 카드(Ace of Cups)](https://dongnebosal.com/tarot-cups-ace.html): 새로운 사랑과 감정의 시작 · 정방향 새로운 사랑·감정의 충만·공감·직관 · 역방향 억눌린 감정·공허함·자기 돌봄 부족·닫힌 마음
+- [컵 2 카드(Two of Cups)](https://dongnebosal.com/tarot-cups-2.html): 마음이 통하는 인연과 결합 · 정방향 상호 끌림·동반자 관계·화해·협력 · 역방향 관계의 불균형·소통 단절·오해·어긋난 약속
+- [컵 3 카드(Three of Cups)](https://dongnebosal.com/tarot-cups-3.html): 함께 나누는 축하와 우정 · 정방향 축하·우정·공동체·재회의 기쁨 · 역방향 과한 향락·뒷말·소외감·삼각관계
+- [컵 4 카드(Four of Cups)](https://dongnebosal.com/tarot-cups-4.html): 무관심과 놓친 기회 · 정방향 권태·무관심·성찰·놓친 기회 · 역방향 새로운 관심·기회 수용·무기력 탈출·재도전
+- [컵 5 카드(Five of Cups)](https://dongnebosal.com/tarot-cups-5.html): 상실의 슬픔과 남은 희망 · 정방향 상실·후회·슬픔·미련 · 역방향 수용·회복·용서·다시 일어섬
+- [컵 6 카드(Six of Cups)](https://dongnebosal.com/tarot-cups-6.html): 순수한 추억과 옛 인연 · 정방향 향수·순수함·옛 인연·대가 없는 호의 · 역방향 과거 집착·미화된 기억·미성숙·변화 거부
+- [컵 7 카드(Seven of Cups)](https://dongnebosal.com/tarot-cups-7.html): 환상과 여러 갈래의 선택 · 정방향 많은 선택지·환상·공상·유혹 · 역방향 현실 인식·결단·환상에서 깨어남·집중
+- [컵 8 카드(Eight of Cups)](https://dongnebosal.com/tarot-cups-8.html): 미련을 두고 떠나는 용기 · 정방향 떠남·내려놓음·더 깊은 의미·자기 탐색 · 역방향 미련·두려움·방황·머뭇거림
+- [컵 9 카드(Nine of Cups)](https://dongnebosal.com/tarot-cups-9.html): 소원 성취와 만족 · 정방향 소원 성취·만족·풍요·자신감 · 역방향 허영·과욕·불만족·방심
+- [컵 10 카드(Ten of Cups)](https://dongnebosal.com/tarot-cups-10.html): 가족과 함께하는 행복 · 정방향 화목·정서적 충만·가족·행복한 결말 · 역방향 불화·엇갈린 기대·겉치레 화목·단절
+- [컵 시종 카드(Page of Cups)](https://dongnebosal.com/tarot-cups-page.html): 설레는 소식과 새 감정 · 정방향 설렘·영감·호기심·반가운 소식 · 역방향 감정 기복·미숙함·현실 도피·실망스러운 소식
+- [컵 기사 카드(Knight of Cups)](https://dongnebosal.com/tarot-cups-knight.html): 마음을 담은 제안과 고백 · 정방향 낭만·고백·제안·감성 · 역방향 변덕·빈말·비현실적 기대·질투
+- [컵 여왕 카드(Queen of Cups)](https://dongnebosal.com/tarot-cups-queen.html): 깊은 공감과 직관 · 정방향 공감·직관·따뜻함·정서적 안정 · 역방향 감정 과잉·의존·자기 소홀·억눌린 감정
+- [컵 왕 카드(King of Cups)](https://dongnebosal.com/tarot-cups-king.html): 흔들리지 않는 감정의 중심 · 정방향 감정 조절·너그러움·포용력·침착함 · 역방향 감정 억압·조종·변덕·겉과 속의 차이
+- [검 에이스 카드(Ace of Swords)](https://dongnebosal.com/tarot-swords-ace.html): 진실을 꿰뚫는 명료한 판단 · 정방향 명료함·돌파구·진실·새로운 생각 · 역방향 혼란·오판·날 선 말·흐려진 판단
+- [검 2 카드(Two of Swords)](https://dongnebosal.com/tarot-swords-2.html): 결정을 미룬 채 멈춘 교착 · 정방향 교착 상태·결정 보류·회피·팽팽한 균형 · 역방향 혼란·정보 과잉·드러난 진실·떠밀린 선택
+- [검 3 카드(Three of Swords)](https://dongnebosal.com/tarot-swords-3.html): 상처와 슬픔을 지나는 시간 · 정방향 상처·슬픔·아픈 진실·실망 · 역방향 회복·용서·아픔 흘려보내기·억눌린 슬픔
+- [검 4 카드(Four of Swords)](https://dongnebosal.com/tarot-swords-4.html): 싸움을 멈추고 쉬어 가는 회복 · 정방향 휴식·재충전·고요·성찰 · 역방향 번아웃·불안한 쉼·재기·움직일 때
+- [검 5 카드(Five of Swords)](https://dongnebosal.com/tarot-swords-5.html): 이기고도 잃는 갈등의 끝 · 정방향 갈등·빈 승리·자존심 싸움·이기적인 선택 · 역방향 화해·앙금 정리·수습·사과
+- [검 6 카드(Six of Swords)](https://dongnebosal.com/tarot-swords-6.html): 아픔을 뒤로하고 떠나는 여정 · 정방향 전환·이동·회복·평온 · 역방향 미련·정체·풀지 못한 짐·떠나지 못함
+- [검 7 카드(Seven of Swords)](https://dongnebosal.com/tarot-swords-7.html): 몰래 빠져나가는 속임수와 전략 · 정방향 속임수·전략·몰래 챙김·회피 · 역방향 들통·양심·고백·자기 의심
+- [검 8 카드(Eight of Swords)](https://dongnebosal.com/tarot-swords-8.html): 스스로 만든 속박 · 정방향 고립감·자기 제한·두려움·막막함 · 역방향 해방·새로운 관점·자기 신뢰·탈출구 발견
+- [검 9 카드(Nine of Swords)](https://dongnebosal.com/tarot-swords-9.html): 밤을 삼키는 걱정 · 정방향 불안·걱정·죄책감·불면 · 역방향 회복·불안 완화·도움 요청·숨긴 걱정
+- [검 10 카드(Ten of Swords)](https://dongnebosal.com/tarot-swords-10.html): 끝에서 시작되는 새벽 · 정방향 고통스러운 끝·바닥·마무리·배신감 · 역방향 회복·재기·미련·서서히 일어섬
+- [검 시종 카드(Page of Swords)](https://dongnebosal.com/tarot-swords-page.html): 날카로운 호기심과 배움 · 정방향 호기심·배움·경계심·새로운 생각 · 역방향 경솔한 말·뒷말·산만함·엿보기
+- [검 기사 카드(Knight of Swords)](https://dongnebosal.com/tarot-swords-knight.html): 거침없는 추진력 · 정방향 추진력·결단력·속도·솔직함 · 역방향 성급함·무모함·날 선 말·방향 상실
+- [검 여왕 카드(Queen of Swords)](https://dongnebosal.com/tarot-swords-queen.html): 냉철한 판단과 분명한 경계 · 정방향 명확함·독립성·공정한 판단·솔직한 소통 · 역방향 냉담함·날카로운 말·고립·편견
+- [검 왕 카드(King of Swords)](https://dongnebosal.com/tarot-swords-king.html): 원칙과 공정한 판단 · 정방향 공정함·논리·권위·명확한 결정 · 역방향 권위 남용·독단·냉혹함·원칙 훼손
+- [펜타클 에이스 카드(Ace of Pentacles)](https://dongnebosal.com/tarot-pentacles-ace.html): 새로운 기회와 물질의 씨앗 · 정방향 새 기회·풍요의 시작·안정된 기반·실속 · 역방향 놓친 기회·계획 부족·지출 누수·늦어지는 결실
+- [펜타클 2 카드(Two of Pentacles)](https://dongnebosal.com/tarot-pentacles-2.html): 유연한 균형과 우선순위 · 정방향 균형·유연함·멀티태스킹·적응력 · 역방향 과부하·우선순위 혼란·일정 겹침·지출 몰림
+- [펜타클 3 카드(Three of Pentacles)](https://dongnebosal.com/tarot-pentacles-3.html): 협력으로 완성하는 실력 · 정방향 협력·전문성·인정·성장 · 역방향 엇박자·역할 혼란·대충한 마무리·인정받지 못함
+- [펜타클 4 카드(Four of Pentacles)](https://dongnebosal.com/tarot-pentacles-4.html): 지키는 안정과 집착 사이 · 정방향 저축·안정·절약·자기 보호 · 역방향 인색함·집착·충동 지출·불안
+- [펜타클 5 카드(Five of Pentacles)](https://dongnebosal.com/tarot-pentacles-5.html): 어려움 속 가까이 있는 도움 · 정방향 경제적 어려움·소외감·결핍·도움 필요 · 역방향 회복·도움의 손길·고비 넘김·다시 일어섬
+- [펜타클 6 카드(Six of Pentacles)](https://dongnebosal.com/tarot-pentacles-6.html): 공정한 나눔과 주고받음 · 정방향 나눔·관대함·공정함·도움 · 역방향 조건부 호의·빚·불균형·생색
+- [펜타클 7 카드(Seven of Pentacles)](https://dongnebosal.com/tarot-pentacles-7.html): 인내와 수확 전의 점검 · 정방향 인내·꾸준함·중간 점검·장기적 안목 · 역방향 조급함·헛수고·성과 부진·방향 착오
+- [펜타클 8 카드(Eight of Pentacles)](https://dongnebosal.com/tarot-pentacles-8.html): 반복으로 여무는 솜씨 · 정방향 숙련·성실함·기술 습득·꼼꼼함 · 역방향 대충 넘김·완벽주의·지루함·방향 없는 노력
+- [펜타클 9 카드(Nine of Pentacles)](https://dongnebosal.com/tarot-pentacles-9.html): 스스로 일군 넉넉함 · 정방향 자립·여유·풍요·자기 관리 · 역방향 겉치레·과소비·의존·일중독
+- [펜타클 10 카드(Ten of Pentacles)](https://dongnebosal.com/tarot-pentacles-10.html): 대를 이어 가는 풍요 · 정방향 가족의 안정·유산·전통·오래가는 풍요 · 역방향 집안 불화·돈 문제·기반 흔들림·눈앞의 이익
+- [펜타클 시종 카드(Page of Pentacles)](https://dongnebosal.com/tarot-pentacles-page.html): 배움의 씨앗을 심는 때 · 정방향 새로운 배움·성실함·현실적인 계획·기회의 씨앗 · 역방향 미루기·의욕 저하·비현실적 목표·조급함
+- [펜타클 기사 카드(Knight of Pentacles)](https://dongnebosal.com/tarot-pentacles-knight.html): 느려도 멈추지 않는 걸음 · 정방향 성실함·책임감·꾸준함·신중함 · 역방향 정체·지루함·고집·일에 묶임
+- [펜타클 여왕 카드(Queen of Pentacles)](https://dongnebosal.com/tarot-pentacles-queen.html): 따뜻하게 돌보는 살림 솜씨 · 정방향 돌봄·살림 솜씨·현실 감각·안정 · 역방향 자기 돌봄 소홀·지나친 걱정·일과 집안의 불균형·살림의 흐트러짐
+- [펜타클 왕 카드(King of Pentacles)](https://dongnebosal.com/tarot-pentacles-king.html): 든든히 쌓아 올린 풍요 · 정방향 안정·풍요·책임감·리더십 · 역방향 집착·인색함·고집·흐려진 판단
 
 ## 오늘 일진 — 날에 붙는 간지
 

@@ -130,15 +130,15 @@ const tarotSrc = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"tod
 const tarotData = new Function(tarotSrc.slice(tarotSrc.indexOf("var M="), tarotSrc.indexOf("el.innerHTML=")) +
   "; return {M:M,STORY:STORY,ART:ART,CARD_EL:CARD_EL,YN:YN,YN_LINE:YN_LINE,TOPICS:TOPICS,REL:REL,REVL:REVL,CLOSE:CLOSE,KW:KW,EL_LINE:EL_LINE,EL_MIX:EL_MIX,STAGE:STAGE};")();
 const TREAD = require("./content_tarot_read.js");
-t("타로 메이저 아르카나 22장", tarotData.M.length, 22);
-t("타로 아트 매핑 22장", Object.keys(tarotData.ART).length, 22);
-t("타로 상징 스토리 22개", tarotData.STORY.length === 22 && tarotData.STORY.every(s => s.length >= 25), true);
-t("타로 카드 오행 22장 (0~4)", tarotData.CARD_EL.length === 22 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
+t("타로 78장 (메이저 22 · 마이너 56)", tarotData.M.length, 78);
+t("타로 아트 매핑 78장", Object.keys(tarotData.ART).length, 78);
+t("타로 상징 스토리 78개", tarotData.STORY.length === 78 && tarotData.STORY.every(s => s.length >= 25), true);
+t("타로 카드 오행 78장 (0~4)", tarotData.CARD_EL.length === 78 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
 t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.qs.every(q => q.sp.length >= 1 && q.sp.length <= 3 &&
   q.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined))), true);
 const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","exam","family","friend","health","day"];
 t("타로 고민 키는 원고 topic 키와 일치", tarotData.TOPICS.map(tp => tp.k).join(","), TOPIC_K.join(","));
-t("타로 풀이 원고 22장 · 자리 9 · 고민 4×정역 · 한마디", TREAD.length === 22 && TREAD.every((c, i) => c.no === i &&
+t("타로 풀이 원고 78장 · 자리 9 · 고민 8×정역 · 한마디", TREAD.length === 78 && TREAD.every((c, i) => c.no === i &&
   ROLE_K.every(k => typeof c.role[k] === "string" && c.role[k].length >= 30) &&
   TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
@@ -151,7 +151,7 @@ t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x =>
 const healthLines = TREAD.flatMap(c => c.topic.health);
 t("타로 건강 풀이에 병·증상·치료 표현 없음", healthLines.filter(x => /질환|증상|암에|수술|약을|약이|진단|통증|아프|낫는|낫게|회복|치료|감기|염증|부상|다치/.test(x)).length, 0);
 t("타로 건강 고민은 병원 안내를 먼저 한다", /병원/.test(tarotData.TOPICS.find(tp => tp.k === "health").hi) && /병원/.test(tarotData.CLOSE[tarotData.TOPICS.findIndex(tp => tp.k === "health")]), true);
-t("타로 카드 설명 22장 × 정역 (250자 이상)", TREAD.every(c => c.desc && ["up","rev"].every(k => typeof c.desc[k] === "string" && c.desc[k].replace(/\s/g, "").length >= 250)), true);
+t("타로 카드 설명 78장 × 정역 (250자 이상)", TREAD.every(c => c.desc && ["up","rev"].every(k => typeof c.desc[k] === "string" && c.desc[k].replace(/\s/g, "").length >= 250)), true);
 t("타로 핵심어는 카드 뜻 페이지 keyword와 같음", tarotData.KW.join("|"), require("./content_tarot.js").map(c => c.keyword).join("|"));
 t("타로 종합 원소 문장 5 · 여정 구간 3", tarotData.EL_LINE.length === 5 && tarotData.STAGE.length === 3, true);
 t("타로 결과는 진지한 보살 로딩(최소 3.6초) 뒤에 차례로 띄운다", tarotSrc.includes("mascot-serious.webp") && /Math\.max\(3600,/.test(tarotSrc) && tarotSrc.includes("tr-in"), true);
@@ -323,13 +323,13 @@ t("일간·십성 페이지 생성기 배선", /ILGAN_PAGES\.forEach/.test(bs) &
 t("일간·십성 sitemap 포함", /smUrl\("ilgan-"\+g\.en\+"\.html"\)/.test(bs) && /smUrl\("sipseong-"\+s\.en\+"\.html"\)/.test(bs), true);
 t("사주 페이지에서 일간·십성으로 내부링크", /ilganChips\(null\)/.test(bs) && /sipseongChips\(null\)/.test(bs), true);
 
-// ── 타로 카드 뜻 22장 ──
+// ── 타로 카드 뜻 78장 ──
 const TAROT_PAGES = require("./content_tarot.js");
 const tarotTool = inner.slice(inner.indexOf('id:"tarot"'), inner.indexOf('id:"todayfortune"'));
 const toolNames = tarotData.M.map(x=>x[1]);
-t("타로 원고 22장 · 번호 0~21 순서", TAROT_PAGES.length === 22 && TAROT_PAGES.every((c, i) => c.no === i), true);
+t("타로 원고 78장 · 번호 0~77 순서", TAROT_PAGES.length === 78 && TAROT_PAGES.every((c, i) => c.no === i), true);
 t("타로 원고 카드 이름이 도구 M과 일치", TAROT_PAGES.every((c, i) => c.ko === toolNames[i]), true);
-t("타로 카드 그림 파일 22장 존재", TAROT_PAGES.every(c => fs.existsSync(`img/char/tarot-${String(c.no).padStart(2, "0")}-${c.en}.webp`)), true);
+t("타로 카드 그림 파일 78장 존재", TAROT_PAGES.every(c => fs.existsSync(`img/char/tarot-${String(c.no).padStart(2, "0")}-${c.en}.webp`)), true);
 const TK = { symbol: 280, up: 280, rev: 280, love: 280, reunion: 200, work: 250, advice: 70, yesnoWhy: 60 };
 const tarotShort = TAROT_PAGES.flatMap(c => Object.keys(TK).filter(k => typeof c[k] !== "string" || c[k].replace(/\s/g, "").length < TK[k]).map(k => c.ko + "." + k));
 t("타로 원고 항목별 최소 분량", tarotShort.join(","), "");

@@ -22,7 +22,7 @@ const ZODIAC_PAGES = require("./content_zodiac.js");
 const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
-const TAROT_PAGES = require("./content_tarot.js");       // 타로 메이저 아르카나 22장 — 카드 뜻
+const TAROT_PAGES = require("./content_tarot.js");       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
@@ -301,8 +301,8 @@ zodiacfortune:{
 tarot:{
  intro:`타로는 앞날을 정해진 대로 알려주는 도구가 아니라, 지금 내가 놓치고 있는 면을 비추는 거울에 가깝습니다. 그래서 질문이 구체적일수록 해석이 선명해집니다. "잘 될까요?"보다 "지금 이 일을 계속하는 게 맞을까요?"가 훨씬 좋은 질문입니다.
  고민(연애·금전·사업과 일·시험·가족·우정·건강과 컨디션)과 질문을 고르면 <b>질문에 맞는 자리</b>로 카드가 놓입니다. 속마음이 궁금하면 내 마음·그 사람 마음·둘의 앞날, 막힌 돈줄이면 원인·푸는 길처럼 한 장에서 세 장까지입니다. 앞날 자리의 카드는 확정된 결말이 아니라 지금 선택이 바뀌면 함께 바뀌는 예보에 가깝습니다. 생년월일을 넣으면 만세력으로 일간과 오행을 계산해 카드의 기운과 함께 봅니다.
- 사용하는 카드는 <b>메이저 아르카나 22장</b>입니다. 바보(0)에서 시작해 세계(21)로 끝나는 이 22장은 한 사람이 성장하며 겪는 큰 사건들을 상징합니다. 카드가 거꾸로 나오는 <b>역방향</b>은 나쁜 뜻이 아니라 그 카드의 에너지가 막혀 있거나 안으로 향하고 있다는 신호입니다.`,
- example:{t:"질문별 카드 자리 예시",rows:[["그 사람 속마음","내 마음 · 그 사람 마음 · 둘의 앞날"],["막힌 돈줄","막힌 원인 · 푸는 길"],["이직해도 될까","지금 자리 · 걸림돌 · 보살의 조언"],["예/아니오","보살의 답 한 장"]],res:["카드 수","메이저 아르카나 22장 중 1~3장"]},
+ 사용하는 카드는 <b>78장 전체</b>입니다. 바보(0)에서 시작해 세계(21)로 끝나는 메이저 아르카나 22장은 한 사람이 성장하며 겪는 큰 사건을, 완드·컵·검·펜타클 네 벌로 된 마이너 아르카나 56장은 일·감정·생각·돈처럼 매일 부딪히는 구체적인 장면을 상징합니다. 섞은 78장 가운데 22장이 펼쳐집니다. 카드가 거꾸로 나오는 <b>역방향</b>은 나쁜 뜻이 아니라 그 카드의 에너지가 막혀 있거나 안으로 향하고 있다는 신호입니다.`,
+ example:{t:"질문별 카드 자리 예시",rows:[["그 사람 속마음","내 마음 · 그 사람 마음 · 둘의 앞날"],["막힌 돈줄","막힌 원인 · 푸는 길"],["이직해도 될까","지금 자리 · 걸림돌 · 보살의 조언"],["예/아니오","보살의 답 한 장"]],res:["카드 수","78장을 섞어 펼친 22장 중 1~3장"]},
  caution:["<b>같은 질문을 반복해서 뽑지 마세요.</b> 전통적으로 한 질문에 한 번을 봅니다. 원하는 답이 나올 때까지 다시 뽑으면 의미가 흐려집니다.",
  "<b>카드 이름의 인상에 휘둘리지 마세요.</b> 죽음 카드는 끝과 새 시작을, 악마 카드는 끊어야 할 집착을 뜻합니다. 이름만으로 흉하다고 볼 수 없습니다.",
  "<b>역방향이 나왔다고 실패는 아닙니다.</b> 속도가 늦거나 방향이 안으로 향한다는 뜻이며, 조정하라는 신호로 읽습니다.",
@@ -833,7 +833,7 @@ sleep:[["왜 90분 기준인가요?","수면이 약 90분 주기로 반복돼 �
 calorie:[["정확한가요?","MET 기반 근사치로 개인차가 있습니다."],["운동 강도는요?","같은 운동도 강도에 따라 소모가 달라집니다."]],
 bmr:[["BMR이 뭔가요?","생명 유지에 필요한 최소 에너지입니다."],["다이어트에 어떻게 쓰나요?","하루 섭취를 활동대사량보다 적게 하면 체중이 줄어듭니다."]],
 saju:[["사주에 토(土)가 많으면 어떤 뜻인가요?","토는 중재·신용·저장을 뜻합니다. 많으면 진득하고 사람을 품는 힘이 강한 대신 변화가 더딥니다. 토가 아예 없으면 중심을 잡아줄 자리가 비어 마음이 자주 흔들립니다. 목은 성장·시작, 화는 열정·표현, 금은 결단·마무리, 수는 지혜·유연을 뜻합니다."],["만세력이 뭔가요? 사주계산기와 다른가요?","만세력은 날짜를 간지(干支)로 바꿔 적어둔 역법표입니다. 사주계산기는 그 표를 자동으로 찾아 여덟 글자를 세워주는 도구라 하는 일은 같습니다. 이 페이지는 표 대신 태양 황경을 직접 계산해 절기를 판정하므로 절기 경계일에 태어난 경우에도 어긋나지 않습니다."],["양력·음력 중 어느 걸 넣어야 하나요?","양력으로 넣어야 합니다. 음력 생일만 안다면 먼저 양력으로 바꾼 뒤 입력하세요. 음력 양력 변환 도구를 따로 제공하며 한국천문연구원(KASI) 기준이라 윤달도 정확히 처리합니다."],["일주가 뭔가요? 일간과 다른가요?","일주는 태어난 날의 두 글자(천간+지지)를 함께 부르는 말이고, 일간은 그중 위 글자 하나입니다. 일간이 사주에서 나 자신에 해당해 모든 해석의 기준이 되고, 아래 글자인 일지는 배우자 자리로 봅니다."],["대운과 세운은 어떻게 다른가요?","대운은 10년마다 바뀌는 큰 흐름이고 세운은 그해 한 해의 결입니다. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, 큰 흐름이 얇아도 그해가 받쳐주면 일이 됩니다. 둘을 겹쳐 봐야 그해의 무게가 나옵니다."],["태어난 시각을 모르면 어떻게 하나요?","시주를 제외한 여섯 글자(삼주)로 풀이합니다. 오행·일간 해석은 그대로 볼 수 있습니다."],["진태양시 보정이 뭔가요?","한국 표준시는 동경 135도 기준이라 실제 태양시보다 약 30분 빠릅니다. 시주를 정확히 세우려면 30분을 빼서 계산합니다."],["음력 생일만 아는데요?","음력은 해마다 날짜가 달라 양력 변환 후 입력해야 정확합니다. 포털에서 양력 변환 후 이용하세요."],["연주는 1월 1일에 바뀌나요?","아니요, 입춘(2월 4일경)에 바뀝니다. 이 계산기는 태양 위치로 입춘 시각까지 계산해 판정합니다."]],
-tarot:[["카드는 어떻게 뽑히나요?","카드 섞기를 누르면 22장의 순서와 정·역방향이 무작위로 정해지고, 펼쳐진 카드 중 직접 고른 장이 자리에 놓입니다."],["역방향은 나쁜 건가요?","아니요, 같은 카드의 에너지가 막히거나 다른 방식으로 나타남을 뜻합니다."],["같은 질문을 여러 번 봐도 되나요?","전통적으로는 한 질문에 한 번을 권합니다. 질문을 바꿔 다시 보세요."]],
+tarot:[["카드는 어떻게 뽑히나요?","카드 섞기를 누르면 78장의 순서와 정·역방향이 무작위로 정해지고 그중 22장이 펼쳐집니다. 펼쳐진 카드 중 직접 고른 장이 자리에 놓입니다."],["역방향은 나쁜 건가요?","아니요, 같은 카드의 에너지가 막히거나 다른 방식으로 나타남을 뜻합니다."],["같은 질문을 여러 번 봐도 되나요?","전통적으로는 한 질문에 한 번을 권합니다. 질문을 바꿔 다시 보세요."]],
 todayfortune:[["매일 내용이 바뀌나요?","네, 일진(날의 간지)이 자정에 바뀌므로 운세도 매일 달라집니다."],["무작위로 뽑는 건가요?","아니요, 오늘 일진과 내 일간의 십성 관계라는 명리 규칙으로 계산합니다. 같은 날 같은 생일이면 같은 결과가 나옵니다."],["점수가 낮으면 나쁜 날인가요?","주의 신호일 뿐입니다. 조언대로 움직이면 오히려 실수를 줄이는 날이 됩니다."],["행운의 색은 어떻게 정해지나요?","내 일간(태어난 날의 천간)을 생해 주는 오행에서 뽑습니다. 목은 청록·동쪽, 화는 빨강·남쪽, 토는 노랑·중앙, 금은 흰색·서쪽, 수는 검정·북쪽입니다."],["애정·재물·직장·건강 점수는 어떻게 나오나요?","총점에 십성별 성향 보정을 더합니다. 예를 들어 정재의 날은 재물이 올라가고 편관의 날은 건강이 내려갑니다."],["띠별 운세와 뭐가 다른가요?","오늘의 운세는 생년월일 전체로 일간을 뽑아 봅니다. 띠별 운세는 태어난 해(띠) 하나만으로 보므로 열두 갈래로 나뉩니다."]],
 horoscope:[["수호성이 뭔가요?","각 별자리를 맡은 행성입니다. 양자리는 화성, 황소자리는 금성처럼 짝이 정해져 있고 그 행성의 성격이 별자리 기질의 바탕이 됩니다. 위 표에 열둘을 모두 적어 두었습니다."],["활동궁·고정궁·변통궁은 무슨 뜻인가요?","일을 대하는 방식을 셋으로 나눈 것입니다. 활동궁은 먼저 벌이고, 고정궁은 붙들어 지키며, 변통궁은 상황에 맞춰 바꿉니다. 같은 원소끼리도 이 성질이 달라 결이 갈립니다."],["별자리는 무슨 기준인가요?","태어난 날 태양이 있던 황도 30도 구간입니다. 이 계산기는 날짜표가 아니라 태양 황경을 직접 계산해 판정합니다."],["경계일에 태어났는데 표와 다르게 나옵니다.","태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎 달라집니다. 황경 계산 결과가 더 정확합니다."],["매일 결과가 바뀌나요?","태양이 하루 약 1도씩 움직이므로 각도 관계가 바뀌고, 요일 지배성도 매일 달라져 결과가 달라집니다."],["이번주 흐름은 어떻게 보나요?","일곱 요일은 각각 태양·달·화성·수성·목성·금성·토성이 다스립니다. 내 별자리 수호성의 요일이 대길, 원소와 결이 맞는 행성의 날이 길입니다."],["별자리와 띠 중 뭐가 맞나요?","서로 다른 체계입니다. 별자리는 태양의 위치, 띠는 동양 간지의 연지이므로 둘 다 참고용으로 따로 보세요."]],
 stargunghap:[["별자리 궁합은 뭘 기준으로 보나요?","원소 관계(40%), 황도 각도(40%), 수호성 친화(20%)를 종합합니다. 태양 별자리 기준입니다."],["잘 맞는 별자리 조합은요?","같은 원소끼리(불-불 등), 그리고 불-공기·흙-물 상생 조합이 전통적으로 순한 궁합입니다. 각도로는 트라인(120°)과 섹스타일(60°)이 순풍입니다."],["점수가 낮으면 헤어져야 하나요?","아니요. 스퀘어·오포지션은 성장과 보완의 각으로도 읽습니다. 부딪히기 쉬운 지점을 미리 아는 용도입니다."],["내 별자리를 정확히 모르면요?","경계일(간절기) 출생이면 별자리 운세 페이지에서 생년월일로 판정한 뒤 다시 보세요."]],
@@ -894,7 +894,7 @@ const TOOL_POSE = {todayfortune:"crystal",saju:"magnifier",gunghap:"heart",tarot
 const thBosal = id => TOOL_POSE[id] ? `<img class="th-bosal" src="img/bosal/${TOOL_POSE[id]}.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()">` : "";
 // 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
 const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 이 기기에만</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
-const TRUST_TAROT = '<div class="trust"><span>결제·가입 없음</span><span>섞는 순간 정해지는 22장</span><span>카드 뜻 22장 직접 집필</span><span>생일 넣으면 사주 대조</span></div>';
+const TRUST_TAROT = '<div class="trust"><span>결제·가입 없음</span><span>섞는 순간 정해지는 78장</span><span>카드 뜻 78장 직접 집필</span><span>생일 넣으면 사주 대조</span></div>';
 // 모바일 하단 탭바 — 전역 길찾기가 "← 전체 도구" 하나뿐이었다
 const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfortune.html"><i>☀</i>오늘</a><a href="saju.html"><i>☯</i>사주</a><a href="gunghap.html"><i>♥</i>궁합</a><a href="tarot.html"><i>✦</i>타로</a><a href="dict.html"><i>☰</i>사전</a></nav>`;
 const footer = `<footer class="sfoot">
@@ -1002,7 +1002,7 @@ ${tagHtml}
 ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
  : t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
  : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>'
- : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 아르카나 22장의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
+ : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
 ${introHtml}
@@ -1038,8 +1038,11 @@ const sipseongChips = cur => '<div class="sibs">'+SIPSEONG_PAGES.map(s=>s.en===c
   ? `<span class="cur">${s.ko} 뜻</span>` : `<a href="sipseong-${s.en}.html">${s.ko} 뜻</a>`).join("")+'</div>';
 const conceptChips = cur => '<div class="sibs">'+CONCEPT_PAGES.map(c=>c.en===cur
   ? `<span class="cur">${c.ko}</span>` : `<a href="concept-${c.en}.html">${c.ko}</a>`).join("")+'</div>';
-const tarotChips = cur => '<div class="sibs">'+TAROT_PAGES.map(c=>c.en===cur
-  ? `<span class="cur">${c.ko} 카드</span>` : `<a href="tarot-${c.en}.html">${c.ko} 카드</a>`).join("")+'</div>';
+const TAROT_GROUPS = [["메이저 아르카나", c=>c.no<22],["완드", c=>/^wands-/.test(c.en)],["컵", c=>/^cups-/.test(c.en)],["검", c=>/^swords-/.test(c.en)],["펜타클", c=>/^pentacles-/.test(c.en)]];
+const tarotGroup = c => TAROT_GROUPS.find(g=>g[1](c));
+const tarotChips = cur => { const g = cur ? tarotGroup(TAROT_PAGES.find(c=>c.en===cur)) : null;
+  return TAROT_GROUPS.filter(x=>!g||x===g).map(x=>(g?"":`<h3 style="font-size:14px;margin:14px 0 6px">${x[0]}</h3>`)+'<div class="sibs">'+TAROT_PAGES.filter(x[1]).map(c=>c.en===cur
+  ? `<span class="cur">${c.ko} 카드</span>` : `<a href="tarot-${c.en}.html">${c.ko} 카드</a>`).join("")+'</div>').join(""); };
 
 /* ── 일진 60갑자 ─────────────────────────────────────────────────
    "오늘 일진", "경진일", "갑자일 운세" 같은 검색어는 도구 페이지 하나로 받을 수 없다.
@@ -1556,13 +1559,13 @@ function tarotPage(c){
     title: long.length <= 33 ? long : long.slice(3),
     desc:`${c.ko} 카드 정방향은 ${c.upWords.slice(0,2).join("·")}, 역방향은 ${c.revWords.slice(0,2).join("·")}. 연애·재회·일에서 나왔을 때 뜻까지.`,
     url:`${DOMAIN}/tarot-${c.en}.html`, img:tarotArt(c), hero:"img/tool/h-tarot.webp",
-    h1:`${ROMAN[c.no]} ${c.ko} 카드 — ${c.keyword}`,
-    sub:`메이저 아르카나 ${c.no}번 · ${c.eng} · 예/아니오 ${c.yesno}`,
+    h1:`${c.no<22?ROMAN[c.no]+" ":""}${c.ko} 카드 — ${c.keyword}`,
+    sub:`${c.no<22?"메이저 아르카나 "+c.no+"번":"마이너 아르카나 "+tarotGroup(c)[0]+" 벌"} · ${c.eng} · 예/아니오 ${c.yesno}`,
     parent:"tarot.html", parentName:"타로 카드",
     tool:"tarot",
     tags:[`${c.ko} 카드 뜻`,`${c.ko} 역방향`,`타로 ${c.ko} 연애`,`${c.ko} 카드 재회`,`${c.ko} 예스노`],
     body:`<div class="exbox"><h3>${c.ko} 카드 한눈에 보기</h3>`+
-      [["번호",`메이저 아르카나 ${c.no}번 (${ROMAN[c.no]})`],["영문 이름",c.eng],["정방향",c.upWords.join(" · ")],["역방향",c.revWords.join(" · ")],["예/아니오",c.yesno]]
+      [["구분",c.no<22?`메이저 아르카나 ${c.no}번 (${ROMAN[c.no]})`:`마이너 아르카나 · ${tarotGroup(c)[0]} 벌`],["영문 이름",c.eng],["정방향",c.upWords.join(" · ")],["역방향",c.revWords.join(" · ")],["예/아니오",c.yesno]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>조언</span><b>${esc(c.advice)}</b></div></div>`+
       `<section class="guide" style="display:flow-root"><h2>${c.ko} 카드 상징 읽기</h2><img class="tr-art" width="480" height="720" src="${tarotArt(c)}" alt="${esc(c.ko)} 타로 카드 그림" loading="lazy" onerror="this.remove()"><div class="intro" style="margin-top:0"><p style="margin-bottom:10px;color:var(--muted);font-size:12.5px">동네보살의 카드 그림은 전통 라이더–웨이트 덱의 뜻을 새 그림으로 옮긴 것입니다. 아래 상징 설명은 전통 덱의 그림을 기준으로 합니다.</p>${para(c.symbol)}</div></section>`+
@@ -1575,8 +1578,8 @@ function tarotPage(c){
     faq:[
       [`${c.ko} 카드 역방향은 나쁜 뜻인가요?`, c.rev.split("\n")[0]],
       [`${c.ko} 카드가 연애 질문에 나오면요?`, c.love.split("\n")[0]],
-      ["타로 카드는 어떻게 뽑나요?","타로 카드 페이지에서 카드를 섞으면 메이저 아르카나 22장이 펼쳐집니다. 마음이 가는 세 장을 고르면 과거·현재·미래 자리에 놓이고, 한 장씩 뒤집어 자리와 방향에 맞는 풀이를 읽습니다. 정방향과 역방향은 섞는 순간 정해집니다."]],
-    sibTitle:"메이저 아르카나 22장", sibs:tarotChips(c.en),
+      ["타로 카드는 어떻게 뽑나요?","타로 카드 페이지에서 78장을 섞으면 그중 22장이 펼쳐집니다. 마음이 가는 세 장을 고르면 과거·현재·미래 자리에 놓이고, 한 장씩 뒤집어 자리와 방향에 맞는 풀이를 읽습니다. 정방향과 역방향은 섞는 순간 정해집니다."]],
+    sibTitle:tarotGroup(c)[0]+" "+TAROT_PAGES.filter(tarotGroup(c)[1]).length+"장", sibs:tarotChips(c.en),
     related:["tarot","todayfortune","gunghap","horoscope"]});
 }
 
@@ -2066,7 +2069,7 @@ const conceptGroups = [
       SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
     ["개념 6", "사주에 나오는 말의 뜻. 기관 자료 출처를 밝힌 질문형 해설이다.",
       CONCEPT_PAGES.map(c=>[`concept-${c.en}.html`, c.ko, c.keyword])],
-    ["타로 22", "메이저 아르카나 22장. 정방향·역방향과 연애·재회·일에서의 뜻.",
+    ["타로 " + TAROT_PAGES.length, "메이저 22장과 마이너 56장. 정방향·역방향과 연애·재회·일에서의 뜻.",
       TAROT_PAGES.map(c=>[`tarot-${c.en}.html`, `${c.ko} 카드 뜻`, c.keyword])],
     ["만세력 월력 " + MANSE_PAGES.length, "달마다 한 장. 날짜별 일진·음력과 절기 절입 시각이 들어 있다.",
       Array.from({length:MANSE_Y1-MANSE_Y0+1},(_,i)=>MANSE_Y0+i).map(y=>
@@ -2121,7 +2124,7 @@ draw();})();</script>
 }
 function dictPage(){
   const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
-  const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 22장과 만세력 월력까지 뜻과 함께 찾아보세요.";
+  const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 78장과 만세력 월력까지 뜻과 함께 찾아보세요.";
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)} | 동네보살</title>
@@ -2218,7 +2221,7 @@ ${basisHtml}
 ${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
 <div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
   `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
-<a class="dictcta" href="dict.html"><img class="bosal dc-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 22장 뜻을 한곳에</span><i>→</i></a>
+<a class="dictcta" href="dict.html"><img class="bosal dc-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 78장 뜻을 한곳에</span><i>→</i></a>
 ${homeFaqHtml}
 ${adSlot()}
 ${footer}
@@ -2347,7 +2350,7 @@ ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html):
 
 ${CONCEPT_PAGES.map(c=>`- [${c.ko}(${c.han})](${DOMAIN}/concept-${c.en}.html): ${c.oneline}`).join("\n")}
 
-## 타로 카드별 상세 (22) — 메이저 아르카나
+## 타로 카드별 상세 (78) — 메이저 22 · 마이너 56
 
 ${TAROT_PAGES.map(c=>`- [${c.ko} 카드(${c.eng})](${DOMAIN}/tarot-${c.en}.html): ${c.keyword} · 정방향 ${c.upWords.join("·")} · 역방향 ${c.revWords.join("·")}`).join("\n")}
 

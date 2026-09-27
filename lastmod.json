@@ -652,7 +652,7 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "f40e5cf5",
+  "h": "1762cf2d",
   "d": "2026-09-28"
  },
  "installment.html": {
@@ -1376,95 +1376,95 @@
   "d": "2026-09-28"
  },
  "tarot-chariot.html": {
-  "h": "95084b42",
+  "h": "e583b055",
   "d": "2026-09-28"
  },
  "tarot-death.html": {
-  "h": "34880e29",
+  "h": "c575c888",
   "d": "2026-09-28"
  },
  "tarot-devil.html": {
-  "h": "1e8ccccf",
+  "h": "944a61c7",
   "d": "2026-09-28"
  },
  "tarot-emperor.html": {
-  "h": "db953fd9",
+  "h": "dd3bbac1",
   "d": "2026-09-28"
  },
  "tarot-empress.html": {
-  "h": "577bc238",
+  "h": "5c94014b",
   "d": "2026-09-28"
  },
  "tarot-fool.html": {
-  "h": "ecf016c9",
+  "h": "6f91324a",
   "d": "2026-09-28"
  },
  "tarot-hanged.html": {
-  "h": "c947ae48",
+  "h": "85d520c3",
   "d": "2026-09-28"
  },
  "tarot-hermit.html": {
-  "h": "bdc0427f",
+  "h": "4ca3b312",
   "d": "2026-09-28"
  },
  "tarot-hierophant.html": {
-  "h": "a93a8b91",
+  "h": "6b67460b",
   "d": "2026-09-28"
  },
  "tarot-judgement.html": {
-  "h": "fde92f06",
+  "h": "30355aa0",
   "d": "2026-09-28"
  },
  "tarot-justice.html": {
-  "h": "05968ee2",
+  "h": "622fe891",
   "d": "2026-09-28"
  },
  "tarot-lovers.html": {
-  "h": "3496ff5f",
+  "h": "c7297ca2",
   "d": "2026-09-28"
  },
  "tarot-magician.html": {
-  "h": "029329f6",
+  "h": "32e82c5d",
   "d": "2026-09-28"
  },
  "tarot-moon.html": {
-  "h": "b06bf4bc",
+  "h": "873eefdf",
   "d": "2026-09-28"
  },
  "tarot-priestess.html": {
-  "h": "c731c1fe",
+  "h": "2eb5a9c9",
   "d": "2026-09-28"
  },
  "tarot-star.html": {
-  "h": "a045a670",
+  "h": "5d772cc6",
   "d": "2026-09-28"
  },
  "tarot-strength.html": {
-  "h": "250784c5",
+  "h": "9be38dd3",
   "d": "2026-09-28"
  },
  "tarot-sun.html": {
-  "h": "121903da",
+  "h": "60c10642",
   "d": "2026-09-28"
  },
  "tarot-temperance.html": {
-  "h": "e8f1384d",
+  "h": "674a6aea",
   "d": "2026-09-28"
  },
  "tarot-tower.html": {
-  "h": "56e0e1b0",
+  "h": "661a23ed",
   "d": "2026-09-28"
  },
  "tarot-wheel.html": {
-  "h": "93381782",
+  "h": "6572680f",
   "d": "2026-09-28"
  },
  "tarot-world.html": {
-  "h": "0e0497f7",
+  "h": "83dc8721",
   "d": "2026-09-28"
  },
  "tarot.html": {
-  "h": "ab83c435",
+  "h": "fe3aa4cf",
   "d": "2026-09-28"
  },
  "terms.html": {
@@ -1572,11 +1572,235 @@
   "d": "2026-09-28"
  },
  "column-tarot-vs-saju.html": {
-  "h": "06e6d83f",
+  "h": "5c7265a9",
   "d": "2026-09-28"
  },
  "dict.html": {
-  "h": "44493d6e",
+  "h": "328c3008",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-ace.html": {
+  "h": "4c3ce778",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-2.html": {
+  "h": "f8bb140a",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-3.html": {
+  "h": "209fd759",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-4.html": {
+  "h": "e0131926",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-5.html": {
+  "h": "b939c9da",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-6.html": {
+  "h": "ea903d7e",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-7.html": {
+  "h": "10c3a2c4",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-8.html": {
+  "h": "57963955",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-9.html": {
+  "h": "cfe4a01a",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-10.html": {
+  "h": "f0d0a0c8",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-page.html": {
+  "h": "ac5bd913",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-knight.html": {
+  "h": "e6f18750",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-queen.html": {
+  "h": "9c2903c4",
+  "d": "2026-09-28"
+ },
+ "tarot-wands-king.html": {
+  "h": "680c400e",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-ace.html": {
+  "h": "77920d82",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-2.html": {
+  "h": "6291f2ff",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-3.html": {
+  "h": "41128773",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-4.html": {
+  "h": "54872e7f",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-5.html": {
+  "h": "c1d00ef7",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-6.html": {
+  "h": "8ac9a98e",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-7.html": {
+  "h": "66a66326",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-8.html": {
+  "h": "74feae79",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-9.html": {
+  "h": "bfe94aec",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-10.html": {
+  "h": "df2f8ce6",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-page.html": {
+  "h": "9e1a9ccf",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-knight.html": {
+  "h": "41fa72e4",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-queen.html": {
+  "h": "a021ce1c",
+  "d": "2026-09-28"
+ },
+ "tarot-cups-king.html": {
+  "h": "bad04d8d",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-ace.html": {
+  "h": "94947aba",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-2.html": {
+  "h": "291635cc",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-3.html": {
+  "h": "c3d26cf0",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-4.html": {
+  "h": "33705187",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-5.html": {
+  "h": "a74177e6",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-6.html": {
+  "h": "0cbcaf16",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-7.html": {
+  "h": "28874238",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-8.html": {
+  "h": "1fd946c9",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-9.html": {
+  "h": "95e37ca6",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-10.html": {
+  "h": "ceb87a24",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-page.html": {
+  "h": "1abfe096",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-knight.html": {
+  "h": "6e5de7cd",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-queen.html": {
+  "h": "d89b6362",
+  "d": "2026-09-28"
+ },
+ "tarot-swords-king.html": {
+  "h": "8df57bef",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-ace.html": {
+  "h": "e36e2c8f",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-2.html": {
+  "h": "cfdbec4b",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-3.html": {
+  "h": "e46c5902",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-4.html": {
+  "h": "cbdf9e02",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-5.html": {
+  "h": "b3f29357",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-6.html": {
+  "h": "75338dfc",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-7.html": {
+  "h": "b3834e33",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-8.html": {
+  "h": "3e3ccf9d",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-9.html": {
+  "h": "ab681bb8",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-10.html": {
+  "h": "4c07146f",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-page.html": {
+  "h": "bcf26e23",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-knight.html": {
+  "h": "22bbd93f",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-queen.html": {
+  "h": "a6dd2c0d",
+  "d": "2026-09-28"
+ },
+ "tarot-pentacles-king.html": {
+  "h": "b0dc1feb",
   "d": "2026-09-28"
  }
 }
