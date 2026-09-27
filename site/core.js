@@ -229,6 +229,29 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
   // 자체 통계(worker.js)에는 이벤트 이름만 보낸다. p 에 든 값은 서버로 보내지 않는다
+  /* 한 사람의 오늘은 하나다. 오늘의 운세(일진 천간 × 내 일간 십성 + 일지 합충 + 억부용신)가 기준값이고,
+     띠·별자리 운세는 같은 무리 모두의 공통 흐름이라 생일을 알면 이 값을 먼저 보여 준다.
+     (2026-09 감사: 같은 날 오늘 62점 "지갑 잠가라", 띠 90점 "큰돈 움직인다"가 함께 나왔다) */
+  var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
+  function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
+  function tfToday(y,m,d,now){
+    now=now||new Date();
+    var me=sjPillars(y,m,d,null,0,false),today=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
+    var rel=sjTenGod(me.d.s,today.d.s),score=TF_BASE[rel],myB=me.d.b,tB=today.d.b,art="";
+    if(myB%4===tB%4&&myB!==tB){score+=8;art="삼합";}
+    else if(Math.abs(myB-tB)===6){score-=10;art="충";}
+    else if(sjYukhap(myB)===tB){score+=6;art="육합";}
+    var st=sjStrength(me),todayEl=SJ_ES[today.d.s],yongHit=todayEl===st.yong,yongClash=(todayEl+2)%5===st.yong;
+    if(yongHit)score+=5;else if(yongClash)score-=3;
+    score=Math.max(35,Math.min(98,score));
+    return {me:me,today:today,rel:rel,score:score,grade:tfGrade(score),art:art,st:st,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
+  // 띠·별자리 운세 맨 위에 붙이는 "자네 개인 오늘" — 생일을 모르면 빈 문자열
+  function tfPersonalBox(birth){
+    var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";
+    var t=tfToday(+p[0],+p[1],+p[2]);
+    return '<div class="tf-me"><div class="tf-me-k">자네 개인 오늘 운세 <span>오늘의 운세 기준</span></div>'+
+      '<div class="tf-me-v">'+t.score+'<small>점 · '+t.grade+' · '+t.rel+'의 날</small></div>'+
+      '<p>아래는 같은 무리로 태어난 사람 모두에게 똑같이 나오는 공통 흐름일세. 자네 하루의 기준은 개인 운세야. 둘이 엇갈리면 개인 쪽을 따르게. <a href="todayfortune.html">개인 운세 자세히 →</a></p></div>';}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify({e:ev}));}catch(e){}}
   // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
   if(typeof window!=="undefined"){
@@ -416,6 +439,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var PLAIN_JOSA={"은":"는/은","는":"는/은","이":"가/이","가":"가/이","을":"를/을","를":"를/을",
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
+  var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
   var PLAIN_SKIP="a,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
@@ -434,6 +458,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         var re=new RegExp("(^|[^가-힣])"+term+"(에게서|에서|에게|까지|부터|처럼|보다|으로|이라|이란|이야|이며|이고|일세|은|는|이|가|을|를|과|와|의|에|로|라|란|야|며|고|도|만)?(는|도|만|은)?(?=[^가-힣]|$)","g");
         s=s.replace(re,function(m,pre,jo,jo2,off,str){
           if(pre==="("&&str.charAt(off+m.length)===")")return m;
+          // 일상어와 겹치는 용어는 조사 없이 뒤에 낱말이 이어지면 그 말로 본다
+          // ("질서로 세운 기반", "상관 없이", "인성 교육", "기가 지지 않는다")
+          if(!jo&&PLAIN_AMBIG[term]&&/^\s+[가-힣]/.test(str.slice(off+m.length)))return m;
           var first=!seen[term],word=first?plain+"("+term+")":plain;
           seen[term]=1;
           // 조사는 소리 나는 마지막 낱말 기준 — 괄호를 붙인 첫 등장은 괄호 안 용어로 고른다

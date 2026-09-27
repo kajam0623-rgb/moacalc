@@ -2356,14 +2356,15 @@ fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
 // 음력 변환은 KASI 기준 구현(MIT)이 필요하다. core.js에 넣으면 모든 페이지가 받으므로
 // 그 도구 청크 앞에만 붙인다.
 const VENDOR_LUNAR = fs.readFileSync(path.join(__dirname, "vendor-lunar.js"), "utf8");
-chunks.forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"),
+// 옛 계산기(연봉·BMI 등)는 hub.html 에만 남기고 사이트에는 만들지 않는다 — 운세 사이트에 섞인 계산기가 "짜깁기 사이트"로 보였다(2026-09 감사)
+chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"),
   (c.id === "lunar" ? VENDOR_LUNAR + "\n" : "") +
   // 대화형 타로 풀이 원고는 타로 청크만 받는다
   (c.id === "tarot" ? "var TAROT_READ=" + JSON.stringify(require("./content_tarot_read.js")) + ";\n" : "") +
   (c.id === "saju" ? "var SAJU_GUNG=" + JSON.stringify(require("./content_saju_gung.js")) + ";\n" : "") +
   "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
-meta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
+pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));

@@ -1,6 +1,6 @@
 TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운세",desc:"일진×일간 명리 풀이",render:function(el){
     // 오늘 일진 천간이 내 일간에 대해 갖는 십성
-    // → [기본점수, 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정], 애정운, 직장·학업운, 건강운]
+    // → [기본점수(쓰지 않음 — 원본은 TF_BASE), 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정], 애정운, 직장·학업운, 건강운]
     var TXT={
     "비견":[78,"나와 같은 기운이 들어오는 날일세. 남 눈치 볼 것 없이 내 걸음으로 밀고 가면 힘이 배로 붙어.","동료운은 트였네. 다만 돈은 섞지 말게. 같이 벌어도 계산은 각자 해야 뒤탈이 없어.","오늘은 경쟁자가 아군이 되는 날일세. 자존심 싸움만 피하면 돼.","친구·동료와 돈이 섞이는 자리. 빌려주는 것도, 대신 계산하는 것도 오늘은 만들지 말게.",[2,-4,4,6],
      "대등한 자리가 편한 날이야. 연인 사이라면 누가 이기려 드는 순간부터 어긋나네. 혼자인 사람은 새 인연보다 오래 알던 사람 쪽을 보게. 문이 거기 열려 있어.","같은 데를 보는 사람과 손잡으면 진도가 두 배로 나가. 다만 역할이랑 몫을 말로만 정하고 넘어가면 나중에 반드시 다시 이야기하게 되네. 오늘 적어두게.","기력이 좋은 날일세. 미뤄둔 운동은 오늘 시작하게. 좀 무리해도 회복이 빨라.","내 걸음으로 가는 날. 밀고 가되 돈은 각자."],
@@ -29,20 +29,14 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"todayfortune"});
-      var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
+      // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-      var today=sjPillars(ty,tm,td,null,0,false);
-      var rel=sjTenGod(me.d.s,today.d.s),T=TXT[rel],score=T[0];
-      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",bonusArt="",diff=Math.abs(myB-tB);
-      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
-      else if(diff===6){score-=10;bonusArt="충";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
-      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
-      // 용신 판정: 오늘 일진 천간의 오행이 내 억부용신인지 / 용신을 극하는지
-      var st=sjStrength(me),todayEl=SJ_ES[today.d.s],EL_HAN="木火土金水";
-      var yongHit=(todayEl===st.yong),yongClash=((todayEl+2)%5===st.yong);
-      if(yongHit)score+=5; else if(yongClash)score-=3;
-      score=Math.max(35,Math.min(98,score));
-      var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
+      var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade;
+      var myB=me.d.b,tB=today.d.b,bonusArt=tf.art,bonus="",hlSuf="";
+      if(bonusArt==="삼합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
+      else if(bonusArt==="충"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
+      else if(bonusArt==="육합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
+      var st=tf.st,todayEl=tf.todayEl,EL_HAN="木火土金水",yongHit=tf.yongHit,yongClash=tf.yongClash;
       var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
       // 네 항목 중 최저·최고를 짚어 조언에 붙인다 — 같은 십성이라도 하루의 무게중심이 보이게
       var SUB_LBL=["애정","재물","직장","건강"],loI=sub.indexOf(Math.min.apply(null,sub)),hiI=sub.indexOf(Math.max.apply(null,sub));

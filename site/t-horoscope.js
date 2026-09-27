@@ -27,9 +27,9 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
         week+='<div class="sj-du"><div class="a">'+(dt.getMonth()+1)+'.'+dt.getDate()+' '+WD_KO[dt.getDay()]+'</div>'+
           '<div class="g" style="font-size:14px;color:'+(g==="대길"?"var(--fun-ink)":g==="길"?"var(--accent)":"var(--muted)")+'">'+g+'</div><div class="a">'+r+'</div></div>';}
       var best=WD_KO[WD_RULER.indexOf(ruler)];
-      el.querySelector("#out").innerHTML=
+      el.querySelector("#out").innerHTML=tfPersonalBox(sel<0?el.querySelector("#d").value:loadPrefs().birth)+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 태양은 '+ST_SYM[sun]+' '+ST_KO[sun]+'</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 기준 '+A[1]+' 관계</div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 공통 흐름 · 오늘 태양과 '+A[1]+' 관계</div></div>'+
       '<div class="sj-bars">'+hbar("애정",sub[0])+hbar("재물",sub[1])+hbar("직장",sub[2])+hbar("건강",sub[3])+'</div>'+
       stCard(mine)+
       '<div class="chips"><span class="chip">원소 '+ele+'</span><span class="chip">수호성 '+ruler+'</span><span class="chip">기간 '+ST_RANGE[mine]+'</span><span class="chip">행운의 요일 '+best+'요일</span></div>'+

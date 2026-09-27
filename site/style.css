@@ -388,6 +388,11 @@
   .fold-flat>.fold-sum{padding:15px 12px 15px 2px;}
   .fold-body{font-size:14.5px;line-height:1.85;color:var(--ink);padding:0 2px 16px;}
   .fold-body p+p{margin-top:12px;}
+  .fold-body a{color:var(--accent);font-weight:600;}
+  .tf-me{margin-top:16px;padding:14px 16px;border:1.5px solid var(--fun,#b06a10);border-radius:14px;background:var(--surface-2);}
+  .tf-me-k{font-size:13px;font-weight:700;color:var(--muted);}.tf-me-k span{font-weight:500;margin-left:6px;font-size:12px;}
+  .tf-me-v{font-size:28px;font-weight:900;margin:2px 0 6px;}.tf-me-v small{font-size:14px;font-weight:700;color:var(--muted);margin-left:4px;}
+  .tf-me p{font-size:13.5px;line-height:1.7;margin:0;}.tf-me a{color:var(--accent);font-weight:700;}
   /* 모바일 글자 크기 일괄 상향. 한글은 같은 px에서 영문보다 작게 읽혀 12px 밑은 부담이 크다.
      기준: 본문 16px, 부가정보 13~15.5px, 최소 12.5px.
      목록의 뜻(.ix-d)은 한 줄 말줄임이라 상한이 있다 — 375px에서 이름 15.5/뜻 13.5까지

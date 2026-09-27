@@ -18,7 +18,8 @@ const MANSE_KEEP = { from: "2025-01", to: "2027-12" };
 const LUNAR_MIN = 1200;   // 4단계: 음력 페이지 정적 본문 최소 글자(공백 제외)
 const THIN_MIN = 800;     // 이보다 얇은 검색 노출 페이지는 목록으로 보고한다
 const COLUMN_MIN = { count: 6, chars: 1500 };
-const UNIQ = { k: 10, ilju: 50 }; // 6단계: 노출 페이지 전체에서 이 페이지에만 있는 10자 조각 비율(%). 2026-09 측정 일주 12% · 별자리 74% · 타로 89% // 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
+// 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
+const UNIQ = { k: 10, ilju: 50 }; // 6단계: 노출 페이지 전체에서 이 페이지에만 있는 10자 조각 비율(%). 2026-09 측정 일주 12% · 별자리 74% · 타로 89%
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, "").split("="); return [k, v ?? true]; }));
 const PHASE = +(args.phase || 0);
@@ -94,8 +95,9 @@ gate(0, "사이트맵에 noindex 페이지가 없다", [...smIds].filter(id => b
 gate(0, "노출 페이지의 canonical 이 자기 주소다", indexable.filter(p => p.canon !== `${DOMAIN}/${p.id === "index" ? "" : p.f}`).map(p => p.id));
 gate(0, "RSS·llms.txt 에 noindex 페이지 주소가 없다", pages.filter(p => p.noindex && (rss.includes(`/${p.f}<`) || rss.includes(`/${p.f}"`) || llms.includes(`/${p.f})`))).map(p => p.id));
 
-const calcs = pages.filter(p => p.type === "계산기").map(p => p.id);
-gate(2, "계산기 45개가 모두 noindex", calcs.filter(id => !byId[id].noindex).concat(calcs.length === 45 ? [] : [`계산기 수 ${calcs.length}`]));
+// 계산기는 처음엔 noindex 로 숨겼다가(7bf1139) 사이트에서 아예 뺐다. 페이지가 하나라도 생기면 실패
+const calcs = Object.keys(TOOL_CAT).filter(id => typeOf(id) === "계산기");   // hub.html 에 남은 계산기 전부
+gate(2, "계산기 페이지가 사이트에 없다", calcs.filter(id => byId[id]).concat(calcs.length >= 40 ? [] : [`hub 계산기 ${calcs.length}개 — 분류 확인`]));
 gate(2, "계산기가 사이트맵에 없다", calcs.filter(id => smIds.has(id)));
 gate(2, "노출 페이지에서 계산기로 가는 링크가 없다", indexable.flatMap(p => p.links.filter(l => calcs.includes(l)).map(l => `${p.id}→${l}`)).slice(0, 20));
 gate(2, "RSS·llms.txt 에 계산기 주소가 없다", calcs.filter(id => rss.includes(`/${id}.html`) || llms.includes(`/${id}.html`)));
@@ -140,7 +142,12 @@ async function live() {
   const same = [...smIds].every(i => liveIds.has(i)) && liveIds.size === smIds.size;
   console.log(`${same ? "일치" : "불일치"} 사이트맵 ${sm.status} ${sm.server} · 주소 ${liveIds.size}개 (로컬 ${smIds.size}개) · age=${sm.age ?? "-"} cache=${sm.cache ?? "-"}`);
   if (!same) fail++;
-  for (const id of ["salary", "bmi", "manse-2020-05", "manse-2026-09", "lunar", "saju"].filter(i => byId[i])) {
+  for (const id of ["salary", "bmi"]) { // 계산기는 사이트에서 내렸다 — 404 여야 한다
+    const r = await get(`${DOMAIN}/${id}.html`);
+    console.log(`${r.status === 404 ? "일치" : "불일치"} ${id} ${r.status} (계산기 → 404 기대)`);
+    if (r.status !== 404) fail++;
+  }
+  for (const id of ["manse-2020-05", "manse-2026-09", "lunar", "saju"].filter(i => byId[i])) {
     const r = await get(`${DOMAIN}/${id}.html`);
     const rb = (r.body.match(/<meta name="robots" content="([^"]+)"/i) || [])[1] || "(없음)";
     const ok = /noindex/.test(rb) === byId[id].noindex;

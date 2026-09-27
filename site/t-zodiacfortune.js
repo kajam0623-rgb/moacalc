@@ -45,9 +45,10 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
         :(b===7)?"2026 병오년 태세 오(午)와 오미 육합일세. 관계도 계약도 부드럽게 풀리는 한 해야."
         :(b===1)?"2026 병오년 태세 오(午)와 축오 해(害)일세. 작은 어긋남이 쌓이지 않게 그때그때 털고 가게."
         :"2026 병오년 태세 오(午)와는 뚜렷한 합충이 없네. 큰 변동 없이 자네 걸음대로 갈 수 있는 한 해일세.";
-      el.querySelector("#out").innerHTML=
+      var myBirth=loadPrefs().birth||"",myBY=+myBirth.split("-")[0];
+      el.querySelector("#out").innerHTML=(myBY&&((myBY-4)%12+12)%12===b?tfPersonalBox(myBirth):"")+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[tb]+'('+SJ_S[today.d.s]+SJ_B[tb]+')</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 공통 흐름 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
       zoCard(b)+
       '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+

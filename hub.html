@@ -389,6 +389,11 @@
   .fold-flat>.fold-sum{padding:15px 12px 15px 2px;}
   .fold-body{font-size:14.5px;line-height:1.85;color:var(--ink);padding:0 2px 16px;}
   .fold-body p+p{margin-top:12px;}
+  .fold-body a{color:var(--accent);font-weight:600;}
+  .tf-me{margin-top:16px;padding:14px 16px;border:1.5px solid var(--fun,#b06a10);border-radius:14px;background:var(--surface-2);}
+  .tf-me-k{font-size:13px;font-weight:700;color:var(--muted);}.tf-me-k span{font-weight:500;margin-left:6px;font-size:12px;}
+  .tf-me-v{font-size:28px;font-weight:900;margin:2px 0 6px;}.tf-me-v small{font-size:14px;font-weight:700;color:var(--muted);margin-left:4px;}
+  .tf-me p{font-size:13.5px;line-height:1.7;margin:0;}.tf-me a{color:var(--accent);font-weight:700;}
   /* 모바일 글자 크기 일괄 상향. 한글은 같은 px에서 영문보다 작게 읽혀 12px 밑은 부담이 크다.
      기준: 본문 16px, 부가정보 13~15.5px, 최소 12.5px.
      목록의 뜻(.ix-d)은 한 줄 말줄임이라 상한이 있다 — 375px에서 이름 15.5/뜻 13.5까지
@@ -804,6 +809,29 @@
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
   // 자체 통계(worker.js)에는 이벤트 이름만 보낸다. p 에 든 값은 서버로 보내지 않는다
+  /* 한 사람의 오늘은 하나다. 오늘의 운세(일진 천간 × 내 일간 십성 + 일지 합충 + 억부용신)가 기준값이고,
+     띠·별자리 운세는 같은 무리 모두의 공통 흐름이라 생일을 알면 이 값을 먼저 보여 준다.
+     (2026-09 감사: 같은 날 오늘 62점 "지갑 잠가라", 띠 90점 "큰돈 움직인다"가 함께 나왔다) */
+  var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
+  function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
+  function tfToday(y,m,d,now){
+    now=now||new Date();
+    var me=sjPillars(y,m,d,null,0,false),today=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
+    var rel=sjTenGod(me.d.s,today.d.s),score=TF_BASE[rel],myB=me.d.b,tB=today.d.b,art="";
+    if(myB%4===tB%4&&myB!==tB){score+=8;art="삼합";}
+    else if(Math.abs(myB-tB)===6){score-=10;art="충";}
+    else if(sjYukhap(myB)===tB){score+=6;art="육합";}
+    var st=sjStrength(me),todayEl=SJ_ES[today.d.s],yongHit=todayEl===st.yong,yongClash=(todayEl+2)%5===st.yong;
+    if(yongHit)score+=5;else if(yongClash)score-=3;
+    score=Math.max(35,Math.min(98,score));
+    return {me:me,today:today,rel:rel,score:score,grade:tfGrade(score),art:art,st:st,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
+  // 띠·별자리 운세 맨 위에 붙이는 "자네 개인 오늘" — 생일을 모르면 빈 문자열
+  function tfPersonalBox(birth){
+    var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";
+    var t=tfToday(+p[0],+p[1],+p[2]);
+    return '<div class="tf-me"><div class="tf-me-k">자네 개인 오늘 운세 <span>오늘의 운세 기준</span></div>'+
+      '<div class="tf-me-v">'+t.score+'<small>점 · '+t.grade+' · '+t.rel+'의 날</small></div>'+
+      '<p>아래는 같은 무리로 태어난 사람 모두에게 똑같이 나오는 공통 흐름일세. 자네 하루의 기준은 개인 운세야. 둘이 엇갈리면 개인 쪽을 따르게. <a href="todayfortune.html">개인 운세 자세히 →</a></p></div>';}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify({e:ev}));}catch(e){}}
   // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
   if(typeof window!=="undefined"){
@@ -991,6 +1019,7 @@
   var PLAIN_JOSA={"은":"는/은","는":"는/은","이":"가/이","가":"가/이","을":"를/을","를":"를/을",
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
+  var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
   var PLAIN_SKIP="a,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
@@ -1009,6 +1038,9 @@
         var re=new RegExp("(^|[^가-힣])"+term+"(에게서|에서|에게|까지|부터|처럼|보다|으로|이라|이란|이야|이며|이고|일세|은|는|이|가|을|를|과|와|의|에|로|라|란|야|며|고|도|만)?(는|도|만|은)?(?=[^가-힣]|$)","g");
         s=s.replace(re,function(m,pre,jo,jo2,off,str){
           if(pre==="("&&str.charAt(off+m.length)===")")return m;
+          // 일상어와 겹치는 용어는 조사 없이 뒤에 낱말이 이어지면 그 말로 본다
+          // ("질서로 세운 기반", "상관 없이", "인성 교육", "기가 지지 않는다")
+          if(!jo&&PLAIN_AMBIG[term]&&/^\s+[가-힣]/.test(str.slice(off+m.length)))return m;
           var first=!seen[term],word=first?plain+"("+term+")":plain;
           seen[term]=1;
           // 조사는 소리 나는 마지막 낱말 기준 — 괄호를 붙인 첫 등장은 괄호 안 용어로 고른다
@@ -2721,7 +2753,7 @@
     start();}},
   {id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운세",desc:"일진×일간 명리 풀이",render:function(el){
     // 오늘 일진 천간이 내 일간에 대해 갖는 십성
-    // → [기본점수, 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정], 애정운, 직장·학업운, 건강운]
+    // → [기본점수(쓰지 않음 — 원본은 TF_BASE), 총운, 재물·일, 조언, 오늘의 주의, [애정·재물·직장·건강 보정], 애정운, 직장·학업운, 건강운]
     var TXT={
     "비견":[78,"나와 같은 기운이 들어오는 날일세. 남 눈치 볼 것 없이 내 걸음으로 밀고 가면 힘이 배로 붙어.","동료운은 트였네. 다만 돈은 섞지 말게. 같이 벌어도 계산은 각자 해야 뒤탈이 없어.","오늘은 경쟁자가 아군이 되는 날일세. 자존심 싸움만 피하면 돼.","친구·동료와 돈이 섞이는 자리. 빌려주는 것도, 대신 계산하는 것도 오늘은 만들지 말게.",[2,-4,4,6],
      "대등한 자리가 편한 날이야. 연인 사이라면 누가 이기려 드는 순간부터 어긋나네. 혼자인 사람은 새 인연보다 오래 알던 사람 쪽을 보게. 문이 거기 열려 있어.","같은 데를 보는 사람과 손잡으면 진도가 두 배로 나가. 다만 역할이랑 몫을 말로만 정하고 넘어가면 나중에 반드시 다시 이야기하게 되네. 오늘 적어두게.","기력이 좋은 날일세. 미뤄둔 운동은 오늘 시작하게. 좀 무리해도 회복이 빨라.","내 걸음으로 가는 날. 밀고 가되 돈은 각자."],
@@ -2750,20 +2782,14 @@
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"todayfortune"});
-      var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
+      // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-      var today=sjPillars(ty,tm,td,null,0,false);
-      var rel=sjTenGod(me.d.s,today.d.s),T=TXT[rel],score=T[0];
-      var myB=me.d.b,tB=today.d.b,bonus="",hlSuf="",bonusArt="",diff=Math.abs(myB-tB);
-      if(myB%4===tB%4&&myB!==tB){score+=8;bonusArt="삼합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
-      else if(diff===6){score-=10;bonusArt="충";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
-      else if(sjYukhap(myB)===tB){score+=6;bonusArt="육합";bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
-      // 용신 판정: 오늘 일진 천간의 오행이 내 억부용신인지 / 용신을 극하는지
-      var st=sjStrength(me),todayEl=SJ_ES[today.d.s],EL_HAN="木火土金水";
-      var yongHit=(todayEl===st.yong),yongClash=((todayEl+2)%5===st.yong);
-      if(yongHit)score+=5; else if(yongClash)score-=3;
-      score=Math.max(35,Math.min(98,score));
-      var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
+      var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade;
+      var myB=me.d.b,tB=today.d.b,bonusArt=tf.art,bonus="",hlSuf="";
+      if(bonusArt==="삼합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
+      else if(bonusArt==="충"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
+      else if(bonusArt==="육합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
+      var st=tf.st,todayEl=tf.todayEl,EL_HAN="木火土金水",yongHit=tf.yongHit,yongClash=tf.yongClash;
       var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
       // 네 항목 중 최저·최고를 짚어 조언에 붙인다 — 같은 십성이라도 하루의 무게중심이 보이게
       var SUB_LBL=["애정","재물","직장","건강"],loI=sub.indexOf(Math.min.apply(null,sub)),hiI=sub.indexOf(Math.max.apply(null,sub));
@@ -2847,9 +2873,9 @@
         week+='<div class="sj-du"><div class="a">'+(dt.getMonth()+1)+'.'+dt.getDate()+' '+WD_KO[dt.getDay()]+'</div>'+
           '<div class="g" style="font-size:14px;color:'+(g==="대길"?"var(--fun-ink)":g==="길"?"var(--accent)":"var(--muted)")+'">'+g+'</div><div class="a">'+r+'</div></div>';}
       var best=WD_KO[WD_RULER.indexOf(ruler)];
-      el.querySelector("#out").innerHTML=
+      el.querySelector("#out").innerHTML=tfPersonalBox(sel<0?el.querySelector("#d").value:loadPrefs().birth)+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 태양은 '+ST_SYM[sun]+' '+ST_KO[sun]+'</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 기준 '+A[1]+' 관계</div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 공통 흐름 · 오늘 태양과 '+A[1]+' 관계</div></div>'+
       '<div class="sj-bars">'+hbar("애정",sub[0])+hbar("재물",sub[1])+hbar("직장",sub[2])+hbar("건강",sub[3])+'</div>'+
       stCard(mine)+
       '<div class="chips"><span class="chip">원소 '+ele+'</span><span class="chip">수호성 '+ruler+'</span><span class="chip">기간 '+ST_RANGE[mine]+'</span><span class="chip">행운의 요일 '+best+'요일</span></div>'+
@@ -2907,7 +2933,7 @@
       '<div class="gh-pair">'+stCard(a,"나")+stCard(b,"상대")+'</div>'+
       '<div class="sj-sec"><h3>원소 궁합 — '+ST_ELE[a%4]+' × '+ST_ELE[b%4]+'</h3><p>'+E[2]+'</p></div>'+
       '<div class="sj-sec"><h3>각도 관계 — '+A[1]+'</h3><p>두 별자리는 황도에서 '+(dist*30)+'° 떨어져 있습니다. '+A[2]+'</p></div>'+
-      '<div class="sj-sec"><h3>수호성 궁합</h3><p>'+ST_KO[a]+'는 '+rA+', '+ST_KO[b]+'는 '+rB+'가 다스립니다. '+rNote+'</p></div>'+
+      '<div class="sj-sec"><h3>수호성 궁합</h3><p>'+ST_KO[a]+'는 '+rA+', '+ST_KO[b]+'는 '+rB+josa(rB,"가/이")+' 다스립니다. '+rNote+'</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
       shareBtn()+
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
@@ -2962,9 +2988,10 @@
         :(b===7)?"2026 병오년 태세 오(午)와 오미 육합일세. 관계도 계약도 부드럽게 풀리는 한 해야."
         :(b===1)?"2026 병오년 태세 오(午)와 축오 해(害)일세. 작은 어긋남이 쌓이지 않게 그때그때 털고 가게."
         :"2026 병오년 태세 오(午)와는 뚜렷한 합충이 없네. 큰 변동 없이 자네 걸음대로 갈 수 있는 한 해일세.";
-      el.querySelector("#out").innerHTML=
+      var myBirth=loadPrefs().birth||"",myBY=+myBirth.split("-")[0];
+      el.querySelector("#out").innerHTML=(myBY&&((myBY-4)%12+12)%12===b?tfPersonalBox(myBirth):"")+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[tb]+'('+SJ_S[today.d.s]+SJ_B[tb]+')</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 공통 흐름 · 오늘 지지와 <b>'+rel+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
       zoCard(b)+
       '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+

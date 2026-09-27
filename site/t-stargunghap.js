@@ -40,7 +40,7 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
       '<div class="gh-pair">'+stCard(a,"나")+stCard(b,"상대")+'</div>'+
       '<div class="sj-sec"><h3>원소 궁합 — '+ST_ELE[a%4]+' × '+ST_ELE[b%4]+'</h3><p>'+E[2]+'</p></div>'+
       '<div class="sj-sec"><h3>각도 관계 — '+A[1]+'</h3><p>두 별자리는 황도에서 '+(dist*30)+'° 떨어져 있습니다. '+A[2]+'</p></div>'+
-      '<div class="sj-sec"><h3>수호성 궁합</h3><p>'+ST_KO[a]+'는 '+rA+', '+ST_KO[b]+'는 '+rB+'가 다스립니다. '+rNote+'</p></div>'+
+      '<div class="sj-sec"><h3>수호성 궁합</h3><p>'+ST_KO[a]+'는 '+rA+', '+ST_KO[b]+'는 '+rB+josa(rB,"가/이")+' 다스립니다. '+rNote+'</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
       shareBtn()+
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
