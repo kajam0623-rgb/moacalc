@@ -11,11 +11,11 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       return '<div class="sj-char"><img width="520" height="520" src="img/char/el-'+en+'-'+g+'.webp" alt="'+who+' — '+SJ_S[P.d.s]+e+' 일간 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+who+' · '+(g==="m"?"남":"여")+'</div><div class="n">'+SJ_S[P.d.s]+e+' 일간</div><p>'+SJ_TTI[P.y.b]+'띠 · '+SJ_S[P.d.s]+SJ_B[P.d.b]+'일주</p></div></div>';}
     function pts(a,b){ // [점수증감, 설명] 목록
-      var out=[],sc=60;
+      var out=[],sc=60,f={hap:false,r1:null,tti:"",ilji:"",fill:0}; // f: 네 축 계산에 쓰는 판정값
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
-      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;out.push(["기운이 딱 맞물림","두 사람을 뜻하는 글자("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")가 서로 짝을 이루는 사이입니다. 사주에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
+      if(Math.abs(a.d.s-b.d.s)===5){sc+=18;f.hap=true;out.push(["기운이 딱 맞물림","두 사람을 뜻하는 글자("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")가 서로 짝을 이루는 사이입니다. 사주에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
       else{
-        var r1=sjTenGod(a.d.s,b.d.s);
+        var r1=sjTenGod(a.d.s,b.d.s);f.r1=r1;
         if(r1==="정재"||r1==="정관"){sc+=10;out.push(["서로를 아껴 주는 기운","상대가 나의 "+r1+" — 서로 아껴주고 책임지는 안정형 조합입니다."]);}
         else if(r1==="정인"||r1==="식신"){sc+=8;out.push(["한쪽이 키워 주는 기운","상대가 나의 "+r1+" — 한쪽이 기르고 한쪽이 자라는 순환이 좋은 관계."]);}
         else if(r1==="편관"||r1==="상관"){sc-=6;out.push(["부딪히기 쉬운 기운","상대가 나의 "+r1+" — 자극이 강한 만큼 다툼도 잦을 수 있는 스파크형. 존중의 거리가 필요합니다."]);}
@@ -23,23 +23,23 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       }
       // 2. 띠(연지) 합충
       var ab=a.y.b,bb=b.y.b,d=Math.abs(ab-bb);
-      if(ab%4===bb%4&&ab!==bb){sc+=12;out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")는 셋이 뭉치는 짝일세 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
-      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;out.push(["띠끼리 편안","두 띠는 둘이 맞는 짝 — 서로를 편안하게 만드는 찰떡 조합."]);}
-      else if(d===6){sc-=12;out.push(["띠끼리 부딪힘","두 띠는 서로 부딪히는 짝 — 처음엔 강하게 끌리지만 다투기도 쉬운 관계. 생활 방식을 맞추는 게 관건."]);}
+      if(ab%4===bb%4&&ab!==bb){sc+=12;f.tti="삼합";out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")는 셋이 뭉치는 짝일세 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
+      else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;f.tti="육합";out.push(["띠끼리 편안","두 띠는 둘이 맞는 짝 — 서로를 편안하게 만드는 찰떡 조합."]);}
+      else if(d===6){sc-=12;f.tti="충";out.push(["띠끼리 부딪힘","두 띠는 서로 부딪히는 짝 — 처음엔 강하게 끌리지만 다투기도 쉬운 관계. 생활 방식을 맞추는 게 관건."]);}
       else{out.push(["띠끼리 무난","띠끼리 맞부딪히거나 붙는 자리가 없어 — 무난한 흐름입니다."]);}
       // 3. 오행 보완 (서로 부족한 오행 채워주는지)
       function cnt6(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
       var ca=cnt6(a),cb=cnt6(b),fill=0;
-      for(var i=0;i<5;i++){if(ca[i]===0&&cb[i]>=2)fill++;if(cb[i]===0&&ca[i]>=2)fill++;}
+      for(var i=0;i<5;i++){if(ca[i]===0&&cb[i]>=2)fill++;if(cb[i]===0&&ca[i]>=2)fill++;}f.fill=fill;
       if(fill>=2){sc+=10;out.push(["서로 채워 주는 기운","서로 없는 오행을 상대가 넉넉히 갖고 있어 — 함께 있을 때 완성되는 보완형."]);}
       else if(fill===1){sc+=5;out.push(["서로 채워 주는 기운","부족한 오행 하나를 상대가 채워줍니다."]);}
       else{out.push(["닮은 기운","오행 구성이 비슷 — 닮아서 편하지만 약점도 같이 겹칠 수 있어요."]);}
       // 4. 일지 합충 (배우자궁)
       var da=a.d.b,db=b.d.b,dd=Math.abs(da-db);
-      if(da%4===db%4&&da!==db){sc+=8;out.push(["같이 사는 호흡","배우자 자리끼리 뭉치는 짝 — 일상 속 호흡이 잘 맞습니다."]);}
-      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;out.push(["같이 사는 호흡","배우자 자리끼리 맞는 짝 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
-      else if(dd===6){sc-=8;out.push(["생활 습관은 조율 필요","배우자 자리끼리 부딪히는 짝 — 애정과 별개로 생활 습관이 자주 엇갈릴 수 있습니다."]);}
-      return [Math.max(35,Math.min(99,sc)),out];
+      if(da%4===db%4&&da!==db){sc+=8;f.ilji="삼합";out.push(["같이 사는 호흡","배우자 자리끼리 뭉치는 짝 — 일상 속 호흡이 잘 맞습니다."]);}
+      else if(da+db===13||(da===0&&db===1)||(da===1&&db===0)){sc+=8;f.ilji="육합";out.push(["같이 사는 호흡","배우자 자리끼리 맞는 짝 — 살 맞대고 사는 궁합이 특히 좋습니다."]);}
+      else if(dd===6){sc-=8;f.ilji="충";out.push(["생활 습관은 조율 필요","배우자 자리끼리 부딪히는 짝 — 애정과 별개로 생활 습관이 자주 엇갈릴 수 있습니다."]);}
+      return [Math.max(35,Math.min(99,sc)),out,f];
     }
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
@@ -49,14 +49,17 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       savePrefs(inv?{birth:el.querySelector("#a").value,gender:ga}:{birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
       track("fortune_view",{tool:"gunghap"});
       var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=inv?inv.p:sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
-      var r=pts(A,B),sc=r[0],rows=r[1];
+      var r=pts(A,B),sc=r[0],rows=r[1],f=r[2];
       var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
-      // 축별 점수 — 각 항목이 어디서 왔는지 보이도록 분해
-      function has(k){return rows.some(function(x){return x[0].indexOf(k)>=0;});}
-      var attract=sc+(has("천간합")?10:0)+(has("긴장")?4:-2);          // 끌림: 일간 관계가 좌우
-      var stable=sc+(has("삼합")||has("육합")?8:0)-(has("충")?10:0);   // 안정: 띠 합충
-      var talk=sc+(has("상생")?8:0)-(has("긴장")?12:0);                 // 소통: 일간 십성
-      var life=sc+(has("배우자궁 삼합")||has("배우자궁 육합")?10:0)-(has("배우자궁 충")?12:0); // 생활: 일지
+      /* 네 축은 총점에서 가감하지 않고 각자 계산한다. 예전엔 풀이 제목에서 "천간합"·"충" 같은 낱말을 찾았는데
+         제목이 쉬운 말로 바뀐 뒤로 한 번도 걸리지 않아 네 막대가 총점 ±2로만 나왔다(2026-09 감사: 62/64/64/64).
+         끌림: 두 일간의 관계 · 안정: 띠 합충 · 소통: 상대 일간이 나에게 무슨 십성인가 · 생활: 배우자 자리(일지) 합충과 오행 보완 */
+      var AT={정재:18,정관:18,정인:14,식신:14,편관:10,상관:10,편재:6,편인:6,비견:2,겁재:2};
+      var TK={식신:20,정인:20,정재:12,정관:12,비견:8,편재:4,편인:4,겁재:-2,편관:-10,상관:-10};
+      var attract=60+(f.hap?30:(AT[f.r1]||0));
+      var stable=62+(f.tti==="삼합"?22:f.tti==="육합"?18:f.tti==="충"?-16:0);
+      var talk=60+(f.hap?16:(TK[f.r1]||0));
+      var life=62+(f.ilji==="삼합"?20:f.ilji==="육합"?18:f.ilji==="충"?-16:0)+(f.fill>=2?8:f.fill===1?4:0);
       var subs=[["끌림",attract],["안정",stable],["소통",talk],["생활",life]].map(function(x){
         return [x[0],Math.max(30,Math.min(99,x[1]))];});
       function gbar(n,v){return rateBar(n,v);}
