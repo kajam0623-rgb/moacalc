@@ -355,6 +355,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
         '<p style="color:var(--muted);font-size:12.5px;margin-top:4px">10년마다 바뀌는 큰 흐름입니다. 태어난 날부터 절기까지의 날수로 시작 나이를 정하며, 여기서는 8개 구간을 보여드립니다. 괄호 안은 그 구간 천간의 오행입니다.</p></div>'+
+        sjBasisHtml({y:y,mo:mo,d:d,h:h,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
+        sjAiHtml()+
         closing+
         shareBtn()+
         // 저장·소장 경로. 브라우저 인쇄 대화상자에서 "PDF로 저장"을 고르면 파일이 된다
@@ -390,6 +392,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
       cardData.file="사주팔자";
       bindSave(el,cardData);
+      bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],

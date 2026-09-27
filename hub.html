@@ -272,6 +272,10 @@
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
   .lunar-pick{margin:0 0 10px;font-size:13.5px;}
+  .ai-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .ai-row .ai-copy{padding:10px 16px;border-radius:10px;background:#E6B25A;color:#1b1406;font-weight:800;cursor:pointer;}
+  .ai-row a{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-2);color:var(--ink);font-weight:700;text-decoration:none;}
+  .ai-done{font-size:13px;color:var(--muted);margin-top:8px;}.ai-text{white-space:pre-wrap;font-size:12.5px;background:var(--surface-2);padding:12px;border-radius:10px;user-select:all;}
   .lunar-pick summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0;list-style:none;}
   .lunar-pick summary::-webkit-details-marker{display:none;}
   .lp-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;}
@@ -835,6 +839,74 @@
     if(yongHit)score+=5;else if(yongClash)score-=3;
     score=Math.max(35,Math.min(98,score));
     return {me:me,today:today,rel:rel,score:score,grade:tfGrade(score),art:art,st:st,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
+  /* 출생 당시 한국 시계가 지금 표준시(UTC+9)와 몇 분 달랐나.
+     IANA tzdb Asia/Seoul·Rule ROK 기준: 1954-03-21~1961-08-10 표준시 UTC+8:30, 서머타임 +1시간.
+     1987·88년 기간은 tzdb·국가기록원·언론 기록이 같다. 1948~60년 기간은 tzdb 날짜를 쓰되
+     국가기록원은 "1949~1961년, 대개 5~9월"로만 적어 기록마다 조금 다르다. [시작일, 끝나는 날(그날 0시에 해제)] */
+  var KR_DST=[["1948-06-01","1948-09-13"],["1949-04-03","1949-09-11"],["1950-04-01","1950-09-10"],["1951-05-06","1951-09-09"],
+    ["1955-05-05","1955-09-09"],["1956-05-20","1956-09-30"],["1957-05-05","1957-09-22"],["1958-05-04","1958-09-21"],
+    ["1959-05-03","1959-09-20"],["1960-05-01","1960-09-18"],["1987-05-10","1987-10-11"],["1988-05-08","1988-10-09"]];
+  function krClockShift(y,m,d){
+    var k=y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"),dst=false,std830=k>="1954-03-21"&&k<"1961-08-10";
+    KR_DST.forEach(function(r){if(k>=r[0]&&k<r[1])dst=true;});
+    return {min:(std830?-30:0)+(dst?60:0),dst:dst,std830:std830};}
+  function sjKst(jd){var t=new Date(Math.round((jd-2440587.5)*86400000)+9*3600000);
+    return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월 "+t.getUTCDate()+"일 "+String(t.getUTCHours()).padStart(2,"0")+":"+String(t.getUTCMinutes()).padStart(2,"0");}
+  // 태어난 순간의 앞뒤 월 절기(황경 315+30k°) — 월주가 어느 절기부터 시작됐는지 보여 준다
+  function sjMonthTerms(jd){
+    var L=sjSunLong(jd),k=Math.floor((((L-315)%360)+360)%360/30),deg=(315+30*k)%360,y=new Date(Math.round((jd-2440587.5)*86400000)).getUTCFullYear();
+    var prev=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,deg);}).filter(function(j){return j<=jd;}).pop();
+    var nd=(deg+30)%360,next=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,nd);}).filter(function(j){return j>jd;})[0];
+    var nm=function(g){for(var i=0;i<SJ_TERM.length;i++)if(SJ_TERM[i][1]===g)return SJ_TERM[i][0];};
+    return {L:L,prev:prev,prevName:nm(deg),next:next,nextName:nm(nd)};}
+  /* 계산 근거 — 결과가 어떤 계산에서 나왔는지 존댓말로 밝힌다(풀이는 보살 말투, 근거 고지는 존댓말).
+     o: {y,mo,d,h,corr,male,p,su,days,fwd} */
+  function sjBasisHtml(o){
+    var p=o.p,jdB=sjJdKST(o.y,o.mo,o.d,o.h==null?12:o.h,o.h==null?0:30),ip=sjIpchun(o.y),mt=sjMonthTerms(jdB),sh=krClockShift(o.y,o.mo,o.d);
+    var G=function(x){return SJ_S[x.s]+SJ_B[x.b]+"("+SJ_SH[x.s]+SJ_BH[x.b]+")";};
+    var li=[];
+    li.push("<b>연주 "+G(p.y)+"</b> — 사주의 해는 1월 1일이 아니라 입춘에 바뀝니다. "+o.y+"년 입춘은 "+sjKst(ip)+"이고, 태어난 때가 그 "+(jdB<ip?"전이라 "+(o.y-1)+"년의 간지를 씁니다.":"뒤라 "+o.y+"년의 간지를 씁니다."));
+    li.push("<b>월주 "+G(p.m)+"</b> — 태어난 순간 태양의 황경은 "+mt.L.toFixed(2)+"°입니다. 달은 절기로 바뀌므로 "+mt.prevName+"("+sjKst(mt.prev)+")부터 "+mt.nextName+"("+sjKst(mt.next)+") 전까지가 이 달입니다.");
+    li.push("<b>일주 "+G(p.d)+"</b> — 날짜는 자정에 바뀝니다. 밤 11시 이후(야자시)에 태어나도 일주는 그날 것을 씁니다.");
+    li.push(o.h==null?"<b>시주</b> — 태어난 시각을 모른다고 하셔서 시주를 빼고 여섯 글자로 봤습니다.":
+      "<b>시주 "+G(p.h)+"</b> — 고르신 시진으로 정했습니다. 한국 표준시는 동경 135°에 맞춰져 서울의 실제 해 시각보다 약 30분 빠릅니다. 진태양시 보정은 "+(o.corr?"적용했습니다.":"끄셨습니다."));
+    if(sh.min!==0){
+      var why=sh.std830&&sh.dst?"당시 표준시가 UTC+8:30이었고 서머타임(1시간 당김)도 시행 중이었습니다."
+        :sh.std830?"당시 표준시가 지금보다 30분 늦은 UTC+8:30이었습니다.":"서머타임(시계를 1시간 당김)이 시행 중이었습니다.";
+      li.push("<b>출생 당시 시계</b> — 이 날짜는 "+why+" 출생증명서에 적힌 시각은 지금 시계로 치면 "+(sh.min>0?sh.min+"분 앞선":(-sh.min)+"분 늦은")+" 시각입니다. 시진을 고를 때는 적힌 시각에서 "+(sh.min>0?sh.min+"분을 빼고":(-sh.min)+"분을 더해")+" 고르세요."+(sh.dst&&o.y<1962?" 1948~1960년 서머타임 기간은 기록마다 며칠씩 다릅니다.":""));}
+    if(o.su)li.push("<b>대운</b> — "+(o.fwd?"순행":"역행")+"입니다(연간이 "+(p.y.s%2===0?"양":"음")+"이고 "+(o.male?"남":"여")+"자). 태어난 때부터 "+(o.fwd?"다음":"이전")+" 절기까지 "+(Math.round(o.days*4)/4)+"일이라, 3일을 1년으로 쳐서 "+o.su+"세에 첫 대운이 시작됩니다."+(o.h==null?" 시각을 몰라 정오로 보고 셌습니다.":""));
+    return '<div class="sj-sec sj-basis"><h3>이 결과는 이렇게 계산했습니다</h3><p>'+li.join("<br><br>")+
+      '<br><br><span style="color:var(--muted);font-size:12.5px">절기 시각은 태양 황경을 직접 계산한 값입니다. 한국천문연구원 발표와 몇 분 차이가 날 수 있어, 절기 경계 몇 분 안에 태어났다면 다른 만세력과 월주가 다를 수 있습니다.</span></p></div>';}
+  /* AI에게 물어보기 — 범용 AI는 만세력을 자주 틀린다. 계산이 끝난 값만 담은 질문문을 복사해 넘긴다.
+     생년월일은 넣지 않는다. o: {p,male,h,st,gyeok,sinsal,cnt,G,duList,su,fwd} */
+  function sjAiPrompt(o){
+    var p=o.p,ds=p.d.s,H=function(x){return SJ_SH[x.s]+SJ_BH[x.b];},K=function(x){return SJ_S[x.s]+SJ_B[x.b];};
+    var cols=[p.y,p.m,p.d].concat(p.h?[p.h]:[]),now=new Date(),yp=sjPillars(now.getFullYear(),7,1,null,0,false).y;
+    return ["아래는 만세력(절기는 태양 황경으로 계산)으로 계산을 마친 내 사주입니다. 간지를 다시 계산하지 말고 이 값을 그대로 써서 풀이해 주세요.",
+      "- 성별: "+(o.male?"남":"여"),
+      "- 사주("+(p.h?"연·월·일·시":"연·월·일, 태어난 시각 모름")+"): "+cols.map(H).join(" ")+" ("+cols.map(K).join(" · ")+")",
+      "- 일간: "+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+" · "+(o.st.strong?"신강":"신약")+" · 억부용신 "+SJ_EL[o.st.yong]+", 보조 "+SJ_EL[o.st.yong2],
+      "- 오행 개수: "+SJ_EL.map(function(e,i){return e+" "+o.cnt[i];}).join(", "),
+      "- 십성 분포: 비겁 "+o.G.비겁+", 식상 "+o.G.식상+", 재성 "+o.G.재성+", 관성 "+o.G.관성+", 인성 "+o.G.인성,
+      "- 격국: "+o.gyeok+(o.sinsal.length?" · 신살: "+o.sinsal.join(", "):""),
+      "- 대운("+(o.fwd?"순행":"역행")+", 대운수 "+o.su+"): "+o.duList.map(function(x){return x.age+"세 "+x.g+"("+x.tg+")";}).join(" → "),
+      "- 올해 "+now.getFullYear()+"년 세운: "+H(yp)+"("+sjTenGod(ds,yp.s)+")",
+      "",
+      "질문: [여기에 궁금한 것을 적으세요. 예) 올해 이직해도 될까요? 어떤 일이 잘 맞나요?]",
+      "",
+      "풀이할 때는 단정하지 말고, 어느 글자와 어느 글자의 관계에서 그렇게 보는지 근거를 함께 말해 주세요."].join("\n");}
+  function sjAiHtml(){
+    return '<div class="sj-sec sj-ai"><h3>AI에게 더 물어보기</h3><p>챗GPT 같은 AI는 사주 여덟 글자를 자주 틀리게 셉니다. 아래 버튼은 여기서 계산을 마친 여덟 글자·오행·대운을 담은 질문문을 복사합니다. AI 창에 붙여 넣고 궁금한 것을 이어서 물어보세요. 생년월일은 들어가지 않습니다.</p>'+
+      '<div class="ai-row"><span class="ai-copy" role="button" tabindex="0">질문문 복사</span>'+
+      '<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div>'+
+      '<p class="ai-done" aria-live="polite"></p></div>';}
+  function bindAiCopy(el,text){
+    var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
+    function done(ok){msg.textContent=ok?"복사했습니다. AI 창에 붙여 넣고 질문 칸만 고쳐 쓰세요.":"복사가 막혔습니다. 아래 글을 길게 눌러 복사하세요.";
+      if(!ok){var pre=document.createElement("pre");pre.className="ai-text";pre.textContent=text;msg.after(pre);}}
+    function copy(){track("share_click",{tool:"saju_ai"});
+      if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);});else done(false);}
+    b.addEventListener("click",copy);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();copy();}});}
   // 띠·별자리 운세 맨 위에 붙이는 "자네 개인 오늘" — 생일을 모르면 빈 문자열
   function tfPersonalBox(birth){
     var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";
@@ -1030,7 +1102,7 @@
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
-  var PLAIN_SKIP="a,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  var PLAIN_SKIP="a,.sj-basis,.sj-ai,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
     var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];
@@ -1308,7 +1380,8 @@
       var y=+v[0],m=+v[1],d=+v[2];
       if(!y||!m||!d||y<1930||y>nowY)return;
       Y=y;M=m;D=d;rebuildDays();
-      scrollTo(cols.y,Y,true);scrollTo(cols.m,M,true);scrollTo(cols.d,D,true);
+      // 즉시 이동 — 부드럽게 굴리면 지나가는 중간 연도가 scroll 판정으로 확정돼 입력을 덮어쓴다(1987 입력 → 1988로 계산)
+      scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);
       mark(cols.y);mark(cols.m);mark(cols.d);commit();}
     inp.addEventListener("change",syncFromInput);
     inp.addEventListener("input",syncFromInput);
@@ -2312,6 +2385,8 @@
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
         '<p style="color:var(--muted);font-size:12.5px;margin-top:4px">10년마다 바뀌는 큰 흐름입니다. 태어난 날부터 절기까지의 날수로 시작 나이를 정하며, 여기서는 8개 구간을 보여드립니다. 괄호 안은 그 구간 천간의 오행입니다.</p></div>'+
+        sjBasisHtml({y:y,mo:mo,d:d,h:h,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
+        sjAiHtml()+
         closing+
         shareBtn()+
         // 저장·소장 경로. 브라우저 인쇄 대화상자에서 "PDF로 저장"을 고르면 파일이 된다
@@ -2347,6 +2422,7 @@
       cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
       cardData.file="사주팔자";
       bindSave(el,cardData);
+      bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],

@@ -271,6 +271,10 @@
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
   .lunar-pick{margin:0 0 10px;font-size:13.5px;}
+  .ai-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+  .ai-row .ai-copy{padding:10px 16px;border-radius:10px;background:#E6B25A;color:#1b1406;font-weight:800;cursor:pointer;}
+  .ai-row a{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-2);color:var(--ink);font-weight:700;text-decoration:none;}
+  .ai-done{font-size:13px;color:var(--muted);margin-top:8px;}.ai-text{white-space:pre-wrap;font-size:12.5px;background:var(--surface-2);padding:12px;border-radius:10px;user-select:all;}
   .lunar-pick summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0;list-style:none;}
   .lunar-pick summary::-webkit-details-marker{display:none;}
   .lp-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;}

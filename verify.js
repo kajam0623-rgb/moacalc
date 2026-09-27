@@ -343,7 +343,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -508,5 +508,17 @@ t("build_site에 ILJU_PAGES 존재", /const ILJU_PAGES\s*=/.test(bs), true);
 t("사이트맵에 일주 포함", /ILJU_PAGES\.map\(p=>smUrl\("ilju-/.test(bs), true);
 t("일주는 UN_DESC(존댓말판)를 쓴다", /ILJU_SRC\.UN_DESC/.test(bs), true);
 t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S]{0,3000}SJ_UN_DESC/.test(bs), false);
+// ── 계산 근거: 출생 당시 시계(tzdb Asia/Seoul) · 월 절기 ──
+{ const hs = inner.slice(inner.indexOf("  var KR_DST="), inner.indexOf("  /* 계산 근거"));
+  const E = new Function("sjSunLong","sjTermJd","SJ_TERM", hs + "; return {krClockShift, sjMonthTerms, sjKst};")(sjSunLong, sjTermJd, SJ_TERM);
+  t("시계 보정 1987-07-01 서머타임 +60분", E.krClockShift(1987,7,1).min, 60);
+  t("시계 보정 1987-05-10 서머타임 첫날 +60분", E.krClockShift(1987,5,10).min, 60);
+  t("시계 보정 1987-10-11 해제일 0분", E.krClockShift(1987,10,11).min, 0);
+  t("시계 보정 1958-01-15 UTC+8:30 −30분", E.krClockShift(1958,1,15).min, -30);
+  t("시계 보정 1958-07-01 UTC+8:30+서머타임 +30분", E.krClockShift(1958,7,1).min, 30);
+  t("시계 보정 1990-07-01 없음", E.krClockShift(1990,7,1).min, 0);
+  const mt = E.sjMonthTerms(sjJdKST(1992,6,18,8,30));
+  t("1992-06-18 월주 구간 망종~소서", mt.prevName + "~" + mt.nextName, "망종~소서");
+  t("1992 망종 절입일 6월 5일", E.sjKst(mt.prev).startsWith("1992년 6월 5일 "), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
