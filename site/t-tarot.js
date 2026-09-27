@@ -431,7 +431,8 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       bindSave(rd,{file:"동네보살-타로",draw:drawShare});
       [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
-      track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});}
+      track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});
+      diaryAdd({t:"타로 · "+topic.name,h:picks.map(function(pk){return M[pk.i][1]+(pk.rev?"(역)":"");}).join(" · ")});}
     var rz;window.addEventListener("resize",function(){window.clearTimeout(rz);rz=window.setTimeout(function(){
       if(stage==="idle")stack();else if(stage==="pick")fan();},150);});
     start();}});

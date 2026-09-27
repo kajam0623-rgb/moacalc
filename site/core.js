@@ -392,6 +392,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 입력만 바꿔도 결과가 즉시 나오면 '물어본다'는 감각이 사라진다.
   // 답은 버튼을 눌러야 나오고, 나오기 직전에 보살이 짚어 보는 시간을 둔다.
   var ASK_LABEL="동네보살에게 물어보기";
+  /* 점 일기 — 오늘의 운세·타로를 볼 때마다 날짜별로 기기 안(localStorage dnbs_diary)에 적는다.
+     같은 날 같은 도구는 마지막 것만 남기고 120개까지. diary.html 이 읽어 "맞았나요?"를 묻는다 */
+  function diaryAdd(e){try{var a=JSON.parse(localStorage.getItem("dnbs_diary")||"[]"),n=new Date(),k=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
+    var old=a.filter(function(x){return x.d===k&&x.t===e.t;})[0];e.d=k;if(old&&old.v)e.v=old.v;
+    a=a.filter(function(x){return !(x.d===k&&x.t===e.t);});a.unshift(e);localStorage.setItem("dnbs_diary",JSON.stringify(a.slice(0,120)));}catch(_){}}
+  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</p>';}
   /* 아기보살 — 동네보살의 얼굴. 자세별 그림(img/bosal/<자세>.webp)을 자리마다 골라 쓴다.
      점수로 고를 때: 85 이상 만세(cheer), 60 이상 미소(smile), 그 아래 걱정하며 토닥(worry) */
   function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}

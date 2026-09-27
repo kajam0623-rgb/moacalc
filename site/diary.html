@@ -1,0 +1,41 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>운세 일기 | 동네보살</title>
+<meta name="robots" content="noindex, follow">
+<meta name="description" content="내가 본 오늘의 운세와 타로를 날짜별로 모아 보고, 지난 운세가 맞았는지 적어 두는 곳. 기록은 이 기기에만 남습니다.">
+<link rel="stylesheet" href="style.css?v=82079a97">
+<link rel="icon" href="/img/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><link rel="manifest" href="/site.webmanifest"><meta name="theme-color" content="#101b3d"><meta property="og:site_name" content="동네보살"><meta name="google-site-verification" content="RIS-m_ipKnwt5ve7kht--_MhedXjirSLqlv-JQ0Qvos"><meta name="naver-site-verification" content="839a2a3a55c3cfa5392e350cbdc1be1a66be45ac"><script async src="https://www.googletagmanager.com/gtag/js?id=G-8HPPE0MCHD"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8HPPE0MCHD');</script><script>addEventListener("load",function(){try{navigator.sendBeacon("/api/hit",JSON.stringify({p:location.pathname,r:document.referrer}))}catch(e){}});</script><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2579933973121542" crossorigin="anonymous"></script></head><body>
+<div class="wrap">
+<a class="back" href="./">← 홈</a>
+<img class="bosal page-bosal" src="img/bosal/diary.webp" alt="일기를 쓰는 아기보살" decoding="async" onerror="this.remove()">
+<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">운세 일기</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:18px">오늘의 운세와 타로를 볼 때마다 여기 적힙니다. 지난 날은 실제로 어땠는지 눌러 두세요. 기록은 이 기기에만 있고 서버로 가지 않습니다.</p>
+<p class="dy-sum" id="dysum"></p>
+<div id="dy"></div>
+<footer class="sfoot">
+<div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
+<p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
+<div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a><a href="column.html">보살 칼럼</a><a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
+</footer>
+<div class="foot">© 2026 동네보살</div><nav class="tabbar" aria-label="주요 메뉴"><a href="todayfortune.html"><i>☀</i>오늘</a><a href="saju.html"><i>☯</i>사주</a><a href="gunghap.html"><i>♥</i>궁합</a><a href="tarot.html"><i>✦</i>타로</a><a href="dict.html"><i>☰</i>사전</a></nav>
+</div>
+<script>(function(){var box=document.getElementById("dy"),sum=document.getElementById("dysum");
+function get(){try{return JSON.parse(localStorage.getItem("dnbs_diary")||"[]");}catch(e){return [];}}
+function put(a){try{localStorage.setItem("dnbs_diary",JSON.stringify(a));}catch(e){}}
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var n=new Date(),today=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
+function draw(){var a=get();
+  if(!a.length){box.innerHTML='<div class="dy-empty"><img class="bosal" src="img/bosal/smile.webp" alt="" style="width:110px;margin:0 auto 8px"><p>아직 적힌 게 없네. <a href="todayfortune.html">오늘의 운세</a>나 <a href="tarot.html">타로</a>를 보면 여기 차곡차곡 쌓이네.</p></div>';sum.textContent="";return;}
+  var c={맞음:0,애매:0,다름:0};a.forEach(function(e){if(e.v)c[e.v]++;});var k=c.맞음+c.애매+c.다름;
+  sum.textContent="적힌 "+a.length+"개"+(k?" · 확인한 "+k+"개 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름:"");
+  box.innerHTML=a.map(function(e,i){var past=e.d<today;
+    return '<div class="dy-e"><div class="dy-h"><b>'+esc(e.d)+'</b><span>'+esc(e.t)+'</span>'+(e.s!=null?'<i>'+esc(e.s)+'점 · '+esc(e.g)+'</i>':'')+'</div><p>'+esc(e.h)+'</p>'+
+      (past?'<div class="yr-fb">'+["맞음","애매","다름"].map(function(v){return '<span data-i="'+i+'" data-v="'+v+'"'+(e.v===v?' class="on"':'')+'>'+({맞음:"맞았다",애매:"애매",다름:"달랐다"})[v]+'</span>';}).join("")+'</div>':'<div class="dy-today">오늘 것 — 내일 와서 맞았는지 눌러 주게</div>')+'</div>';}).join("")+
+    '<p style="margin-top:16px"><span class="dy-clear" role="button" tabindex="0">일기 모두 지우기</span></p>';}
+box.addEventListener("click",function(ev){var t=ev.target,a=get();
+  if(t.dataset&&t.dataset.v!=null&&t.dataset.i!=null){var e=a[+t.dataset.i];if(!e)return;e.v=e.v===t.dataset.v?undefined:t.dataset.v;put(a);draw();return;}
+  if(t.classList.contains("dy-clear")&&confirm("이 기기의 운세 일기를 모두 지울까요?")){put([]);draw();}});
+draw();})();</script>
+</body></html>

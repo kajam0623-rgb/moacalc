@@ -901,7 +901,7 @@ const footer = `<footer class="sfoot">
 <div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
-<div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
 </footer>
 <div class="foot">© 2026 동네보살</div>${tabbar}`;
@@ -1117,6 +1117,8 @@ function jdToKst(jd){
 
 // 음력 변환기는 setSolarDate로 상태를 갈아끼우는 방식이라 인스턴스 하나면 된다
 const MANSE_CAL = new KoreanLunarCalendar();
+// 휴대폰 달력 구독 파일(RFC 5545). 빌드 때마다 올해부터 3년치를 새로 쓴다
+const ICS_TERMS = DOMAIN + "/calendar-jeolgi.ics", ICS_SON = DOMAIN + "/calendar-sonless.ics";
 // 음력 고정 명절 — 양력 날짜가 해마다 달라지므로 엔진이 잡아야 한다
 const LUNAR_FEAST = { "1-1":"설날", "1-15":"정월대보름", "4-8":"부처님오신날",
                       "5-5":"단오", "7-7":"칠석", "8-15":"추석" };
@@ -1136,7 +1138,9 @@ function manseData(p){
     for (const t of terms) if (t.at.d === d) note.push(`${t.name} ${hhmm(t.at)}`);
     if (MANSE_SRC.SOLAR_HOLIDAYS[`${p.mo}-${d}`]) note.push(MANSE_SRC.SOLAR_HOLIDAYS[`${p.mo}-${d}`]);
     if (!L.intercalation && LUNAR_FEAST[`${L.month}-${L.day}`]) note.push(LUNAR_FEAST[`${L.month}-${L.day}`]);
-    days.push({ d, w:new Date(p.y, p.mo-1, d).getDay(), lun:L, note:note.join(" · "), b:il.b,
+    const son = L.day % 10 === 9 || L.day % 10 === 0;   // 손 없는 날: 음력 끝자리 9·0
+    if (son) note.push("손 없는 날");
+    days.push({ d, w:new Date(p.y, p.mo-1, d).getDay(), lun:L, son, note:note.join(" · "), b:il.b,
       ko:ENGINE.SJ_S[il.s]+ENGINE.SJ_B[il.b], han:ENGINE.SJ_SH[il.s]+ENGINE.SJ_BH[il.b] });
   }
   return { dim, terms, days,
@@ -1675,6 +1679,13 @@ function mansePage(p){
       }).join("")+
       `</div></section>`+
 
+      (function(){ const S = M.days.filter(x => x.son), wk = S.filter(x => x.w === 0 || x.w === 6);
+        return `<section class="guide"><h2>${p.y}년 ${p.mo}월 손 없는 날 — 이사·개업 날짜</h2>`+
+        `<img class="bosal bs-side" src="img/bosal/scroll.webp" alt="날짜를 펼쳐 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()">`+
+        `<p style="margin:0 0 10px">이 달의 손 없는 날은 <b>${S.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ")}</b>입니다.${wk.length ? " 그중 주말은 " + wk.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ") + "이라 이사 날짜로 먼저 찾는 사람이 많습니다." : " 이 달에는 주말에 드는 손 없는 날이 없습니다."}</p>`+
+        `<div class="exbox" style="margin-top:0">`+S.map(x => `<div class="row"><span>${p.mo}월 ${x.d}일 (${WDAY[x.w]})</span><b>${lunOf(x.lun)} · ${x.ko}일</b></div>`).join("")+`</div>`+
+        `<p style="color:var(--muted);font-size:13px;line-height:1.75;margin:10px 0 0">'손'은 날마다 방위를 옮겨 다니며 사람의 일을 방해한다고 여겨진 존재입니다. 민간에서는 음력 날짜 끝자리가 9와 0인 날에는 손이 하늘로 올라가 어느 방위에도 없다고 보아, 이사·개업·혼례 날짜를 이 날로 잡아 왔습니다. 풍습이니 참고로만 보세요. 수요가 몰려 이삿짐 비용이 오르는 날이기도 합니다.</p>`+
+        `<p style="margin:12px 0 0">휴대폰 달력에 넣어 두면 손 없는 날이 해마다 저절로 보입니다 — <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 구독</a> · <a href="${ICS_TERMS.replace("https://", "webcal://")}">절기·명절 구독</a></p></section>`; })()+
       `<section class="guide"><h2>${p.mo}월은 사주에서 ${T.ji}월 — 이 달에 태어난 사람</h2>`+
       `<div class="intro" style="margin-top:0">${para(T.body)}</div></section>`+
 
@@ -1687,6 +1698,8 @@ function mansePage(p){
         .map(y=>`<a href="manse-${enOf({y,mo:p.mo})}.html">${y}년 ${p.mo}월</a>`).join("")+
       `</div></section>`,
     faq:[
+      [`${p.y}년 ${p.mo}월 손 없는 날은 언제인가요?`,
+       `${M.days.filter(x => x.son).map(x => p.mo + "월 " + x.d + "일(" + WDAY[x.w] + ")").join(", ")}입니다. 음력 날짜 끝자리가 9와 0인 날이며, 민간에서 이사·개업 날짜로 즐겨 고르는 날입니다.`],
       [`${p.y}년 ${p.mo}월 절기는 언제인가요?`,
        `${jeol.name}${josa(jeol.name,"은/는")} ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}, ${jung.name}${josa(jung.name,"은/는")} ${p.mo}월 ${jung.at.d}일 ${hhmm(jung.at)}입니다. 태양 황경으로 직접 계산한 한국 시각입니다.`],
       [`${p.y}년 ${p.mo}월생의 월주는 무엇인가요?`,
@@ -1735,6 +1748,7 @@ function manseHubPage(){
        ["1일 일진", `${CM.first.ko}(${CM.first.han})일`],["말일 일진", `${CM.last.ko}(${CM.last.han})일`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>날짜별 일진·음력 표</span><b><a href="manse-${cur.en}.html">${cur.y}년 ${cur.mo}월 만세력 보기 →</a></b></div></div></section>`+
+      `<section class="guide"><h2>휴대폰 달력에 절기·손 없는 날 넣기</h2><img class="bosal bs-side" src="img/bosal/phone.webp" alt="휴대폰을 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">아래 링크를 누르면 아이폰 캘린더나 구글 캘린더에 구독으로 들어갑니다. 한 번 넣어 두면 24절기 절입 시각, 설날·추석 같은 음력 명절, 손 없는 날이 달력에 저절로 뜨고 해가 바뀌어도 이어집니다.</p><p style="margin-bottom:10px"><a href="${ICS_TERMS.replace("https://","webcal://")}">절기·명절 구독</a> · <a href="${ICS_SON.replace("https://","webcal://")}">손 없는 날 구독</a></p><p style="color:var(--muted);font-size:12.5px">구글 캘린더를 PC에서 쓰신다면 설정 → 다른 캘린더 추가 → URL로 추가에 <code>${ICS_TERMS}</code> 를 붙여 넣으세요. 개인 정보는 오가지 않고 달력 파일만 받아 갑니다.</p></div></section>`+
       `<section class="guide"><h2>월별 만세력 ${MANSE_Y0}~${MANSE_Y1}년</h2>`+
       `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">달마다 한 장씩, 날짜별 일진과 음력, 절입 시각, 그 달의 연주·월주가 들어 있습니다.</p>`+
       `<div class="exbox" style="margin-top:0">${grid}</div></section>`,
@@ -2068,6 +2082,43 @@ const conceptHtml = conceptGroups.map(([title, sub, links]) =>
     `</section>`).join("");
 
 
+/* 운세 일기 — 기기 안의 기록만 보여 주는 개인 페이지라 검색에 싣지 않는다(noindex, 사이트맵 제외) */
+function diaryPage(){
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>운세 일기 | 동네보살</title>
+<meta name="robots" content="noindex, follow">
+<meta name="description" content="내가 본 오늘의 운세와 타로를 날짜별로 모아 보고, 지난 운세가 맞았는지 적어 두는 곳. 기록은 이 기기에만 남습니다.">
+<link rel="stylesheet" href="style.css?v=${styleV}">
+${headExtra}</head><body>
+<div class="wrap">
+<a class="back" href="./">← 홈</a>
+<img class="bosal page-bosal" src="img/bosal/diary.webp" alt="일기를 쓰는 아기보살" decoding="async" onerror="this.remove()">
+<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">운세 일기</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:18px">오늘의 운세와 타로를 볼 때마다 여기 적힙니다. 지난 날은 실제로 어땠는지 눌러 두세요. 기록은 이 기기에만 있고 서버로 가지 않습니다.</p>
+<p class="dy-sum" id="dysum"></p>
+<div id="dy"></div>
+${footer}
+</div>
+<script>(function(){var box=document.getElementById("dy"),sum=document.getElementById("dysum");
+function get(){try{return JSON.parse(localStorage.getItem("dnbs_diary")||"[]");}catch(e){return [];}}
+function put(a){try{localStorage.setItem("dnbs_diary",JSON.stringify(a));}catch(e){}}
+function esc(t){return String(t==null?"":t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+var n=new Date(),today=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
+function draw(){var a=get();
+  if(!a.length){box.innerHTML='<div class="dy-empty"><img class="bosal" src="img/bosal/smile.webp" alt="" style="width:110px;margin:0 auto 8px"><p>아직 적힌 게 없네. <a href="todayfortune.html">오늘의 운세</a>나 <a href="tarot.html">타로</a>를 보면 여기 차곡차곡 쌓이네.</p></div>';sum.textContent="";return;}
+  var c={맞음:0,애매:0,다름:0};a.forEach(function(e){if(e.v)c[e.v]++;});var k=c.맞음+c.애매+c.다름;
+  sum.textContent="적힌 "+a.length+"개"+(k?" · 확인한 "+k+"개 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름:"");
+  box.innerHTML=a.map(function(e,i){var past=e.d<today;
+    return '<div class="dy-e"><div class="dy-h"><b>'+esc(e.d)+'</b><span>'+esc(e.t)+'</span>'+(e.s!=null?'<i>'+esc(e.s)+'점 · '+esc(e.g)+'</i>':'')+'</div><p>'+esc(e.h)+'</p>'+
+      (past?'<div class="yr-fb">'+["맞음","애매","다름"].map(function(v){return '<span data-i="'+i+'" data-v="'+v+'"'+(e.v===v?' class="on"':'')+'>'+({맞음:"맞았다",애매:"애매",다름:"달랐다"})[v]+'</span>';}).join("")+'</div>':'<div class="dy-today">오늘 것 — 내일 와서 맞았는지 눌러 주게</div>')+'</div>';}).join("")+
+    '<p style="margin-top:16px"><span class="dy-clear" role="button" tabindex="0">일기 모두 지우기</span></p>';}
+box.addEventListener("click",function(ev){var t=ev.target,a=get();
+  if(t.dataset&&t.dataset.v!=null&&t.dataset.i!=null){var e=a[+t.dataset.i];if(!e)return;e.v=e.v===t.dataset.v?undefined:t.dataset.v;put(a);draw();return;}
+  if(t.classList.contains("dy-clear")&&confirm("이 기기의 운세 일기를 모두 지울까요?")){put([]);draw();}});
+draw();})();</script>
+</body></html>`;
+}
 function dictPage(){
   const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
   const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 22장과 만세력 월력까지 뜻과 함께 찾아보세요.";
@@ -2181,7 +2232,8 @@ function show(b){clearTimeout(midT);var nx=new Date();nx.setHours(24,0,5,0);midT
 box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosal/s/'+(t.score>=85?"cheer":t.score>=60?"smile":"worry")+'.webp" alt="아기보살" onerror="this.remove()"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
 '<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
 '<div class="today-btns"><a class="p" href="todayfortune.html#go">오늘 운세 자세히</a><a href="saju.html#go">내 사주 보기</a><a href="gunghap.html">궁합</a></div>'+
-'<button type="button" class="today-reset">다른 생일로 보기</button></div>';
+'<button type="button" class="today-reset">다른 생일로 보기</button>'+
+(function(){try{var n=JSON.parse(localStorage.getItem("dnbs_diary")||"[]").length;return n?'<a class="today-diary" href="diary.html">운세 일기 '+n+'개 보기 →</a>':"";}catch(e){return "";}})()+'</div>';
 if(window.plainWords)plainWords(box.querySelector(".w"));
 box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();};});}
 function wire(){var g=document.getElementById("hgo");if(!g)return;g.onclick=function(){var v=document.getElementById("hb").value;if(!v)return;
@@ -2352,6 +2404,12 @@ const extraCss = `
 .dc-bosal{width:54px;flex:none;}
 .page-bosal{float:right;width:110px;margin:-6px 0 6px 12px;}
 .foot-bosal{width:64px;margin:0 0 8px;}
+.dy-sum{font-weight:700;margin:0 0 12px;}.dy-e{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--surface);}
+.dy-h{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;}.dy-h span{font-weight:700;}.dy-h i{font-style:normal;color:var(--muted);font-size:13px;margin-left:auto;}
+.dy-e p{margin:6px 0 0;font-size:14px;}.dy-today{font-size:12.5px;color:var(--muted);margin-top:8px;}
+.dy-e .yr-fb{display:flex;gap:6px;margin-top:8px;}.dy-e .yr-fb span{padding:6px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:12.5px;cursor:pointer;}
+.dy-e .yr-fb span.on{background:#E6B25A;color:#1b1406;border-color:#E6B25A;font-weight:800;}
+.dy-clear{font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer;}.dy-empty{text-align:center;padding:30px 10px;}
 .toolhero img.th-bosal{grid-area:1/1;justify-self:end;align-self:start;width:92px;height:auto;aspect-ratio:auto;object-fit:contain;margin:10px 10px 0 0;z-index:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));animation:bosalBob 3.4s ease-in-out infinite;}
 @media (min-width:760px){.toolhero img.th-bosal{width:150px;margin:14px 18px 0 0;}}
 @media (prefers-reduced-motion:reduce){.th-bosal{animation:none}}
@@ -2369,6 +2427,7 @@ const extraCss = `
 .today-card .w{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.6;}
 .today-btns{display:flex;flex-wrap:wrap;gap:8px;}.today-btns a{border:1.5px solid var(--line-2);border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--ink);}
 .today-btns .p{border-color:#E6B25A;}
+.today-diary{display:block;margin-top:6px;font-size:13px;color:var(--accent);font-weight:700;}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}
@@ -2456,6 +2515,7 @@ chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSy
   "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
+fs.writeFileSync(path.join(OUT,"diary.html"), diaryPage());
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
@@ -2547,7 +2607,33 @@ fs.writeFileSync(path.join(OUT,"_redirects"), "/ /index.html 200\n/lotto.html / 
 fs.writeFileSync(path.join(OUT,"404.html"), notFoundPage());
 fs.writeFileSync(path.join(OUT,"_headers"),
   "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n" +
-  "/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=86400\n/*.css\n  Cache-Control: public, max-age=86400\n");
+  "/*.ics\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=86400\n/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=86400\n/*.css\n  Cache-Control: public, max-age=86400\n");
+{ // 달력 구독 파일
+  const Y0 = new Date().getFullYear(), stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
+  const icsEsc = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  const fold = line => { const out = []; let cur = "", n = 0;   // 75바이트마다 접는다(한글은 3바이트)
+    for (const ch of line) { const w = Buffer.byteLength(ch); if (n + w > 73) { out.push(cur); cur = " "; n = 1; } cur += ch; n += w; }
+    out.push(cur); return out.join("\r\n"); };
+  const ymd = (y, m, d) => `${y}${String(m).padStart(2, "0")}${String(d).padStart(2, "0")}`;
+  const cal = (name, desc, ev) => ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//dongnebosal.com//calendar//KO", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+    "X-WR-CALNAME:" + icsEsc(name), "X-WR-CALDESC:" + icsEsc(desc), "X-WR-TIMEZONE:Asia/Seoul", "REFRESH-INTERVAL;VALUE=DURATION:P7D", "X-PUBLISHED-TTL:P7D",
+    ...ev.flatMap(e => { const nx = new Date(e.y, e.m - 1, e.d + 1);
+      return ["BEGIN:VEVENT", "UID:" + e.uid + "@dongnebosal.com", "DTSTAMP:" + stamp, "DTSTART;VALUE=DATE:" + ymd(e.y, e.m, e.d),
+        "DTEND;VALUE=DATE:" + ymd(nx.getFullYear(), nx.getMonth() + 1, nx.getDate()), "SUMMARY:" + icsEsc(e.sum), "DESCRIPTION:" + icsEsc(e.desc), "TRANSP:TRANSPARENT", "END:VEVENT"]; }),
+    "END:VCALENDAR"].map(fold).join("\r\n") + "\r\n";
+  const terms = [], son = [];
+  for (let y = Y0; y < Y0 + 3; y++) {
+    for (const [nm, deg] of ENGINE.SJ_TERM) { const t = jdToKst(ENGINE.sjTermJd(y, deg));
+      terms.push({ y: t.y, m: t.mo, d: t.d, uid: `term-${t.y}-${deg}`, sum: nm, desc: `${nm} 절입 ${hhmm(t)} (태양 황경 ${deg}°) · 동네보살 만세력 https://dongnebosal.com/manse.html` }); }
+    for (let m = 1; m <= 12; m++) for (let d = 1; d <= new Date(y, m, 0).getDate(); d++) {
+      MANSE_CAL.setSolarDate(y, m, d); const L = MANSE_CAL.getLunarCalendar();
+      if (!L.intercalation && LUNAR_FEAST[`${L.month}-${L.day}`]) terms.push({ y, m, d, uid: `feast-${y}-${m}-${d}`, sum: LUNAR_FEAST[`${L.month}-${L.day}`], desc: `음력 ${L.month}월 ${L.day}일 · 동네보살` });
+      if (L.day % 10 === 9 || L.day % 10 === 0) son.push({ y, m, d, uid: `son-${y}-${m}-${d}`, sum: "손 없는 날", desc: `음력 ${L.intercalation ? "윤" : ""}${L.month}월 ${L.day}일 — 이사·개업 날짜로 민간에서 즐겨 고르는 날 · 동네보살 https://dongnebosal.com/manse.html` }); } }
+  const seen = new Set(), uniq = a => a.filter(e => !seen.has(e.uid) && seen.add(e.uid)).sort((p, q) => ymd(p.y, p.m, p.d).localeCompare(ymd(q.y, q.m, q.d)));
+  fs.writeFileSync(path.join(OUT, "calendar-jeolgi.ics"), cal("동네보살 절기·명절", "24절기 절입 시각(태양 황경 계산)과 음력 명절", uniq(terms)));
+  fs.writeFileSync(path.join(OUT, "calendar-sonless.ics"), cal("동네보살 손 없는 날", "음력 끝자리 9·0인 손 없는 날", uniq(son)));
+  console.log("   달력 구독:", terms.length, "절기·명절 +", son.length, "손 없는 날");
+}
 // img/ → site/img/ 복사 (이미지 도착하면 넣고 재빌드)
 if (fs.existsSync(IMG_SRC)) {
   let n = 0;
