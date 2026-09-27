@@ -6,7 +6,7 @@
    node adsense_audit.js --baseline      현황을 adsense_baseline.json 에 저장 (작업 전 한 번)
    node adsense_audit.js --live          라이브 사이트에서 표본 페이지의 robots 메타와 사이트맵을 확인
 
-   단계: 2 계산기 검색 제외 / 3 월력 줄이기 / 4 음력 페이지 보강 / 5 칼럼 추가 */
+   단계: 2 계산기 검색 제외 / 3 월력 줄이기 / 4 음력 페이지 보강 / 5 칼럼 추가 / 6 일주 60 차별화 */
 const fs = require("fs");
 const path = require("path");
 const https = require("https");
@@ -17,7 +17,8 @@ const DOMAIN = "https://dongnebosal.com";
 const MANSE_KEEP = { from: "2025-01", to: "2027-12" };
 const LUNAR_MIN = 1200;   // 4단계: 음력 페이지 정적 본문 최소 글자(공백 제외)
 const THIN_MIN = 800;     // 이보다 얇은 검색 노출 페이지는 목록으로 보고한다
-const COLUMN_MIN = { count: 6, chars: 1500 }; // 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
+const COLUMN_MIN = { count: 6, chars: 1500 };
+const UNIQ = { k: 10, ilju: 50 }; // 6단계: 노출 페이지 전체에서 이 페이지에만 있는 10자 조각 비율(%). 2026-09 측정 일주 12% · 별자리 74% · 타로 89% // 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, "").split("="); return [k, v ?? true]; }));
 const PHASE = +(args.phase || 0);
@@ -49,7 +50,7 @@ const pages = fs.readdirSync(SITE).filter(f => f.endsWith(".html")).map(f => {
   const canon = (html.match(/<link rel="canonical" href="([^"]+)"/i) || [])[1] || "";
   const navHtml = (html.match(/<nav class="sitenav">[\s\S]*?<\/nav>/) || [""])[0];
   const links = [...html.matchAll(/href="([a-z0-9-]+)\.html(?:[#?][^"]*)?"/g)].map(m => m[1]);
-  return { f, id, type: typeOf(id), noindex: /noindex/i.test(robots), canon, chars: visible(html).length, links, navLinks: [...navHtml.matchAll(/href="([a-z0-9-]+)\.html"/g)].map(m => m[1]) };
+  return { f, id, type: typeOf(id), noindex: /noindex/i.test(robots), canon, chars: visible(html).length, body: visible(html.replace(/<div class="sibs">[\s\S]*?<\/div>/g, "")), links, navLinks: [...navHtml.matchAll(/href="([a-z0-9-]+)\.html"/g)].map(m => m[1]) };
 });
 const byId = Object.fromEntries(pages.map(p => [p.id, p]));
 const sitemap = fs.readFileSync(path.join(SITE, "sitemap.xml"), "utf8");
@@ -57,6 +58,10 @@ const smIds = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1
 const rss = fs.readFileSync(path.join(SITE, "rss.xml"), "utf8");
 const llms = fs.existsSync(path.join(SITE, "llms.txt")) ? fs.readFileSync(path.join(SITE, "llms.txt"), "utf8") : "";
 const indexable = pages.filter(p => !p.noindex && p.id !== "404");
+// 고유율: 노출 페이지들의 K자 조각 가운데 이 페이지에서만 나오는 조각의 비율. 이름만 바꿔 끼운 템플릿 문장은 여기서 걸린다
+const shCount = new Map();
+for (const p of indexable) { const seen = new Set(); for (let i = 0; i + UNIQ.k <= p.body.length; i++) { const s = p.body.slice(i, i + UNIQ.k); if (!seen.has(s)) { seen.add(s); shCount.set(s, (shCount.get(s) || 0) + 1); } } }
+for (const p of indexable) { let n = 0, u = 0; for (let i = 0; i + UNIQ.k <= p.body.length; i++) { n++; if (shCount.get(p.body.slice(i, i + UNIQ.k)) === 1) u++; } p.uniq = n ? Math.round(100 * u / n) : 0; }
 
 // ---- 현황
 const count = {};
@@ -71,6 +76,8 @@ const report = {
 console.log("== 현황");
 console.log(`페이지 ${report.페이지} · 검색 노출 ${report.검색노출} · 사이트맵 ${report.사이트맵} · 찍어 낸 페이지 ${report.찍어낸페이지비율}`);
 console.log(Object.entries(count).sort((a, b) => b[1].전체 - a[1].전체).map(([k, v]) => `${k} ${v.노출}/${v.전체}`).join(" · "));
+const uAvg = {}; for (const p of indexable) (uAvg[p.type] = uAvg[p.type] || []).push(p.uniq);
+console.log("고유율(평균·최소) " + Object.entries(uAvg).filter(([, v]) => v.length > 1).map(([k, v]) => `${k} ${Math.round(v.reduce((a, b) => a + b, 0) / v.length)}·${Math.min(...v)}%`).join(" · "));
 console.log(`얇은 노출 페이지(<${THIN_MIN}자) ${thin.length}개: ${thin.slice(0, 12).map(p => `${p.id}(${p.chars})`).join(" ")}${thin.length > 12 ? " …" : ""}`);
 
 if (args.baseline) {
@@ -108,6 +115,9 @@ const cols = indexable.filter(p => p.type === "칼럼");
 gate(5, `칼럼 ${COLUMN_MIN.count}편 이상`, cols.length >= COLUMN_MIN.count ? [] : [`${cols.length}편`]);
 gate(5, `칼럼마다 ${COLUMN_MIN.chars}자 이상`, cols.filter(p => p.chars < COLUMN_MIN.chars).map(p => `${p.id}(${p.chars})`));
 gate(5, "칼럼이 사이트맵에 있다", cols.filter(p => !smIds.has(p.id)).map(p => p.id));
+
+const ilju = indexable.filter(p => p.type === "일주");
+gate(6, `일주 60편 모두 고유율 ${UNIQ.ilju}% 이상`, ilju.filter(p => p.uniq < UNIQ.ilju).sort((a, b) => a.uniq - b.uniq).map(p => `${p.id}(${p.uniq}%)`).concat(ilju.length === 60 ? [] : [`일주 ${ilju.length}편`]));
 
 console.log(`\n== 게이트 (강제: 공통${PHASE >= 2 ? " + 2~" + PHASE + "단계" : ""})`);
 let fail = 0;

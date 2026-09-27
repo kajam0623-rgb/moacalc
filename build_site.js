@@ -1169,15 +1169,19 @@ const iljinChips = cur => '<div class="sibs">'+ILJIN_PAGES.map(p=>p.en===cur
 /* 일주(日柱) 60 — 태어난 날의 두 글자.
    iljin-* 이 "그 날의 기운"이라면 여기는 "그 일주로 태어난 사람"이다. 같은 60갑자를 쓰므로
    제목·본문이 겹치면 구글이 한쪽만 색인하고 나머지를 버린다. 섹션 구성을 아예 다르게 둔다.
-   천간은 ILGAN_PAGES(일간 원고)를 재활용하고 지지는 content_ilju.js 를 쓴다.
-   ILJIN_PAGES 를 읽으므로 반드시 그 정의보다 뒤에 있어야 한다. */
+   본문의 중심은 content_ilju60.js(60편 각자의 원고)이고, 지지 공용 원고(content_ilju.js)는 배우자 자리 한 절에만 쓴다.
+   천간 공용 원고는 일간 페이지와 겹치므로 옮겨 싣지 않고 링크만 건다. adsense_audit.js 가 고유율을 검사한다. */
 const ILJU_SRC = require("./content_ilju.js");
+// 60편 각자의 원고. 천간·지지 공용 원고만으로는 같은 천간 6편·같은 지지 5편이 문장을 나눠 써서 찍어 낸 페이지가 된다
+const ILJU_TEXT = require("./content_ilju60.js");
 const ILJU_PAGES = Array.from({length:60}, (_, k) => {
   const s = k % 10, b = k % 12;
   const g = ILGAN_PAGES[s], j = ILJU_SRC.JIJU[b];
   const tengod = ENGINE.sjTenGod(s, ENGINE.SJ_BMAIN[b]);   // 일지 지장간 본기로 본 십성
+  const txt = ILJU_TEXT[`${g.en}${j.rom}`];
+  if (!txt) throw new Error(`content_ilju60.js 에 ${g.en}${j.rom} 원고가 없다`);
   return {
-    k, s, b, gan:g, ji:j, tengod,
+    k, s, b, gan:g, ji:j, tengod, txt,
     en:`${g.en}${j.rom}`,                       // 예: gapja
     ko:`${g.ko}${j.ko}`,                        // 갑자
     han:`${g.han}${j.han}`,                     // 甲子
@@ -1189,7 +1193,6 @@ const ILJU_PAGES = Array.from({length:60}, (_, k) => {
     chung:ENGINE.SJ_TTI[(b + 6) % 12],
     samhap:[0,4,8].map(o=>ENGINE.SJ_TTI[(b + o) % 12]),
     yukhap:ENGINE.SJ_TTI[ENGINE.sjYukhap(b)],
-    iljinEn:ILJIN_PAGES[k].en,                  // 같은 간지의 일진 페이지 — 검색 의도를 갈라 준다
   };
 });
 const iljuChips = cur => '<div class="sibs">'+ILJU_PAGES.map(p=>p.en===cur
@@ -1879,14 +1882,15 @@ function iljinPage(p){
    일진 페이지와 간지는 같지만 보는 대상이 다르다. 여기서는 날이 아니라 사람을 본다.
    일간 = 나, 일지 = 배우자 자리라는 틀만 쓰고 일진 쪽 어휘(이 날·도래일·점수)는 쓰지 않는다. */
 function iljuPage(p){
-  const G = p.gan, J = p.ji, S = p.ss;
+  const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
+  const first = (t, n) => t.trim().split(/(?<=[.?!])\s+/).slice(0, n).join(" ");
   return seoPage({
     crumb:`${p.ko}일주`,
-    title:`${p.ko}일주 성격 — 여자·남자 차이와 배우자 자리 | 동네보살`,
-    desc:`${p.ko}일주(${p.han}) 성격과 배우자 자리, 여자와 남자의 차이. 십이운성 ${p.un}, 일지 십성 ${p.tengod}.`,
+    title:`${p.ko}일주 성격 — ${C.tag}, 여자·남자 차이 | 동네보살`,
+    desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(C.core,1)} 여자와 남자의 차이, 일과 재물까지.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
-    h1:`${p.han} ${p.ko}일주 — 나는 ${gEl}, 배우자 자리는 ${jEl}`,
+    h1:`${p.han} ${p.ko}일주 — ${C.tag}`,
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju", preset:"",
@@ -1904,46 +1908,38 @@ function iljuPage(p){
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+
 
       `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. 60갑자 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
-      `<p style="margin-bottom:10px">${gEl}${josa(gEl,"이/가")} ${jEl} 위에 앉으면 십이운성으로 <b>${p.un}</b> 자리에 놓입니다. 그리고 ${J.ko}의 지장간 본기 ${p.bmain}${josa(p.bmain,"은/는")} 내 일간에게 <b>${p.tengod}</b>${josa(p.tengod,"이/가")} 됩니다. 이 두 가지가 ${p.ko}일주의 골격입니다.</p></div>`+
+      `${para(C.core)}</div>`+
+      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 하나만 떼어 본 성격·일·재물 풀이는 <a href="ilgan-${G.en}.html">${gEl} 일간</a> 페이지에 있습니다.</p>`+
 
-      `<section class="guide"><h2>${gEl} 일간 — ${p.ko}일주의 성격</h2>`+
-      `<div class="intro" style="margin-top:0">${para(G.intro)}</div>`+
-      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 하나만 떼어 본 풀이는 <a href="ilgan-${G.en}.html">${gEl} 일간</a> 페이지에 더 자세히 있습니다.</p></section>`+
+      `<section class="guide"><h2>${C.tag} — ${p.ko}일주가 드러나는 장면</h2>`+
+      `<div class="intro" style="margin-top:0">${para(C.scene)}</div></section>`+
 
-      `<section class="guide"><h2>일지 ${J.ko}(${J.han}) — ${p.ko}일주의 배우자 자리</h2><div class="intro" style="margin-top:0">`+
-      `${para(J.seat)}${para(J.inner)}${para(J.pair)}`+
-      `<p style="margin-bottom:10px">사주에서 일지는 배우자궁(配偶者宮)이라 부릅니다. 배우자가 어떤 사람인지보다, 내가 관계를 어떻게 다루는지가 여기에 나옵니다. 상대의 사주와 맞춰 보려면 <a href="gunghap.html">궁합</a>에서 두 사람의 생년월일을 함께 넣어 보세요.</p></div></section>`+
+      `<section class="guide"><h2>${p.ko}일주 여자와 남자</h2><div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px"><b>${p.ko}일주 여자</b><br>${C.woman}</p>`+
+      `<p style="margin-bottom:10px"><b>${p.ko}일주 남자</b><br>${C.man}</p>`+
+      `<p style="margin-bottom:10px">남녀가 갈리는 근거는 십성입니다. 여자는 관성(官星), 남자는 재성(財星)을 배우자로 읽습니다.</p></div></section>`+
 
-      `<section class="guide"><h2>${p.ko}일주 여자와 남자 — 같은 글자, 다른 자리</h2><div class="intro" style="margin-top:0">`+
-      `${para(J.gender)}`+
-      `<p style="margin-bottom:10px">남녀를 나누는 근거는 성별 자체가 아니라 십성입니다. 남자는 재성(財星)을 배우자로 보고 여자는 관성(官星)을 배우자로 보기 때문에, 같은 ${J.ko} 자리라도 읽는 글자가 달라집니다. ${p.ko}일주의 일지 십성이 ${p.tengod}${josa(p.tengod,"이라/라")} 이 차이가 특히 눈에 띕니다.</p></div></section>`+
-
-      `<section class="guide"><h2>십이운성 ${p.un} — ${gEl}${josa(gEl,"이/가")} ${J.ko}에서 서는 자리</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px">${esc(ILJU_SRC.UN_DESC[p.un])}</p>`+
-      `<p style="margin-bottom:10px">십이운성은 내 일간이 열두 지지 위에서 각각 얼마나 힘을 받는지를 사람의 한살이에 빗대 매긴 눈금입니다. ${p.ko}일주는 내 글자가 바로 자기 일지 위에 앉아 있으므로, ${p.un}${josa(p.un,"이/가")} 평생 깔고 가는 기본값이 됩니다. 좋고 나쁨이 아니라 힘이 어디에 쏠려 있는지를 보는 눈금입니다.</p></div></section>`+
-
-      `<section class="guide"><h2>일지 십성 ${p.tengod} — 배우자 자리가 나에게 주는 것</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px">${J.ko}(${J.han}) 안에 숨은 천간 가운데 가장 힘이 센 것이 ${p.bmain}입니다. 이 글자를 내 일간 ${G.han}(${G.ko})${josa(G.ko,"과/와")} 대조하면 <b>${p.tengod}</b>${josa(p.tengod,"이/가")} 나옵니다. ${S ? esc(S.rule)+josa(S.rule,"이라는/라는")+" 뜻입니다." : ""}</p>`+
-      (S ? `<p style="margin-bottom:10px">${p.tengod}${josa(p.tengod,"은/는")} ${esc(S.keyword)}입니다. ${esc(S.strong)}${josa(S.strong,"이/가")} 강점으로 나오고, 과하면 ${esc(S.weak)}${josa(S.weak,"으로/로")} 기웁니다. 이것이 배우자 자리에 놓였다는 것은 가장 가까운 사람과의 사이에서 이 성질이 되풀이된다는 뜻입니다.</p>`+
-       `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0"><a href="sipseong-${S.en}.html">${p.tengod} 뜻 자세히 보기</a></p>` : "")+
-      `</div></section>`+
+      `<section class="guide"><h2>일지 ${J.ko}(${J.han}) — 배우자 자리</h2><div class="intro" style="margin-top:0">`+
+      `${para(J.seat)}${para(J.pair)}`+
+      `<p style="margin-bottom:10px">상대의 사주와 맞춰 보려면 <a href="gunghap.html">궁합</a>에서 두 사람의 생년월일을 함께 넣어 보세요.</p></div></section>`+
 
       `<section class="guide"><h2>${p.ko}일주의 일과 재물</h2>`+
-      `<div class="intro" style="margin-top:0">${para(G.work)}${para(G.money)}</div></section>`+
+      `<div class="intro" style="margin-top:0">${para(C.work)}</div></section>`+
+
+      `<section class="guide"><h2>${p.ko}일주가 조심할 것</h2>`+
+      `<div class="intro" style="margin-top:0">${para(C.care)}</div></section>`+
+
+      `<section class="guide"><h2>십이운성 ${p.un}${josa(p.un,"과/와")} 일지 십성 ${p.tengod}</h2><div class="intro" style="margin-top:0">`+
+      `<p style="margin-bottom:10px"><b>십이운성 ${p.un}</b> — ${esc(ILJU_SRC.UN_DESC[p.un])}</p>`+
+      `<p style="margin-bottom:10px"><b>일지 십성 ${p.tengod}</b> — ${J.ko}(${J.han}) 안에서 가장 힘이 센 ${p.bmain}${josa(p.bmain,"을/를")} 내 일간 ${G.ko}${josa(G.ko,"과/와")} 대조한 결과입니다.${S ? " "+esc(S.rule)+josa(S.rule,"이라는/라는")+" 뜻입니다." : ""}</p>`+
+      (S ? `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0"><a href="sipseong-${S.en}.html">${p.tengod} 뜻 자세히 보기</a></p>` : "")+
+      `</div></section>`+
 
       `<section class="guide"><h2>${p.ko}일주와 인연이 닿는 띠</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px"><b>삼합 — ${esc(p.samhap.join(", "))}띠</b><br>내 일지 ${J.ko}${josa(J.ko,"과/와")} 한 덩어리로 묶이는 세 지지입니다. 말을 길게 하지 않아도 뜻이 통하는 쪽이라, 오래 가는 인연이 이 안에서 많이 나옵니다.</p>`+
-      `<p style="margin-bottom:10px"><b>육합 — ${esc(p.yukhap)}띠</b><br>짝을 이루는 지지입니다. 서로의 모난 곳을 덮어 주는 결이라 배우자·동업자 자리에서 편안합니다.</p>`+
-      `<p style="margin-bottom:10px"><b>충 — ${esc(p.chung)}띠</b><br>배우자 자리를 정면으로 흔드는 띠입니다. 못 만날 사이라는 뜻은 아니고, 끌리는 힘이 세지만 부딪히는 일도 잦다는 뜻으로 읽습니다. 서로의 거리를 정해 두면 오래 갑니다.</p>`+
-      `<p style="margin-bottom:10px">띠는 태어난 해 하나만 보는 방식이라 열두 갈래로만 갈립니다. 일주끼리 맞춰 보는 쪽이 훨씬 좁게 나옵니다.</p></div></section>`+
-
-      `<section class="guide"><h2>${p.ko}일주와 ${p.ko}일은 다릅니다</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px">글자는 ${p.han}으로 같지만 보는 대상이 다릅니다. <b>${p.ko}일주</b>는 그 간지로 <b>태어난 사람</b>을 말하고, <b>${p.ko}일</b>은 달력에 60일마다 돌아오는 <b>하루</b>를 말합니다. 이 페이지는 사람 쪽입니다.</p>`+
-      `<p style="margin-bottom:10px">그 날짜의 기운이 궁금하다면 <a href="iljin-${p.iljinEn}.html">${p.ko}일 일진</a> 페이지를 보세요. 그쪽에는 ${p.ko}일이 언제 오는지와, 일간 열 가지가 그 날 각각 어떤 자리에 서는지가 계산돼 있습니다.</p>`+
-      `<p style="margin-bottom:10px">내 일주가 무엇인지 모른다면 <a href="saju.html">사주팔자 만세력</a>에 생년월일을 넣으면 여덟 글자 가운데 일주가 표시됩니다.</p></div></section>`,
+      `<p style="margin-bottom:10px">일지 ${J.ko}${josa(J.ko,"과/와")} 한 덩어리로 묶이는 삼합은 <b>${esc(p.samhap.join(", "))}띠</b>, 짝을 이루는 육합은 <b>${esc(p.yukhap)}띠</b>입니다. 정면으로 마주 보는 충은 <b>${esc(p.chung)}띠</b>인데 못 만날 사이가 아니라 끌림과 마찰이 함께 큰 사이로 읽습니다.</p></div></section>`,
     faq:[
-      [`${p.ko}일주는 어떤 성격인가요?`,`일간이 ${gEl}${josa(gEl,"이라/라")} ${G.metaphor}에 비유합니다. ${G.intro.split("\n")[1] ? G.intro.split("\n")[1].trim() : G.intro.split("\n")[0].trim()} 여기에 일지 ${J.ko}${josa(J.ko,"이/가")} 깔려 십이운성 ${p.un} 자리가 되고, 일지 십성은 ${p.tengod}입니다.`],
-      [`${p.ko}일주는 여자와 남자가 다른가요?`,`기본 성격은 일간 ${gEl}${josa(gEl,"으로/로")} 같습니다. 갈리는 것은 배우자를 보는 글자입니다. 남자는 재성, 여자는 관성을 배우자로 읽기 때문에 같은 ${J.ko} 자리를 두고도 해석이 달라집니다. ${J.gender}`],
+      [`${p.ko}일주는 어떤 성격인가요?`,`${G.metaphor}에 비유되는 ${gEl} 일간이 ${jEl} 위에 앉은 일주입니다. ${first(C.core,2)}`],
+      [`${p.ko}일주는 여자와 남자가 다른가요?`,`기본 성격은 같고 배우자를 보는 글자가 갈립니다. 여자는 관성, 남자는 재성을 배우자로 읽습니다. ${first(C.woman,1)} ${first(C.man,1)}`],
       [`내 일주는 어떻게 확인하나요?`,`태어난 날의 간지가 일주입니다. 생년월일을 사주팔자 만세력에 넣으면 여덟 글자 가운데 세 번째 기둥으로 나옵니다. 그 두 글자가 ${p.han}이면 ${p.ko}일주입니다. 날짜 경계는 자정 기준이며 시주만 진태양시로 보정합니다.`],
       [`충인 ${p.chung}띠와는 안 맞나요?`,`충은 안 맞는다는 뜻이 아니라 부딪힌다는 뜻입니다. ${p.chung}띠는 내 일지 ${J.ko}${josa(J.ko,"과/와")} 정면으로 마주 보는 자리라 끌리는 힘도 세고 마찰도 잦습니다. 실제 궁합은 일지 하나가 아니라 사주 여덟 글자 전체의 균형으로 봅니다.`]],
     sibTitle:"다른 일주도 보기", sibs:iljuChips(p.en),
