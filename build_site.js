@@ -22,7 +22,8 @@ const ZODIAC_PAGES = require("./content_zodiac.js");
 const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방침·이용약관(E-E-A-T)
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
-const TAROT_PAGES = require("./content_tarot.js");       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
+const TAROT_PAGES = require("./content_tarot.js");
+const DREAM = require("./content_dream.js");          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
@@ -902,7 +903,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
 <div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
+<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="dream.html">꿈해몽</a></div>
 </footer>
 <div class="foot">© 2026 동네보살</div>${tabbar}`;
 
@@ -2122,6 +2123,57 @@ box.addEventListener("click",function(ev){var t=ev.target,a=get();
 draw();})();</script>
 </body></html>`;
 }
+/* 꿈해몽 — 찾기 한 쪽(dream.html) + 분류마다 한 쪽. 풀이는 보살 말투, 분류 소개와 안내는 존댓말 */
+const DREAM_N = DREAM.reduce((t,c)=>t+c.items.length,0);
+const DREAM_KIND = {길몽:"#3f9d6a",흉몽:"#c0563f",태몽:"#b0689a",반반:"#8a7a55"};
+const dreamBadge = k => `<span class="dm-k" style="background:${DREAM_KIND[k]}">${k}</span>`;
+const dreamHead = (url, title, desc, crumbs) => `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)} | 동네보살</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
+${OG_IMG_TAG}
+<link rel="stylesheet" href="style.css?v=${styleV}">
+${headExtra}
+${ORG_LD}
+${crumbLd(crumbs)}</head><body>
+<div class="wrap">`;
+const DREAM_NOTE = '<p class="note">해몽은 조상들이 꿈에 붙여 온 민간의 풀이입니다. 앞날을 정해 주지 않으니 좋은 꿈은 하루를 여는 기분으로, 언짢은 꿈은 한 번 더 조심하라는 신호 정도로 가볍게 받아들이세요. 같은 꿈이 오래 반복되거나 잠을 크게 설친다면 전문가와 상담해 보시길 권합니다.</p>';
+function dreamHubPage(){
+  const url = `${DOMAIN}/dream.html`, title = `꿈해몽 풀이 사전 — 동물·사람·돈·태몽 ${DREAM_N}가지`;
+  const desc = `돼지꿈, 뱀꿈, 이빨 빠지는 꿈부터 태몽까지 ${DREAM_N}가지 꿈을 12갈래로 나눠 풀었습니다. 꿈에 나온 것을 검색하면 길몽·흉몽과 보살의 풀이를 바로 볼 수 있습니다.`;
+  return dreamHead(url, title, desc, [["홈", DOMAIN+"/"],["꿈해몽", url]]) + `
+<a class="back" href="./">← 홈</a>
+<img class="bosal page-bosal" src="img/bosal/sleepy.webp" alt="꿈을 꾸는 아기보살" decoding="async" onerror="this.remove()"><h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">꿈해몽</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:14px">간밤에 본 것을 적어 보세요. ${DREAM_N}가지 꿈 가운데 맞는 풀이를 찾아 드립니다.</p>
+<input type="search" id="dq" placeholder="예: 돼지, 이빨, 물, 돌아가신 할머니" aria-label="꿈 검색" style="width:100%;padding:14px 16px;font-size:16px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);color:inherit;margin-bottom:6px">
+<p id="dqn" style="font-size:13px;color:var(--muted);margin:0 0 14px"></p>
+<div id="dlist">${DREAM.map(c=>`<section class="guide dm-g"><h2><a href="dream-${c.id}.html">${c.ko}</a> <small style="color:var(--muted);font-weight:600">${c.items.length}가지</small></h2><div class="sibs">${c.items.map(e=>`<a href="dream-${c.id}.html#${e.k}" data-t="${esc(e.title.replace(/ ?꿈$/,""))}">${esc(e.title)} ${dreamBadge(e.kind)}</a>`).join("")}</div></section>`).join("")}</div>
+${DREAM_NOTE}
+${footer}
+</div>
+<script>(function(){var q=document.getElementById("dq"),n=document.getElementById("dqn"),gs=[].slice.call(document.querySelectorAll(".dm-g"));
+function run(){var v=q.value.replace(/\\s|꿈/g,""),c=0;gs.forEach(function(g){var k=0;[].slice.call(g.querySelectorAll("a[data-t]")).forEach(function(a){var on=!v||a.dataset.t.replace(/\\s/g,"").indexOf(v)>=0||v.indexOf(a.dataset.t.replace(/\\s/g,""))>=0;a.style.display=on?"":"none";if(on)k++;});g.style.display=k?"":"none";c+=k;});
+n.textContent=v?(c?c+"가지 꿈이 맞습니다. 눌러서 풀이를 보세요.":"맞는 꿈이 없네요. 짧게 한 낱말로 찾아보세요."):"";}
+q.addEventListener("input",run);})();</script>
+</body></html>`;
+}
+function dreamCatPage(c){
+  const url = `${DOMAIN}/dream-${c.id}.html`, names = c.items.slice(0,5).map(e=>e.title.replace(/ ?꿈$/,"")).join("·");
+  const title = `${c.ko} 해몽 — ${names} 꿈 풀이`;
+  const desc = `${c.ko} ${c.items.length}가지를 풀었습니다. ${names} 꿈이 길몽인지 흉몽인지, 동네보살이 하나씩 짚어 드립니다.`;
+  return dreamHead(url, title, desc, [["홈", DOMAIN+"/"],["꿈해몽", DOMAIN+"/dream.html"],[c.ko, url]]) + `
+<a class="back" href="dream.html">← 꿈해몽 찾기</a>
+<h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${c.ko} 해몽</h1>
+<div class="intro" style="margin:0 0 18px">${para(c.intro)}</div>
+<div class="sibs" style="margin-bottom:18px">${c.items.map(e=>`<a href="#${e.k}">${esc(e.title)}</a>`).join("")}</div>
+${c.items.map(e=>`<section class="guide dm-e" id="${e.k}"><h2>${esc(e.title)} ${dreamBadge(e.kind)}</h2><p>${esc(e.text)}</p></section>`).join("")}
+${DREAM_NOTE}
+<section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs">${DREAM.map(x=>x.id===c.id?`<span class="cur">${x.ko}</span>`:`<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
+${footer}
+</div></body></html>`;
+}
 function dictPage(){
   const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
   const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 78장과 만세력 월력까지 뜻과 함께 찾아보세요.";
@@ -2208,7 +2260,7 @@ function indexPage(){
 <div class="hero-sub">가입도 앱 설치도 없이 생일 하나로. 사주·오늘의 운세·궁합·타로를 끝까지 무료로 봅니다.</div>
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 이 기기에만 저장됩니다. 서버로 보내지 않습니다.</p></div></div>
 </header>
-<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><img class="tile-bosal" src="img/bosal/s/lantern.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><img class="tile-bosal" src="img/bosal/s/point.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
+<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><img class="tile-bosal" src="img/bosal/s/lantern.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dream.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>꿈해몽</b><span>간밤 꿈 241가지 풀이</span></a></nav>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/trophy.webp" alt="트로피를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="zrank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/crystal.webp" alt="수정구를 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 별자리 순위</h2><p>오늘 태양의 자리와 요일의 별로 매긴 12별자리 순위</p></div>
@@ -2303,7 +2355,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
-  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+
+  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+smUrl("dream.html")+"\n"+DREAM.map(c=>smUrl("dream-"+c.id+".html")).join("\n")+"\n"+
   MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   (COLUMN_PAGES.length ? smUrl("column.html")+"\n"+COLUMN_PAGES.map(c=>smUrl("column-"+c.en+".html")).join("\n")+"\n" : "")+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
@@ -2407,6 +2459,8 @@ const extraCss = `
 .dc-bosal{width:54px;flex:none;}
 .page-bosal{float:right;width:110px;margin:-6px 0 6px 12px;}
 .foot-bosal{width:64px;margin:0 0 8px;}
+.dm-k{display:inline-block;color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:4px;vertical-align:middle;letter-spacing:0;}
+.dm-e p{font-size:15px;line-height:1.8;margin:0;}
 .dy-sum{font-weight:700;margin:0 0 12px;}.dy-e{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--surface);}
 .dy-h{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;}.dy-h span{font-weight:700;}.dy-h i{font-style:normal;color:var(--muted);font-size:13px;margin-left:auto;}
 .dy-e p{margin:6px 0 0;font-size:14px;}.dy-today{font-size:12.5px;color:var(--muted);margin-top:8px;}
@@ -2519,6 +2573,8 @@ chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSy
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
 fs.writeFileSync(path.join(OUT,"diary.html"), diaryPage());
+fs.writeFileSync(path.join(OUT,"dream.html"), dreamHubPage());
+DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCatPage(c)));
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));

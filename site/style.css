@@ -630,6 +630,8 @@
 .dc-bosal{width:54px;flex:none;}
 .page-bosal{float:right;width:110px;margin:-6px 0 6px 12px;}
 .foot-bosal{width:64px;margin:0 0 8px;}
+.dm-k{display:inline-block;color:#fff;font-size:11px;font-weight:800;padding:2px 7px;border-radius:999px;margin-left:4px;vertical-align:middle;letter-spacing:0;}
+.dm-e p{font-size:15px;line-height:1.8;margin:0;}
 .dy-sum{font-weight:700;margin:0 0 12px;}.dy-e{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;margin-bottom:8px;background:var(--surface);}
 .dy-h{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline;}.dy-h span{font-weight:700;}.dy-h i{font-style:normal;color:var(--muted);font-size:13px;margin-left:auto;}
 .dy-e p{margin:6px 0 0;font-size:14px;}.dy-today{font-size:12.5px;color:var(--muted);margin-top:8px;}
