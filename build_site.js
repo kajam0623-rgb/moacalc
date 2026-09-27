@@ -1469,6 +1469,12 @@ function columnPage(c){
     tool:c.tool, tags:c.tags, date:c.date, dateModified:c.dateModified,
     body:`<p style="color:var(--muted);font-size:12.5px;margin:4px 0 14px">동네보살 편집팀 · ${ymdKo(c.date)} 작성${c.dateModified ? " · " + ymdKo(c.dateModified) + " 고침" : ""}</p>`+
       c.sections.map(([h, t])=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("")+
+      // 편마다 직접 계산하거나 정리한 표. 문장만 있는 글보다 이 페이지에만 있는 자료가 되게 한다
+      (c.tables || []).map(tb=>`<section class="guide"><h2>${esc(tb.h)}</h2>`+
+        (tb.lead ? `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">${esc(tb.lead)}</p>` : "")+
+        `<div class="exbox">`+tb.rows.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`+
+          (r[2] ? `<p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(r[2])}</p>` : "")).join("")+
+        `</div></section>`).join("")+
       (c.sources && c.sources.length ? `<section class="guide"><h2>참고한 자료</h2><div class="intro" style="margin-top:0"><p>`+
         c.sources.map(x=>`<a href="${x.url}" target="_blank" rel="noopener">${esc(x.t)}</a> — ${esc(x.org)}`).join("<br>")+`</p></div></section>` : ""),
     faq:c.faq,
@@ -1481,7 +1487,11 @@ function columnHubPage(){
     h1:"보살 칼럼",
     sub:`사주·운세를 볼 때 실제로 헷갈리는 것들을 한 편씩 풀었습니다. ${COLUMN_PAGES.length}편`,
     desc:`태어난 시각을 모를 때, 자정 무렵에 태어났을 때, 띠가 바뀌는 날처럼 사주·운세를 볼 때 헷갈리는 것들을 한 편씩 풀어 쓴 동네보살 칼럼 ${COLUMN_PAGES.length}편입니다.`,
-    body:[["칼럼 목록", COLUMN_PAGES.map(c=>`<a href="column-${c.en}.html"><b>${esc(c.title)}</b></a> — ${esc(c.lead)}`).join("\n")]],
+    body:[["칼럼 목록", COLUMN_PAGES.map(c=>`<a href="column-${c.en}.html"><b>${esc(c.title)}</b></a> — ${esc(c.lead)}`).join("\n")],
+      ["이 칼럼을 쓰는 이유", `동네보살의 도구는 생년월일을 넣으면 바로 결과를 보여 줍니다. 그런데 결과를 받아 든 뒤에 생기는 질문은 도구 화면만으로 풀리지 않는 경우가 많습니다. 태어난 시각을 모르면 어떻게 되는지, 1월에 태어났는데 띠가 왜 앞 해로 나오는지, 별자리 경계일에 태어나면 어느 쪽인지 같은 것들입니다.
+      보살 칼럼은 이런 질문을 한 편에 하나씩 붙잡고 끝까지 풉니다. 설명만 늘어놓지 않고 편마다 그 주제에 필요한 표를 하나씩 붙였습니다. 절기 시각이나 날짜처럼 계산으로 나오는 값은 사이트의 만세력 엔진으로 직접 계산해 적었습니다.`],
+      ["어떻게 쓰나요", `계산 기준은 사이트의 도구와 같습니다. 연주는 입춘, 월주는 절기가 드는 순간, 일주는 자정을 경계로 삼고 시주에는 진태양시 보정을 둡니다. 칼럼에서 이 기준과 다른 방식을 소개할 때는 다른 방식이라고 밝혀 적습니다.
+      사주와 운세는 전통적인 해석 체계라서 풀이가 사실을 보증하지는 않습니다. 칼럼은 계산이 어떻게 이루어지는지와 결과를 어떻게 읽으면 덜 헷갈리는지를 다루고, 건강·돈·법률처럼 중요한 결정은 전문가와 사실에 근거해 판단하시길 권합니다. 틀린 곳이 발견되면 고친 날짜를 함께 적어 바로잡습니다.`]],
     faq:[["칼럼은 누가 쓰나요?","동네보살 편집팀이 씁니다. 사주 계산 방식은 사이트의 만세력 엔진과 같은 기준을 따르고, 편마다 작성일을 적어 둡니다."],
          ["칼럼 내용과 도구 결과가 다르면 어느 쪽을 보나요?","도구 결과가 기준입니다. 칼럼은 계산 방식과 읽는 법을 설명하는 글이고, 틀린 곳을 발견하면 고친 날짜와 함께 바로잡습니다."]]});
 }

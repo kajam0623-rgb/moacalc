@@ -17,7 +17,7 @@ const DOMAIN = "https://dongnebosal.com";
 const MANSE_KEEP = { from: "2025-01", to: "2027-12" };
 const LUNAR_MIN = 1200;   // 4단계: 음력 페이지 정적 본문 최소 글자(공백 제외)
 const THIN_MIN = 800;     // 이보다 얇은 검색 노출 페이지는 목록으로 보고한다
-const COLUMN_MIN = { count: 10, chars: 1500 }; // 5단계
+const COLUMN_MIN = { count: 6, chars: 1500 }; // 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, "").split("="); return [k, v ?? true]; }));
 const PHASE = +(args.phase || 0);
