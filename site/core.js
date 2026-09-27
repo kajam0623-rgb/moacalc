@@ -228,7 +228,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return hasJong?p[1]:p[0];}
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
-  function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}}
+  // 자체 통계(worker.js)에는 이벤트 이름만 보낸다. p 에 든 값은 서버로 보내지 않는다
+  function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify({e:ev}));}catch(e){}}
   // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
   if(typeof window!=="undefined"){
     window.addEventListener("error",function(e){

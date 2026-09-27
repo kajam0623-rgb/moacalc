@@ -1,8 +1,18 @@
 {
   "name": "dongnebosal",
   "compatibility_date": "2026-09-19",
+  // 자체 방문 통계. /api/hit 기록, /admin 대시보드. 나머지는 전부 정적 자산이 그대로 응답한다
+  "main": "./worker.js",
+  "d1_databases": [
+    { "binding": "DB", "database_name": "dongnebosal-stats", "database_id": "dfa75c93-71dc-424b-b2c6-d4c36a0c02a8" }
+  ],
+  // 매일 한국 시간 새벽 3시: 90일 지난 방문자 구분값 삭제
+  "triggers": { "crons": ["0 18 * * *"] },
   "assets": {
     "directory": "./site",
+    "binding": "ASSETS",
+    // 404-page 설정이 있으면 없는 주소는 Worker 대신 404 페이지로 갈 수 있어, 통계 경로만 Worker 가 먼저 받게 못 박는다
+    "run_worker_first": ["/api/*", "/admin"],
     // 기본값(auto-trailing-slash)은 /saju.html 을 /saju 로 돌려보낸다. 캐노니컬이 전부 .html 이라 끈다.
     "html_handling": "none",
     // 없는 주소는 site/404.html 을 404 상태로 보여준다

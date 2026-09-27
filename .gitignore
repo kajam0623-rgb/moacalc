@@ -13,3 +13,6 @@ threads-today-pm.txt
 card-out/
 threads-log.txt
 .wrangler/
+
+# wrangler dev 로컬 비밀값 — 커밋 금지
+.dev.vars*
