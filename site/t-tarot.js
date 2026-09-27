@@ -415,7 +415,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       var stage=N===1?"":STAGE[avg<8?0:avg<15?1:2];
       var hasAdvice=ques.sp.some(function(x){return x[0]==="advice";});
       var adv=hasAdvice&&N>1?"첫 장의 "+M[picks[0].i][1]+"도 한마디 거드네. "+R[picks[0].i].role.advice:"그래서 내가 해 줄 말은 이것일세. "+R[last.i].role.advice;
-      blocks.push('<div class="sj-sec"><h3>보살의 종합</h3><p>'+flow+'</p>'+(rl?'<p>'+rl+'</p>':'')+'<p>'+elLine+(stage?' '+stage:'')+'</p><p>'+adv+'</p>'+
+      blocks.push('<div class="sj-sec"><h3>보살의 종합</h3><p>'+bosalImg("tarot","bs-side","카드를 펼쳐 든 아기보살")+flow+'</p>'+(rl?'<p>'+rl+'</p>':'')+'<p>'+elLine+(stage?' '+stage:'')+'</p><p>'+adv+'</p>'+
         '<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>');
       if(birth)blocks.push(sajuPart(ti,last,ques.sp[N-1][1]));
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+

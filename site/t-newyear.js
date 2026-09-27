@@ -66,5 +66,5 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 '+SJ_B[YB]+'('+SJ_BH[YB]+')는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. '+YR+'년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
-      bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
+      bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년엔 조심할 구간이 있네. 아래 '조심할 것'을 먼저 챙기게."});}
     askWire(el,go,["그 해 태세를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}});

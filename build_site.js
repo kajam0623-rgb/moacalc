@@ -888,13 +888,17 @@ const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
   knowsAbout:["사주팔자","만세력","오늘의 운세","별자리 운세","띠별 운세","궁합","타로","십성","용신","십이운성"]
 })+'</script>';
 
+// 도구마다 어울리는 아기보살 자세(img/bosal/<자세>.webp, 작은 판은 img/bosal/s/)
+const TOOL_POSE = {todayfortune:"crystal",saju:"magnifier",gunghap:"heart",tarot:"tarot",newyear:"newyear",horoscope:"sleepy",
+  zodiacfortune:"trophy",stargunghap:"phone",namematch:"diary",lunar:"scroll",manse:"scroll",dict:"point"};
+const thBosal = id => TOOL_POSE[id] ? `<img class="th-bosal" src="img/bosal/${TOOL_POSE[id]}.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()">` : "";
 // 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
 const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 이 기기에만</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
 const TRUST_TAROT = '<div class="trust"><span>결제·가입 없음</span><span>섞는 순간 정해지는 22장</span><span>카드 뜻 22장 직접 집필</span><span>생일 넣으면 사주 대조</span></div>';
 // 모바일 하단 탭바 — 전역 길찾기가 "← 전체 도구" 하나뿐이었다
 const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfortune.html"><i>☀</i>오늘</a><a href="saju.html"><i>☯</i>사주</a><a href="gunghap.html"><i>♥</i>궁합</a><a href="tarot.html"><i>✦</i>타로</a><a href="dict.html"><i>☰</i>사전</a></nav>`;
 const footer = `<footer class="sfoot">
-<div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
+<div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
 <div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
@@ -990,7 +994,7 @@ function toolPage(t){
 <div class="shell">
 <main>
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
- ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
+ ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()">${thBosal(t.id)}<div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
  : `<h1 class="th">${t.name}</h1>\n<div class="tl">${t.desc}</div>`}
 ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` : ""}
 <div class="card tool" id="tool"></div>
@@ -1252,7 +1256,7 @@ function seoPage(o){
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
 <main>
-<div class="toolhero"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+<div class="toolhero"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
 ${o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`}
 <div class="card tool" id="tool"></div>
 <div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
@@ -1318,7 +1322,7 @@ ${crumb}
 ${faqLd}</head><body>
 <div class="wrap">
 <a class="back" href="./">← 전체 도구</a>
-<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">${esc(o.h1)}</h1>
+${o.id==="about"?'<img class="bosal page-bosal" src="img/bosal/bow.webp" alt="합장하고 인사하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()">':""}<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">${esc(o.h1)}</h1>
 <p style="color:var(--muted);font-size:14px;margin-bottom:22px">${esc(o.sub)}</p>
 ${body}
 ${faqHtml}
@@ -1339,7 +1343,7 @@ function notFoundPage(){
 <link rel="stylesheet" href="/style.css?v=${styleV}">
 ${FAVICON}</head><body>
 <div class="wrap" style="text-align:center;padding-top:40px">
-<img src="/img/mascot.webp" alt="동네보살" width="160" height="160" style="width:160px;height:auto">
+<img src="/img/bosal/lost.webp" alt="길을 잃은 아기보살" width="160" style="width:160px;height:auto" onerror="this.src='/img/mascot.webp'">
 <h1 style="font-size:26px;font-weight:900;margin:14px 0 8px">찾으시는 페이지가 없습니다</h1>
 <p style="color:var(--muted);font-size:14.5px;margin-bottom:22px">주소가 바뀌었거나 잘못 입력된 것 같습니다. 아래에서 보고 싶은 풀이를 골라 주세요.</p>
 <div style="display:grid;gap:10px;max-width:360px;margin:0 auto">`+
@@ -1479,7 +1483,7 @@ function columnPage(c){
     h1:c.title, sub:c.lead,
     parent:"column.html", parentName:"보살 칼럼",
     tool:c.tool, tags:c.tags, date:c.date, dateModified:c.dateModified,
-    body:`<p style="color:var(--muted);font-size:12.5px;margin:4px 0 14px">동네보살 편집팀 · ${ymdKo(c.date)} 작성${c.dateModified ? " · " + ymdKo(c.dateModified) + " 고침" : ""}</p>`+
+    body:`<img class="bosal page-bosal" src="img/bosal/diary.webp" alt="붓으로 적는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><p style="color:var(--muted);font-size:12.5px;margin:4px 0 14px">동네보살 편집팀 · ${ymdKo(c.date)} 작성${c.dateModified ? " · " + ymdKo(c.dateModified) + " 고침" : ""}</p>`+
       c.sections.map(([h, t])=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("")+
       // 편마다 직접 계산하거나 정리한 표. 문장만 있는 글보다 이 페이지에만 있는 자료가 되게 한다
       (c.tables || []).map(tb=>`<section class="guide"><h2>${esc(tb.h)}</h2>`+
@@ -2080,7 +2084,7 @@ ${ORG_LD}
 <script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"홈",item:DOMAIN+"/"},{"@type":"ListItem",position:2,name:"사주 사전",item:url}]})}</script></head><body>
 <div class="wrap">
 <a class="back" href="./">← 홈</a>
-<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">사주 사전</h1>
+<img class="bosal page-bosal" src="img/bosal/point.webp" alt="사전을 짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">사주 사전</h1>
 <p style="color:var(--muted);font-size:14px;margin-bottom:22px">사주·운세에 나오는 말이 낯설다면 여기서 찾아보세요. 이름마다 한 줄 뜻을 달았습니다.</p>
 <section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
 <p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
@@ -2145,34 +2149,36 @@ function indexPage(){
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
 <header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span></div>
+<img class="hero-bosal" id="heroBosal" src="img/mascot.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
 <h1 class="hero-h">결과 먼저, 결제 없이.<br><b>근거까지 보여 주는 무료 사주</b></h1>
 <div class="hero-sub">가입도 앱 설치도 없이 생일 하나로. 사주·오늘의 운세·궁합·타로를 끝까지 무료로 봅니다.</div>
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 이 기기에만 저장됩니다. 서버로 보내지 않습니다.</p></div></div>
 </header>
-<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
-<div class="sect"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
+<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><img class="tile-bosal" src="img/bosal/s/lantern.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><img class="tile-bosal" src="img/bosal/s/point.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
+<div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/trophy.webp" alt="트로피를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="zrank"><li class="zr-wait">순위를 매기는 중…</li></ol>
-<div class="sect"><h2>오늘의 별자리 순위</h2><p>오늘 태양의 자리와 요일의 별로 매긴 12별자리 순위</p></div>
+<div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/crystal.webp" alt="수정구를 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 별자리 순위</h2><p>오늘 태양의 자리와 요일의 별로 매긴 12별자리 순위</p></div>
 <ol class="zrank" id="srank"><li class="zr-wait">순위를 매기는 중…</li></ol>
-<div class="sect"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
-<nav class="situ"><a href="tarot.html"><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></a><a href="gunghap.html"><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></a><a href="saju.html"><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></a><a href="newyear.html"><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></a><a href="todayfortune.html"><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></a></nav>
-<div class="sect"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
+<div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/heart.webp" alt="하트를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
+<nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a></nav>
+<div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/point.webp" alt="짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
 <div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일은 이 기기에만</b><p>가입을 받지 않고, 생년월일은 서버로 보내지 않습니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
 ${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
 <div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
   `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
-<a class="dictcta" href="dict.html"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 22장 뜻을 한곳에</span><i>→</i></a>
+<a class="dictcta" href="dict.html"><img class="bosal dc-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 22장 뜻을 한곳에</span><i>→</i></a>
 ${homeFaqHtml}
 ${adSlot()}
 ${footer}
 </div>
 ${homeFaqLd}
+<script>(function(){var hb=document.getElementById("heroBosal"),hr=new Date().getHours();if(hb&&(hr>=22||hr<5)){hb.onerror=function(){this.onerror=null;this.src="img/mascot.webp";};hb.src="img/bosal/lantern.webp";hb.alt="초롱을 들고 밤마중 나온 아기보살";}})();</script>
 <script>(function(){var box=document.getElementById("today");if(!box)return;var form=box.innerHTML;
 function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
 var midT=null;
 function show(b){clearTimeout(midT);var nx=new Date();nx.setHours(24,0,5,0);midT=setTimeout(function(){show(b);},nx-new Date());load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
-box.innerHTML='<div class="today-card"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
+box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosal/s/'+(t.score>=85?"cheer":t.score>=60?"smile":"worry")+'.webp" alt="아기보살" onerror="this.remove()"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
 '<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
 '<div class="today-btns"><a class="p" href="todayfortune.html#go">오늘 운세 자세히</a><a href="saju.html#go">내 사주 보기</a><a href="gunghap.html">궁합</a></div>'+
 '<button type="button" class="today-reset">다른 생일로 보기</button></div>';
@@ -2332,6 +2338,24 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
+.hero2{position:relative;}
+.hero-bosal{position:absolute;top:0;right:-4px;width:108px;height:auto;filter:drop-shadow(0 8px 18px rgba(0,0,0,.4));animation:bosalBob 3.2s ease-in-out infinite;}
+.hero2 .hero-h{padding-right:100px;}
+@media (min-width:760px){.hero-bosal{width:210px;top:-6px;right:0;}.hero2 .hero-h,.hero2 .hero-sub{padding-right:230px;}}
+@keyframes bosalBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.hero-bosal{animation:none}}
+.today{clear:both;}
+.today-card{position:relative;}.tc-bosal{position:absolute;right:8px;top:-40px;width:70px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));}
+.today-card .k,.today-card .v,.today-card .l{margin-right:72px;}
+.sect-bosal{width:46px;align-self:flex-end;margin-bottom:-4px;}
+.situ a:has(.situ-bosal){display:flex;align-items:center;gap:12px;}.situ .situ-bosal{width:52px;flex:none;}
+.dc-bosal{width:54px;flex:none;}
+.page-bosal{float:right;width:110px;margin:-6px 0 6px 12px;}
+.foot-bosal{width:64px;margin:0 0 8px;}
+.toolhero img.th-bosal{grid-area:1/1;justify-self:end;align-self:start;width:92px;height:auto;aspect-ratio:auto;object-fit:contain;margin:10px 10px 0 0;z-index:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));animation:bosalBob 3.4s ease-in-out infinite;}
+@media (min-width:760px){.toolhero img.th-bosal{width:150px;margin:14px 18px 0 0;}}
+@media (prefers-reduced-motion:reduce){.th-bosal{animation:none}}
+.tgrid a{align-items:center;text-align:center;padding:10px 6px 12px;}.tgrid .tile-bosal{height:58px;width:auto;margin:0 auto 4px;}
 .today{margin:18px 0 6px;max-width:640px;}
 .today-btns a{flex:1;text-align:center;white-space:nowrap;}
 @media (max-width:759px){.today-btns .p{flex-basis:100%;}}

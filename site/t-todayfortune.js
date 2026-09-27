@@ -81,7 +81,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'<br><br>그리고 '+score+'점 말인데, 이건 그냥 나온 숫자가 아닐세. 십성 '+rel+'의 기본값에 자네 태어난 날 글자와 오늘 날짜 글자의 관계, 용신 판정을 얹어서 나온 값이야.<br><br>숫자만 보고 좋다 나쁘다 하지 말게. 뭐가 깎았는지를 봐야지. 오늘은 <b>'+SUB_LBL[loI]+'</b>이 제일 낮고('+sub[loI]+'점) <b>'+SUB_LBL[hiI]+'</b>이 제일 높네('+sub[hiI]+'점). '+SUB_LBL[loI]+' 쪽만 조심하고 '+SUB_LBL[hiI]+' 쪽에 힘을 실으면, 오늘 하루는 자네 편일세.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네 억부용신인 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
-      '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
+      '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>'+bosalImg("sleepy","bs-side","달 위에서 조는 아기보살")+'내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
       shareBtn()+
       '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 센 편이면 덜어내는 쪽, 약한 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지

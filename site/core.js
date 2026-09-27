@@ -283,7 +283,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         :sh.std830?"당시 표준시가 지금보다 30분 늦은 UTC+8:30이었습니다.":"서머타임(시계를 1시간 당김)이 시행 중이었습니다.";
       li.push("<b>출생 당시 시계</b> — 이 날짜는 "+why+" 출생증명서에 적힌 시각은 지금 시계로 치면 "+(sh.min>0?sh.min+"분 앞선":(-sh.min)+"분 늦은")+" 시각입니다. 시진을 고를 때는 적힌 시각에서 "+(sh.min>0?sh.min+"분을 빼고":(-sh.min)+"분을 더해")+" 고르세요."+(sh.dst&&o.y<1962?" 1948~1960년 서머타임 기간은 기록마다 며칠씩 다릅니다.":""));}
     if(o.su)li.push("<b>대운</b> — "+(o.fwd?"순행":"역행")+"입니다(연간이 "+(p.y.s%2===0?"양":"음")+"이고 "+(o.male?"남":"여")+"자). 태어난 때부터 "+(o.fwd?"다음":"이전")+" 절기까지 "+(Math.round(o.days*4)/4)+"일이라, 3일을 1년으로 쳐서 "+o.su+"세에 첫 대운이 시작됩니다."+(o.h==null?" 시각을 몰라 정오로 보고 셌습니다.":""));
-    return '<div class="sj-sec sj-basis"><h3>이 결과는 이렇게 계산했습니다</h3><p>'+li.join("<br><br>")+
+    return '<div class="sj-sec sj-basis"><h3>이 결과는 이렇게 계산했습니다</h3><p>'+bosalImg("point","bs-side","계산을 짚어 주는 아기보살")+li.join("<br><br>")+
       '<br><br><span style="color:var(--muted);font-size:12.5px">절기 시각은 태양 황경을 직접 계산한 값입니다. 한국천문연구원 발표와 몇 분 차이가 날 수 있어, 절기 경계 몇 분 안에 태어났다면 다른 만세력과 월주가 다를 수 있습니다.</span></p></div>';}
   /* AI에게 물어보기 — 범용 AI는 만세력을 자주 틀린다. 계산이 끝난 값만 담은 질문문을 복사해 넘긴다.
      생년월일은 넣지 않는다. o: {p,male,h,st,gyeok,sinsal,cnt,G,duList,su,fwd} */
@@ -304,7 +304,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       "",
       "풀이할 때는 단정하지 말고, 어느 글자와 어느 글자의 관계에서 그렇게 보는지 근거를 함께 말해 주세요."].join("\n");}
   function sjAiHtml(){
-    return '<div class="sj-sec sj-ai"><h3>AI에게 더 물어보기</h3><p>챗GPT 같은 AI는 사주 여덟 글자를 자주 틀리게 셉니다. 아래 버튼은 여기서 계산을 마친 여덟 글자·오행·대운을 담은 질문문을 복사합니다. AI 창에 붙여 넣고 궁금한 것을 이어서 물어보세요. 생년월일은 들어가지 않습니다.</p>'+
+    return '<div class="sj-sec sj-ai"><h3>AI에게 더 물어보기</h3><p>'+bosalImg("magnifier","bs-side","돋보기로 보는 아기보살")+'챗GPT 같은 AI는 사주 여덟 글자를 자주 틀리게 셉니다. 아래 버튼은 여기서 계산을 마친 여덟 글자·오행·대운을 담은 질문문을 복사합니다. AI 창에 붙여 넣고 궁금한 것을 이어서 물어보세요. 생년월일은 들어가지 않습니다.</p>'+
       '<div class="ai-row"><span class="ai-copy" role="button" tabindex="0">질문문 복사</span>'+
       '<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div>'+
       '<p class="ai-done" aria-live="polite"></p></div>';}
@@ -392,14 +392,20 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 입력만 바꿔도 결과가 즉시 나오면 '물어본다'는 감각이 사라진다.
   // 답은 버튼을 눌러야 나오고, 나오기 직전에 보살이 짚어 보는 시간을 둔다.
   var ASK_LABEL="동네보살에게 물어보기";
+  /* 아기보살 — 동네보살의 얼굴. 자세별 그림(img/bosal/<자세>.webp)을 자리마다 골라 쓴다.
+     점수로 고를 때: 85 이상 만세(cheer), 60 이상 미소(smile), 그 아래 걱정하며 토닥(worry) */
+  function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}
+  function bosalPose(score){return score>=85?"cheer":score>=60?"smile":"worry";}
+  function bosalSay(pose,html){return '<div class="bosal-say">'+bosalImg(pose,"bs-av")+'<div class="bs-b">'+html+'</div></div>';}
+  var BOSAL_LINE=[[85,"좋은 날일세! 오늘은 자네가 먼저 움직여도 되네."],[75,"괜찮은 흐름이야. 하던 일에 힘을 실어 보게."],[60,"무난한 날일세. 서두르지만 않으면 되네."],[0,"조심할 자리가 보이네. 아래 '피할 것'부터 먼저 보고 가게."]];
   function askWait(msg){
-    return '<div class="ask-wait"><div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
+    return '<div class="ask-wait">'+bosalImg("smile","aw-bosal","자네를 기다리는 아기보살")+'<div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
       '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르게.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나오네.</div></div>';}
   var ASK_GANJI="甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥";
   // 버튼을 누른 뒤 결과까지 약 1초. 릴이 돌고 짚는 순서가 한 줄씩 지나간다.
   function askThink(out,btn,steps,done){
     var reel="";for(var i=0;i<14;i++)reel+=ASK_GANJI.charAt(Math.floor(Math.random()*ASK_GANJI.length));
-    out.innerHTML='<div class="ask-think"><div class="ask-reel"><i>'+reel.split("").join("<br>")+'</i></div>'+
+    out.innerHTML='<div class="ask-think">'+bosalImg("crystal","at-bosal","수정구를 들여다보는 아기보살")+'<div class="ask-reel"><i>'+reel.split("").join("<br>")+'</i></div>'+
       '<div class="ask-step"></div><div class="ask-dots">'+steps.map(function(){return "<span></span>";}).join("")+'</div></div>';
     var stepEl=out.querySelector(".ask-step"),dots=out.querySelectorAll(".ask-dots span");
     var was=btn?btn.textContent:"",n=0;
@@ -490,7 +496,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var idx=(now.getDate()+now.getMonth()*31+score)%BUJEOK.length,b=BUJEOK[idx];
     var first=(p.bjDay!==key);
     if(first)savePrefs({bjDay:key});
-    return '<div class="bujeok"><div class="k">오늘의 부적 · '+(grade||"")+'</div>'+
+    return '<div class="bujeok">'+bosalImg("talisman","bj-bosal","부적을 든 아기보살")+'<div class="k">오늘의 부적 · '+(grade||"")+'</div>'+
       '<div class="w">'+b[0]+'</div><div class="m">'+b[1]+'</div>'+
       '<div class="m" style="margin-top:12px;opacity:.6">'+(first?"오늘 몫은 이걸로 다 썼네. 내일 새로 한 장 나오네.":"오늘은 이미 받아 갔네. 부적은 하루 한 장일세.")+'</div></div>';}
   // 결과 렌더 후 한 번에 거는 마무리 연출. o={score,grade,streak,bujeok}
@@ -506,6 +512,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     plainWords(out);foldAll(out,{open:1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
+    if(o.score!=null&&top&&!out.querySelector(".bosal-say")){
+      var ln=o.say||BOSAL_LINE.filter(function(x){return o.score>=x[0];})[0][1];
+      top.insertAdjacentHTML("afterend",bosalSay(o.pose||bosalPose(o.score),ln));}
     if(top&&top.scrollIntoView)try{top.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}}
   // 물어보기 배선 — 초기엔 대기 화면, 버튼을 눌러야 짚어 보고 답이 나온다
   function askWire(el,go,steps,waitMsg,seer){
@@ -986,8 +995,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
-        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56;
-        for(var k2=0;k2<bl2.length&&k2<6;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}}
+        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;
+        for(var k2=0;k2<bl2.length&&k2<cap2;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}
+      // 아기보살 — 점수에 맞는 자세. 본문을 네 줄로 줄여 겹치지 않게 한다
+      if(o.bosalImg){var bh=300,bw=Math.round(o.bosalImg.width*bh/o.bosalImg.height);x.drawImage(o.bosalImg,(W-bw)/2,H-218-bh,bw,bh);}}
     // 저장 이미지는 출처를 달고 돌아다닌다. 도메인이 안 보이면 퍼져도 유입이 없다
     // 주소 기준선이 테두리(H-48)와 4px 떨어져 'g' 꼬리가 선을 넘었다. 블록째 올려 테두리와 띄운다
     x.fillStyle="#d4af6e";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-158);
@@ -1017,7 +1028,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       b.textContent="만드는 중...";
       // 카드 그림처럼 불러와야 그릴 수 있는 이미지는 draw 가 다 그린 뒤 캔버스를 넘긴다
       if(opts&&opts.draw){opts.draw(finish);return;}
-      finish(fortuneCard(typeof opts==="function"?opts():opts));});}
+      var o2=typeof opts==="function"?opts():opts;
+      if(o2&&o2.score!=null&&!o2.pillars){var bi=new Image();
+        bi.onload=function(){o2.bosalImg=bi;finish(fortuneCard(o2));};bi.onerror=function(){finish(fortuneCard(o2));};
+        bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
+      finish(fortuneCard(o2));});}
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});

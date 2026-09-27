@@ -371,7 +371,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
             rows+='<div class="yr'+(yy===nowY?' now':yy<nowY?' past':'')+'" data-y="'+yy+'"><div class="yr-h"><b>'+yy+'</b><span>'+SJ_S[yp.s]+SJ_B[yb]+'년 · '+ytg+(rel?' · '+rel:'')+'</span><small>'+age+'세'+(du?' · '+du.g+' 대운':'')+'</small></div>'+
               '<p>'+DUTXT[ytg].split(".")[0]+'.</p>'+
               (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
-          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
+          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
