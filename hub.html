@@ -271,6 +271,12 @@
   /* 년 칸은 '1990년' 5글자가 들어가야 한다. 비율(fr)만 쓰면 좁은 폭에서 잘리므로 최소폭을 준다 */
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
+  .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center;}
+  .ppl-c,.ppl-add,.ppl-ok{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line-2);font-size:13px;font-weight:700;cursor:pointer;background:var(--surface);}
+  .ppl-c.on{border-color:#E6B25A;background:#E6B25A;color:#1b1406;}
+  .ppl-c i{font-style:normal;color:var(--muted);font-weight:400;padding:0 2px;}.ppl-c.on i{color:#5a4410;}
+  .ppl-add{color:var(--accent);border-style:dashed;}.ppl-ok{background:var(--accent);color:var(--on-accent,#fff);border-color:transparent;}
+  .ppl-n{width:120px;padding:7px 10px;font-size:13px;}
   .lunar-pick{margin:0 0 10px;font-size:13.5px;}
   .yrs{display:grid;gap:8px;margin-top:10px;}
   .yr{border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;background:var(--surface);}
@@ -1452,7 +1458,30 @@
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
     lunarPick(host,inp,era,nowY);
+    peopleChips(host,inp,host.querySelector(".lunar-pick")||era);
     return wrap;}
+  /* 여러 사람 저장 — 나·가족·연인 생일을 이름표로 두고 눌러서 바로 넣는다. 기기 안(localStorage)에만, 8명까지.
+     궁합처럼 입력이 둘인 도구는 칸마다 같은 목록을 쓴다 */
+  function peopleChips(host,inp,before){
+    var box=document.createElement("div");box.className="ppl";host.insertBefore(box,before);
+    function get(){try{return JSON.parse(localStorage.getItem("dnbs_people")||"[]");}catch(e){return [];}}
+    function put(a){try{localStorage.setItem("dnbs_people",JSON.stringify(a.slice(0,8)));}catch(e){}
+      document.querySelectorAll(".ppl").forEach(function(b){if(b._draw)b._draw();});}
+    function draw(){var a=get();
+      box.innerHTML=a.map(function(x,i){return '<span class="ppl-c'+(x.b===inp.value?' on':'')+'" data-i="'+i+'" role="button" tabindex="0">'+escH(x.n)+'<i data-del="'+i+'" role="button" aria-label="'+escH(x.n)+' 지우기">×</i></span>';}).join("")+
+        '<span class="ppl-add" role="button" tabindex="0">+ 지금 생일 저장</span>';}
+    box._draw=draw;
+    function fill(v){inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));draw();}
+    function act(e){var t=e.target,a=get();
+      if(t.dataset.del!=null){a.splice(+t.dataset.del,1);put(a);return;}
+      var c=t.closest(".ppl-c");if(c){var x=a[+c.dataset.i];if(x)fill(x.b);return;}
+      if(t.closest(".ppl-add")){t.outerHTML='<input class="ppl-n" maxlength="8" placeholder="이름 (예: 엄마)" aria-label="저장할 이름"><span class="ppl-ok" role="button" tabindex="0">저장</span>';box.querySelector(".ppl-n").focus();return;}
+      if(t.closest(".ppl-ok")){var n=(box.querySelector(".ppl-n").value||"").trim().slice(0,8);if(!n||!inp.value){draw();return;}
+        a=a.filter(function(x){return x.n!==n;});a.unshift({n:n,b:inp.value});put(a);}}
+    box.addEventListener("click",act);
+    box.addEventListener("keydown",function(e){if(e.key==="Enter"){if(e.target.classList.contains("ppl-n")){e.preventDefault();box.querySelector(".ppl-ok").click();}else if(e.target.getAttribute("role")==="button"){e.preventDefault();e.target.click();}}});
+    inp.addEventListener("change",function(){if(!box.querySelector(".ppl-n"))draw();});
+    draw();}
   /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 음력 연·월·일(윤달)을 고르면 양력으로 바꿔
      위 입력칸에 넣고, 다이얼은 input 이벤트로 따라온다. 계산은 늘 양력 한 가지로 한다.
      변환(KASI 기준 vendor-lunar.js)은 펼칠 때만 받는다. */
@@ -1489,13 +1518,13 @@
       var test=cur?cur+" "+words[i]:words[i];
       if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=test;}
     if(cur)lines.push(cur);return lines;}
-  // 결과 카드 1080×1350 PNG. 외부 라이브러리 없이 Canvas만 사용
+  // 결과 카드 PNG. 점수 카드는 스토리·상태 사진에 바로 쓰도록 9:16(1080×1920), 사주 명식 카드는 3:4. 외부 라이브러리 없이 Canvas만 사용
   // 저장·공유 이미지에 찍히는 주소. 커스텀 도메인이 붙으면 여기 한 줄만 바꾼다
   var BRAND_URL="dongnebosal.com";
   function fortuneCard(o){
     if(typeof document==="undefined")return null;
-    // 사주 카드(명식 있음)는 3:4 로 키워 그림·명식·본문을 한 장에 담는다. 나머지 도구는 1080x1350 그대로
-    var W=1080,H=o.pillars?1440:1350,c=document.createElement("canvas");c.width=W;c.height=H;
+    // 사주 카드(명식 있음)는 3:4. 나머지는 9:16 — 예전 1350 높이용 배치를 그대로 두고 oy 만큼 내려 가운데에 둔다
+    var W=1080,H=o.pillars?1440:1920,oy=o.pillars?0:285,c=document.createElement("canvas");c.width=W;c.height=H;
     var x=c.getContext("2d");
     var g=x.createLinearGradient(0,0,0,H);
     g.addColorStop(0,"#0d1424");g.addColorStop(.55,"#131c30");g.addColorStop(1,"#0a0f1a");
@@ -1509,8 +1538,8 @@
     x.textAlign="center";
     x.fillStyle="#d4af6e";x.font="600 34px "+F;
     // 사주 카드만 위로 당겨 공간을 번다. 다른 도구 카드는 예전 좌표 그대로
-    x.fillText(o.tool||"오늘의 운세",W/2,o.pillars?150:168);
-    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,o.pillars?204:224);}
+    x.fillText(o.tool||"오늘의 운세",W/2,o.pillars?150:168+oy);
+    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,o.pillars?204:224+oy);}
     if(o.pillars&&o.pillars.length){
       // 그림(왼쪽) + 명식 네 기둥(오른쪽). 그림을 못 불러오면 기둥이 폭 전체를 쓴다
       var top=252,side=300,px0=o.art?96+side+28:100,pwid=o.art?W-100-px0:W-200;
@@ -1553,10 +1582,10 @@
         for(var k=0;k<bl.length;k++)x.fillText(bl[k],W/2,by+k*45);}
     }else{
       if(o.score!=null){
-        x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470);
-        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556);}
+        x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470+oy);
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=o.score!=null?700:520;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null?700:520)+oy;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
@@ -2216,7 +2245,10 @@
         식상:"돈을 낳는 뿌리가 자라는 시기일세. 당장 버는 것보다 실력과 결과물을 만들어 두는 데 힘을 쓰게.",
         관성:"책임과 자리가 먼저 커지는 시기라 돈은 뒤따라오네. 조급해하지 말게.",
         인성:"배우고 쌓는 시기라 돈은 잔잔하네. 지금 준비해 두면 다음 10년에 그대로 쓰네."};
-      var money=moneyBase+P+
+      // 일간×강약 문단(content_saju_ilgan.js). 같은 버킷의 두 사람이 문단 절반을 공유하던 것을 가른다(2026-09 감사: 196문장 중 97 동일)
+      var ILG=(typeof SAJU_ILG!=="undefined")?SAJU_ILG[["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"][ds]]:null,SK=st.strong?"strong":"weak";
+      var ilg=function(a){return ILG&&ILG[a]?P+ILG[a][SK]:"";};
+      var money=moneyBase+ilg("money")+P+
         "사주 여덟 글자 가운데 돈 기운은 "+(G.재성?G.재성+"자리일세. ":"한 자리도 없네. ")+(st.strong
           ?"타고난 힘이 센 편이라 들어온 돈을 지킬 그릇은 되네. 기회가 오면 손을 뻗어도 좋아."
           :"다만 타고난 힘이 약한 편이라 큰돈을 혼자 감당하기엔 벅차네. 크게 벌이기보다 새는 돈부터 막게. 빚과 보증은 특히 조심하게.")+P+
@@ -2227,7 +2259,7 @@
         :G.식상>=3?"재주와 표현 기운이 <b>발달했네</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이야. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞네."
         :"일·자리 기운이 알맞네. <b>회사에서도, 혼자서도</b> 해낼 수 있는 사람이야. 역할이 분명하고 성과가 눈에 보이는 자리에서 만족이 크겠어.";
       var jobLean=G.식상>G.관성?"직접 만들어 내놓는 힘이 더 강한":(G.식상<G.관성?"맡은 자리를 지키는 힘이 더 강한":"두 힘이 비슷한");
-      var job=jobBase+P+
+      var job=jobBase+ilg("job")+P+
         "사주에서 일을 맡아 지키는 힘은 "+G.관성+", 만들어 내놓는 힘은 "+G.식상+", 배워서 쌓는 힘은 "+G.인성+"일세. 자네는 <b>"+jobLean+"</b> 사람이야."+P+
         "자네에게 필요한 기운이 "+yEl+josa(yEl,"라/이라")+" "+Y.job+" 쪽 일이 결에 맞네. 일하다 막히거든 이런 걸 해 보게 — "+Y.act+"."+P+
         (st.strong?"타고난 힘이 센 편이라 <b>자기 이름을 걸고 하는 일</b>에서 힘이 나네. 남 밑에 오래 눌려 있으면 못 견디니, 결정권이 있는 자리로 옮겨 갈수록 잘 풀려."
@@ -2237,13 +2269,13 @@
       var loveBase=spouseN===0?"배우자를 뜻하는 기운("+spouseWord+")이 사주에 드러나 있지 않네. 인연이 늦게 오거나 조용히 오는 편이야. 조건을 따지기보다 <b>같이 있으면 편한 사람</b>을 기준으로 삼게."
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주일세. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하게."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주일세. 생활 리듬이 맞는 사람과 오래가네.";
-      var love=loveBase+P+
+      var love=loveBase+ilg("love")+P+
         "태어난 날의 아래 글자는 배우자 자리를 뜻하네. 자네는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 그 자리에 있어. "+(UN_PLAIN[ilUn]||"")+P+
         "곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세. 조건보다 같이 있을 때 숨이 트이는지를 보게."+P+
         "지금 10년 흐름은 <b>"+GRP_PLAIN[duG]+"</b>의 시기일세. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워. 사람 만나는 자리에 자주 나가 보게."
           :"인연이 곧바로 움직이는 시기는 아닐세. 조급해하기보다 자네 생활을 다져 두면 다음 흐름이 사람을 데려오네.");
-      var health="사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
+      var health=(ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
         "반대로 "+mx+" 기운은 넘치는 편일세. 한쪽으로 몰린 기운도 무리하면 표가 나니 "+WEAK[mx]+" 쪽도 함께 살펴 두게."+P+
         "몸이 편해지는 계절은 "+Y.season+"일세. 지칠 땐 이런 걸로 기운을 돌리게 — "+Y.act+"."+P+
         (st.strong?"타고난 힘이 센 편이라 안에 쌓아 두면 탈이 나네. 땀 흘리는 운동으로 밖으로 덜어내는 게 자네한텐 약일세."
@@ -2376,8 +2408,12 @@
          여태 결과가 항목 나열로 시작해 나열로 끝났다. 읽는 사람은 자기 얘기가
          어떤 그림인지 먼저 보고, 마지막엔 사람 말 한마디를 듣고 싶어 한다.
          둘 다 계산값(최강·최약 오행, 신강신약, 용신)에서 나온다. */
-      var EL_STRONG={목:"뻗어 오르는 나무",화:"타오르는 불",토:"두텁게 쌓인 흙",금:"벼려진 쇠",수:"깊이 흐르는 물"};
-      var EL_NEED={목:"뿌리내릴 나무",화:"데워줄 불",토:"붙잡아줄 흙",금:"맺고 끊을 쇠",수:"식혀줄 물"};
+      /* 헤드라인은 부제와 같은 계산(일간·강약·용신)에서 나와야 한다. 예전엔 가장 적은 오행으로 지어
+         "필요한 기운 수"라는 부제 위에 "나무를 찾는 사주"가 뜨기도 했다(2026-09 감사).
+         신강이면 용신은 내가 낳는 기운(덜어 쓰는 쪽), 신약이면 나를 낳는 기운(받치는 쪽)이다. */
+      var ILG_IMG=["곧게 크는 큰 나무","덩굴처럼 뻗는 풀꽃","한낮의 해","밤을 밝히는 등불","너른 산","곡식을 기르는 밭","벼리기 전의 무쇠","다듬은 보석","큰 강","스며드는 빗물"];
+      var YONG_OUT={화:"기운을 태워 쓸 불",토:"열기를 받아 줄 흙",금:"결실을 거둘 쇠",수:"흘려보낼 물길",목:"물기를 끌어올릴 나무"};
+      var YONG_IN={수:"뿌리를 적셔 줄 물",목:"불씨를 살려 줄 나무",화:"흙을 데워 줄 불",토:"쇠를 품어 줄 흙",금:"물줄기를 틔워 줄 쇠"};
       // 오행이 고르면 최강과 최약이 같은 글자로 나온다. 그때는 다른 제목을 쓴다
       // 여덟 글자 자리 읽기 — 각 기둥 지지의 본기가 일간에게 어떤 십성인지를 그 자리의 뜻과 함께 읽는다
       function gungSec(){
@@ -2388,8 +2424,8 @@
             return '<b>'+r[1]+' '+SJ_B[r[3].b]+'('+SJ_BH[r[3].b]+') — '+tg+'</b> · '+r[2]+'<br>'+SAJU_GUNG[r[0]][tg];}).join("<br><br>")+
           (p.h?'':'<br><br>태어난 시각을 모르니 그 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
           '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 태어난 날의 하늘 글자는 자기 자신이라 아래 글자만 읽습니다.</span></p></div>';}
-      var headTxt=(mx===mn)?"기운이 고르게 퍼진 사주"
-        :EL_STRONG[mx]+' 사이에서<br>'+EL_NEED[mn]+josa(EL_NEED[mn],"를/을")+' 찾는 사주';
+      var img=ILG_IMG[ds],need=st.strong?YONG_OUT[yEl]:YONG_IN[yEl];
+      var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+

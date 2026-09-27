@@ -270,6 +270,12 @@
   /* 년 칸은 '1990년' 5글자가 들어가야 한다. 비율(fr)만 쓰면 좁은 폭에서 잘리므로 최소폭을 준다 */
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
+  .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center;}
+  .ppl-c,.ppl-add,.ppl-ok{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line-2);font-size:13px;font-weight:700;cursor:pointer;background:var(--surface);}
+  .ppl-c.on{border-color:#E6B25A;background:#E6B25A;color:#1b1406;}
+  .ppl-c i{font-style:normal;color:var(--muted);font-weight:400;padding:0 2px;}.ppl-c.on i{color:#5a4410;}
+  .ppl-add{color:var(--accent);border-style:dashed;}.ppl-ok{background:var(--accent);color:var(--on-accent,#fff);border-color:transparent;}
+  .ppl-n{width:120px;padding:7px 10px;font-size:13px;}
   .lunar-pick{margin:0 0 10px;font-size:13.5px;}
   .yrs{display:grid;gap:8px;margin-top:10px;}
   .yr{border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;background:var(--surface);}

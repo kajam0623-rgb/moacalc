@@ -847,7 +847,30 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
     lunarPick(host,inp,era,nowY);
+    peopleChips(host,inp,host.querySelector(".lunar-pick")||era);
     return wrap;}
+  /* 여러 사람 저장 — 나·가족·연인 생일을 이름표로 두고 눌러서 바로 넣는다. 기기 안(localStorage)에만, 8명까지.
+     궁합처럼 입력이 둘인 도구는 칸마다 같은 목록을 쓴다 */
+  function peopleChips(host,inp,before){
+    var box=document.createElement("div");box.className="ppl";host.insertBefore(box,before);
+    function get(){try{return JSON.parse(localStorage.getItem("dnbs_people")||"[]");}catch(e){return [];}}
+    function put(a){try{localStorage.setItem("dnbs_people",JSON.stringify(a.slice(0,8)));}catch(e){}
+      document.querySelectorAll(".ppl").forEach(function(b){if(b._draw)b._draw();});}
+    function draw(){var a=get();
+      box.innerHTML=a.map(function(x,i){return '<span class="ppl-c'+(x.b===inp.value?' on':'')+'" data-i="'+i+'" role="button" tabindex="0">'+escH(x.n)+'<i data-del="'+i+'" role="button" aria-label="'+escH(x.n)+' 지우기">×</i></span>';}).join("")+
+        '<span class="ppl-add" role="button" tabindex="0">+ 지금 생일 저장</span>';}
+    box._draw=draw;
+    function fill(v){inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));draw();}
+    function act(e){var t=e.target,a=get();
+      if(t.dataset.del!=null){a.splice(+t.dataset.del,1);put(a);return;}
+      var c=t.closest(".ppl-c");if(c){var x=a[+c.dataset.i];if(x)fill(x.b);return;}
+      if(t.closest(".ppl-add")){t.outerHTML='<input class="ppl-n" maxlength="8" placeholder="이름 (예: 엄마)" aria-label="저장할 이름"><span class="ppl-ok" role="button" tabindex="0">저장</span>';box.querySelector(".ppl-n").focus();return;}
+      if(t.closest(".ppl-ok")){var n=(box.querySelector(".ppl-n").value||"").trim().slice(0,8);if(!n||!inp.value){draw();return;}
+        a=a.filter(function(x){return x.n!==n;});a.unshift({n:n,b:inp.value});put(a);}}
+    box.addEventListener("click",act);
+    box.addEventListener("keydown",function(e){if(e.key==="Enter"){if(e.target.classList.contains("ppl-n")){e.preventDefault();box.querySelector(".ppl-ok").click();}else if(e.target.getAttribute("role")==="button"){e.preventDefault();e.target.click();}}});
+    inp.addEventListener("change",function(){if(!box.querySelector(".ppl-n"))draw();});
+    draw();}
   /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 음력 연·월·일(윤달)을 고르면 양력으로 바꿔
      위 입력칸에 넣고, 다이얼은 input 이벤트로 따라온다. 계산은 늘 양력 한 가지로 한다.
      변환(KASI 기준 vendor-lunar.js)은 펼칠 때만 받는다. */
@@ -884,13 +907,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       var test=cur?cur+" "+words[i]:words[i];
       if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=words[i];}else cur=test;}
     if(cur)lines.push(cur);return lines;}
-  // 결과 카드 1080×1350 PNG. 외부 라이브러리 없이 Canvas만 사용
+  // 결과 카드 PNG. 점수 카드는 스토리·상태 사진에 바로 쓰도록 9:16(1080×1920), 사주 명식 카드는 3:4. 외부 라이브러리 없이 Canvas만 사용
   // 저장·공유 이미지에 찍히는 주소. 커스텀 도메인이 붙으면 여기 한 줄만 바꾼다
   var BRAND_URL="dongnebosal.com";
   function fortuneCard(o){
     if(typeof document==="undefined")return null;
-    // 사주 카드(명식 있음)는 3:4 로 키워 그림·명식·본문을 한 장에 담는다. 나머지 도구는 1080x1350 그대로
-    var W=1080,H=o.pillars?1440:1350,c=document.createElement("canvas");c.width=W;c.height=H;
+    // 사주 카드(명식 있음)는 3:4. 나머지는 9:16 — 예전 1350 높이용 배치를 그대로 두고 oy 만큼 내려 가운데에 둔다
+    var W=1080,H=o.pillars?1440:1920,oy=o.pillars?0:285,c=document.createElement("canvas");c.width=W;c.height=H;
     var x=c.getContext("2d");
     var g=x.createLinearGradient(0,0,0,H);
     g.addColorStop(0,"#0d1424");g.addColorStop(.55,"#131c30");g.addColorStop(1,"#0a0f1a");
@@ -904,8 +927,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     x.textAlign="center";
     x.fillStyle="#d4af6e";x.font="600 34px "+F;
     // 사주 카드만 위로 당겨 공간을 번다. 다른 도구 카드는 예전 좌표 그대로
-    x.fillText(o.tool||"오늘의 운세",W/2,o.pillars?150:168);
-    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,o.pillars?204:224);}
+    x.fillText(o.tool||"오늘의 운세",W/2,o.pillars?150:168+oy);
+    if(o.ident){x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText(o.ident,W/2,o.pillars?204:224+oy);}
     if(o.pillars&&o.pillars.length){
       // 그림(왼쪽) + 명식 네 기둥(오른쪽). 그림을 못 불러오면 기둥이 폭 전체를 쓴다
       var top=252,side=300,px0=o.art?96+side+28:100,pwid=o.art?W-100-px0:W-200;
@@ -948,10 +971,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         for(var k=0;k<bl.length;k++)x.fillText(bl[k],W/2,by+k*45);}
     }else{
       if(o.score!=null){
-        x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470);
-        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556);}
+        x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470+oy);
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=o.score!=null?700:520;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null?700:520)+oy;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;

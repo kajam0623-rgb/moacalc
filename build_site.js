@@ -2424,7 +2424,7 @@ chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSy
   (c.id === "lunar" ? VENDOR_LUNAR + "\n" : "") +
   // 대화형 타로 풀이 원고는 타로 청크만 받는다
   (c.id === "tarot" ? "var TAROT_READ=" + JSON.stringify(require("./content_tarot_read.js")) + ";\n" : "") +
-  (c.id === "saju" ? "var SAJU_GUNG=" + JSON.stringify(require("./content_saju_gung.js")) + ";\n" : "") +
+  (c.id === "saju" ? "var SAJU_GUNG=" + JSON.stringify(require("./content_saju_gung.js")) + ";\nvar SAJU_ILG=" + JSON.stringify(require("./content_saju_ilgan.js")) + ";\n" : "") +
   "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
