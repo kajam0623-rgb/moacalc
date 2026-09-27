@@ -280,6 +280,11 @@
   .yr-fb{display:flex;gap:6px;margin-top:8px;}.yr-fb span{padding:6px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:12.5px;cursor:pointer;}
   .yr-fb span.on{background:#E6B25A;color:#1b1406;border-color:#E6B25A;font-weight:800;}
   .yr-sum{font-size:13px;color:var(--muted);}
+  .gh-inv{margin:0 0 14px;padding:12px 14px;border-radius:12px;border:1.5px solid #E6B25A;background:var(--surface-2);font-size:14px;line-height:1.65;}
+  .gh-mkinv{margin-top:20px;padding:14px 16px;border-radius:14px;border:1px solid var(--line-2);background:var(--surface-2);}
+  .gh-mkinv h3{font-size:16px;margin:0 0 6px;}.gh-mkinv p{font-size:13.5px;line-height:1.65;margin:0;}
+  .gh-nick{flex:1;min-width:140px;}.gh-mk{padding:10px 16px;border-radius:10px;background:#E6B25A;color:#1b1406;font-weight:800;cursor:pointer;}
+  .gh-link{font-size:13px;color:var(--muted);margin-top:8px;word-break:break-all;}.gh-link a{color:var(--accent);}
   .ai-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
   .ai-row .ai-copy{padding:10px 16px;border-radius:10px;background:#E6B25A;color:#1b1406;font-weight:800;cursor:pointer;}
   .ai-row a{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-2);color:var(--ink);font-weight:700;text-decoration:none;}
@@ -920,6 +925,19 @@
     box.addEventListener("click",function(e){var s=e.target.closest(".yr-fb span");if(!s)return;var yy=s.closest(".yr").dataset.y;
       mine[yy]=mine[yy]===s.dataset.v?undefined:s.dataset.v;all[bkey]=mine;try{localStorage.setItem("dnbs_yfb",JSON.stringify(all));}catch(_){}paint();});
     paint();}
+  // 궁합 초대 링크 만들기 — 사주 글자 6개와 성별·호칭만 보낸다(worker.js /api/invite, 7일 보관)
+  function bindInvite(el,P,g){
+    var b=el.querySelector(".gh-mk"),out=el.querySelector(".gh-link"),busy=false;if(!b)return;
+    function make(){if(busy)return;busy=true;out.textContent="링크를 만드는 중이네…";
+      var n=(el.querySelector(".gh-nick").value||"").trim().slice(0,10);
+      fetch("/api/invite",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({p:[P.y.s,P.y.b,P.m.s,P.m.b,P.d.s,P.d.b],g:g,n:n})})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(j){busy=false;track("invite_make",{});
+        var url=location.origin+"/gunghap.html?i="+j.id,msg=(n?n+josa(n,"가/이"):"친구가")+" 동네보살에서 우리 사주 궁합 보자고 보냈어. 생일만 넣으면 돼!";
+        out.innerHTML='링크를 만들었네. 7일 동안 열리네.<br><a href="'+url+'">'+url+'</a>';
+        if(navigator.share)navigator.share({title:"우리 궁합 보자",text:msg,url:url}).catch(function(){});
+        else if(navigator.clipboard)navigator.clipboard.writeText(msg+" "+url).then(function(){out.insertAdjacentHTML("beforeend","<br>주소를 복사했네. 카톡에 붙여 넣게.");},function(){});})
+      .catch(function(){busy=false;out.textContent="링크를 만들지 못했네. 잠시 뒤 다시 눌러 보게.";});}
+    b.addEventListener("click",make);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();make();}});}
   function bindAiCopy(el,text){
     var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
     function done(ok){msg.textContent=ok?"복사했습니다. AI 창에 붙여 넣고 질문 칸만 고쳐 쓰세요.":"복사가 막혔습니다. 아래 글을 길게 눌러 복사하세요.";
@@ -3197,11 +3215,12 @@
     }
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
-      if(av.length<3||bv.length<3)return;
-      var ga=el.querySelector("#ga").value,gb=el.querySelector("#gb").value;
-      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
+      if(av.length<3||(!inv&&bv.length<3))return;
+      var ga=el.querySelector("#ga").value,gb=inv?inv.g:el.querySelector("#gb").value;
+      // 초대로 들어온 경우 상대 생일은 모른다(사주 글자만 받았다). 저장도 내 것만
+      savePrefs(inv?{birth:el.querySelector("#a").value,gender:ga}:{birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
       track("fortune_view",{tool:"gunghap"});
-      var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
+      var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=inv?inv.p:sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
       var r=pts(A,B),sc=r[0],rows=r[1];
       var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
       // 축별 점수 — 각 항목이 어디서 왔는지 보이도록 분해
@@ -3231,16 +3250,28 @@
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
-      '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,"상대")+'</div>'+
+      '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,inv&&inv.n?escH(inv.n):"상대")+'</div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>여섯 글자(연·월·일주)에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
+      '<div class="gh-mkinv"><h3>'+(inv?"나도 다른 사람에게 보내기":"이 궁합, 상대에게 보내기")+'</h3><p>내 사주 글자만 담은 링크를 보내면 받은 사람은 자기 생일만 넣고 우리 둘의 궁합을 봅니다. 생년월일은 서버로 가지 않고, 링크는 7일 뒤 지워집니다.</p>'+
+      '<div class="ai-row"><input class="gh-nick" maxlength="10" placeholder="내 이름 (선택)" aria-label="보내는 사람 이름"><span class="gh-mk" role="button" tabindex="0">초대 링크 만들기</span></div><p class="gh-link" aria-live="polite"></p></div>'+
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
+      bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
+    // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
+    var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
+    if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
+      var bar=document.createElement("div");bar.className="gh-inv";el.insertBefore(bar,el.firstChild);
+      if(!j||!j.p){bar.textContent="초대 링크가 만료됐거나 잘못됐네. 링크는 7일 동안만 열리니 보낸 사람에게 다시 받아 보게.";return;}
+      inv={p:{y:{s:j.p[0],b:j.p[1]},m:{s:j.p[2],b:j.p[3]},d:{s:j.p[4],b:j.p[5]},h:null},g:j.g==="m"?"m":"f",n:j.n||""};
+      bar.innerHTML='<b>'+(inv.n?escH(inv.n)+" 님":"친구")+'</b>'+(inv.n?"이":"가")+' 궁합을 보자고 보냈네. 자네 생년월일과 성별만 넣고 물어보게. 보낸 사람의 생년월일은 여기 오지 않았고, 사주 글자만 받았네.';
+      ["#b","#gb"].forEach(function(q){var x=el.querySelector(q);if(x&&x.parentNode)x.parentNode.style.display="none";});
+      track("invite_open",{});});
     askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}},
 
   {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){

@@ -1,9 +1,10 @@
 /* 동네보살 자체 방문 통계.
    POST /api/hit  페이지가 보내는 조회·이벤트 기록 (build_site.js 의 비콘, hub.html 의 track())
+   POST /api/invite  궁합 초대 링크 만들기(사주 글자만), GET /api/invite?i=  받기 — 7일 보관
    GET  /admin    대시보드. ADMIN_PASS 비밀값을 정하면 비밀번호가 걸린다
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 두 경로만 여기로 보낸다. */
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
-const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error"]);
+const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open"]);
 const BOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly/i;
 const SELF = /(^|\.)dongnebosal\.com$/;
 const kstDay = (off = 0) => new Date(Date.now() + 9 * 3600e3 - off * 86400e3).toISOString().slice(0, 10);
@@ -12,12 +13,14 @@ export default {
   async fetch(req, env) {
     const { pathname } = new URL(req.url);
     if (pathname === "/api/hit") return req.method === "POST" ? hit(req, env) : new Response(null, { status: 405 });
+    if (pathname === "/api/invite") return req.method === "POST" ? inviteMake(req, env) : req.method === "GET" ? inviteGet(req, env) : new Response(null, { status: 405 });
     if (pathname === "/admin") return admin(req, env);
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
   async scheduled(_, env) {
     await env.DB.prepare("DELETE FROM visitors WHERE day < ?").bind(kstDay(90)).run();
+    await env.DB.prepare("DELETE FROM invites WHERE day < ?").bind(kstDay(7)).run();
   },
 };
 
@@ -46,6 +49,25 @@ async function hit(req, env) {
   }
   await env.DB.batch(stmts);
   return ok;
+}
+
+// ---- 궁합 초대 링크
+const JSONH = { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" };
+async function inviteMake(req, env) {
+  let b;
+  try { b = JSON.parse((await req.text()).slice(0, 500)); } catch { return new Response(null, { status: 400 }); }
+  const p = b && b.p, ok = Array.isArray(p) && p.length === 6 && p.every((v, i) => Number.isInteger(v) && v >= 0 && v < (i % 2 ? 12 : 10));
+  if (!ok || (b.g !== "m" && b.g !== "f")) return new Response(null, { status: 400 });
+  const n = typeof b.n === "string" ? b.n.replace(/[<>&"'\u0000-\u001f]/g, "").trim().slice(0, 10) : "";
+  const id = [...crypto.getRandomValues(new Uint8Array(10))].map(x => "abcdefghijkmnpqrstuvwxyz23456789"[x % 32]).join("");
+  await env.DB.prepare("INSERT INTO invites VALUES (?,?,?)").bind(id, JSON.stringify({ p, g: b.g, n }), kstDay()).run();
+  return new Response(JSON.stringify({ id }), { headers: JSONH });
+}
+async function inviteGet(req, env) {
+  const id = new URL(req.url).searchParams.get("i") || "";
+  if (!/^[a-z0-9]{10}$/.test(id)) return new Response(null, { status: 404 });
+  const row = await env.DB.prepare("SELECT data FROM invites WHERE id = ? AND day >= ?").bind(id, kstDay(7)).first();
+  return row ? new Response(row.data, { headers: JSONH }) : new Response(null, { status: 404, headers: JSONH });
 }
 
 // ---- 대시보드

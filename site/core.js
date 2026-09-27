@@ -320,6 +320,19 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     box.addEventListener("click",function(e){var s=e.target.closest(".yr-fb span");if(!s)return;var yy=s.closest(".yr").dataset.y;
       mine[yy]=mine[yy]===s.dataset.v?undefined:s.dataset.v;all[bkey]=mine;try{localStorage.setItem("dnbs_yfb",JSON.stringify(all));}catch(_){}paint();});
     paint();}
+  // 궁합 초대 링크 만들기 — 사주 글자 6개와 성별·호칭만 보낸다(worker.js /api/invite, 7일 보관)
+  function bindInvite(el,P,g){
+    var b=el.querySelector(".gh-mk"),out=el.querySelector(".gh-link"),busy=false;if(!b)return;
+    function make(){if(busy)return;busy=true;out.textContent="링크를 만드는 중이네…";
+      var n=(el.querySelector(".gh-nick").value||"").trim().slice(0,10);
+      fetch("/api/invite",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({p:[P.y.s,P.y.b,P.m.s,P.m.b,P.d.s,P.d.b],g:g,n:n})})
+      .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(j){busy=false;track("invite_make",{});
+        var url=location.origin+"/gunghap.html?i="+j.id,msg=(n?n+josa(n,"가/이"):"친구가")+" 동네보살에서 우리 사주 궁합 보자고 보냈어. 생일만 넣으면 돼!";
+        out.innerHTML='링크를 만들었네. 7일 동안 열리네.<br><a href="'+url+'">'+url+'</a>';
+        if(navigator.share)navigator.share({title:"우리 궁합 보자",text:msg,url:url}).catch(function(){});
+        else if(navigator.clipboard)navigator.clipboard.writeText(msg+" "+url).then(function(){out.insertAdjacentHTML("beforeend","<br>주소를 복사했네. 카톡에 붙여 넣게.");},function(){});})
+      .catch(function(){busy=false;out.textContent="링크를 만들지 못했네. 잠시 뒤 다시 눌러 보게.";});}
+    b.addEventListener("click",make);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();make();}});}
   function bindAiCopy(el,text){
     var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
     function done(ok){msg.textContent=ok?"복사했습니다. AI 창에 붙여 넣고 질문 칸만 고쳐 쓰세요.":"복사가 막혔습니다. 아래 글을 길게 눌러 복사하세요.";

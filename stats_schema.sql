@@ -5,3 +5,5 @@ CREATE TABLE IF NOT EXISTS views    (day TEXT NOT NULL, path TEXT NOT NULL, n IN
 CREATE TABLE IF NOT EXISTS visitors (day TEXT NOT NULL, h TEXT NOT NULL, mobile INTEGER NOT NULL, PRIMARY KEY (day, h));
 CREATE TABLE IF NOT EXISTS refs     (day TEXT NOT NULL, host TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, host));
 CREATE TABLE IF NOT EXISTS events   (day TEXT NOT NULL, name TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name));
+-- 궁합 초대 링크: 보낸 사람의 사주 글자(연·월·일 천간·지지 6개)와 성별·호칭만. 생년월일은 받지 않는다. 7일 뒤 지운다
+CREATE TABLE IF NOT EXISTS invites  (id TEXT PRIMARY KEY, data TEXT NOT NULL, day TEXT NOT NULL);
