@@ -3274,8 +3274,11 @@
       track("invite_open",{});});
     askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}},
 
-  {id:"newyear",cat:"재미·운세",icon:"",name:"2026 신년운세",desc:"병오년 나의 한 해",render:function(el){
-    var YR=2026,YS=2,YB=6; // 병오년
+  {id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"2026 병오 · 2027 정미 나의 한 해",render:function(el){
+    // 해마다 바뀌는 건 그 해의 간지뿐이다. 12~2월이 성수기라 10월부터는 다음 해를 먼저 연다(?y=2027 로 고정 가능)
+    var YEARS={2026:{s:2,b:6,ko:"병오",han:"丙午",ani:"붉은 말"},2027:{s:3,b:7,ko:"정미",han:"丁未",ani:"붉은 양"}};
+    var nowD=new Date(),qy=+((location.search.match(/[?&]y=(20\d\d)/)||[])[1]||0);
+    var defY=YEARS[qy]?qy:(nowD.getMonth()>=9&&YEARS[nowD.getFullYear()+1])?nowD.getFullYear()+1:(YEARS[nowD.getFullYear()]?nowD.getFullYear():2026);
     var TXT={ // 병(丙)이 내 일간에 대해 갖는 십성 → 올해의 큰 흐름
     "비견":["동료와 경쟁의 해","같은 불이 하나 더 켜지는 해일세. 자네 힘이 커지는 만큼 경쟁자도 또렷해지네. 동업이든 협업이든 역할을 문서로 갈라두면 길하고, 뭉뚱그리면 반드시 다툼이 되네.","독립하고 창업하기 좋은 기운일세. 단, 자금은 자네 몫을 분명히 하게."],
     "겁재":["지출 관리의 해","기운은 왕성한데 재물이 새기 쉬운 해야. 보증이며 동업 자금이며 큰 선심은 상반기에 특히 조심하게. 대신 사람은 많이 얻는 해일세.","버는 해가 아니라 지키는 해로 짜두게. 그러면 연말이 편안하네."],
@@ -3287,18 +3290,21 @@
     "정관":["명예와 자리의 해","승진이든 합격이든 공식적인 인정운이 밝은 해일세. 원칙대로 움직일수록 평판이 자산이 되네.","이력서든 자격이든 직함이든, 공적인 것을 정비하기 좋은 해야."],
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해일세. 자격증·공부·기획에 유리하고, 결정은 좀 묵혔다 내리는 게 좋네.","혼자 파고드는 시간이 하반기의 반전을 만들어."],
     "정인":["귀인과 문서의 해","어른이든 스승이든 기관이든, 위에서 도움이 오는 해일세. 계약·합격·승인 같은 문서운이 밝네.","배움에 쓰는 돈이 올해 자네한테 제일 수익률 높은 투자야."]};
-    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
+    el.innerHTML='<label>어느 해</label><select id="yr">'+Object.keys(YEARS).map(function(k){return '<option value="'+k+'"'+(+k===defY?" selected":"")+'>'+k+' '+YEARS[k].ko+'년 ('+YEARS[k].ani+')</option>';}).join("")+'</select>'+
+    '<label style="margin-top:12px">생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"newyear"});
+      var YR=+el.querySelector("#yr").value,Y=YEARS[YR],YS=Y.s,YB=Y.b,TSE=SJ_B[YB]+SJ_EL[SJ_EB[YB]]; // 태세 지지와 오행(예: 오화, 미토)
+      var YW=YR===new Date().getFullYear()?"올해":YR+"년"; // 다음 해를 볼 때 "올해"라고 부르지 않는다
       var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
       var rel=sjTenGod(me.d.s,YS),T=TXT[rel];
       var yb=me.y.b,db=me.d.b,notes=[];
       function relB(b,label){
-        if(b%4===YB%4&&b!==YB)notes.push(label+"가 태세(오화)와 삼합일세. 귀인과 협력의 흐름이 한 해 내내 힘을 보태네.");
-        else if(b+YB===13)notes.push(label+"가 태세와 육합일세. 사람 사이가 유난히 부드러운 해야.");
+        if(b%4===YB%4&&b!==YB)notes.push(label+"가 태세("+TSE+")와 삼합일세. 귀인과 협력의 흐름이 한 해 내내 힘을 보태네.");
+        else if(sjYukhap(b)===YB)notes.push(label+"가 태세와 육합일세. 사람 사이가 유난히 부드러운 해야.");
         else if(Math.abs(b-YB)===6)notes.push(label+"가 태세와 충일세. 이동수·변동수가 있으니 이사든 이직이든 자네가 먼저 계획 안으로 끌어들이게.");}
       relB(yb,"내 띠(연지)");relB(db,"내 일지");
       var score={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[rel];
@@ -3319,25 +3325,25 @@
       var E=EXT[rel],sub=[["재물",E[0][0]],["직장",E[0][1]],["애정",E[0][2]],["건강",E[0][3]]].map(function(x){
         return [x[0],Math.max(30,Math.min(99,score+x[1]))];});
       function ybar(n,v){return rateBar(n,v);}
-      var un=sjUnseong(me.d.s,YB); // 태세 오(午)가 내 일간에 갖는 십이운성
+      var un=sjUnseong(me.d.s,YB); // 태세 지지가 내 일간에 갖는 십이운성
       el.querySelector("#out").innerHTML=
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
-      '<div class="tf-hl">병오년, 자네에게 '+rel+'의 해일세.</div>'+
-      '<div class="out" style="margin-top:16px"><div class="k">2026 병오년(丙午年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
-      '<div class="v">'+score+'<small>점</small></div><div class="s">올해는 자네에게 <b>'+rel+'</b>의 해 — '+T[0]+'</div></div>'+
+      '<div class="tf-hl">'+Y.ko+'년, 자네에게 '+rel+'의 해일세.</div>'+
+      '<div class="out" style="margin-top:16px"><div class="k">'+YR+' '+Y.ko+'년('+Y.han+'年) · '+SJ_TTI[yb]+'띠 · '+SJ_S[me.d.s]+'일간</div>'+
+      '<div class="v">'+score+'<small>점</small></div><div class="s">'+YW+(YW==="올해"?"는":"은")+' 자네에게 <b>'+rel+'</b>의 해 — '+T[0]+'</div></div>'+
       '<div class="sj-bars">'+sub.map(function(x){return ybar(x[0],x[1]);}).join("")+'</div>'+
       zoCard(me.y.b)+
       '<div class="sj-sec"><h3>한 해의 큰 흐름</h3><p>'+T[1]+'</p></div>'+
       '<div class="sj-sec"><h3>상반기 (입춘~하지)</h3><p>'+E[1]+'</p></div>'+
       '<div class="sj-sec"><h3>하반기 (하지~입춘 전)</h3><p>'+E[2]+'</p></div>'+
-      '<div class="sj-sec"><h3>올해 조심할 것</h3><p>'+E[3]+'</p></div>'+
-      '<div class="sj-sec"><h3>올해의 전략</h3><p>'+T[2]+'</p></div>'+
+      '<div class="sj-sec"><h3>'+YW+' 조심할 것</h3><p>'+E[3]+'</p></div>'+
+      '<div class="sj-sec"><h3>'+YW+'의 전략</h3><p>'+T[2]+'</p></div>'+
       (notes.length?'<div class="sj-sec"><h3>붙는 자리와 부딪히는 자리</h3><p>'+notes.join(" ")+'</p></div>':"")+
-      '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 오(午)는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. 2026년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
+      '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 '+SJ_B[YB]+'('+SJ_BH[YB]+')는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. '+YR+'년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
-      '<p class="note">올해 하늘 글자(丙)와 나를 뜻하는 글자가 맺는 관계, 올해 아래 글자(午)가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
-      bindShare(el,"2026 신년운세","2026 병오년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
-    askWire(el,go,["병오년 태세를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
+      '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
+      bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score});}
+    askWire(el,go,["그 해 태세를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   {id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",desc:"획수 계산 전통놀이",render:function(el){
     var CHO=[1,2,2,3,3,4,4,6,2,4,4,6,4,6,3,2,3,4,3];   // ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ 근사 획수
