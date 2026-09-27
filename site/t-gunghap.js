@@ -1,8 +1,15 @@
 TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
     '<div><label>상대 생년월일</label><input type="date" id="b" value="'+(loadPrefs().partnerBirth||"1992-07-20")+'"></div></div>'+
+    // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
+    (function(){var g=loadPrefs().gender==="m"?"m":"f",pg=loadPrefs().partnerGender||(g==="m"?"f":"m");
+      function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}
+      return '<div class="r2" style="margin-top:10px"><div><label>나의 성별</label>'+sel("ga",g)+'</div><div><label>상대의 성별</label>'+sel("gb",pg)+'</div></div>';})()+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
+    function ghChar(P,g,who){var e=SJ_EL[SJ_ES[P.d.s]],en={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"}[e];
+      return '<div class="sj-char"><img width="520" height="520" src="img/char/el-'+en+'-'+g+'.webp" alt="'+who+' — '+SJ_S[P.d.s]+e+' 일간 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+        '<div class="cap"><div class="t">'+who+' · '+(g==="m"?"남":"여")+'</div><div class="n">'+SJ_S[P.d.s]+e+' 일간</div><p>'+SJ_TTI[P.y.b]+'띠 · '+SJ_S[P.d.s]+SJ_B[P.d.b]+'일주</p></div></div>';}
     function pts(a,b){ // [점수증감, 설명] 목록
       var out=[],sc=60;
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
@@ -37,7 +44,8 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||bv.length<3)return;
-      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value});
+      var ga=el.querySelector("#ga").value,gb=el.querySelector("#gb").value;
+      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
       track("fortune_view",{tool:"gunghap"});
       var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
       var r=pts(A,B),sc=r[0],rows=r[1];
@@ -69,7 +77,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
-      '<div class="gh-pair">'+zoCard(A.y.b,"나")+zoCard(B.y.b,"상대")+'</div>'+
+      '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,"상대")+'</div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>여섯 글자(연·월·일주)에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){

@@ -729,7 +729,34 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
+    lunarPick(host,inp,era,nowY);
     return wrap;}
+  /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 음력 연·월·일(윤달)을 고르면 양력으로 바꿔
+     위 입력칸에 넣고, 다이얼은 input 이벤트로 따라온다. 계산은 늘 양력 한 가지로 한다.
+     변환(KASI 기준 vendor-lunar.js)은 펼칠 때만 받는다. */
+  function lunarPick(host,inp,before,nowY){
+    var lp=document.createElement("details");lp.className="lunar-pick";
+    var mo="",dd="";for(var i=1;i<=12;i++)mo+='<option value="'+i+'">'+i+'월</option>';for(i=1;i<=30;i++)dd+='<option value="'+i+'">'+i+'일</option>';
+    lp.innerHTML='<summary>음력 생일이세요?</summary><div class="lp-row">'+
+      '<input type="number" class="lp-y" min="1930" max="'+nowY+'" value="'+((inp.value||"1990").split("-")[0])+'" aria-label="음력 연도">'+
+      '<select class="lp-m" aria-label="음력 월">'+mo+'</select><select class="lp-d" aria-label="음력 일">'+dd+'</select>'+
+      '<label class="lp-leap"><input type="checkbox" class="lp-l"> 윤달</label>'+
+      '<span class="lp-go" role="button" tabindex="0">양력으로 넣기</span></div><p class="lp-note"></p>';
+    host.insertBefore(lp,before);
+    function load(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
+      var s=document.createElement("script");s.id="vendor-lunar";s.src="vendor-lunar.js";document.head.appendChild(s);}
+    lp.addEventListener("toggle",function(){if(lp.open)load();});
+    var note=lp.querySelector(".lp-note"),go=lp.querySelector(".lp-go");
+    function apply(){
+      var K=window.KoreanLunarCalendar;if(!K){load();note.textContent="변환 준비 중이네. 한 번만 더 눌러 주게.";return;}
+      var y=+lp.querySelector(".lp-y").value,m=+lp.querySelector(".lp-m").value,d=+lp.querySelector(".lp-d").value,leap=lp.querySelector(".lp-l").checked;
+      var cal=new K();
+      if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없네. 윤달이 아닌지 다시 보게.";return;}
+      var s=cal.getSolarCalendar(),v=s.year+"-"+String(s.month).padStart(2,"0")+"-"+String(s.day).padStart(2,"0");
+      inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));
+      note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+s.year+"년 "+s.month+"월 "+s.day+"일일세. 이 날짜로 보네.";}
+    go.addEventListener("click",apply);
+    go.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();apply();}});}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
     '<button type="button" class="save-btn">이미지로 저장</button>';}

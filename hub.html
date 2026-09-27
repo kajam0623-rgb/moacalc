@@ -271,6 +271,14 @@
   /* 년 칸은 '1990년' 5글자가 들어가야 한다. 비율(fr)만 쓰면 좁은 폭에서 잘리므로 최소폭을 준다 */
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
+  .lunar-pick{margin:0 0 10px;font-size:13.5px;}
+  .lunar-pick summary{cursor:pointer;color:var(--accent);font-weight:700;padding:6px 0;list-style:none;}
+  .lunar-pick summary::-webkit-details-marker{display:none;}
+  .lp-row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;}
+  .lp-row input[type=number]{width:88px;}.lp-row select{width:auto;}
+  .lp-leap{display:inline-flex;align-items:center;gap:4px;font-size:13px;margin:0;}
+  .lp-go{display:inline-block;padding:9px 14px;border-radius:10px;background:var(--accent);color:var(--on-accent,#fff);font-weight:800;cursor:pointer;}
+  .lp-note{margin:8px 0 0;font-size:13px;color:var(--muted);line-height:1.6;}
   .dial-era{display:flex;gap:6px;overflow-x:auto;margin:0 0 8px;padding-bottom:2px;
     contain:inline-size;-webkit-overflow-scrolling:touch;scrollbar-width:none}
   .dial-era::-webkit-scrollbar{display:none}
@@ -1309,7 +1317,34 @@
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
+    lunarPick(host,inp,era,nowY);
     return wrap;}
+  /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 음력 연·월·일(윤달)을 고르면 양력으로 바꿔
+     위 입력칸에 넣고, 다이얼은 input 이벤트로 따라온다. 계산은 늘 양력 한 가지로 한다.
+     변환(KASI 기준 vendor-lunar.js)은 펼칠 때만 받는다. */
+  function lunarPick(host,inp,before,nowY){
+    var lp=document.createElement("details");lp.className="lunar-pick";
+    var mo="",dd="";for(var i=1;i<=12;i++)mo+='<option value="'+i+'">'+i+'월</option>';for(i=1;i<=30;i++)dd+='<option value="'+i+'">'+i+'일</option>';
+    lp.innerHTML='<summary>음력 생일이세요?</summary><div class="lp-row">'+
+      '<input type="number" class="lp-y" min="1930" max="'+nowY+'" value="'+((inp.value||"1990").split("-")[0])+'" aria-label="음력 연도">'+
+      '<select class="lp-m" aria-label="음력 월">'+mo+'</select><select class="lp-d" aria-label="음력 일">'+dd+'</select>'+
+      '<label class="lp-leap"><input type="checkbox" class="lp-l"> 윤달</label>'+
+      '<span class="lp-go" role="button" tabindex="0">양력으로 넣기</span></div><p class="lp-note"></p>';
+    host.insertBefore(lp,before);
+    function load(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
+      var s=document.createElement("script");s.id="vendor-lunar";s.src="vendor-lunar.js";document.head.appendChild(s);}
+    lp.addEventListener("toggle",function(){if(lp.open)load();});
+    var note=lp.querySelector(".lp-note"),go=lp.querySelector(".lp-go");
+    function apply(){
+      var K=window.KoreanLunarCalendar;if(!K){load();note.textContent="변환 준비 중이네. 한 번만 더 눌러 주게.";return;}
+      var y=+lp.querySelector(".lp-y").value,m=+lp.querySelector(".lp-m").value,d=+lp.querySelector(".lp-d").value,leap=lp.querySelector(".lp-l").checked;
+      var cal=new K();
+      if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없네. 윤달이 아닌지 다시 보게.";return;}
+      var s=cal.getSolarCalendar(),v=s.year+"-"+String(s.month).padStart(2,"0")+"-"+String(s.day).padStart(2,"0");
+      inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));
+      note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+s.year+"년 "+s.month+"월 "+s.day+"일일세. 이 날짜로 보네.";}
+    go.addEventListener("click",apply);
+    go.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();apply();}});}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
     '<button type="button" class="save-btn">이미지로 저장</button>';}
@@ -3013,8 +3048,15 @@
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
     el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
     '<div><label>상대 생년월일</label><input type="date" id="b" value="'+(loadPrefs().partnerBirth||"1992-07-20")+'"></div></div>'+
+    // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
+    (function(){var g=loadPrefs().gender==="m"?"m":"f",pg=loadPrefs().partnerGender||(g==="m"?"f":"m");
+      function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}
+      return '<div class="r2" style="margin-top:10px"><div><label>나의 성별</label>'+sel("ga",g)+'</div><div><label>상대의 성별</label>'+sel("gb",pg)+'</div></div>';})()+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
+    function ghChar(P,g,who){var e=SJ_EL[SJ_ES[P.d.s]],en={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"}[e];
+      return '<div class="sj-char"><img width="520" height="520" src="img/char/el-'+en+'-'+g+'.webp" alt="'+who+' — '+SJ_S[P.d.s]+e+' 일간 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+        '<div class="cap"><div class="t">'+who+' · '+(g==="m"?"남":"여")+'</div><div class="n">'+SJ_S[P.d.s]+e+' 일간</div><p>'+SJ_TTI[P.y.b]+'띠 · '+SJ_S[P.d.s]+SJ_B[P.d.b]+'일주</p></div></div>';}
     function pts(a,b){ // [점수증감, 설명] 목록
       var out=[],sc=60;
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
@@ -3049,7 +3091,8 @@
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||bv.length<3)return;
-      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value});
+      var ga=el.querySelector("#ga").value,gb=el.querySelector("#gb").value;
+      savePrefs({birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
       track("fortune_view",{tool:"gunghap"});
       var A=sjPillars(+av[0],+av[1],+av[2],null,0,false),B=sjPillars(+bv[0],+bv[1],+bv[2],null,0,false);
       var r=pts(A,B),sc=r[0],rows=r[1];
@@ -3081,7 +3124,7 @@
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
-      '<div class="gh-pair">'+zoCard(A.y.b,"나")+zoCard(B.y.b,"상대")+'</div>'+
+      '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,"상대")+'</div>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>여섯 글자(연·월·일주)에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){

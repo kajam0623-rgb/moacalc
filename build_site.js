@@ -2407,6 +2407,8 @@ fs.writeFileSync(path.join(OUT,"core.js"), coreJs);
 // 음력 변환은 KASI 기준 구현(MIT)이 필요하다. core.js에 넣으면 모든 페이지가 받으므로
 // 그 도구 청크 앞에만 붙인다.
 const VENDOR_LUNAR = fs.readFileSync(path.join(__dirname, "vendor-lunar.js"), "utf8");
+// 생일 다이얼의 "음력 생일이세요?"가 펼칠 때 따로 받는다
+fs.writeFileSync(path.join(OUT,"vendor-lunar.js"), VENDOR_LUNAR);
 // 옛 계산기(연봉·BMI 등)는 hub.html 에만 남기고 사이트에는 만들지 않는다 — 운세 사이트에 섞인 계산기가 "짜깁기 사이트"로 보였다(2026-09 감사)
 chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSync(path.join(OUT,"t-"+c.id+".js"),
   (c.id === "lunar" ? VENDOR_LUNAR + "\n" : "") +
