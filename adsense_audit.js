@@ -97,6 +97,9 @@ const manse = pages.filter(p => p.type === "월력");
 const inKeep = id => { const ym = id.slice(6); return ym >= MANSE_KEEP.from && ym <= MANSE_KEEP.to; };
 gate(3, `월력은 ${MANSE_KEEP.from}~${MANSE_KEEP.to} 만 노출`, manse.filter(p => inKeep(p.id) === p.noindex).map(p => p.id));
 gate(3, "밖의 월력이 사이트맵에 없다", manse.filter(p => !inKeep(p.id) && smIds.has(p.id)).map(p => p.id));
+const iljin60 = pages.filter(p => /^iljin-/.test(p.id));
+gate(3, "일진 60장은 noindex·사이트맵 제외, 오늘 일진만 노출", iljin60.filter(p => !p.noindex || smIds.has(p.id)).map(p => p.id)
+  .concat(iljin60.length === 60 ? [] : [`일진 ${iljin60.length}장`]).concat(byId.iljin && !byId.iljin.noindex && smIds.has("iljin") ? [] : ["iljin.html"]));
 
 gate(4, `음력 페이지 본문 ${LUNAR_MIN}자 이상`, byId.lunar && byId.lunar.chars >= LUNAR_MIN ? [] : [`lunar ${byId.lunar ? byId.lunar.chars : "없음"}자`]);
 

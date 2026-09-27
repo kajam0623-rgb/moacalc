@@ -1778,6 +1778,8 @@ function iljinPage(p){
   const relRow = r => `<div class="row"><span><a href="ilgan-${r.ilgan.en}.html">${r.ilgan.ko}${r.ilgan.el} 일간</a>`+
     ` · ${esc(r.tengod)}</span><b>${r.score}점 · ${esc(r.un)}</b></div>`;
   return seoPage({
+    // 애드센스 반려 대응(2026-09): 60장이 간지만 바꾼 같은 틀이라 검색에서 뺀다. 오늘 일진(iljin.html)만 노출
+    noindex: true,
     crumb:`${p.ko}일`,
     title:`${p.ko}일 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
     desc:`${p.ko}일(${p.han})은 ${p.rel.label}입니다. ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합. 일간 열 가지의 점수와 조언.`,
@@ -2205,7 +2207,6 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
-  ILJIN_PAGES.map(p=>smUrl("iljin-"+p.en+".html")).join("\n")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
   smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+
   MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
@@ -2258,16 +2259,15 @@ ${CONCEPT_PAGES.map(c=>`- [${c.ko}(${c.han})](${DOMAIN}/concept-${c.en}.html): $
 
 ${TAROT_PAGES.map(c=>`- [${c.ko} 카드(${c.eng})](${DOMAIN}/tarot-${c.en}.html): ${c.keyword} · 정방향 ${c.upWords.join("·")} · 역방향 ${c.revWords.join("·")}`).join("\n")}
 
-## 일진별 상세 (60) — 날에 붙는 간지
+## 오늘 일진 — 날에 붙는 간지
 
-일진은 60일마다 돌아온다. 같은 일진이라도 사람마다 결과가 갈리는 것은, 그날 천간이 각자의 일간에게 다른 십성이 되기 때문이다. 아래 각 페이지에 일간 열 가지의 십성·점수·십이운성이 계산되어 있다.
+일진은 60일마다 돌아온다. 같은 일진이라도 사람마다 결과가 갈리는 것은, 그날 천간이 각자의 일간에게 다른 십성이 되기 때문이다. 오늘 일진 페이지에서 60갑자 전체와 오늘의 간지를 볼 수 있다.
 
 - [일진 달력 — 오늘 일진](${DOMAIN}/iljin.html): 60갑자 전체 목록과 오늘 일진
-${ILJIN_PAGES.map(p=>`- [${p.ko}일(${p.han})](${DOMAIN}/iljin-${p.en}.html): ${p.gan.ko}${p.gan.el}·${p.ji.ko}${p.ji.el} · ${p.rel.label} · 충 ${p.chung}띠 · 삼합 ${p.samhap.join("·")}띠`).join("\n")}
 
 ## 일주별 상세 (60) — 태어난 날의 간지
 
-일진과 같은 60갑자를 쓰지만 보는 대상이 다르다. 일진은 그 날의 기운이고, 일주는 그 간지로 태어난 사람이다. 일간(위 글자)은 나 자신, 일지(아래 글자)는 배우자 자리로 읽는다. 주소는 ${DOMAIN}/ilju-천간지지.html 형식이며 철자는 일진과 같다(예: ilju-gapja.html ↔ iljin-gapja.html). 각 페이지에는 그 일주의 십이운성, 일지 지장간 본기로 본 십성, 삼합·육합·충 띠가 계산되어 있고 성격·배우자 자리·여자와 남자의 차이가 적혀 있다.
+일진과 같은 60갑자를 쓰지만 보는 대상이 다르다. 일진은 그 날의 기운이고, 일주는 그 간지로 태어난 사람이다. 일간(위 글자)은 나 자신, 일지(아래 글자)는 배우자 자리로 읽는다. 주소는 ${DOMAIN}/ilju-천간지지.html 형식이다(예: ilju-gapja.html). 각 페이지에는 그 일주의 십이운성, 일지 지장간 본기로 본 십성, 삼합·육합·충 띠가 계산되어 있고 성격·배우자 자리·여자와 남자의 차이가 적혀 있다.
 
 ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DOMAIN}/ilju-${p.en}.html): 일간 ${p.gan.ko}${p.gan.el} · 일지 ${p.ji.ko}${p.ji.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`).join("\n")}
 
