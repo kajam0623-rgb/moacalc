@@ -272,6 +272,14 @@
   /* contain:inline-size — 칩을 다 합친 너비(480px)가 min-content 로 잡혀 좁은 화면에서 부모를 밀어냈다.
      가로폭을 내용과 끊어 부모 폭을 따르게 하고, 칩은 그 안에서 가로 스크롤한다 */
   .lunar-pick{margin:0 0 10px;font-size:13.5px;}
+  .yrs{display:grid;gap:8px;margin-top:10px;}
+  .yr{border:1px solid var(--line-2);border-radius:12px;padding:10px 12px;background:var(--surface);}
+  .yr.now{border:1.5px solid #E6B25A;}.yr.past{opacity:.92;}
+  .yr-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;}.yr-h b{font-size:16px;}.yr-h span{font-weight:700;font-size:13.5px;}.yr-h small{color:var(--muted);font-size:12.5px;margin-left:auto;}
+  .yr p{margin:4px 0 0;font-size:13.5px;line-height:1.6;}
+  .yr-fb{display:flex;gap:6px;margin-top:8px;}.yr-fb span{padding:6px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:12.5px;cursor:pointer;}
+  .yr-fb span.on{background:#E6B25A;color:#1b1406;border-color:#E6B25A;font-weight:800;}
+  .yr-sum{font-size:13px;color:var(--muted);}
   .ai-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
   .ai-row .ai-copy{padding:10px 16px;border-radius:10px;background:#E6B25A;color:#1b1406;font-weight:800;cursor:pointer;}
   .ai-row a{padding:10px 14px;border-radius:10px;border:1.5px solid var(--line-2);color:var(--ink);font-weight:700;text-decoration:none;}
@@ -900,6 +908,18 @@
       '<div class="ai-row"><span class="ai-copy" role="button" tabindex="0">질문문 복사</span>'+
       '<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div>'+
       '<p class="ai-done" aria-live="polite"></p></div>';}
+  // 인생 시기표의 "그해 어땠나" — localStorage 에만 둔다. key: 생년월일, 값: {해: 맞음|애매|다름}
+  function bindYearFb(el,bkey){
+    var box=el.querySelector(".yrs");if(!box)return;var all={};
+    try{all=JSON.parse(localStorage.getItem("dnbs_yfb")||"{}");}catch(e){}
+    var mine=all[bkey]||{},sum=el.querySelector(".yr-sum");
+    function paint(){var c={맞음:0,애매:0,다름:0};
+      box.querySelectorAll(".yr.past").forEach(function(r){var v=mine[r.dataset.y];
+        r.querySelectorAll(".yr-fb span").forEach(function(s){s.classList.toggle("on",s.dataset.v===v);});if(v)c[v]++;});
+      var n=c.맞음+c.애매+c.다름;sum.textContent=n?"적어 둔 "+n+"해 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름+". 이 기록은 이 기기에만 있네.":"";}
+    box.addEventListener("click",function(e){var s=e.target.closest(".yr-fb span");if(!s)return;var yy=s.closest(".yr").dataset.y;
+      mine[yy]=mine[yy]===s.dataset.v?undefined:s.dataset.v;all[bkey]=mine;try{localStorage.setItem("dnbs_yfb",JSON.stringify(all));}catch(_){}paint();});
+    paint();}
   function bindAiCopy(el,text){
     var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
     function done(ok){msg.textContent=ok?"복사했습니다. AI 창에 붙여 넣고 질문 칸만 고쳐 쓰세요.":"복사가 막혔습니다. 아래 글을 길게 눌러 복사하세요.";
@@ -1102,7 +1122,7 @@
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
-  var PLAIN_SKIP="a,.sj-basis,.sj-ai,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  var PLAIN_SKIP="a,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
     var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];
@@ -2381,6 +2401,16 @@
         '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br><br>'+
         gTxt+'<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         seSec+
+        (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
+          var nowY=new Date().getFullYear(),rows="";
+          for(var yy=nowY-5;yy<=nowY+5;yy++){var age=yy-y+1;if(age<1)continue;
+            var yp=sjPillars(yy,7,1,null,0,false).y,ytg=sjTenGod(ds,yp.s),db=p.d.b,yb=yp.b;
+            var rel=Math.abs(yb-db)===6?"일지와 충":sjYukhap(db)===yb?"일지와 육합":(yb%4===db%4&&yb!==db)?"일지와 삼합":"";
+            var du=duList.filter(function(x){return x.age<=age;}).pop();
+            rows+='<div class="yr'+(yy===nowY?' now':yy<nowY?' past':'')+'" data-y="'+yy+'"><div class="yr-h"><b>'+yy+'</b><span>'+SJ_S[yp.s]+SJ_B[yb]+'년 · '+ytg+(rel?' · '+rel:'')+'</span><small>'+age+'세'+(du?' · '+du.g+' 대운':'')+'</small></div>'+
+              '<p>'+DUTXT[ytg].split(".")[0]+'.</p>'+
+              (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
+          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
@@ -2422,6 +2452,7 @@
       cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
       cardData.file="사주팔자";
       bindSave(el,cardData);
+      bindYearFb(el,y+"-"+mo+"-"+d);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}

@@ -308,6 +308,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ai-row"><span class="ai-copy" role="button" tabindex="0">질문문 복사</span>'+
       '<a href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT</a><a href="https://claude.ai/new" target="_blank" rel="noopener">Claude</a><a href="https://gemini.google.com/app" target="_blank" rel="noopener">Gemini</a></div>'+
       '<p class="ai-done" aria-live="polite"></p></div>';}
+  // 인생 시기표의 "그해 어땠나" — localStorage 에만 둔다. key: 생년월일, 값: {해: 맞음|애매|다름}
+  function bindYearFb(el,bkey){
+    var box=el.querySelector(".yrs");if(!box)return;var all={};
+    try{all=JSON.parse(localStorage.getItem("dnbs_yfb")||"{}");}catch(e){}
+    var mine=all[bkey]||{},sum=el.querySelector(".yr-sum");
+    function paint(){var c={맞음:0,애매:0,다름:0};
+      box.querySelectorAll(".yr.past").forEach(function(r){var v=mine[r.dataset.y];
+        r.querySelectorAll(".yr-fb span").forEach(function(s){s.classList.toggle("on",s.dataset.v===v);});if(v)c[v]++;});
+      var n=c.맞음+c.애매+c.다름;sum.textContent=n?"적어 둔 "+n+"해 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름+". 이 기록은 이 기기에만 있네.":"";}
+    box.addEventListener("click",function(e){var s=e.target.closest(".yr-fb span");if(!s)return;var yy=s.closest(".yr").dataset.y;
+      mine[yy]=mine[yy]===s.dataset.v?undefined:s.dataset.v;all[bkey]=mine;try{localStorage.setItem("dnbs_yfb",JSON.stringify(all));}catch(_){}paint();});
+    paint();}
   function bindAiCopy(el,text){
     var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
     function done(ok){msg.textContent=ok?"복사했습니다. AI 창에 붙여 넣고 질문 칸만 고쳐 쓰세요.":"복사가 막혔습니다. 아래 글을 길게 눌러 복사하세요.";
@@ -510,7 +522,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
-  var PLAIN_SKIP="a,.sj-basis,.sj-ai,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  var PLAIN_SKIP="a,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
     var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];

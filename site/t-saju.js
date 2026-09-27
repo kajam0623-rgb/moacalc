@@ -351,6 +351,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br><br>'+
         gTxt+'<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         seSec+
+        (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
+          var nowY=new Date().getFullYear(),rows="";
+          for(var yy=nowY-5;yy<=nowY+5;yy++){var age=yy-y+1;if(age<1)continue;
+            var yp=sjPillars(yy,7,1,null,0,false).y,ytg=sjTenGod(ds,yp.s),db=p.d.b,yb=yp.b;
+            var rel=Math.abs(yb-db)===6?"일지와 충":sjYukhap(db)===yb?"일지와 육합":(yb%4===db%4&&yb!==db)?"일지와 삼합":"";
+            var du=duList.filter(function(x){return x.age<=age;}).pop();
+            rows+='<div class="yr'+(yy===nowY?' now':yy<nowY?' past':'')+'" data-y="'+yy+'"><div class="yr-h"><b>'+yy+'</b><span>'+SJ_S[yp.s]+SJ_B[yb]+'년 · '+ytg+(rel?' · '+rel:'')+'</span><small>'+age+'세'+(du?' · '+du.g+' 대운':'')+'</small></div>'+
+              '<p>'+DUTXT[ytg].split(".")[0]+'.</p>'+
+              (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
+          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
@@ -392,6 +402,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       cardArt.src="img/char/el-"+EL_EN[SJ_EL[SJ_ES[ds]]]+"-"+(male?"m":"f")+".webp";
       cardData.file="사주팔자";
       bindSave(el,cardData);
+      bindYearFb(el,y+"-"+mo+"-"+d);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
