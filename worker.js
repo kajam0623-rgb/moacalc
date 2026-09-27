@@ -1,6 +1,6 @@
 /* 동네보살 자체 방문 통계.
    POST /api/hit  페이지가 보내는 조회·이벤트 기록 (build_site.js 의 비콘, hub.html 의 track())
-   GET  /admin    비밀번호(ADMIN_PASS) 걸린 대시보드
+   GET  /admin    대시보드. ADMIN_PASS 비밀값을 정하면 비밀번호가 걸린다
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 두 경로만 여기로 보낸다. */
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
 const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error"]);
@@ -62,8 +62,8 @@ async function passOk(req, pass) {
 }
 
 async function admin(req, env) {
-  if (!env.ADMIN_PASS) return new Response("대시보드 비밀번호가 아직 없습니다. 터미널에서 npx wrangler@4 secret put ADMIN_PASS 로 정해 주세요.", { status: 503, headers: { ...PRIV, "content-type": "text/plain; charset=utf-8" } });
-  if (!(await passOk(req, env.ADMIN_PASS))) return new Response("로그인이 필요합니다.", { status: 401, headers: { ...PRIV, "www-authenticate": 'Basic realm="dongnebosal admin", charset="UTF-8"', "content-type": "text/plain; charset=utf-8" } });
+  // 비밀번호(ADMIN_PASS)를 정하지 않았으면 누구나 본다(사용자 요청 2026-09-27). 정하면 그때부터 잠긴다
+  if (env.ADMIN_PASS && !(await passOk(req, env.ADMIN_PASS))) return new Response("로그인이 필요합니다.", { status: 401, headers: { ...PRIV, "www-authenticate": 'Basic realm="dongnebosal admin", charset="UTF-8"', "content-type": "text/plain; charset=utf-8" } });
 
   const days = Math.min(365, Math.max(1, +new URL(req.url).searchParams.get("days") || 30));
   const from = kstDay(days - 1), today = kstDay();
