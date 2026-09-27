@@ -2150,6 +2150,8 @@ function indexPage(){
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 이 기기에만 저장됩니다. 서버로 보내지 않습니다.</p></div></div>
 </header>
 <nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
+<div class="sect"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
+<ol class="zrank" id="zrank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
 <nav class="situ"><a href="tarot.html"><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></a><a href="gunghap.html"><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></a><a href="saju.html"><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></a><a href="newyear.html"><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></a><a href="todayfortune.html"><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></a></nav>
 <div class="sect"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
@@ -2176,6 +2178,8 @@ box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();}
 function wire(){var g=document.getElementById("hgo");if(!g)return;g.onclick=function(){var v=document.getElementById("hb").value;if(!v)return;
 try{var c=JSON.parse(localStorage.getItem("dnbs")||"{}");c.birth=v;localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}show(v);};}
 var saved;try{saved=JSON.parse(localStorage.getItem("dnbs")||"{}").birth;}catch(e){}
+load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)return;
+ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
 wire();if(saved){var i=document.getElementById("hb");if(i)i.value=saved;show(saved);}})();</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
@@ -2348,6 +2352,10 @@ const extraCss = `
 .diff{display:grid;gap:10px;}@media (min-width:760px){.diff{grid-template-columns:repeat(2,1fr);}}
 .diff div{padding:16px;border-radius:14px;background:var(--surface);border:1px solid var(--line-2);}
 .diff b{display:block;font-size:16px;margin-bottom:4px;}.diff p{font-size:13.5px;line-height:1.7;color:var(--muted);margin:0;}
+.zrank{list-style:none;margin:0;padding:0;display:grid;gap:6px;}@media (min-width:760px){.zrank{grid-template-columns:repeat(2,1fr);}}
+.zrank a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);text-decoration:none;color:var(--ink);}
+.zrank em{font-style:normal;font-weight:900;width:22px;color:var(--muted);}.zrank li:nth-child(-n+3) em{color:#E6B25A;}.zrank b{width:64px;}.zrank span{flex:1;font-size:13px;color:var(--muted);}.zrank i{font-style:normal;font-weight:800;}
+.zr-wait{color:var(--muted);font-size:13px;padding:8px 2px;}
 .dictcta{display:flex;align-items:center;gap:12px;margin:22px 0;padding:16px;border-radius:14px;border:1.5px solid #E6B25A;text-decoration:none;color:var(--ink);background:var(--surface);}
 .dictcta b{font-size:17px;white-space:nowrap;}.dictcta span{flex:1;font-size:13px;color:var(--muted);}.dictcta i{font-style:normal;font-weight:800;}
 .tabbar{display:none;}

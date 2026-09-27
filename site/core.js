@@ -340,6 +340,29 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function copy(){track("share_click",{tool:"saju_ai"});
       if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(text).then(function(){done(true);},function(){done(false);});else done(false);}
     b.addEventListener("click",copy);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();copy();}});}
+  /* 띠 오늘 점수 — 띠별 운세와 홈 "오늘의 띠 순위"가 같이 쓴다.
+     띠(연지)와 오늘 일지의 관계로 기본점수, 오늘 천간이 띠 본기 천간에 갖는 십성으로 보정한다. */
+  var ZF_BASE={"삼합":88,"육합":84,"복음":74,"평":72,"해":60,"형":56,"충":52};
+  var ZF_TG={"식신":4,"정재":4,"정관":3,"정인":4,"편재":2,"비견":0,"상관":-3,"편인":-2,"겁재":-5,"편관":-5};
+  var ZF_LINE={"삼합":"사람이 붙는 날","육합":"걸림 없이 맞물리는 날","복음":"좋고 나쁨이 진해지는 날","평":"평평하게 흘러가는 날",
+    "해":"작은 어긋남을 조심할 날","형":"밀어붙이면 마찰이 나는 날","충":"변수가 튀어나오는 날"};
+  // 오늘 천간이 띠 본기에 갖는 십성을 짧게 — 띠 운세 총운과 홈 순위(합충 없는 "평"인 띠)가 쓴다
+  var ZF_TGW={"비견":"내 힘으로 밀고 가는","겁재":"지출이 새기 쉬운","식신":"표현과 먹을 복이 좋은","상관":"말이 앞서기 쉬운","편재":"큰돈이 움직이는","정재":"성실함이 돈이 되는","편관":"압박과 도전이 따르는","정관":"원칙이 통하는","편인":"생각이 깊어지는","정인":"귀인과 문서의"};
+  function zfRel(b,t){
+    if(Math.abs(b-t)===6)return"충";
+    var H=[[0,3],[2,5],[5,8],[8,2],[1,10],[10,7],[7,1]],i;
+    for(i=0;i<H.length;i++)if((H[i][0]===b&&H[i][1]===t)||(H[i][0]===t&&H[i][1]===b))return"형";
+    var Y=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+    for(i=0;i<Y.length;i++)if((Y[i][0]===b&&Y[i][1]===t)||(Y[i][0]===t&&Y[i][1]===b))return"해";
+    if(b===t)return"복음";
+    if(b%4===t%4)return"삼합";
+    if(sjYukhap(b)===t)return"육합";
+    return"평";}
+  function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
+    return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
+  // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
+  function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
+    return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
   // 띠·별자리 운세 맨 위에 붙이는 "자네 개인 오늘" — 생일을 모르면 빈 문자열
   function tfPersonalBox(birth){
     var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";

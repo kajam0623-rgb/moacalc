@@ -1,5 +1,5 @@
 TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세",desc:"12띠 오늘의 운세",render:function(el){
-    // 오늘 일지와 내 띠(연지)의 관계 → [기본점수, 총운, 재물·일, 애정, 조언, [애정·재물·직장·건강]]
+    // 오늘 일지와 내 띠(연지)의 관계 → [기본점수(쓰지 않음 — 원본은 ZF_BASE), 총운, 재물·일, 애정, 조언, [애정·재물·직장·건강]]
     var ZR={
     "삼합":[88,"자네 띠와 오늘 지지가 삼합을 이루었네. 혼자 끙끙대던 일에 사람이 붙는 날일세.","협업이든 소개든 계약이든 다 유리해. 오늘은 부탁하면 대체로 열리네.","만남과 화해에 좋은 날이야. 먼저 연락하는 쪽이 이기네.","오늘 도와준 사람 이름은 적어두게. 이 인연은 한 번으로 끝나지 않아.",[8,6,8,2]],
     "육합":[84,"자네 띠와 오늘 지지가 육합일세. 걸리는 데 없이 부드럽게 맞물리는 하루야.","조율이든 정산이든 마무리든 술술 풀리네.","오래 미뤄둔 이야기를 꺼내기 좋은 날일세.","오늘은 무리할 것 없네. 흐름에 맡기고 한 가지만 확실히 끝내게.",[8,4,4,4]],
@@ -10,19 +10,9 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
     "충":[52,"자네 띠와 오늘 지지가 충(沖)일세. 정해둔 게 흔들리고 변수가 튀어나오는 날이야.","이동이며 변경이며 취소가 잦아. 여유 시간을 미리 빼두게.","감정 기복이 큰 날일세. 중요한 대화는 하루 미루게.","충은 나쁜 게 아니라 움직이는 기운일세. 어차피 움직일 거라면 자네가 먼저 정하게.",[-10,-8,-6,-10]]};
     el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="'+((loadPrefs().birth||"1990-03-15").split("-")[0])+'" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
-    SJ_TTI.map(function(n,i){return '<option value="'+i+'">'+n+'띠</option>';}).join("")+'</select></div></div>'+
+    SJ_TTI.map(function(n,i){var qb=(location.search.match(/[?&]b=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qb!=null&&+qb===i?" selected":"")+'>'+n+'띠</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
-    function zrel(b,t){
-      if(Math.abs(b-t)===6)return"충";
-      var H=[[0,3],[2,5],[5,8],[8,2],[1,10],[10,7],[7,1]],i;
-      for(i=0;i<H.length;i++)if((H[i][0]===b&&H[i][1]===t)||(H[i][0]===t&&H[i][1]===b))return"형";
-      var Y=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
-      for(i=0;i<Y.length;i++)if((Y[i][0]===b&&Y[i][1]===t)||(Y[i][0]===t&&Y[i][1]===b))return"해";
-      if(b===t)return"복음";
-      if(b%4===t%4)return"삼합";
-      if(sjYukhap(b)===t)return"육합";
-      return"평";}
     function zbar(n,v){return rateBar(n,v);}
     function go(){
       var sel=+el.querySelector("#s").value,b;
@@ -30,11 +20,9 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       track("fortune_view",{tool:"zodiacfortune"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var today=sjPillars(ty,tm,td,null,0,false),tb=today.d.b;
-      var rel=zrel(b,tb),Z=ZR[rel],score=Z[0];
-      // 오늘 천간이 내 띠 본기 천간에 대해 갖는 십성 — 하루의 성격을 한 겹 더한다
-      var tg=sjTenGod(SJ_BMAIN[b],today.d.s);
-      var TG={"비견":"내 힘으로 밀고 가는","겁재":"지출이 새기 쉬운","식신":"표현과 먹을 복이 좋은","상관":"말이 앞서기 쉬운","편재":"큰돈이 움직이는","정재":"성실함이 돈이 되는","편관":"압박과 도전이 따르는","정관":"원칙이 통하는","편인":"생각이 깊어지는","정인":"귀인과 문서의"}[tg];
-      score=Math.max(35,Math.min(98,score+({"식신":4,"정재":4,"정관":3,"정인":4,"편재":2,"비견":0,"상관":-3,"편인":-2,"겁재":-5,"편관":-5}[tg]||0)));
+      // 점수는 zfScore 한 곳에서 — 홈 "오늘의 띠 순위"와 같은 값
+      var zf=zfScore(b,today),rel=zf.rel,Z=ZR[rel],tg=zf.tg,score=zf.score;
+      var TG=ZF_TGW[tg];
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
       var sub=Z[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
       var luckEl=(SJ_EB[b]+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tb);
