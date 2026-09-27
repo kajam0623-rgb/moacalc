@@ -233,6 +233,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
      띠·별자리 운세는 같은 무리 모두의 공통 흐름이라 생일을 알면 이 값을 먼저 보여 준다.
      (2026-09 감사: 같은 날 오늘 62점 "지갑 잠가라", 띠 90점 "큰돈 움직인다"가 함께 나왔다) */
   var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
+  // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
+  var TF_LINE={"비견":"내 걸음으로 가는 날. 밀고 가되 돈은 각자.","겁재":"새는 날. 지갑도 마음도 잠가둘 것.","식신":"표현이 풀리는 날. 담아둔 말은 꺼낼 것.","상관":"번뜩이는 날. 단, 입은 한 박자 늦게.","편재":"큰돈이 움직이는 날. 계산기부터 두드릴 것.","정재":"성실이 돈 되는 날. 한탕 말고 확실한 것.","편관":"압박의 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 오늘은 원칙이 지름길.","편인":"생각이 깊어지는 날. 확답은 내일로.","정인":"귀인의 날. 혼자 앓지 말 것."};
   function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
   function tfToday(y,m,d,now){
     now=now||new Date();
@@ -859,4 +861,4 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // ---------- TOOLS ----------
   
 var TOOLS=[];
-window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};
+window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"){var g=el.querySelector("#go");if(g)setTimeout(function(){g.click();},250);}var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};

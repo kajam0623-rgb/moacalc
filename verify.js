@@ -174,7 +174,10 @@ t("오늘의 운세 항목별 해설(애정·직장·건강) 존재", /애정운
 t("일간 정체성 SJ_ILGAN_ID 10문장", SJ_ILGAN_ID.length===10 && SJ_ILGAN_ID.every(s=>s.indexOf("—")>0), true);
 t("십이운성 무드 UN_MOOD 12문장", Object.keys(UN_MOOD).length===12 && SJ_UN.every(u=>typeof UN_MOOD[u]==="string" && UN_MOOD[u].length>=20), true);
 const txtCode = tfSrc.slice(tfSrc.indexOf("var TXT={"), tfSrc.indexOf("]};")+3);
-const TFTXT = new Function(txtCode + "; return TXT;")();
+// 한 줄 요약(TXT[..][9])은 홈 오늘 카드와 같이 쓰려고 core 의 TF_LINE 으로 옮겼다
+const tfLineCode = (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0];
+t("오늘의 운세 한 줄 TF_LINE 이 core 에 있다", tfLineCode.length > 0, true);
+const TFTXT = new Function(tfLineCode + txtCode + "; return TXT;")();
 t("오늘의 운세 TXT 10종 × 10필드(hl 포함)", Object.keys(TFTXT).length===10 && Object.values(TFTXT).every(a=>a.length===10 && typeof a[9]==="string" && a[9].length>=8), true);
 t("총운 3계층 조립(UN_MOOD 접합)", tfSrc.includes("UN_MOOD[un]") && tfSrc.includes("삼합도 충도 육합도 없어"), true);
 t("용신 섹션·내일 미리보기 렌더", tfSrc.includes("나를 받쳐 주는 기운으로 보는 오늘") && tfSrc.includes("내일 미리보기"), true);

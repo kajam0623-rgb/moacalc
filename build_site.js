@@ -887,14 +887,19 @@ const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
   knowsAbout:["사주팔자","만세력","오늘의 운세","별자리 운세","띠별 운세","궁합","타로","십성","용신","십이운성"]
 })+'</script>';
 
+// 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
+const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 이 기기에만</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
+const TRUST_TAROT = '<div class="trust"><span>결제·가입 없음</span><span>섞는 순간 정해지는 22장</span><span>카드 뜻 22장 직접 집필</span><span>생일 넣으면 사주 대조</span></div>';
+// 모바일 하단 탭바 — 전역 길찾기가 "← 전체 도구" 하나뿐이었다
+const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfortune.html"><i>☀</i>오늘</a><a href="saju.html"><i>☯</i>사주</a><a href="gunghap.html"><i>♥</i>궁합</a><a href="tarot.html"><i>✦</i>타로</a><a href="dict.html"><i>☰</i>사전</a></nav>`;
 const footer = `<footer class="sfoot">
 <div><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
-<p>무엇이든 물어보면 답이 나오는 동네보살. 운세는 랜덤 문구가 아니라 태양황경을 직접 계산하는 만세력 엔진으로 풀이하며, 자동 검증 ${VERIFY_PASS}개를 통과한 로직입니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
-<div><h4>사이트</h4><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a></div>
 </footer>
-<div class="foot">© 2026 동네보살</div>`;
+<div class="foot">© 2026 동네보살</div>${tabbar}`;
 
 // 애드센스 승인 전에는 아무것도 그리지 않는다.
 // 빈 자리 표시는 사용자에게 광고를 보여주지도 못하면서 완성도만 깎고,
@@ -986,7 +991,7 @@ function toolPage(t){
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
  ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
  : `<h1 class="th">${t.name}</h1>\n<div class="tl">${t.desc}</div>`}
-${t.id==="tarot" ? `<div class="trust"><span>섞는 순간 정해지는 22장</span><span>카드 뜻 22장 직접 집필</span><span>생일 넣으면 만세력 사주 대조</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : t.cat==="재미·운세" ? `<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : ""}
+${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
 ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
@@ -1043,6 +1048,7 @@ const tarotChips = cur => '<div class="sibs">'+TAROT_PAGES.map(c=>c.en===cur
    hub.html의 var가 build_site.js의 const(josa 등)와 이름이 부딪친다. */
 const ENGINE = new Function(
   inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")) + "\n" +
+  (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0] + "\n" +   // TXT 의 한 줄 요약이 이걸 가리킨다
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
@@ -1246,7 +1252,7 @@ function seoPage(o){
 <div class="shell">
 <main>
 <div class="toolhero"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
-${o.tool==="tarot" ? `<div class="trust"><span>섞는 순간 정해지는 22장</span><span>카드 뜻 22장 직접 집필</span><span>생일 넣으면 만세력 사주 대조</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>` : `<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>`}
+${o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`}
 <div class="card tool" id="tool"></div>
 <div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
 ${o.body}
@@ -1990,7 +1996,7 @@ function iljinHubPage(){
 <div class="shell">
 <main>
 <div class="toolhero"><img src="img/tool/h-todayfortune.webp" alt="일진 달력" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>일진 달력 — 오늘 일진과 60갑자</h1><div class="tl">날에 붙는 간지 60가지</div></div></div>
-<div class="trust"><span>랜덤 문구 아님 — 계산된 운세</span><span>태양황경 직접 계산 만세력</span><span>같은 입력 = 같은 결과</span><span>자동 검증 ${VERIFY_PASS}개 통과</span></div>
+${TRUST_GEN}
 ${body}
 ${adSlot()}
 </main>
@@ -2030,33 +2036,7 @@ const catItems = c => { // 재미·운세는 검색량 순으로 앞에 세운�
     return (ia<0?99:ia) - (ib<0?99:ib);
   });
 };
-function indexPage(){
-  const rows = PUB_CATS.map(function(c){
-    var items=catItems(c);
-    return '<section class="grp wash'+(c==="재미·운세"?" fun":"")+'" id="c-'+CAT_IMG[c]+'"><div class="cat" data-n="'+items.length+'"><span>'+c+'</span></div>'+items.map(function(t){
-      return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
-    }).join("")+'</section>';
-  }).join("");
-  const BENTO=["b-full","b-wide","b-wide","","",""];
-  const catCards = PUB_CATS.map(function(c,ci){
-    var items=catItems(c);
-    var top=items.slice(0,c==="재미·운세"?6:4);
-    return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
-      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" width="1200" height="800" alt="'+c+' 도구" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
-      '<div class="body">'+top.map(function(t){
-        return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-a">→</span></a>';}).join("")+'</div>'+
-      '<a class="more" href="#c-'+CAT_IMG[c]+'">'+c+' '+items.length+'개 전체 보기 →</a></article>';
-  }).join("");
-  const kpis = `<div class="kpis">
-<div class="kpi wash"><div class="kl"><i></i>도구</div><div class="kv">${pubMeta.length}</div><div class="kd">사주 · 운세 <b>전부 무료</b></div></div>
-<div class="kpi wash"><div class="kl"><i></i>절기</div><div class="kv">24</div><div class="kd">태양황경 <b>직접 계산</b></div></div>
-<div class="kpi wash"><div class="kl"><i></i>가입</div><div class="kv">0</div><div class="kd">로그인 없이 <b>바로 사용</b></div></div>
-<div class="kpi wash f"><div class="kl"><i></i>운세</div><div class="kv">매일</div><div class="kd">일진 바뀌면 <b>결과도 갱신</b></div></div>
-</div>`;
-  // 개념 페이지 44개(별자리·띠·일간·십성)는 도구 페이지를 거쳐야만 닿았다.
-  // 홈에서 직접 링크해 크롤 깊이를 1로 낮춘다.
-  // 이름만 늘어놓으면 '갑목'·'비견'이 무슨 말인지 알 수 없다. 한 줄 뜻을 같이 건다.
-  const conceptGroups = [
+const conceptGroups = [
     ["별자리 12", "태어난 날짜로 정해진다. 성격·연애·궁합을 본다.",
       STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`, `${s.range} · ${s.ele} 원소`])],
     ["띠 12", "태어난 해로 정해진다. 삼합·육합·충으로 궁합을 본다.",
@@ -2074,7 +2054,7 @@ function indexPage(){
         [`manse-${y}-01.html`, `${y}년 만세력`, `1월부터 12월까지 · 절기 24개와 날짜별 간지`])],
   ];
   // 나머지 목록과 같은 .idxrow를 쓴다 — 이름·뜻·화살표 한 줄. 새 CSS가 필요 없다
-  const conceptHtml = conceptGroups.map(([title, sub, links]) =>
+const conceptHtml = conceptGroups.map(([title, sub, links]) =>
     `<section class="grp wash fun"><div class="cat" data-n="${links.length}"><span>${title}</span></div>`+
     `<p style="padding:2px 16px 12px;color:var(--muted);font-size:13px;line-height:1.65">${esc(sub)}</p>`+
     links.map(([href, label, gloss]) =>
@@ -2082,12 +2062,55 @@ function indexPage(){
       `<span class="ix-d">${esc(gloss)}</span><span class="ix-a">→</span></a>`).join("")+
     `</section>`).join("");
 
+
+function dictPage(){
+  const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
+  const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 22장과 만세력 월력까지 뜻과 함께 찾아보세요.";
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)} | 동네보살</title>
+<meta name="description" content="${esc(desc)}">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
+${OG_IMG_TAG}
+<link rel="stylesheet" href="style.css?v=${styleV}">
+${headExtra}
+${ORG_LD}
+<script type="application/ld+json">${JSON.stringify({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"홈",item:DOMAIN+"/"},{"@type":"ListItem",position:2,name:"사주 사전",item:url}]})}</script></head><body>
+<div class="wrap">
+<a class="back" href="./">← 홈</a>
+<h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">사주 사전</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:22px">사주·운세에 나오는 말이 낯설다면 여기서 찾아보세요. 이름마다 한 줄 뜻을 달았습니다.</p>
+<section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
+<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
+${iljuChips(null)}</section>
+<div class="alllist">${conceptHtml}</div>
+${footer}
+</div></body></html>`;
+}
+function indexPage(){
+  const rows = PUB_CATS.map(function(c){
+    var items=catItems(c);
+    return '<section class="grp wash'+(c==="재미·운세"?" fun":"")+'" id="c-'+CAT_IMG[c]+'"><div class="cat" data-n="'+items.length+'"><span>'+c+'</span></div>'+items.map(function(t){
+      return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-d">'+t.desc+'</span><span class="ix-a">→</span></a>';
+    }).join("")+'</section>';
+  }).join("");
+  const BENTO=["b-full","b-wide","b-wide","","",""];
+  const catCards = PUB_CATS.map(function(c,ci){
+    var items=catItems(c);
+    var top=items.slice(0,c==="재미·운세"?6:4);
+    return '<article class="ccard '+BENTO[ci]+(c==="재미·운세"?" fun":"")+'">'+
+      '<a class="thumb" href="#c-'+CAT_IMG[c]+'"><img src="img/'+CAT_IMG[c]+'.webp" width="1200" height="800" alt="'+c+' 도구" loading="lazy"><em>'+items.length+'</em><b>'+c+'</b></a>'+
+      '<div class="body">'+top.map(function(t){
+        return '<a class="idxrow" href="'+t.id+'.html"><span class="ix-n">'+t.name+'</span><span class="ix-a">→</span></a>';}).join("")+'</div>'+
+      '<a class="more" href="#c-'+CAT_IMG[c]+'">'+c+' '+items.length+'개 전체 보기 →</a></article>';
+  }).join("");
   // 홈 본문이 링크 텍스트뿐이라 크롤러가 읽을 내용이 없었다. 계산 근거를 글로 적는다.
   const BASIS = [
     ["만세력","태양황경을 직접 계산","절기와 입춘 경계를 그 해의 실제 시각으로 가릅니다. 날짜표를 찾아보는 방식이 아니라 경계일에 태어난 경우도 어긋나지 않습니다."],
     ["시주","진태양시 30분 보정","한국 표준시는 동경 135도 기준이라 한반도의 실제 남중 시각과 약 30분 차이가 납니다. 시주를 세울 때 이 차이를 보정합니다."],
     ["음력","한국천문연구원 기준","음력 양력 변환은 KASI 기준 데이터를 씁니다. 윤달이 든 해도 그대로 처리됩니다."],
-    ["검증","자동 검사 "+VERIFY_PASS+"개","배포할 때마다 계산 로직을 전부 다시 검사하고, 하나라도 실패하면 배포가 중단됩니다."],
+    ["결과","같은 생일·같은 날 = 같은 결과","무작위로 문장을 고르지 않습니다. 같은 사람이 같은 날 몇 번을 눌러도 결과가 같고, 개인 운세와 띠·별자리 운세가 서로 다른 판정을 내지 않습니다."],
   ];
   const basisHtml = '<div class="sect"><h2>무엇으로 계산하나</h2><p>운세는 랜덤 문구가 아닙니다. 같은 입력이면 언제 눌러도 같은 결과가 나옵니다</p></div>'+
     // .alllist는 3단 컬럼이라 한 덩이를 넣으면 1/3 폭만 쓴다. exbox만 쓴다.
@@ -2120,45 +2143,39 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span><span class="meta">2026 · ${pubMeta.length} TOOLS</span></div>
-<div class="hero-wrap">
-<div>
-<h1 class="hero-h">990원도 아까워~<br>무료로 사주, 운세, 궁합<br><b>제대로 봐주는 '동네보살'</b></h1>
-<div class="hero-sub">생일만 넣으면 바로. 사주·만세력부터 별자리 운세·타로까지 ${pubMeta.length}가지.</div>
-<div class="hero-trust">랜덤 문구가 아닙니다 — 태양황경을 직접 계산하는 만세력 엔진이 절기와 별자리를 판정합니다. 같은 생일, 같은 날이면 언제 눌러도 같은 결과. 자동 검증 ${VERIFY_PASS}개 통과.</div>
-<nav class="pop"><a class="f" href="manse.html">✦ 만세력</a><a class="f" href="zodiacfortune.html">✦ 띠별운세</a><a class="f" href="tarot.html">✦ 타로</a><a class="f" href="stargunghap.html">✦ 별자리 궁합</a><a href="saju.html">사주팔자</a><a href="iljin.html">오늘 일진</a><a href="lunar.html">음력 변환</a></nav>
-</div>
-<img class="hero-art mascot" width="701" height="720" fetchpriority="high" src="img/mascot.webp" alt="동네보살 캐릭터 — 연꽃 모자를 쓰고 염주를 든 꼬마 보살" onerror="this.closest('.hero-wrap').classList.add('noart');this.remove()">
-</div>
-<nav class="fortune4" aria-label="주요 운세">${[
-  ["tarot","타로","보살에게 고민을 말하고 카드를 직접 섞어 뽑습니다. 연애·금전·시험·가족 등 여덟 가지 고민을 봅니다."],
-  ["saju","사주팔자","생년월일로 여덟 글자를 세우고 오행·십성·대운까지 풀어 드립니다. 절기는 태양황경으로 직접 계산합니다."],
-  ["todayfortune","오늘의 운세","오늘 일진이 내 일간에게 어떤 날인지 봅니다. 애정·직장·금전을 점수와 함께 풀어 드립니다."],
-  ["gunghap","궁합","두 사람의 사주 오행과 합·충으로 봅니다. 서로 채워 주는 기운과 부딪히는 자리까지 짚습니다."],
-  ["horoscope","별자리 운세","12별자리의 오늘과 이번 주 운세. 태양 황경으로 판정해 경계일에 태어난 사람도 정확합니다."],
-].map(([id,n,d],i)=>`<a href="${id}.html"><img src="img/tool/h-${id}.webp" alt="" decoding="async"${i>1?' loading="lazy"':''} onerror="this.remove()"><span class="t"><small>0${i+1}</small><b>${n}</b><span class="d">${d}</span><span class="go">바로 보기 →</span></span></a>`).join("")}</nav>
+<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span></div>
+<h1 class="hero-h">결과 먼저, 결제 없이.<br><b>근거까지 보여 주는 무료 사주</b></h1>
+<div class="hero-sub">가입도 앱 설치도 없이 생일 하나로. 사주·오늘의 운세·궁합·타로를 끝까지 무료로 봅니다.</div>
+<div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 이 기기에만 저장됩니다. 서버로 보내지 않습니다.</p></div></div>
 </header>
-${kpis}
-<div class="sect"><h2>분야별로 찾기</h2><p>카드를 눌러 전체 목록으로</p></div>
-<div class="bento">${catCards}</div>
+<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dict.html"><b>사주 사전</b><span>일주·십성·카드 뜻</span></a></nav>
+<div class="sect"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
+<nav class="situ"><a href="tarot.html"><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></a><a href="gunghap.html"><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></a><a href="saju.html"><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></a><a href="newyear.html"><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></a><a href="todayfortune.html"><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></a></nav>
+<div class="sect"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
+<div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일은 이 기기에만</b><p>가입을 받지 않고, 생년월일은 서버로 보내지 않습니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
 ${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
 <div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
   `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
-<div class="sect"><h2>용어부터 알고 보기</h2><p>사주·운세에 나오는 말이 낯설다면 여기부터. 별자리·띠·일간·십성을 하나씩 풀어뒀습니다</p></div>
-<div class="alllist">${conceptHtml}</div>
-<!-- 일주 60은 .idxrow로 늘어놓으면 홈이 두 배로 길어진다. 도구 페이지의 일진 칩 스트립과 같은 방식으로
-     한 덩이에 담아 크롤 깊이만 1로 낮춘다. -->
-<section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
-<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 성격·배우자 자리·여자와 남자의 차이를 일주마다 한 장씩 풀었습니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
-${iljuChips(null)}</section>
-<div class="sect"><h2>전체 ${pubMeta.length}개</h2><p>이름으로 검색하면 더 빠릅니다</p></div>
-<div class="alllist">${rows}</div>
+<a class="dictcta" href="dict.html"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 22장 뜻을 한곳에</span><i>→</i></a>
 ${homeFaqHtml}
 ${adSlot()}
 ${footer}
 </div>
 ${homeFaqLd}
+<script>(function(){var box=document.getElementById("today");if(!box)return;var form=box.innerHTML;
+function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
+function show(b){load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
+box.innerHTML='<div class="today-card"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
+'<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
+'<div class="today-btns"><a class="p" href="todayfortune.html#go">오늘 운세 자세히</a><a href="saju.html#go">내 사주 보기</a><a href="gunghap.html">궁합</a></div>'+
+'<button type="button" class="today-reset">다른 생일로 보기</button></div>';
+if(window.plainWords)plainWords(box.querySelector(".w"));
+box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();};});}
+function wire(){var g=document.getElementById("hgo");if(!g)return;g.onclick=function(){var v=document.getElementById("hb").value;if(!v)return;
+try{var c=JSON.parse(localStorage.getItem("dnbs")||"{}");c.birth=v;localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}show(v);};}
+var saved;try{saved=JSON.parse(localStorage.getItem("dnbs")||"{}").birth;}catch(e){}
+wire();if(saved){var i=document.getElementById("hb");if(i)i.value=saved;show(saved);}})();</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;
@@ -2177,7 +2194,7 @@ const chunks = markers.map((mk, i) => {
   return { id: mk.id, src };
 });
 const coreJs = `${helpers}\nvar TOOLS=[];\n`+
-  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);`+
+  `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"){var g=el.querySelector("#go");if(g)setTimeout(function(){g.click();},250);}`+
   // 도구들은 <label>이름</label><input id=…> 로 쓰고 for 를 안 붙였다. 바로 뒤 입력칸과 이어 준다(스크린리더·라벨 클릭)
   // 생년월일은 이름표와 입력칸 사이에 연대 칩이 끼어 있어, 다음 이름표 전까지 형제를 따라가며 첫 입력칸을 찾는다
   `var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};`;
@@ -2216,7 +2233,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
-  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+
+  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+
   MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   (COLUMN_PAGES.length ? smUrl("column.html")+"\n"+COLUMN_PAGES.map(c=>smUrl("column-"+c.en+".html")).join("\n")+"\n" : "")+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
@@ -2304,7 +2321,41 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 `;
 
 // CSS + 페이지 전용 추가 스타일
-const extraCss = `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
+const extraCss = `
+.hero2 .hero-h{margin-top:14px;word-break:keep-all;}
+.today{margin:18px 0 6px;max-width:640px;}
+.today-btns a{flex:1;text-align:center;white-space:nowrap;}
+@media (max-width:759px){.today-btns .p{flex-basis:100%;}}
+.today-in label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.today-row{display:flex;gap:8px;}.today-row input{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);}
+.today-row button,.today-btns .p{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;background:#E6B25A;color:#1b1406;cursor:pointer;white-space:nowrap;text-decoration:none;}
+.today-note{font-size:12.5px;color:var(--muted);margin:8px 2px 0;}
+.today-card{border:1.5px solid #E6B25A;border-radius:16px;padding:16px;background:var(--surface);}
+.today-card .k{font-size:13px;font-weight:700;color:var(--muted);}.today-card .v{font-size:40px;font-weight:900;line-height:1.15;}
+.today-card .v small{font-size:16px;color:var(--muted);margin-left:4px;}.today-card .l{font-size:16px;font-weight:700;margin:6px 0 4px;}
+.today-card .w{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.6;}
+.today-btns{display:flex;flex-wrap:wrap;gap:8px;}.today-btns a{border:1.5px solid var(--line-2);border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--ink);}
+.today-btns .p{border-color:#E6B25A;}
+.today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
+@media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}
+.tgrid a{display:flex;flex-direction:column;gap:3px;padding:12px 10px;min-height:74px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);text-decoration:none;color:var(--ink);}
+.tgrid a b{font-size:15px;}.tgrid a span{font-size:12.5px;color:var(--muted);line-height:1.4;}
+.situ{display:grid;gap:8px;}@media (min-width:760px){.situ{grid-template-columns:repeat(2,1fr);}}
+.situ a{display:block;padding:14px 16px;border-radius:14px;border:1px solid var(--line-2);background:var(--surface);text-decoration:none;color:var(--ink);}
+.situ a b{display:block;font-size:16px;margin-bottom:2px;}.situ a span{font-size:13px;color:var(--muted);}
+.diff{display:grid;gap:10px;}@media (min-width:760px){.diff{grid-template-columns:repeat(2,1fr);}}
+.diff div{padding:16px;border-radius:14px;background:var(--surface);border:1px solid var(--line-2);}
+.diff b{display:block;font-size:16px;margin-bottom:4px;}.diff p{font-size:13.5px;line-height:1.7;color:var(--muted);margin:0;}
+.dictcta{display:flex;align-items:center;gap:12px;margin:22px 0;padding:16px;border-radius:14px;border:1.5px solid #E6B25A;text-decoration:none;color:var(--ink);background:var(--surface);}
+.dictcta b{font-size:17px;white-space:nowrap;}.dictcta span{flex:1;font-size:13px;color:var(--muted);}.dictcta i{font-style:normal;font-weight:800;}
+.tabbar{display:none;}
+@media (max-width:759px){
+  .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);border-top:1px solid var(--line-2);padding:4px 4px calc(4px + env(safe-area-inset-bottom));}
+  .tabbar a{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:48px;justify-content:center;font-size:12px;font-weight:700;color:var(--muted);text-decoration:none;}
+  .tabbar a i{font-style:normal;font-size:17px;line-height:1;}
+  body{padding-bottom:64px;}
+}` + `\n.intro{font-size:13.5px;color:var(--muted);line-height:1.8;margin:20px 2px 0;}`+
   // 본문 속 맨 링크가 브라우저 기본 #0000ee 로 떠서 다크 배경에서 안 보였다(명암비 1.65). :where 로 우선순위 0 — 칩·버튼 링크 규칙이 이긴다
   `\n:where(.intro,.exbox,.guide) :where(a){color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px;}`+
   `\n.trust{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0 0;}`+
@@ -2364,6 +2415,7 @@ chunks.filter(c => pubMeta.some(t => t.id === c.id)).forEach(c => fs.writeFileSy
   (c.id === "saju" ? "var SAJU_GUNG=" + JSON.stringify(require("./content_saju_gung.js")) + ";\n" : "") +
   "TOOLS.push("+c.src+");"));
 fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
+fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
