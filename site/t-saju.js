@@ -501,7 +501,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
       el.querySelector("#out").innerHTML=
-        headline+synth+hourSec()+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>'+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
@@ -509,6 +508,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
+        headline+synth+hourSec()+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
         '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
