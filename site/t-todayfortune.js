@@ -22,13 +22,13 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
      "혼자 있고 싶어지는 날이야. 상대는 그걸 거리 두기로 오해하네. 말없이 사라지지 말고 한마디만 남기고 들어가게.","자료를 파고들거나 구조를 다시 짜는 데는 오늘만 한 날이 없어. 반대로 즉답이 필요한 회의나 협상은 오늘 잡지 말게.","머리는 바쁜데 몸은 처지는 날일세. 눕고 나서 생각이 꼬리를 물지 않게 화면을 일찍 끄게.",TF_LINE["편인"]],
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.",TF_LINE["정인"]]};
-    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
+    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
-      savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"todayfortune"});
+      track("fortune_view",{tool:"todayfortune"});
       // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade;

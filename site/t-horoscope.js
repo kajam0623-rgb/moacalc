@@ -1,5 +1,5 @@
 TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1995-08-15")+'"></div>'+
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
     ST_KO.map(function(n,i){var qs=(location.search.match(/[?&]s=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qs!=null&&+qs===i?" selected":"")+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
@@ -8,8 +8,7 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
     function go(){
       var sel=+el.querySelector("#s").value,mine;
       if(sel>=0)mine=sel;
-      else{var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;mine=stOf(+dv[0],+dv[1],+dv[2]);
-        savePrefs({birth:el.querySelector("#d").value});}
+      else{var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;mine=stOf(+dv[0],+dv[1],+dv[2]);}
       track("fortune_view",{tool:"horoscope"});
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       // 점수는 hsScore 한 곳에서 — 홈 "오늘의 별자리 순위"와 같은 값
@@ -27,7 +26,7 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
         week+='<div class="sj-du"><div class="a">'+(dt.getMonth()+1)+'.'+dt.getDate()+' '+WD_KO[dt.getDay()]+'</div>'+
           '<div class="g" style="font-size:14px;color:'+(g==="대길"?"var(--fun-ink)":g==="길"?"var(--accent)":"var(--muted)")+'">'+g+'</div><div class="a">'+r+'</div></div>';}
       var best=WD_KO[WD_RULER.indexOf(ruler)];
-      el.querySelector("#out").innerHTML=tfPersonalBox(sel<0?el.querySelector("#d").value:loadPrefs().birth)+
+      el.querySelector("#out").innerHTML=tfPersonalBox(sel<0?el.querySelector("#d").value:"")+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 태양은 '+ST_SYM[sun]+' '+ST_KO[sun]+'</div>'+
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+ST_KO[mine]+' 공통 흐름 · 오늘 태양과 '+A[1]+' 관계</div></div>'+
       '<div class="sj-bars">'+hbar("애정",sub[0])+hbar("재물",sub[1])+hbar("직장",sub[2])+hbar("건강",sub[3])+'</div>'+

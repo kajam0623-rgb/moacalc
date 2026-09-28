@@ -15,7 +15,7 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
     var MON=["정월","이월","삼월","사월","오월","유월","칠월","팔월","구월","시월","동짓달","섣달"];
     var nowD=new Date(),Y0=nowD.getFullYear(),YS=[Y0,Y0+1],defY=nowD.getMonth()>=9?Y0+1:Y0;
     el.innerHTML='<label>어느 해</label><select id="yr">'+YS.map(function(y){var i=((y-4)%10+10)%10,j=((y-4)%12+12)%12;return '<option value="'+y+'"'+(y===defY?" selected":"")+'>'+y+' '+SJ_S[i]+SJ_B[j]+'년</option>';}).join("")+'</select>'+
-    '<label style="margin-top:12px">생년월일 (양력 · 음력이면 아래에서 바꿔 넣기)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'">'+
+    '<label style="margin-top:12px">생년월일 (양력 · 음력이면 아래에서 바꿔 넣기)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function lib(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
@@ -28,7 +28,7 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
       var out=el.querySelector("#out"),dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       var K=window.KoreanLunarCalendar;
       if(!K){lib();out.innerHTML='<p class="note">음력 달력을 불러오는 중이네. 잠깐 뒤에 다시 눌러 주게.</p>';return;}
-      savePrefs({birth:el.querySelector("#d").value});track("fortune_view",{tool:"tojeong"});
+      track("fortune_view",{tool:"tojeong"});
       var Y=+el.querySelector("#yr").value,cal=new K();
       cal.setSolarDate(+dv[0],+dv[1],+dv[2]);var L=cal.getLunarCalendar();
       var r=tjCalc(L.year,L.month,L.day,Y,K,gz);

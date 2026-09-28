@@ -40,17 +40,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :"돕는 기운이 삼 할에 못 미치네. 꽤 얇은 편일세. 혼자 다 짊어지면 금세 지치니, 기댈 사람과 쉬어 갈 자리부터 챙기게.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
+    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
     '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
-    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다. 저장돼 있던 정각 값은 그 시각이 속한 시진으로 옮긴다
-    (function(){var bh=loadPrefs().birthHour,sv=(bh==null||bh==="")?-1:bh==="23"?23:Math.floor(((+bh*60+30)%1440)/120)*2;
-      return sjHourOpts(sv);})()+'</select></div></div>'+
-    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m"'+(loadPrefs().gender==="f"?"":" selected")+'>남</option><option value="f"'+(loadPrefs().gender==="f"?" selected":"")+'>여</option></select></div>'+
+    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
+    sjHourOpts(-1)+'</select></div></div>'+
+    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value="'+escH(loadPrefs().birthTime||"")+'"></div>'+
+    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value=""></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value="'+escH(loadPrefs().name||"")+'"></div>'+
+    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
     '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
@@ -81,7 +80,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
       syncT();
-      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,birthTime:el.querySelector("#tm").value,gender:el.querySelector("#g").value,name:nm});
       track("fortune_view",{tool:"saju"});
       var B=birthIn(),h=B.h,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";

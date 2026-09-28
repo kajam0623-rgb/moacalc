@@ -8,7 +8,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
     "해":[60,"자네 띠와 오늘 지지가 해(害)로 만났네. 사소한 어긋남이 감정을 건드리기 쉬운 날일세.","약속 시간이나 금액 같은 작은 숫자에서 착오가 나. 두 번씩 확인하게.","말투 때문에 오해가 생기는 날이야. 문자보다 목소리로 하게.","오늘의 서운함은 대개 사실 확인 한 번이면 풀리네. 담아두지 말게.",[-8,-4,-4,-2]],
     "형":[56,"자네 띠와 오늘 지지가 형(刑)일세. 밀어붙일수록 마찰이 커지는 날이야.","서류든 계약이든 법적인 문제든 다툼이 나기 쉬워. 도장은 내일 찍게.","날 선 말이 오가네. 이기려 들지 말게.","오늘 참으면 내일 자네가 유리해져. 정면충돌은 오늘의 방식이 아닐세.",[-8,-6,-8,-8]],
     "충":[52,"자네 띠와 오늘 지지가 충(沖)일세. 정해둔 게 흔들리고 변수가 튀어나오는 날이야.","이동이며 변경이며 취소가 잦아. 여유 시간을 미리 빼두게.","감정 기복이 큰 날일세. 중요한 대화는 하루 미루게.","충은 나쁜 게 아니라 움직이는 기운일세. 어차피 움직일 거라면 자네가 먼저 정하게.",[-10,-8,-6,-10]]};
-    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="'+((loadPrefs().birth||"1990-03-15").split("-")[0])+'" min="1900" max="2100"></div>'+
+    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
     SJ_TTI.map(function(n,i){var qb=(location.search.match(/[?&]b=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qb!=null&&+qb===i?" selected":"")+'>'+n+'띠</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
@@ -33,8 +33,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
         :(b===7)?"2026 병오년 태세 오(午)와 오미 육합일세. 관계도 계약도 부드럽게 풀리는 한 해야."
         :(b===1)?"2026 병오년 태세 오(午)와 축오 해(害)일세. 작은 어긋남이 쌓이지 않게 그때그때 털고 가게."
         :"2026 병오년 태세 오(午)와는 뚜렷한 합충이 없네. 큰 변동 없이 자네 걸음대로 갈 수 있는 한 해일세.";
-      var myBirth=loadPrefs().birth||"",myBY=+myBirth.split("-")[0];
-      el.querySelector("#out").innerHTML=(myBY&&((myBY-4)%12+12)%12===b?tfPersonalBox(myBirth):"")+
+      el.querySelector("#out").innerHTML=
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[tb]+'('+SJ_S[today.d.s]+SJ_B[tb]+')</div>'+
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 공통 흐름 · 오늘 지지와 <b>'+(rel==="평"?"큰 합·충 없음":rel)+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+

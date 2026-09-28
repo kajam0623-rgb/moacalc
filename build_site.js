@@ -2314,12 +2314,11 @@ box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosa
 if(window.plainWords)plainWords(box.querySelector(".w"));
 box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();};});}
 function wire(){var g=document.getElementById("hgo");if(!g)return;g.onclick=function(){var v=document.getElementById("hb").value;if(!v)return;
-try{var c=JSON.parse(localStorage.getItem("dnbs")||"{}");c.birth=v;localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}show(v);};}
-var saved;try{saved=JSON.parse(localStorage.getItem("dnbs")||"{}").birth;}catch(e){}
+show(v);};}
 load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)return;
 var sl=document.getElementById("srank");if(sl&&window.hsRank)sl.innerHTML=hsRank().map(function(z,i){return '<li><a href="horoscope.html?s='+z.i+'#go"><em>'+(i+1)+'</em><b>'+ST_KO[z.i]+'</b><span>'+HS_LINE[z.dist]+(z.rk===2?' · 수호성의 요일':'')+'</span><i>'+z.score+'</i></a></li>';}).join("");
 ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
-wire();if(saved){var i=document.getElementById("hb");if(i)i.value=saved;show(saved);}})();</script>
+wire();})();</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;

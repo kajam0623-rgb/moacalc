@@ -242,6 +242,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return hasJong?p[1]:p[0];}
   function loadPrefs(){try{return JSON.parse(localStorage.getItem("dnbs")||"{}");}catch(e){return {};}}
   function savePrefs(p){try{var c=loadPrefs();for(var k in p)c[k]=p[k];localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}}
+  // 생년월일·시각·성별·이름은 저장하지 않는다(2026-09 사용자 결정). 예전에 자동으로 남겨 둔 값은 여기서 지운다
+  (function(){try{var c=loadPrefs(),ch=false;["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"].forEach(function(k){if(k in c){delete c[k];ch=true;}});
+    if(ch)localStorage.setItem("dnbs",JSON.stringify(c));}catch(e){}})();
   // 자체 통계(worker.js)에는 이벤트 이름만 보낸다. p 에 든 값은 서버로 보내지 않는다
   /* 한 사람의 오늘은 하나다. 오늘의 운세(일진 천간 × 내 일간 십성 + 일지 합충 + 억부용신)가 기준값이고,
      띠·별자리 운세는 같은 무리 모두의 공통 흐름이라 생일을 알면 이 값을 먼저 보여 준다.

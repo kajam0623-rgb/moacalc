@@ -1,8 +1,8 @@
 TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
-    '<div><label>상대 생년월일</label><input type="date" id="b" value="'+(loadPrefs().partnerBirth||"1992-07-20")+'"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
+    '<div><label>상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
     // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
-    (function(){var g=loadPrefs().gender==="m"?"m":"f",pg=loadPrefs().partnerGender||(g==="m"?"f":"m");
+    (function(){var g="f",pg="m";
       function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}
       function hr(id){return '<select id="'+id+'"><option value="">모름</option>'+sjHourOpts(-1)+'</select>';}
       return '<div class="r2" style="margin-top:10px"><div><label>나의 성별</label>'+sel("ga",g)+'</div><div><label>상대의 성별</label>'+sel("gb",pg)+'</div></div>'+
@@ -51,8 +51,6 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||(!inv&&bv.length<3))return;
       var ga=el.querySelector("#ga").value,gb=inv?inv.g:el.querySelector("#gb").value;
-      // 초대로 들어온 경우 상대 생일은 모른다(사주 글자만 받았다). 저장도 내 것만
-      savePrefs(inv?{birth:el.querySelector("#a").value,gender:ga}:{birth:el.querySelector("#a").value,partnerBirth:el.querySelector("#b").value,gender:ga,partnerGender:gb});
       track("fortune_view",{tool:"gunghap"});
       // 시각은 선택. 사주와 같이 진태양시 30분 보정을 쓴다(시진 목록의 범위가 보정을 반영한 값)
       var hav=el.querySelector("#ha").value,hbv=el.querySelector("#hb").value;

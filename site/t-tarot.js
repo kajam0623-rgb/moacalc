@@ -260,11 +260,11 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       bindOpts(function(i){if(i===topic.qs.length){start();return;}ques=topic.qs[i];askBirth();});}
     function askBirth(){
       chat.innerHTML='<div class="bs-me">'+ques.q+'</div>'+say(ques.say)+say("생일을 알려 주면 자네 사주와 패를 같이 놓고 보겠네. 싫으면 그냥 넘어가도 되네.")+
-        '<div class="bs-birth"><label for="tr-bd">생년월일 (양력)</label><input type="date" id="tr-bd" value="'+escH(loadPrefs().birth||"")+'"></div>'+
+        '<div class="bs-birth"><label for="tr-bd">생년월일 (양력)</label><input type="date" id="tr-bd" value=""></div>'+
         opts(["사주도 같이 볼게요","카드만 볼게요"]);
       bindOpts(function(i){
         var inp=el.querySelector("#tr-bd"),v=inp.value;
-        if(i===0){if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){inp.focus();return;}birth=v;savePrefs({birth:v});}
+        if(i===0){if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){inp.focus();return;}birth=v;}
         else birth=null;
         idle();});}
     // ── 게임 연출 ── 금빛 입자는 화면 전체를 덮는 캔버스 하나에 그린다. 남은 입자가 없으면 그리기를 멈춘다
