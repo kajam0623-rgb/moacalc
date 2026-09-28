@@ -83,8 +83,11 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       var elLine=SJ_EL.map(function(n,i){return n+" "+elA[i]+":"+elB[i];}).join(" · ");
       // 첫 화면 헤드라인 — 네 축 중 가장 높은 축이 이 관계의 성격을 요약한다
       var topAx=subs.slice().sort(function(x,y){return y[1]-x[1];})[0];
+      var whoB=inv&&inv.n?escH(inv.n):"상대";
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
+      '<div class="gh-myeong"><div><div class="gh-who">나 · '+SJ_S[A.d.s]+SJ_B[A.d.b]+'일주</div>'+sjGridHtml(A,"날 자리(나)")+'</div>'+
+        '<div><div class="gh-who">'+whoB+' · '+SJ_S[B.d.s]+SJ_B[B.d.b]+'일주</div>'+sjGridHtml(B,"날 자리")+'</div></div>'+
+      '<div class="tf-id" style="margin-top:22px">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
       '<div class="tf-hl">'+SJ_TTI[A.y.b]+'띠 × '+SJ_TTI[B.y.b]+'띠 — '+grade+'. '+topAx[0]+'이 가장 강한 축.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+

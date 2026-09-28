@@ -251,6 +251,15 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     ["오시","11:30~13:29"],["미시","13:30~15:29"],["신시","15:30~17:29"],["유시","17:30~19:29"],["술시","19:30~21:29"],["해시","21:30~23:29"]];
   function sjHourOpts(sv){return SIJIN.map(function(x,i){return '<option value="'+(i*2)+'"'+(i*2===sv?' selected':'')+'>'+(i?x[0]+' ('+x[1]+')':'자시·새벽 (00:00~01:29)')+'</option>';}).join("")+
     '<option value="23"'+(sv===23?' selected':'')+'>자시·밤 (23:30~23:59)</option>';}
+  // 명식 표(시·일·월·연 네 기둥, 십성·십이운성은 그 사람 일간 기준) — 사주·궁합 결과가 같이 쓴다
+  function sjGridHtml(p,dayLabel){var ds=p.d.s;
+    function cell(s,b){var tg1=sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
+      return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
+      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div>'+
+      '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
+    var cols=[["시각 자리",p.h?cell(p.h.s,p.h.b):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
+      [dayLabel,cell(p.d.s,p.d.b)],["달 자리",cell(p.m.s,p.m.b)],["해 자리",cell(p.y.s,p.y.b)]];
+    return '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>';}
   var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
   // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
   var TF_LINE={"비견":"내 걸음으로 가는 날. 밀고 가되 돈은 각자.","겁재":"새는 날. 지갑도 마음도 잠가둘 것.","식신":"표현이 풀리는 날. 담아둔 말은 꺼낼 것.","상관":"번뜩이는 날. 단, 입은 한 박자 늦게.","편재":"큰돈이 움직이는 날. 계산기부터 두드릴 것.","정재":"성실이 돈 되는 날. 한탕 말고 확실한 것.","편관":"압박의 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 오늘은 원칙이 지름길.","편인":"생각이 깊어지는 날. 확답은 내일로.","정인":"귀인의 날. 혼자 앓지 말 것."};

@@ -558,6 +558,9 @@
   .sj-char .n{font-size:30px;font-weight:900;margin:6px 0 6px;letter-spacing:-1px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.8);}
   .sj-char p{font-size:14px;color:#cfd6e0;line-height:1.7;}
   .gh-pair{display:grid;grid-template-columns:1fr;gap:14px;}
+  .gh-myeong{display:grid;grid-template-columns:1fr;gap:18px;}.gh-myeong .sj-grid{margin-top:8px;}
+  .gh-who{font-size:13px;font-weight:800;color:var(--muted);}
+  @media (min-width:640px){.gh-myeong{grid-template-columns:1fr 1fr;}}
   @media (min-width:640px){.gh-pair{grid-template-columns:1fr 1fr;}
     .gh-pair .sj-char{display:block;}
     .gh-pair .sj-char img{aspect-ratio:1/1;min-height:0;}

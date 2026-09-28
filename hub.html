@@ -559,6 +559,9 @@
   .sj-char .n{font-size:30px;font-weight:900;margin:6px 0 6px;letter-spacing:-1px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.8);}
   .sj-char p{font-size:14px;color:#cfd6e0;line-height:1.7;}
   .gh-pair{display:grid;grid-template-columns:1fr;gap:14px;}
+  .gh-myeong{display:grid;grid-template-columns:1fr;gap:18px;}.gh-myeong .sj-grid{margin-top:8px;}
+  .gh-who{font-size:13px;font-weight:800;color:var(--muted);}
+  @media (min-width:640px){.gh-myeong{grid-template-columns:1fr 1fr;}}
   @media (min-width:640px){.gh-pair{grid-template-columns:1fr 1fr;}
     .gh-pair .sj-char{display:block;}
     .gh-pair .sj-char img{aspect-ratio:1/1;min-height:0;}
@@ -887,6 +890,15 @@
     ["오시","11:30~13:29"],["미시","13:30~15:29"],["신시","15:30~17:29"],["유시","17:30~19:29"],["술시","19:30~21:29"],["해시","21:30~23:29"]];
   function sjHourOpts(sv){return SIJIN.map(function(x,i){return '<option value="'+(i*2)+'"'+(i*2===sv?' selected':'')+'>'+(i?x[0]+' ('+x[1]+')':'자시·새벽 (00:00~01:29)')+'</option>';}).join("")+
     '<option value="23"'+(sv===23?' selected':'')+'>자시·밤 (23:30~23:59)</option>';}
+  // 명식 표(시·일·월·연 네 기둥, 십성·십이운성은 그 사람 일간 기준) — 사주·궁합 결과가 같이 쓴다
+  function sjGridHtml(p,dayLabel){var ds=p.d.s;
+    function cell(s,b){var tg1=sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
+      return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
+      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div>'+
+      '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
+    var cols=[["시각 자리",p.h?cell(p.h.s,p.h.b):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
+      [dayLabel,cell(p.d.s,p.d.b)],["달 자리",cell(p.m.s,p.m.b)],["해 자리",cell(p.y.s,p.y.b)]];
+    return '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>';}
   var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
   // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
   var TF_LINE={"비견":"내 걸음으로 가는 날. 밀고 가되 돈은 각자.","겁재":"새는 날. 지갑도 마음도 잠가둘 것.","식신":"표현이 풀리는 날. 담아둔 말은 꺼낼 것.","상관":"번뜩이는 날. 단, 입은 한 박자 늦게.","편재":"큰돈이 움직이는 날. 계산기부터 두드릴 것.","정재":"성실이 돈 되는 날. 한탕 말고 확실한 것.","편관":"압박의 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 오늘은 원칙이 지름길.","편인":"생각이 깊어지는 날. 확답은 내일로.","정인":"귀인의 날. 혼자 앓지 말 것."};
@@ -2255,10 +2267,6 @@
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
-    function cell(s,b,ds){var tg1=s===null?"":sjTenGod(ds,s),tg2=sjTenGod(ds,SJ_BMAIN[b]);
-      return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
-      '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div>'+
-      '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
     // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
@@ -2305,8 +2313,6 @@
       // 십성 카운트
       var tgc={};chars.forEach(function(c,ci){if(!(ci===2)){var g1=sjTenGod(ds,c.s);tgc[g1]=(tgc[g1]||0)+1;}var g2=sjTenGod(ds,SJ_BMAIN[c.b]);tgc[g2]=(tgc[g2]||0)+1;});
       var tgTop=Object.entries(tgc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0]+" "+x[1];}).join(" · ");
-      var cols=[["시각 자리",p.h?cell(p.h.s,p.h.b,ds):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
-                ["날 자리(나)",cell(p.d.s,p.d.b,ds)],["달 자리",cell(p.m.s,p.m.b,ds)],["해 자리",cell(p.y.s,p.y.b,ds)]];
       // 신강·신약 / 용신 / 격국 / 신살 / 십이운성
       var st=sjStrength(p),yEl=SJ_EL[st.yong],y2El=SJ_EL[st.yong2],Y=SJ_YONG[yEl];
       var wolTg=sjTenGod(ds,SJ_BMAIN[p.m.b]),gyeok=SJ_GYEOK[wolTg],sinsal=sjSinsal(p),ilUn=sjUnseong(ds,p.d.b);
@@ -2695,7 +2701,7 @@
           :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
       el.querySelector("#out").innerHTML=
-        '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>'+
+        sjGridHtml(p,"날 자리(나)")+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
         '<div class="s">돕는 기운 '+Math.round(st.ratio*100)+'% · 보조로 쓰는 기운 '+y2El+'</div></div>'+
@@ -3679,8 +3685,11 @@
       var elLine=SJ_EL.map(function(n,i){return n+" "+elA[i]+":"+elB[i];}).join(" · ");
       // 첫 화면 헤드라인 — 네 축 중 가장 높은 축이 이 관계의 성격을 요약한다
       var topAx=subs.slice().sort(function(x,y){return y[1]-x[1];})[0];
+      var whoB=inv&&inv.n?escH(inv.n):"상대";
       el.querySelector("#out").innerHTML=
-      '<div class="tf-id">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
+      '<div class="gh-myeong"><div><div class="gh-who">나 · '+SJ_S[A.d.s]+SJ_B[A.d.b]+'일주</div>'+sjGridHtml(A,"날 자리(나)")+'</div>'+
+        '<div><div class="gh-who">'+whoB+' · '+SJ_S[B.d.s]+SJ_B[B.d.b]+'일주</div>'+sjGridHtml(B,"날 자리")+'</div></div>'+
+      '<div class="tf-id" style="margin-top:22px">'+SJ_S[A.d.s]+' × '+SJ_S[B.d.s]+' — 두 사람을 뜻하는 글자 비교</div>'+
       '<div class="tf-hl">'+SJ_TTI[A.y.b]+'띠 × '+SJ_TTI[B.y.b]+'띠 — '+grade+'. '+topAx[0]+'이 가장 강한 축.</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+SJ_TTI[A.y.b]+'띠 '+SJ_S[A.d.s]+'일간 ♥ '+SJ_TTI[B.y.b]+'띠 '+SJ_S[B.d.s]+'일간</div>'+
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
