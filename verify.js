@@ -204,12 +204,12 @@ t("조언에 최저·최고 항목 명시", tfSrc.includes("SUB_LBL[loI]") && tf
 
 // ── T3 물어보기 게이트 · 도파민 연출 ──
 // 운세 7종은 버튼을 눌러야 답이 나온다. 자동 실행이 하나라도 남으면 게이트가 뚫린다
-const FORTUNE_GATED = ["saju","todayfortune","horoscope","stargunghap","zodiacfortune","gunghap","newyear"];
+const FORTUNE_GATED = ["saju","todayfortune","horoscope","stargunghap","zodiacfortune","gunghap","newyear","tojeong"];
 const toolBlock = id => { const i = inner.indexOf('{id:"'+id+'"'); const j = inner.indexOf('{id:"', i+8); return inner.slice(i, j<0?inner.length:j); };
-t("운세 7종 물어보기 배선(askWire)", FORTUNE_GATED.every(id=>/askWire\(el,go,\[/.test(toolBlock(id))), true);
+t("운세 8종 물어보기 배선(askWire)", FORTUNE_GATED.every(id=>/askWire\(el,go,\[/.test(toolBlock(id))), true);
 // 버튼 클릭 외에 결과를 그리는 경로가 남아 있으면 게이트가 샌다(select change·초기 go() 모두)
-t("운세 7종 자동 실행 제거", FORTUNE_GATED.every(id=>{const b=toolBlock(id);return !/;go\(\);/.test(b) && !/addEventListener\("change",go\)/.test(b);}), true);
-t("버튼 문구 통일(ASK_LABEL)", (inner.match(/'\+ASK_LABEL\+'<\/button>/g)||[]).length, 7);
+t("운세 8종 자동 실행 제거", FORTUNE_GATED.every(id=>{const b=toolBlock(id);return !/;go\(\);/.test(b) && !/addEventListener\("change",go\)/.test(b);}), true);
+t("버튼 문구 통일(ASK_LABEL)", (inner.match(/'\+ASK_LABEL\+'<\/button>/g)||[]).length, 8);
 t("물어보기 전 대기 화면", /function askWait/.test(inner) && /ask-wait/.test(src), true);
 // 도파민 1 — 짚어 보는 연출(릴 + 단계 문구), 2 — 점수 카운트업·막대 채우기·등급, 3 — 스트릭·부적
 t("연출1 짚어보기(릴+단계)", /function askThink/.test(inner) && /ask-reel/.test(src) && /reelspin/.test(src), true);
@@ -246,6 +246,20 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const s = inner.slice(inner.indexOf(`id:"${id}"`), inner.indexOf(`id:"${next}"`));
   t(`${id} 헤드라인이 점수 카드 위에 렌더`, s.indexOf("tf-hl")>0 && s.indexOf("tf-hl") < s.indexOf('class="out"'), true);
 });
+
+// ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
+{
+  const tjSrc = toolBlock("tojeong");
+  const tjCalc = new Function("return " + tjSrc.slice(tjSrc.indexOf("function tjCalc"), tjSrc.indexOf("    var MON=")))();
+  const KLC = require("./vendor-lunar.js");
+  const jdn = (y, m, d) => { const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3; return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045; };
+  const gz = (y, m, d) => { const i = (jdn(y, m, d) + 49) % 60; return [i % 10, i % 12]; };
+  const TV = [[1976,8,26,2005,"212"],[1975,7,25,2024,"811"],[1972,7,9,2003,"231"],[1990,1,15,2026,"531"],[1985,2,14,2026,"262"],[1976,8,26,2026,"363"],[2000,12,1,2026,"331"],[1970,5,30,2026,"151"],[1966,2,30,2026,"562"]];
+  t("토정비결 작괘 9개 예제", TV.map(([a,b2,c,Y])=>tjCalc(a,b2,c,Y,KLC,gz).code).join(","), TV.map(x=>x[4]).join(","));
+  const TJ = require("./content_tojeong.js"), codes = []; for (let a = 1; a <= 8; a++) for (let b2 = 1; b2 <= 6; b2++) for (let c = 1; c <= 3; c++) codes.push(""+a+b2+c);
+  t("토정비결 144괘 원고 · 총운 + 12달", codes.every(k => TJ[k] && TJ[k].chongun.length > 250 && [1,2,3,4,5,6,7,8,9,10,11,12].every(m => (TJ[k].months[m]||"").length > 60)), true);
+  t("토정비결 풀이는 보살 말투", codes.filter(k => JONDAE.test([TJ[k].chongun].concat(Object.values(TJ[k].months)).join(" "))).length, 0);
+}
 
 // ── T3 프로그래매틱 SEO: 별자리 12 + 띠 12 원고 ──
 const STAR_PAGES = require("./content_star.js"), ZODIAC_PAGES = require("./content_zodiac.js");

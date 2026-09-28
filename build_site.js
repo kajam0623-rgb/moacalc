@@ -23,7 +23,8 @@ const SITE_PAGES = require("./content_site.js"); // About·개인정보처리방
 const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사주에서 '나'에 해당하는 글자
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
 const TAROT_PAGES = require("./content_tarot.js");
-const DREAM = require("./content_dream.js");          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
+const DREAM = require("./content_dream.js");
+const TOJEONG = require("./content_tojeong.js");      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
@@ -159,6 +160,7 @@ horoscope:"생년월일로 별자리를 판정하고, 오늘 태양과 이루는
 zodiacfortune:"내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2026 병오년 흐름까지 무료로.",
 stargunghap:"두 별자리의 원소 관계와 황도 각도, 수호성 친화로 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다.",
 gunghap:"무료 사주궁합. 두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합해 봅니다.",
+tojeong:"2026 병오년·2027 정미년 무료 토정비결. 음력 생일로 전통 작괘법대로 144괘 가운데 내 괘를 뽑아 총운과 음력 달마다 흐름을 봅니다. 괘를 세운 셈까지 그대로 보여 드립니다.",
 newyear:"2027 정미년과 2026 병오년 무료 신년운세. 생년월일만 넣으면 그 해 천간과 내 일간의 십성 관계, 태세 지지와 내 띠·일지의 합충으로 한 해의 흐름과 상·하반기 전략을 풀이합니다.",
 namematch:"두 사람의 이름 획수를 번갈아 더해가는 전통 이름궁합 놀이입니다. 획수 피라미드와 점수, 풀이까지 무료로 확인하세요.",
 };
@@ -217,6 +219,7 @@ horoscope:["별자리 운세","오늘의 별자리 운세","별자리 궁합 기
 zodiacfortune:["띠별 운세","오늘의 띠별 운세","12띠 운세","2026 띠별 운세","무료 띠 운세"],
 stargunghap:["별자리 궁합","별자리 커플 궁합","12별자리 궁합","별자리 궁합표","무료 별자리 궁합"],
 gunghap:["궁합 보기","사주 궁합","무료 궁합","띠 궁합"],
+tojeong:["토정비결","2027 토정비결","무료 토정비결","2026 토정비결","토정비결 보기","토정비결 144괘"],
 newyear:["2027 신년운세","정미년 운세","2026 신년운세","병오년 운세","무료 신년운세"],
 tarot:["타로 카드","무료 타로","타로점","타로 해석"],
 namematch:["이름 궁합","이름 궁합 테스트","획수 궁합"],
@@ -716,6 +719,15 @@ gunghap:{
  "<b>띠 충은 절대 금기가 아닙니다.</b> 전통적 경계일 뿐이며 실제로는 일간·일지 관계가 더 중요합니다.",
  "<b>궁합은 관계를 예측하지 않습니다.</b> 성향 차이를 보여줄 뿐 노력과 소통이 결과를 만듭니다.",
  "<b>음력 생일은 양력으로 변환해 넣으세요.</b> 그대로 넣으면 명식이 달라집니다."]},
+tojeong:{
+ intro:`토정비결은 조선 후기부터 새해 첫머리에 한 해 신수를 보던 책입니다. 토정 이지함이 지었다고 전하지만 실제로는 그 이름을 빌린 것이라는 견해가 많습니다. 사주처럼 여덟 글자를 풀지 않고 <b>음력 생일과 볼 해의 음력 달력</b>만으로 괘를 세우는 것이 특징이라, 태어난 시각을 몰라도 볼 수 있습니다.
+ 괘는 세 자리입니다. <b>상괘</b>는 세는 나이에 그해 간지의 태세수를 더해 8로 나눈 나머지, <b>중괘</b>는 볼 해 음력 생월의 날수(큰달 30, 작은달 29)에 그 달 간지의 월건수를 더해 6으로 나눈 나머지, <b>하괘</b>는 음력 생일 숫자에 볼 해 그 날짜의 일진수를 더해 3으로 나눈 나머지입니다. 나머지가 0이면 8·6·3을 씁니다. 그래서 8×6×3, 모두 <b>144괘</b>가 나옵니다.
+ 월건은 사주처럼 절기로 나누지 않고 <b>음력 달 번호</b>로 정합니다. 같은 사람이라도 해마다 나이와 그해 달력이 바뀌니 괘도 해마다 달라집니다. 동네보살은 한국천문연구원 기준 음력으로 계산하고, 결과 아래에 괘를 세운 셈을 그대로 보여 드립니다.`,
+ example:{t:"음력 1990년 1월 15일생 · 2026 병오년",rows:[["세는 나이 + 태세수(丙午)","37 + 16 = 53 → 53÷8 나머지 5"],["1월 날수 + 월건수(庚寅)","30 + 15 = 45 → 45÷6 나머지 3"],["생일 + 일진수(丙子)","15 + 16 = 31 → 31÷3 나머지 1"]],res:["괘","531괘"]},
+ caution:["<b>음력 생일로 셉니다.</b> 양력 생일을 넣으면 음력으로 바꿔 계산합니다. 음력 생일을 안다면 '음력 생일이세요?'에서 바로 넣으세요.",
+ "<b>나이는 세는 나이입니다.</b> 만 나이 통일법과 상관없이 전통식 셈을 따릅니다.",
+ "<b>윤달생과 30일생</b>은 문헌에 정해진 규칙이 없어 통례를 따릅니다. 윤달생은 평달로, 그해 생월이 작은달이면 30일생은 29일로 셉니다.",
+ "<b>운세는 참고입니다.</b> 조심할 달은 미리 준비하는 데 쓰세요."]},
 newyear:{
  intro:`2027년은 <b>정미년(丁未年)</b>, 붉은 양의 해입니다. 정(丁)은 등불·촛불 같은 작은 불이고 미(未)는 여름 끝의 뜨거운 흙이라, 2026년 병오년의 큰 불이 한 김 식으며 <b>불이 흙으로 옮겨 가는</b> 해입니다. 크게 벌이던 일을 다듬고 쌓아 두는 쪽에 힘이 실립니다. 사주에서 2027년은 1월 1일이 아니라 <b>입춘(2월 4일 오전 10시 40분경)</b>부터입니다.
  2026년은 <b>병오년(丙午年)</b>, 붉은 말의 해입니다. 병(丙)은 태양 같은 큰 불이고 오(午)도 화(火)에 속해, 한 해 전체에 <b>불의 기운</b>이 강하게 흐릅니다. 위 도구에서 어느 해를 볼지 고를 수 있습니다.
@@ -782,6 +794,7 @@ horoscope:["태어난 날 태양이 있던 황도 30도 구간이 내 별자리�
 zodiacfortune:["내 띠(연지)와 오늘 일진 지지의 관계가 하루의 결을 정합니다.","삼합(4로 나눈 나머지가 같음)과 육합은 순한 관계, 충·형·해는 마찰이 있는 관계입니다.","오늘 천간이 내 띠 본기에 갖는 십성으로 점수를 한 번 더 조정합니다.","2026 병오년은 태세 오(午)와의 관계로 한 해 흐름을 봅니다."],
 stargunghap:["12별자리는 불·흙·공기·물 네 원소로 나뉘고, 원소 관계가 궁합의 첫 축입니다.","두 별자리의 황도 각도(합·60·90·120·180도)가 두 번째 축입니다.","서로의 수호성이 상대 원소와 결이 맞는지가 세 번째 축입니다.","세 축을 40:40:20으로 종합해 점수를 냅니다."],
 gunghap:["일간 천간합(갑기·을경·병신·정임·무계)은 명리에서 가장 강한 끌림으로 봅니다.","띠의 삼합·육합은 조화를, 충은 강한 자극과 충돌을 뜻합니다.","서로 없는 오행을 채워주는 관계는 함께 있을 때 완성되는 보완형입니다."],
+tojeong:["토정비결은 음력 생일과 볼 해의 음력 달력으로 세 자리 괘를 세웁니다.","상괘는 나이와 태세, 중괘는 생월과 월건, 하괘는 생일과 일진에서 나옵니다.","해마다 나이와 달력이 바뀌니 괘도 해마다 달라집니다."],
 newyear:["신년운세는 그 해의 간지(2027=정미, 2026=병오)와 내 사주의 관계로 봅니다.","그 해 천간이 내 일간에 어떤 십성인지가 한 해의 큰 주제입니다.","태세 지지와 내 띠·일지의 삼합·육합·충이 세부 흐름을 만듭니다."],
 namematch:["이름 글자의 획수를 번갈아 한 줄로 놓습니다.","이웃한 숫자끼리 더해 일의 자리만 남기며 줄여갑니다.","마지막 두 자리가 궁합 점수입니다. 학창 시절 그 방식 그대로예요."],
 };
@@ -840,6 +853,7 @@ horoscope:[["수호성이 뭔가요?","각 별자리를 맡은 행성입니다. 
 stargunghap:[["별자리 궁합은 뭘 기준으로 보나요?","원소 관계(40%), 황도 각도(40%), 수호성 친화(20%)를 종합합니다. 태양 별자리 기준입니다."],["잘 맞는 별자리 조합은요?","같은 원소끼리(불-불 등), 그리고 불-공기·흙-물 상생 조합이 전통적으로 순한 궁합입니다. 각도로는 트라인(120°)과 섹스타일(60°)이 순풍입니다."],["점수가 낮으면 헤어져야 하나요?","아니요. 스퀘어·오포지션은 성장과 보완의 각으로도 읽습니다. 부딪히기 쉬운 지점을 미리 아는 용도입니다."],["내 별자리를 정확히 모르면요?","경계일(간절기) 출생이면 별자리 운세 페이지에서 생년월일로 판정한 뒤 다시 보세요."]],
 zodiacfortune:[["띠마다 정해진 시각이 있다는 게 무슨 말인가요?","열두 지지는 해뿐 아니라 하루도 열둘로 나눕니다. 자시는 밤 11시부터 새벽 1시, 축시는 새벽 1시부터 3시 하는 식입니다. 태어난 시각이 어느 지지에 드는지가 사주의 시주가 됩니다."],["띠와 지지는 같은 말인가요?","같은 것을 다르게 부르는 말입니다. 자(子)를 쥐로, 축(丑)을 소로 바꿔 부른 것이 띠입니다. 지지에는 오행과 계절, 하루 중 시각이 함께 붙어 있어 위 표처럼 정리됩니다."],["내 띠는 어떻게 정해지나요?","태어난 해의 지지입니다. 다만 사주에서는 입춘(2월 4일경)에 바뀌므로 1~2월 초 출생이면 앞 해의 띠일 수 있습니다."],["같은 띠면 다 같은 운세인가요?","띠만으로 보면 열두 갈래로 나뉩니다. 더 정밀하게 보려면 생년월일을 모두 넣는 오늘의 운세를 이용하세요."],["삼합·육합·충이 뭔가요?","십이지가 서로 끌어당기거나 부딪히는 정해진 짝입니다. 삼합·육합은 순하게 맞물리고, 충은 변동, 형·해는 마찰을 뜻합니다."],["충이 든 날은 나가지 말아야 하나요?","아니요. 충은 움직이는 기운이라 변동이 잦다는 뜻입니다. 여유 시간을 미리 빼두면 오히려 유리한 날이 됩니다."],["2026년 띠별 운세는요?","2026년은 병오년입니다. 태세 오(午)와 쥐띠는 충, 호랑이·개띠는 삼합, 양띠는 육합, 소띠는 해에 해당합니다."]],
 gunghap:[["별자리 궁합과는 어떻게 다른가요?","보는 재료가 다릅니다. 별자리 궁합은 태양이 지나는 자리와 각도를 보고, 이 페이지는 두 사람의 사주 여덟 글자에서 천간합과 지지의 합충, 오행 보완을 봅니다. 서로 다른 셈이라 결과가 달라도 이상한 것이 아닙니다."],["천간합이 뭔가요?","열 개 천간 중 다섯 쌍이 서로 묶이는 관계입니다. 갑기·을경·병신·정임·무계 다섯 쌍이며, 두 사람의 일간이 이 짝이면 서로 끌리는 힘이 강한 것으로 봅니다."],["나이 차이가 네 살이면 잘 맞나요?","네 살이나 여덟 살 터울이 맞는다는 말은 띠의 삼합에서 나왔습니다. 해의 지지 셋이 한 묶음이 되기 때문입니다. 다만 여덟 글자 중 한 글자만 본 것이라 보조 근거로만 씁니다."],["생년월일만으로 충분한가요?","연·월·일 여섯 글자로 핵심 합·충·오행을 봅니다. 시각까지 넣으면 더 정밀해지므로 만세력에서 확인해보세요."],["점수가 낮으면 헤어져야 하나요?","아니요, 부딪히기 쉬운 지점을 알려주는 지도일 뿐입니다. 아는 만큼 조율할 수 있습니다."],["띠 충이면 결혼하면 안 되나요?","전통적 경계일 뿐 절대 규칙이 아닙니다. 실제로는 일간·일지 관계가 더 중요합니다."]],
+tojeong:[["토정비결은 어떻게 계산하나요?","세는 나이+태세수를 8로, 볼 해 음력 생월 날수+월건수를 6으로, 음력 생일+일진수를 3으로 나눈 나머지로 세 자리 괘를 세웁니다. 나머지가 0이면 8·6·3을 씁니다."],["양력 생일만 알아도 되나요?","네. 양력 생일을 넣으면 한국천문연구원 기준 음력으로 바꿔 계산합니다."],["태어난 시각이 필요한가요?","아니요. 토정비결은 생시를 쓰지 않습니다."],["풀이는 어디서 온 건가요?","괘를 세우는 방법은 전통 작괘법 그대로이고, 144괘의 풀이 문장은 전통 괘의 길흉과 상징을 바탕으로 동네보살이 새로 썼습니다."]],
 newyear:[["2027년은 무슨 해인가요?","정미년(丁未年), 붉은 양의 해입니다. 사주에서는 2027년 입춘(2월 4일 오전 10시 40분경)부터 정미년입니다."],["2026년은 무슨 해인가요?","병오년(丙午年), 붉은 말의 해입니다."],["왜 사람마다 신년운세가 다른가요?","같은 해라도 내 일간과의 십성 관계, 내 띠와의 합충이 달라서입니다."],["운세가 나쁘면 한 해를 망치나요?","아니요, 주의 구간을 미리 아는 지도일 뿐입니다. 전략 항목을 참고하세요."]],
 namematch:[["이 방식은 뭔가요?","이름 획수를 번갈아 놓고 이웃끼리 더해가는 전통 놀이(속칭 이름궁합 테스트)입니다."],["실제 궁합인가요?","재미용입니다. 진지한 궁합은 사주 궁합 보기를 이용하세요."],["영어 이름도 되나요?","한글 이름 기준입니다. 한글로 적어 계산해보세요."]],
 };
@@ -890,7 +904,7 @@ const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
 })+'</script>';
 
 // 도구마다 어울리는 아기보살 자세(img/bosal/<자세>.webp, 작은 판은 img/bosal/s/)
-const TOOL_POSE = {todayfortune:"crystal",saju:"magnifier",gunghap:"heart",tarot:"tarot",newyear:"newyear",horoscope:"sleepy",
+const TOOL_POSE = {tojeong:"scroll",todayfortune:"crystal",saju:"magnifier",gunghap:"heart",tarot:"tarot",newyear:"newyear",horoscope:"sleepy",
   zodiacfortune:"trophy",stargunghap:"phone",namematch:"diary",lunar:"scroll",manse:"scroll",dict:"point"};
 const thBosal = id => TOOL_POSE[id] ? `<img class="th-bosal" src="img/bosal/${TOOL_POSE[id]}.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()">` : "";
 // 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
@@ -903,7 +917,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 이 기기에만 저장하고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
 <div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="dream.html">꿈해몽</a></div>
+<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 </footer>
 <div class="foot">© 2026 동네보살</div>${tabbar}`;
 
@@ -936,6 +950,7 @@ zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
 saju:"무료 사주풀이 — 인터넷 사주·사주 만세력",
 gunghap:"무료 사주궁합 — 사주 궁합·띠 궁합 보기",
+tojeong:"2027 토정비결 — 무료 토정비결 보기 144괘",
 newyear:"2027 신년운세 — 정미년·병오년 무료 운세",
 tarot:"무료 타로 사이트 — 보살에게 묻고 뽑는 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
@@ -2260,7 +2275,7 @@ function indexPage(){
 <div class="hero-sub">가입도 앱 설치도 없이 생일 하나로. 사주·오늘의 운세·궁합·타로를 끝까지 무료로 봅니다.</div>
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 이 기기에만 저장됩니다. 서버로 보내지 않습니다.</p></div></div>
 </header>
-<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="lunar.html"><img class="tile-bosal" src="img/bosal/s/lantern.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>음력 변환</b><span>음력 생일·윤달</span></a><a href="dream.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>꿈해몽</b><span>간밤 꿈 241가지 풀이</span></a></nav>
+<nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="tojeong.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>토정비결</b><span>음력 생일로 뽑는 144괘</span></a><a href="dream.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>꿈해몽</b><span>간밤 꿈 241가지 풀이</span></a></nav>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/trophy.webp" alt="트로피를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 띠 순위</h2><p>오늘 일진과 띠의 관계로 매긴 12띠 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="zrank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/crystal.webp" alt="수정구를 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 별자리 순위</h2><p>오늘 태양의 자리와 요일의 별로 매긴 12별자리 순위</p></div>
@@ -2362,7 +2377,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
 
 // llms.txt — 생성형 검색(ChatGPT·Perplexity 등)이 사이트를 정확히 인용하도록 돕는 안내 파일
-const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tarot","namematch"];
+const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tojeong","tarot","namematch"];
 const llmsTxt = `# 동네보살 (dongnebosal)
 
 > 무료 사주·운세 사이트. 태양황경을 직접 계산하는 만세력 엔진으로 사주팔자·오늘의 운세·별자리 운세·궁합을 풀이한다. 문구를 무작위로 뽑지 않고 계산 결과로 조립하므로, 같은 생일에 같은 날이면 언제 조회해도 같은 결과가 나온다.
@@ -2574,6 +2589,8 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
 fs.writeFileSync(path.join(OUT,"diary.html"), diaryPage());
 fs.writeFileSync(path.join(OUT,"dream.html"), dreamHubPage());
+fs.mkdirSync(path.join(OUT,"tj"),{recursive:true});
+Object.keys(TOJEONG).forEach(k=>fs.writeFileSync(path.join(OUT,"tj",k+".json"), JSON.stringify(TOJEONG[k])));
 DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCatPage(c)));
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
