@@ -144,6 +144,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var ILG=(typeof SAJU_ILG!=="undefined")?SAJU_ILG[["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"][ds]]:null,SK=st.strong?"strong":"weak";
       var CB=COMBO[ILGAN_EN[ds]+"-"+TG_EN[wolTg]]||null;
       var ilg=function(a){return CB&&CB[a]?P+CB[a]:ILG&&ILG[a]?P+ILG[a][SK]:"";};
+      // 판정 문장 — 계산된 갈래는 그대로, 말은 일간(첫 문장)과 격국(설명)에 맞춰. 조합 파일이 없으면 예전 판정
+      var verdict=function(a,bk,old){var v=CB&&CB.v&&CB.v[a];return v&&v.head&&v.head[bk]&&v.follow&&v.follow[bk]?v.head[bk]+" "+v.follow[bk]:old;};
+      var mBk=G.재성===0?"none":G.재성>=3?"many":"mid",jBk=G.관성===0?"none":G.관성>=3?"many":G.식상>=3?"craft":"mid";
       /* 영역별 시기 — 해마다 그해 글자가 자네에게 무엇이 되는지로 인연·이동·일·문서·돈·지출을 표시한다.
          이동: 그해 지지가 일지·월지와 충이거나 일지·연지 기준 역마 / 인연: 배우자 별(남 재성·여 관성)의 해, 일지와 육합, 도화
          일: 관성·상관의 해 / 문서: 인성·편관의 해 / 돈: 재성의 해 / 지출: 겁재의 해.
@@ -164,10 +167,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var plan={};TAGS.forEach(function(t){plan[t]=[];});
       for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){plan[t].push(fy);});}
       var nearY=function(t){var v=plan[t][0];return v?(v===nowY?"올해("+v+"년)":v+"년"):"";};
-      var money=moneyBase+ilg("money")+P+
-        "사주 여덟 글자 가운데 돈 기운은 "+(G.재성?G.재성+"자리일세. ":"한 자리도 없네. ")+(st.strong
-          ?"타고난 힘이 센 편이라 들어온 돈을 지킬 그릇은 되네. 기회가 오면 손을 뻗어도 좋아."
-          :"다만 타고난 힘이 약한 편이라 큰돈을 혼자 감당하기엔 벅차네. 크게 벌이기보다 새는 돈부터 막게. 빚과 보증은 특히 조심하게.")+P+
+      var money=verdict("money",mBk,moneyBase)+ilg("money")+P+
         "지금 자네는 10년 흐름으로 보면 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있네. "+DU_MONEY[duG]+
         (nearY("돈")?" 해마다 드는 운으로 보면 돈이 크게 움직이는 가장 가까운 해는 <b>"+nearY("돈")+"</b>일세.":"")+
         (nearY("지출")?" 새는 돈을 특히 조심할 해는 <b>"+nearY("지출")+"</b>이야.":"");
@@ -175,22 +175,21 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :G.관성>=3?"일·자리 기운이 <b>강하네</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 크지. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아."
         :G.식상>=3?"재주와 표현 기운이 <b>발달했네</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이야. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞네."
         :"일·자리 기운이 알맞네. <b>회사에서도, 혼자서도</b> 해낼 수 있는 사람이야. 역할이 분명하고 성과가 눈에 보이는 자리에서 만족이 크겠어.";
-      var jobLean=G.식상>G.관성?"직접 만들어 내놓는 힘이 더 강한":(G.식상<G.관성?"맡은 자리를 지키는 힘이 더 강한":"두 힘이 비슷한");
-      var job=jobBase+ilg("job")+P+
-        "사주에서 일을 맡아 지키는 힘은 "+G.관성+", 만들어 내놓는 힘은 "+G.식상+", 배워서 쌓는 힘은 "+G.인성+"일세. 자네는 <b>"+jobLean+"</b> 사람이야."+P+
+      var job=verdict("job",jBk,jobBase)+ilg("job")+P+
+        "사주에서 일을 맡아 지키는 힘은 "+G.관성+", 만들어 내놓는 힘은 "+G.식상+", 배워서 쌓는 힘은 "+G.인성+"일세."+P+
         "틀(격국)로 보면 자네가 서게 되는 자리는 <b>"+STAGE[wolTg]+"</b>이고, 필요한 기운("+yEl+")으로 보면 "+Y.job+" 쪽이 결에 맞네."+
-        (nearY("일")?P+"일과 자리에 변화가 오는 가장 가까운 해는 <b>"+nearY("일")+"</b>일세. 이직이나 승진을 겨눈다면 "+(plan.일[0]===nowY?"지금부터":"그해에 맞춰")+" 준비해 두게."
+        (nearY("일")?P+"일과 자리에 변화가 오는 가장 가까운 해는 <b>"+nearY("일")+"</b>일세."
           +(nearY("문서")?" 시험·계약·자격 쪽은 <b>"+nearY("문서")+"</b>에 힘이 실리네.":""):"");
       // 배우자를 뜻하는 기운: 남자는 돈 기운(재성), 여자는 일·자리 기운(관성)
       var spouseN=male?G.재성:G.관성,spouseG=male?"재성":"관성",spouseWord=male?"돈 기운":"일·자리 기운";
       var loveBase=spouseN===0?"배우자를 뜻하는 기운("+spouseWord+")이 사주에 드러나 있지 않네. 인연이 늦게 오거나 조용히 오는 편이야. 조건을 따지기보다 <b>같이 있으면 편한 사람</b>을 기준으로 삼게."
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주일세. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하게."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주일세. 생활 리듬이 맞는 사람과 오래가네.";
-      var love=loveBase+ilg("love")+P+
+      var love=verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love")+P+
         "배우자 자리(태어난 날의 아래 글자)에는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어. "+(UN_PLAIN[ilUn]||"")+" 곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세."+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기일세. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워. 사람 만나는 자리에 자주 나가 보게."
-          :"큰 흐름으로는 인연이 곧바로 움직이는 구간이 아닐세.")+
+          :"")+
         (nearY("인연")?" 해마다 드는 운으로 보면 사람 인연이 움직이는 가장 가까운 해는 <b>"+nearY("인연")+"</b>일세"+(plan.인연[1]?", 그다음은 "+plan.인연[1]+"년이야.":"."):" 앞으로 10년 안에는 해마다 드는 운에서도 인연이 크게 튀는 해가 없으니, 사람 만나는 자리를 자네가 먼저 만들어야 하네.");
       var health=(CB&&CB.health?CB.health+P:ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
         "반대로 "+mx+" 기운은 넘치는 편일세. 한쪽으로 몰린 기운도 무리하면 표가 나니 "+WEAK[mx]+" 쪽도 함께 살펴 두게."+P+
