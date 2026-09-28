@@ -874,7 +874,10 @@ const FAVICON = `<link rel="icon" href="/img/favicon.ico" sizes="any">`+
    구글은 사이트 이름을 "별자리 운세"로 잡아 대출 계산기 제목에까지 붙였다.
    신호를 한 군데서 전 페이지에 내보낸다. */
 const SITE_NAME = "동네보살";
-const headExtra = FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
+const THEME_JS = '<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dnbs_theme")}catch(e){}d.setAttribute("data-theme",t==="dark"?"dark":"light");'+
+  'document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".theme-tg");if(!b)return;var n=d.getAttribute("data-theme")==="dark"?"light":"dark";d.setAttribute("data-theme",n);try{localStorage.setItem("dnbs_theme",n)}catch(x){}});})();</script>';
+const THEME_BTN = '<button type="button" class="theme-tg" aria-label="화면 밝기 바꾸기"><span class="tg-d">🌙 다크 모드</span><span class="tg-l">☀ 라이트 모드</span></button>';
+const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
@@ -918,6 +921,7 @@ const footer = `<footer class="sfoot">
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
 <div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
+<div class="foot-theme">${THEME_BTN}</div>
 </footer>
 <div class="foot">© 2026 동네보살</div>${tabbar}`;
 
@@ -1364,7 +1368,7 @@ function notFoundPage(){
 <title>페이지를 찾을 수 없습니다 | 동네보살</title>
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="/style.css?v=${styleV}">
-${FAVICON}</head><body>
+${THEME_JS}${FAVICON}</head><body>
 <div class="wrap" style="text-align:center;padding-top:40px">
 <img src="/img/bosal/lost.webp" alt="길을 잃은 아기보살" width="160" style="width:160px;height:auto" onerror="this.src='/img/mascot.webp'">
 <h1 style="font-size:26px;font-weight:900;margin:14px 0 8px">찾으시는 페이지가 없습니다</h1>
@@ -2269,7 +2273,7 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span></div>
+<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
 <img class="hero-bosal" id="heroBosal" src="img/mascot.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
 <h1 class="hero-h">결과 먼저, 결제 없이.<br><b>근거까지 보여 주는 무료 사주</b></h1>
 <div class="hero-sub">가입도 앱 설치도 없이 생일 하나로. 사주·오늘의 운세·궁합·타로를 끝까지 무료로 봅니다.</div>
@@ -2299,7 +2303,7 @@ ${homeFaqLd}
 function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
 var midT=null;
 function show(b){clearTimeout(midT);var nx=new Date();nx.setHours(24,0,5,0);midT=setTimeout(function(){show(b);},nx-new Date());load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
-box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosal/s/'+(t.score>=85?"cheer":t.score>=60?"smile":"worry")+'.webp" alt="아기보살" onerror="this.remove()"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
+box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosal/'+(t.score>=85?"cheer":t.score>=60?"smile":"worry")+'.webp" alt="아기보살" onerror="this.remove()"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
 '<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
 '<div class="today-btns"><a class="p" href="todayfortune.html#go">오늘 운세 자세히</a><a href="saju.html#go">내 사주 보기</a><a href="gunghap.html">궁합</a></div>'+
 '<button type="button" class="today-reset">다른 생일로 보기</button>'+
@@ -2467,8 +2471,18 @@ const extraCss = `
 @keyframes bosalBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){.hero-bosal{animation:none}}
 .today{clear:both;}
-.today-card{position:relative;}.tc-bosal{position:absolute;right:8px;top:-40px;width:70px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));}
-.today-card .k,.today-card .v,.today-card .l{margin-right:72px;}
+/* 오늘 카드가 뜨면 캐릭터는 카드 안 하나만 둔다. 위쪽 큰 캐릭터(210px)와 카드 모서리 캐릭터(70px)가 크기가 따로 놀았다 */
+.hero2:has(.today-card) .hero-bosal{display:none;}
+.hero2:has(.today-card) .hero-h,.hero2:has(.today-card) .hero-sub{padding-right:0;}
+.today-card{position:relative;}.tc-bosal{position:absolute;right:12px;top:12px;height:96px;width:auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));}
+.today-card .k,.today-card .v,.today-card .l{margin-right:78px;}
+@media (min-width:760px){.tc-bosal{height:124px;right:26px;top:14px;}.today-card .k,.today-card .v,.today-card .l{margin-right:130px;}}
+/* 라이트/다크 버튼 — 지금 테마의 반대를 보여 준다 */
+.theme-tg{font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;cursor:pointer;line-height:1.2;}
+.theme-tg:hover{border-color:var(--fun);}
+:root[data-theme="dark"] .theme-tg .tg-d,:root:not([data-theme="dark"]) .theme-tg .tg-l{display:none;}
+.logo-row .theme-tg{margin-left:12px;}
+.foot-theme{grid-column:1/-1;margin-top:6px;}
 .sect-bosal{width:46px;align-self:flex-end;margin-bottom:-4px;}
 .situ a:has(.situ-bosal){display:flex;align-items:center;gap:12px;}.situ .situ-bosal{width:52px;flex:none;}
 .dc-bosal{width:54px;flex:none;}

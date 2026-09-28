@@ -15,7 +15,8 @@
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;
     background-image:linear-gradient(rgba(42,68,198,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(42,68,198,.045) 1px,transparent 1px);
     background-size:28px 28px;}
-  @media (prefers-color-scheme:dark){body{background-image:linear-gradient(rgba(147,164,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(147,164,255,.05) 1px,transparent 1px);}}
+  :root[data-theme="dark"]{color-scheme:dark;}
+  :root[data-theme="dark"] body{background-image:linear-gradient(rgba(147,164,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(147,164,255,.05) 1px,transparent 1px);}
   .wrap{max-width:1180px;margin:0 auto;padding:30px 22px 60px;}
   /* 도구 페이지: 본문 + 우측 레일 (데스크톱) */
   .shell{display:grid;grid-template-columns:minmax(0,1fr);gap:26px;}
@@ -623,8 +624,18 @@
 @keyframes bosalBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){.hero-bosal{animation:none}}
 .today{clear:both;}
-.today-card{position:relative;}.tc-bosal{position:absolute;right:8px;top:-40px;width:70px;filter:drop-shadow(0 4px 10px rgba(0,0,0,.35));}
-.today-card .k,.today-card .v,.today-card .l{margin-right:72px;}
+/* 오늘 카드가 뜨면 캐릭터는 카드 안 하나만 둔다. 위쪽 큰 캐릭터(210px)와 카드 모서리 캐릭터(70px)가 크기가 따로 놀았다 */
+.hero2:has(.today-card) .hero-bosal{display:none;}
+.hero2:has(.today-card) .hero-h,.hero2:has(.today-card) .hero-sub{padding-right:0;}
+.today-card{position:relative;}.tc-bosal{position:absolute;right:12px;top:12px;height:96px;width:auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));}
+.today-card .k,.today-card .v,.today-card .l{margin-right:78px;}
+@media (min-width:760px){.tc-bosal{height:124px;right:26px;top:14px;}.today-card .k,.today-card .v,.today-card .l{margin-right:130px;}}
+/* 라이트/다크 버튼 — 지금 테마의 반대를 보여 준다 */
+.theme-tg{font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--surface);border:1px solid var(--line-2);border-radius:999px;padding:6px 12px;cursor:pointer;line-height:1.2;}
+.theme-tg:hover{border-color:var(--fun);}
+:root[data-theme="dark"] .theme-tg .tg-d,:root:not([data-theme="dark"]) .theme-tg .tg-l{display:none;}
+.logo-row .theme-tg{margin-left:12px;}
+.foot-theme{grid-column:1/-1;margin-top:6px;}
 .sect-bosal{width:46px;align-self:flex-end;margin-bottom:-4px;}
 .situ a:has(.situ-bosal){display:flex;align-items:center;gap:12px;}.situ .situ-bosal{width:52px;flex:none;}
 .dc-bosal{width:54px;flex:none;}

@@ -16,7 +16,8 @@
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;
     background-image:linear-gradient(rgba(42,68,198,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(42,68,198,.045) 1px,transparent 1px);
     background-size:28px 28px;}
-  @media (prefers-color-scheme:dark){body{background-image:linear-gradient(rgba(147,164,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(147,164,255,.05) 1px,transparent 1px);}}
+  :root[data-theme="dark"]{color-scheme:dark;}
+  :root[data-theme="dark"] body{background-image:linear-gradient(rgba(147,164,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(147,164,255,.05) 1px,transparent 1px);}
   .wrap{max-width:1180px;margin:0 auto;padding:30px 22px 60px;}
   /* 도구 페이지: 본문 + 우측 레일 (데스크톱) */
   .shell{display:grid;grid-template-columns:minmax(0,1fr);gap:26px;}
