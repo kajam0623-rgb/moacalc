@@ -426,6 +426,7 @@
   :root[data-theme="dark"] .yt-인연{color:#e59ac6;} :root[data-theme="dark"] .yt-이동{color:#8cc4ee;} :root[data-theme="dark"] .yt-일,:root[data-theme="dark"] .yt-돈{color:#e6b25a;}
   :root[data-theme="dark"] .yt-문서{color:#8fd1a8;} :root[data-theme="dark"] .yt-지출{color:#f0a08e;}
   .sj-synth{border:1.5px solid #E6B25A;border-radius:14px;padding:14px 16px;background:var(--surface);}
+  .sj-hour{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px;background:var(--surface);}
   .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}

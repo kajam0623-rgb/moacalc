@@ -254,7 +254,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 풀이: 일간 결 10 · 이기는 방식 10", arr("STYLE")+"/"+arr("WIN"), "10/10");
   const stg = sj.slice(sj.indexOf("var STAGE={"), sj.indexOf("};", sj.indexOf("var STAGE={")));
   t("사주 종합 풀이: 격국 무대 십성 10개", (stg.match(/"[^"]+":/g) || []).length, 10);
-  t("사주 종합 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+synth+glance"), true);
+  t("사주 종합 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+synth+hourSec()+glance"), true);
   t("인생 시기표 영역 표시·앞으로 10년 요약 배선", sj.includes("yr-tags") && sj.includes("planTxt") && sj.includes('TAGS=["인연","이동","일","문서","돈","지출","집안"]'), true);
 }
 
@@ -273,6 +273,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 원고는 보살 말투", JSON.stringify(SY).match(/습니다|합니다|입니다|하세요|십시오/g), null);
   t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("태어난 시각이 재물·애정·시기·한눈에 풀이에 들어간다", ["HOUR_MONEY[hTg]", "HOUR_LOVE[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —"].every(x => toolBlock("saju").includes(x)), true);
+  t("태어난 시각 칸이 종합 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+synth+hourSec()+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
 
