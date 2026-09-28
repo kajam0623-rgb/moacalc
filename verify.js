@@ -283,6 +283,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 원고는 보살 말투", JSON.stringify(SY).match(/습니다|합니다|입니다|하세요|십시오/g), null);
   t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("태어난 시각이 재물·애정·시기·한눈에 풀이에 들어간다", ["HOUR_MONEY[hTg]", "HOUR_LOVE[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —"].every(x => toolBlock("saju").includes(x)), true);
+  t("홈 h1에 title 검색어(무료사주·사주풀이·오늘의 운세·궁합·타로)", (h => ["무료사주","사주풀이","오늘의 운세","궁합","타로"].every(k => h.includes(k)))((bs.match(/<h1 class="hero-h">([\s\S]*?)<\/h1>/) || ["",""])[1].replace(/&nbsp;/g, " ")), true);
   t("생년월일·시각·성별·이름을 저장하지도 읽지도 않는다", !/loadPrefs\(\)\.(birth|partnerBirth|gender|partnerGender|name|birthHour|birthTime)\b/.test(src) && !/savePrefs\(\{[^}]*\b(birth|gender|name|partner)/.test(src) && !/c\.birth=|\.birth;\}catch/.test(bs), true);
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
