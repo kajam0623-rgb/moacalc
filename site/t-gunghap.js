@@ -4,7 +4,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
     // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
     (function(){var g=loadPrefs().gender==="m"?"m":"f",pg=loadPrefs().partnerGender||(g==="m"?"f":"m");
       function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}
-      function hr(id){return '<select id="'+id+'"><option value="">모름</option>'+SIJIN.map(function(x,i){return '<option value="'+(i*2)+'">'+x[0]+' ('+x[1]+')</option>';}).join("")+'</select>';}
+      function hr(id){return '<select id="'+id+'"><option value="">모름</option>'+sjHourOpts(-1)+'</select>';}
       return '<div class="r2" style="margin-top:10px"><div><label>나의 성별</label>'+sel("ga",g)+'</div><div><label>상대의 성별</label>'+sel("gb",pg)+'</div></div>'+
         '<div class="r2" style="margin-top:10px"><div><label>나의 태어난 시각 (선택)</label>'+hr("ha")+'</div><div><label>상대의 태어난 시각 (선택)</label>'+hr("hb")+'</div></div>';})()+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+

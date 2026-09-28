@@ -43,10 +43,11 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="'+(loadPrefs().birth||"1990-03-15")+'"></div>'+
     '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
     // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다. 저장돼 있던 정각 값은 그 시각이 속한 시진으로 옮긴다
-    (function(){var bh=loadPrefs().birthHour,sv=(bh==null||bh==="")?-1:Math.floor(((+bh*60+30)%1440)/120)*2;
-      return SIJIN.map(function(x,i){return '<option value="'+(i*2)+'"'+(i*2===sv?' selected':'')+'>'+x[0]+' ('+x[1]+')</option>';}).join("");})()+'</select></div></div>'+
+    (function(){var bh=loadPrefs().birthHour,sv=(bh==null||bh==="")?-1:bh==="23"?23:Math.floor(((+bh*60+30)%1440)/120)*2;
+      return sjHourOpts(sv);})()+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m"'+(loadPrefs().gender==="f"?"":" selected")+'>남</option><option value="f"'+(loadPrefs().gender==="f"?" selected":"")+'>여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value="'+escH(loadPrefs().birthTime||"")+'"></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
     '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value="'+escH(loadPrefs().name||"")+'"></div>'+
@@ -67,27 +68,36 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
+    /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
+       지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
+    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=el.querySelector("#tm").value,tv=el.querySelector("#t").value;
+      if(tm&&y){var sh=krClockShift(y,mo,d).min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
+        return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,exact:tm};}
+      var h=tv===""?null:+tv;return {y:y,mo:mo,d:d,h:h,mi:h==null?0:30,sh:0,exact:""};}
+    // 정확한 시각을 적으면 시진 칸도 그 시각(표준시)이 속한 시진으로 맞춰 보여 준다
+    function syncT(){var B=birthIn();if(!B.exact)return;var m=B.h*60+B.mi;el.querySelector("#t").value=m>=1410?"23":String(Math.floor(((m+30)%1440)/120)*2);}
     function comboKey(){var dv=el.querySelector("#d").value.split("-");if(dv.length<3||!+dv[0])return "";
-      var tv=el.querySelector("#t").value,h=tv===""?null:+tv,pp=sjPillars(+dv[0],+dv[1],+dv[2],h,h==null?0:30,el.querySelector("#c").value==="1");
+      var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1");
       return ILGAN_EN[pp.d.s]+"-"+TG_EN[sjTenGod(pp.d.s,SJ_BMAIN[pp.m.b])];}
     function prefetch(){var k=comboKey();if(!k||k in COMBO)return;COMBO[k]=null;
       fetch("sj/"+k+".json").then(function(r){return r.ok?r.json():null;}).then(function(j){COMBO[k]=j;}).catch(function(){delete COMBO[k];});}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
-      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,gender:el.querySelector("#g").value,name:nm});
+      syncT();
+      savePrefs({birth:el.querySelector("#d").value,birthHour:el.querySelector("#t").value,birthTime:el.querySelector("#tm").value,gender:el.querySelector("#g").value,name:nm});
       track("fortune_view",{tool:"saju"});
-      var tv=el.querySelector("#t").value,h=tv===""?null:+tv,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
+      var B=birthIn(),h=B.h,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
-      var p=sjPillars(y,mo,d,h,h==null?0:30,corr),ds=p.d.s;
+      var p=sjPillars(B.y,B.mo,B.d,h,B.mi,corr),ds=p.d.s;
       // 오행 카운트
       var cnt=[0,0,0,0,0],chars=[p.y,p.m,p.d];if(p.h)chars.push(p.h);
       chars.forEach(function(c){cnt[SJ_ES[c.s]]++;cnt[SJ_EB[c.b]]++;});
       var tot=cnt.reduce(function(a,b){return a+b;},0);
       var mx=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],mn=SJ_EL[cnt.indexOf(Math.min.apply(null,cnt))];
       // 대운
-      var fwd=(p.y.s%2===0)===male,jd0=sjJdKST(y,mo,d,h==null?12:h,0);
+      var fwd=(p.y.s%2===0)===male,jd0=sjJdKST(B.y,B.mo,B.d,h==null?12:h,h==null?0:B.mi);
       function mIdxOf(jd){return Math.floor((((sjSunLong(jd)-315)%360)+360)%360/30);}
       var base=mIdxOf(jd0),days=30;
       for(var t=0.25;t<=32;t+=0.25){if(mIdxOf(jd0+(fwd?t:-t))!==base){days=t;break;}}
@@ -546,7 +556,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
         '<p style="color:var(--muted);font-size:12.5px;margin-top:4px">10년마다 바뀌는 큰 흐름입니다. 태어난 날부터 절기까지의 날수로 시작 나이를 정하며, 여기서는 8개 구간을 보여드립니다. 괄호 안은 그 구간 천간의 오행입니다.</p></div>'+
-        sjBasisHtml({y:y,mo:mo,d:d,h:h,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
+        sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
         sjAiHtml()+
         closing+
         shareBtn()+
@@ -589,4 +599,5 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
-    el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);prefetch();}});
+    el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);
+    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});prefetch();}});

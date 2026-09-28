@@ -60,7 +60,17 @@ for (const y of [2000, 2026, 2030]) {
 // 외부 대조 — 포스텔러 만세력 2026년 9월 표시값 (스크린샷)
 t("2026 백로 날짜", fmtT(kst(sjTermJd(2026, 165))).slice(0,10), "2026-09-07");
 t("2026 추분 날짜", fmtT(kst(sjTermJd(2026, 180))).slice(0,10), "2026-09-23");
-// 시각은 ±5분 허용 (Meeus 근사)
+// 홍콩천문대 공식 절기표(영국 HMNAO·미국 USNO 자료, HKT=KST-1) — ±1분
+for (const [y, deg, want, nm] of [[2026, 315, "2026-02-04 05:02", "입춘"], [2026, 45, "2026-05-05 20:49", "입하"], [2027, 45, "2027-05-06 02:25", "입하"], [2028, 270, "2028-12-21 17:20", "동지"]]) {
+  const o = kst(sjTermJd(y, deg)), w = want.match(/(\d+)-(\d+)-(\d+) (\d+):(\d+)/).map(Number);
+  const dm = (sjJdn(o.y, o.mo, o.d) - sjJdn(w[1], w[2], w[3])) * 1440 + (o.h * 60 + o.mi) - (w[4] * 60 + w[5]);
+  t(`${y} ${nm} 공식 ${want} ±1분`, Math.abs(dm) <= 1, true);
+}
+// 밤 자시: 1990-03-15(기묘일) 23:30 → 시주 병자(다음 날 경진일의 자시), 새벽 00:30 → 갑자
+t("밤 자시 시 천간은 다음 날 기준(병자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 23, 30, true).h), "2-0");
+t("새벽 자시는 그날 기준(갑자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 0, 30, true).h), "0-0");
+t("정확한 시각 칸이 서머타임·UTC+8:30을 되돌려 쓴다", ["function birthIn()", "krClockShift(y,mo,d).min", 'id="tm"', "sjPillars(B.y,B.mo,B.d,h,B.mi,corr)"].every(x => src.includes(x)), true);
+// 시각은 ±5분 허용 (포스텔러 화면값은 분 단위)
 const bkMin = (o => o.h*60+o.mi)(kst(sjTermJd(2026, 165)));
 t("2026 백로 시각 23:40 ±5분", Math.abs(bkMin - (23*60+40)) <= 5, true);
 
@@ -390,7 +400,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
