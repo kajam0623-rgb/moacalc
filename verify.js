@@ -271,8 +271,12 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const SY = require("./content_saju_synth.js"), GRPS = ["비겁","식상","재성","관성","인성"], SINS = ["천을귀인","문창귀인","도화살","역마살","화개살","양인살","백호대살","괴강살"];
   t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
   t("사주 종합 원고는 보살 말투", JSON.stringify(SY).match(/습니다|합니다|입니다|하세요|십시오/g), null);
+  t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
+
+{ const mm = (y, m) => { const p = sjPillars(y, m, 20, 12, 0, false).m; return p.s + "-" + p.b; };
+  t("달마다 흐름 월주: 2026-10 무술 · 2027-01 신축 · 2026-03 신묘", [mm(2026, 10), mm(2027, 1), mm(2026, 3)].join(","), "4-10,7-1,7-3"); }
 
 // ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
 {

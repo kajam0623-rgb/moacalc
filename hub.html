@@ -2331,7 +2331,8 @@
       var TAGS=["인연","이동","일","문서","돈","지출"];
       var TAG_L={인연:"인연이 움직이는 해",이동:"자리나 집이 바뀌기 쉬운 해",일:"일과 자리에 변화가 오는 해",문서:"계약·시험·문서에 힘이 실리는 해",
         돈:st.strong?"돈이 크게 도는 해":"돈이 크게 들고 나는 해(쥐는 힘이 약하니 지키는 쪽으로)",지출:"새는 돈을 조심할 해"};
-      function yTags(yy){var yp=sjPillars(yy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),gg=grp(tg),yb=yp.b,T=[];
+      function yTags(yy){var yp=sjPillars(yy,7,1,null,0,false).y;return tagsFor(yp.s,yp.b);}
+      function tagsFor(ps,yb){var tg=sjTenGod(ds,ps),gg=grp(tg),T=[];
         if(gg===(male?"재성":"관성")||sjYukhap(p.d.b)===yb||yb===DH)T.push("인연");
         if(Math.abs(yb-p.d.b)===6||Math.abs(yb-p.m.b)===6||YM.indexOf(yb)>=0)T.push("이동");
         if(gg==="관성"||tg==="상관")T.push("일");
@@ -2515,6 +2516,40 @@
           (p.h?'':'<br><br>태어난 시각을 모르니 그 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
           '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 태어난 날의 하늘 글자는 자기 자신이라 아래 글자만 읽습니다.</span></p></div>';}
       var img=ILG_IMG[ds],need=st.strong?YONG_OUT[yEl]:YONG_IN[yEl];
+      /* 달마다 흐름. 사주의 달은 절기(매달 4~8일께)에 바뀐다 — 각 양력 달 20일의 월주를 그 달로 본다.
+         그달 하늘 글자가 자네에게 어떤 십성인지, 용신을 받쳐 주는지, 그달 지지가 일지와 충·합인지, 해마다와 같은 영역 표시 */
+      function monthSec(){
+        var MTG={"비견":["제 힘으로 밀고 나가는 달일세.","혼자 벌인 일에도 손이 붙으니 미뤄 둔 걸 시작하게.","고집이 부딪히기 쉬우니 같이 하는 일은 몫부터 나눠 두게."],
+          "겁재":["사람과 돈이 함께 들썩이는 달이야.","경쟁이 붙어도 밀리지 않으니 붙을 판엔 붙어 보게.","빌려주거나 대신 내는 돈이 새기 쉬우니 지갑을 한 번 더 닫게."],
+          "식신":["만들고 먹고 누리는 달일세.","손에서 나온 것이 인정받으니 결과물을 내보이게.","즐기는 데 돈과 시간이 흘러가기 쉬우니 한도를 정해 두게."],
+          "상관":["말과 재주가 튀는 달이야.","새 생각을 꺼내면 반응이 오니 제안서를 내 보게.","윗사람과 말이 엇갈리기 쉬우니 옳은 말도 한 박자 늦춰 하게."],
+          "편재":["돈과 사람이 크게 오가는 달일세.","들어오는 판이 크니 발 빠르게 움직여 보게.","크게 벌이기보다 계산서부터 다시 맞춰 보게."],
+          "정재":["차곡차곡 쌓는 달이야.","성실히 한 만큼 남으니 저축을 한 칸 늘려 보게.","작은 지출이 모여 새니 가계부를 한 번 들여다보게."],
+          "편관":["일이 몰아치고 시험받는 달일세.","버티면 급이 오르는 달이니 어려운 일을 맡아 보게.","무리하면 몸이 먼저 지치니 약속을 줄이고 잠을 지키게."],
+          "정관":["자리와 이름이 드러나는 달이야.","인정받을 기회가 오니 맡은 일을 반듯하게 마무리하게.","규칙과 절차에 걸리기 쉬우니 서류를 꼼꼼히 챙기게."],
+          "편인":["생각이 깊어지고 방향을 바꾸고 싶은 달일세.","새로 배우는 데 속도가 붙으니 공부를 시작해 보게.","마음이 이리저리 흔들리니 큰 결정은 다음 달로 미루게."],
+          "정인":["도움과 문서가 드는 달이야.","어른의 조언과 계약에 볕이 드니 도장 찍을 일은 이달에 하게.","기대기만 하면 늘어지니 받은 도움을 바로 실행으로 옮기게."]};
+        var now=new Date(),rows="",score=[];
+        for(var i=0;i<12;i++){
+          var dt=new Date(now.getFullYear(),now.getMonth()+i,20),Y=dt.getFullYear(),M=dt.getMonth()+1;
+          var mp=sjPillars(Y,M,20,12,0,false).m,tg=sjTenGod(ds,mp.s),el=SJ_EL[SJ_ES[mp.s]];
+          var fit=el===yEl?2:el===y2El?1:0,T=tagsFor(mp.s,mp.b);
+          var chung=Math.abs(mp.b-p.d.b)===6,hap=sjYukhap(p.d.b)===mp.b||(mp.b%4===p.d.b%4&&mp.b!==p.d.b);
+          var mt=sjMonthTerms(sjJdKST(Y,M,20,12,0)),st0=sjKst(mt.prev).replace(/^\d+년 /,"").replace(/ \d\d:\d\d$/,"");
+          var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
+          score.push({m:M,y:Y,sc:sc});
+          rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
+            '<p>'+MTG[tg][0]+' '+(fit===2?MTG[tg][1]:fit===1?"보조로 쓰는 기운이 붙어 한결 수월하네. "+MTG[tg][1]:MTG[tg][2])+
+            (chung?' 태어난 날 글자와 부딪히는 달이라 이동과 다툼과 몸 관리에 한 번 더 조심하게.':hap?' 태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀리네.':'')+'</p>'+
+            (T.length?'<div class="yr-tags">'+T.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+'</div>';}
+        var srt=score.slice().sort(function(a,b){return b.sc-a.sc;});
+        var best=srt.filter(function(x){return x.sc>=3;}).slice(0,3),worst=srt.filter(function(x){return x.sc<0;}).reverse().slice(0,2);
+        var nm=function(a){return a.map(function(x){return x.m+"월";}).join("·");};
+        var head=best.length?'앞으로 열두 달 가운데 힘이 실리는 달은 <b>'+nm(best)+'</b>'+(worst.length?', 몸과 돈을 아껴야 할 달은 <b>'+nm(worst)+'</b>일세.':'일세.')
+          :worst.length?'앞으로 열두 달은 크게 치고 나갈 달보다 버틸 달이 먼저야. 특히 <b>'+nm(worst)+'</b>은 몸과 돈을 아끼게.':'앞으로 열두 달은 크게 튀는 달 없이 고르게 가네.';
+        return '<div class="sj-sec sj-years"><h3>달마다 흐름 — '+score[0].y+'년 '+score[0].m+'월부터 열두 달</h3><p>'+head+
+          '<br><span style="color:var(--muted);font-size:12.5px">사주의 달은 양력 1일이 아니라 절기(매달 4~8일께)에 바뀝니다. 각 달의 하늘 글자가 나를 뜻하는 글자에게 어떤 기운인지, 필요한 기운(용신)과 맞는지, 그 달 글자가 태어난 날 글자와 부딪히거나 붙는지로 봅니다.</span></p>'+
+          '<div class="yrs">'+rows+'</div></div>';}
       /* 종합 풀이. 칸마다 따로 계산해 "치열한 자리에서 능력"(격국)과 "조용한 환경이 맞다"(직업)가 한 장에 부딪혔다.
          일간은 싸우는 방식, 격국은 서게 되는 무대로 나눠 한 문장으로 묶는다(2026-09 감사) */
       var STYLE=["곧게 밀고 올라가는","부드럽게 감고 뻗어 가는","환하게 드러내 앞장서는","곁을 비추며 사람을 챙기는","묵직하게 버텨 믿음을 쌓는",
@@ -2591,6 +2626,7 @@
         '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>'+gTxt+'<br><br>'+
         '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
         '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
+        monthSec()+
         seSec+
         (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var rows="";
