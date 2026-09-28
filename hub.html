@@ -13,7 +13,8 @@
   :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
   :root[data-theme="dark"]{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;--muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}
   *{margin:0;box-sizing:border-box;}
-  body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;
+  /* 한글은 낱말 중간에서 끊지 않는다("않 / 으면" 같은 줄바꿈). 긴 숫자·주소는 넘치지 않게 끊는다 */
+  body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;
     background-image:linear-gradient(rgba(42,68,198,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(42,68,198,.045) 1px,transparent 1px);
     background-size:28px 28px;}
   :root[data-theme="dark"]{color-scheme:dark;}
