@@ -24,7 +24,8 @@ const ILGAN_PAGES = require("./content_ilgan.js");     // 일간 10종 — 사�
 const SIPSEONG_PAGES = require("./content_sipseong.js"); // 십성 10종 — 나와 다른 글자의 관계
 const TAROT_PAGES = require("./content_tarot.js");
 const DREAM = require("./content_dream.js");
-const TOJEONG = require("./content_tojeong.js");      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
+const TOJEONG = require("./content_tojeong.js");
+const SAJU_COMBO = require("./content_saju_combo.js");  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
@@ -2603,6 +2604,8 @@ fs.writeFileSync(path.join(OUT,"index.html"), indexPage());
 fs.writeFileSync(path.join(OUT,"dict.html"), dictPage());
 fs.writeFileSync(path.join(OUT,"diary.html"), diaryPage());
 fs.writeFileSync(path.join(OUT,"dream.html"), dreamHubPage());
+fs.mkdirSync(path.join(OUT,"sj"),{recursive:true});
+Object.keys(SAJU_COMBO).forEach(il=>Object.keys(SAJU_COMBO[il]).forEach(tg=>fs.writeFileSync(path.join(OUT,"sj",il+"-"+tg+".json"), JSON.stringify(SAJU_COMBO[il][tg]))));
 fs.mkdirSync(path.join(OUT,"tj"),{recursive:true});
 Object.keys(TOJEONG).forEach(k=>fs.writeFileSync(path.join(OUT,"tj",k+".json"), JSON.stringify(TOJEONG[k])));
 DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCatPage(c)));

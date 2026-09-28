@@ -2239,6 +2239,14 @@
       return '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_ES[s]]+'">'+SJ_SH[s]+'</div><div class="sj-ko">'+SJ_S[s]+' · '+SJ_EL[SJ_ES[s]]+'</div><div class="sj-tg">'+tg1+'</div></div>'+
       '<div class="sj-cell"><div class="sj-han el-'+SJ_EL[SJ_EB[b]]+'">'+SJ_BH[b]+'</div><div class="sj-ko">'+SJ_B[b]+' · '+SJ_EL[SJ_EB[b]]+'</div><div class="sj-tg">'+tg2+'</div>'+
       '<div class="sj-tg" style="color:var(--muted)">'+sjUnseong(ds,b)+'</div></div>';}
+    // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
+    // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
+    var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
+    function comboKey(){var dv=el.querySelector("#d").value.split("-");if(dv.length<3||!+dv[0])return "";
+      var tv=el.querySelector("#t").value,h=tv===""?null:+tv,pp=sjPillars(+dv[0],+dv[1],+dv[2],h,h==null?0:30,el.querySelector("#c").value==="1");
+      return ILGAN_EN[pp.d.s]+"-"+TG_EN[sjTenGod(pp.d.s,SJ_BMAIN[pp.m.b])];}
+    function prefetch(){var k=comboKey();if(!k||k in COMBO)return;COMBO[k]=null;
+      fetch("sj/"+k+".json").then(function(r){return r.ok?r.json():null;}).then(function(j){COMBO[k]=j;}).catch(function(){delete COMBO[k];});}
     function go(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
@@ -2309,12 +2317,35 @@
         인성:"배우고 쌓는 시기라 돈은 잔잔하네. 지금 준비해 두면 다음 10년에 그대로 쓰네."};
       // 일간×강약 문단(content_saju_ilgan.js). 같은 버킷의 두 사람이 문단 절반을 공유하던 것을 가른다(2026-09 감사: 196문장 중 97 동일)
       var ILG=(typeof SAJU_ILG!=="undefined")?SAJU_ILG[["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"][ds]]:null,SK=st.strong?"strong":"weak";
-      var ilg=function(a){return ILG&&ILG[a]?P+ILG[a][SK]:"";};
+      var CB=COMBO[ILGAN_EN[ds]+"-"+TG_EN[wolTg]]||null;
+      var ilg=function(a){return CB&&CB[a]?P+CB[a]:ILG&&ILG[a]?P+ILG[a][SK]:"";};
+      /* 영역별 시기 — 해마다 그해 글자가 자네에게 무엇이 되는지로 인연·이동·일·문서·돈·지출을 표시한다.
+         이동: 그해 지지가 일지·월지와 충이거나 일지·연지 기준 역마 / 인연: 배우자 별(남 재성·여 관성)의 해, 일지와 육합, 도화
+         일: 관성·상관의 해 / 문서: 인성·편관의 해 / 돈: 재성의 해 / 지출: 겁재의 해.
+         인생 시기표와 운세 네 칸이 같은 계산을 쓴다 — 운세 칸에는 사람마다 다른 "가장 가까운 해"가 들어간다 */
+      var nowY=new Date().getFullYear();
+      var YM=[SJ_YEOKMA[sjSamhap(p.d.b)],SJ_YEOKMA[sjSamhap(p.y.b)]],DH=SJ_DOHWA[sjSamhap(p.d.b)];
+      var TAGS=["인연","이동","일","문서","돈","지출"];
+      var TAG_L={인연:"인연이 움직이는 해",이동:"자리나 집이 바뀌기 쉬운 해",일:"일과 자리에 변화가 오는 해",문서:"계약·시험·문서에 힘이 실리는 해",
+        돈:st.strong?"돈이 크게 도는 해":"돈이 크게 들고 나는 해(쥐는 힘이 약하니 지키는 쪽으로)",지출:"새는 돈을 조심할 해"};
+      function yTags(yy){var yp=sjPillars(yy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),gg=grp(tg),yb=yp.b,T=[];
+        if(gg===(male?"재성":"관성")||sjYukhap(p.d.b)===yb||yb===DH)T.push("인연");
+        if(Math.abs(yb-p.d.b)===6||Math.abs(yb-p.m.b)===6||YM.indexOf(yb)>=0)T.push("이동");
+        if(gg==="관성"||tg==="상관")T.push("일");
+        if(gg==="인성"||tg==="편관")T.push("문서");
+        if(gg==="재성")T.push("돈");
+        if(tg==="겁재")T.push("지출");
+        return T;}
+      var plan={};TAGS.forEach(function(t){plan[t]=[];});
+      for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){plan[t].push(fy);});}
+      var nearY=function(t){var v=plan[t][0];return v?(v===nowY?"올해("+v+"년)":v+"년"):"";};
       var money=moneyBase+ilg("money")+P+
         "사주 여덟 글자 가운데 돈 기운은 "+(G.재성?G.재성+"자리일세. ":"한 자리도 없네. ")+(st.strong
           ?"타고난 힘이 센 편이라 들어온 돈을 지킬 그릇은 되네. 기회가 오면 손을 뻗어도 좋아."
           :"다만 타고난 힘이 약한 편이라 큰돈을 혼자 감당하기엔 벅차네. 크게 벌이기보다 새는 돈부터 막게. 빚과 보증은 특히 조심하게.")+P+
-        "지금 자네는 10년 흐름으로 보면 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있네. "+DU_MONEY[duG];
+        "지금 자네는 10년 흐름으로 보면 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있네. "+DU_MONEY[duG]+
+        (nearY("돈")?" 해마다 드는 운으로 보면 돈이 크게 움직이는 가장 가까운 해는 <b>"+nearY("돈")+"</b>일세.":"")+
+        (nearY("지출")?" 새는 돈을 특히 조심할 해는 <b>"+nearY("지출")+"</b>이야.":"");
       var jobBase=G.관성===0?"일·자리 기운이 드러나 있지 않네. 남이 정한 규칙에 매이면 답답해서 오래 못 버티는 사람이야. <b>전문 기술이든 프리랜서든 자기 사업이든</b>, 스스로 규칙을 정하는 자리에서 실력이 나오네."
         :G.관성>=3?"일·자리 기운이 <b>강하네</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 크지. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아."
         :G.식상>=3?"재주와 표현 기운이 <b>발달했네</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이야. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞네."
@@ -2322,25 +2353,23 @@
       var jobLean=G.식상>G.관성?"직접 만들어 내놓는 힘이 더 강한":(G.식상<G.관성?"맡은 자리를 지키는 힘이 더 강한":"두 힘이 비슷한");
       var job=jobBase+ilg("job")+P+
         "사주에서 일을 맡아 지키는 힘은 "+G.관성+", 만들어 내놓는 힘은 "+G.식상+", 배워서 쌓는 힘은 "+G.인성+"일세. 자네는 <b>"+jobLean+"</b> 사람이야."+P+
-        "틀(격국)로 보면 자네가 서게 되는 자리는 <b>"+STAGE[wolTg]+"</b>이고, 필요한 기운("+yEl+")으로 보면 "+Y.job+" 쪽이 결에 맞네. 두 쪽이 겹치는 일을 고르면 오래 가네."+P+
-        (st.strong?"타고난 힘이 센 편이라 <b>자기 이름을 걸고 하는 일</b>에서 힘이 나네. 남 밑에 오래 눌려 있으면 못 견디니, 결정권이 있는 자리로 옮겨 갈수록 잘 풀려."
-          :"타고난 힘이 약한 편이라 <b>기댈 수 있는 조직이나 선배가 있는 자리</b>가 낫네. 혼자 다 짊어지면 금세 지치지. 좋은 조직과 스승을 만나면 실력이 두 배로 서네.");
+        "틀(격국)로 보면 자네가 서게 되는 자리는 <b>"+STAGE[wolTg]+"</b>이고, 필요한 기운("+yEl+")으로 보면 "+Y.job+" 쪽이 결에 맞네."+
+        (nearY("일")?P+"일과 자리에 변화가 오는 가장 가까운 해는 <b>"+nearY("일")+"</b>일세. 이직이나 승진을 겨눈다면 "+(plan.일[0]===nowY?"지금부터":"그해에 맞춰")+" 준비해 두게."
+          +(nearY("문서")?" 시험·계약·자격 쪽은 <b>"+nearY("문서")+"</b>에 힘이 실리네.":""):"");
       // 배우자를 뜻하는 기운: 남자는 돈 기운(재성), 여자는 일·자리 기운(관성)
       var spouseN=male?G.재성:G.관성,spouseG=male?"재성":"관성",spouseWord=male?"돈 기운":"일·자리 기운";
       var loveBase=spouseN===0?"배우자를 뜻하는 기운("+spouseWord+")이 사주에 드러나 있지 않네. 인연이 늦게 오거나 조용히 오는 편이야. 조건을 따지기보다 <b>같이 있으면 편한 사람</b>을 기준으로 삼게."
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주일세. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하게."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주일세. 생활 리듬이 맞는 사람과 오래가네.";
       var love=loveBase+ilg("love")+P+
-        "태어난 날의 아래 글자는 배우자 자리를 뜻하네. 자네는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 그 자리에 있어. "+(UN_PLAIN[ilUn]||"")+P+
-        "곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세. 조건보다 같이 있을 때 숨이 트이는지를 보게."+P+
+        "배우자 자리(태어난 날의 아래 글자)에는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어. "+(UN_PLAIN[ilUn]||"")+" 곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세."+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기일세. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워. 사람 만나는 자리에 자주 나가 보게."
-          :"인연이 곧바로 움직이는 시기는 아닐세. 조급해하기보다 자네 생활을 다져 두면 다음 흐름이 사람을 데려오네.");
-      var health=(ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
+          :"큰 흐름으로는 인연이 곧바로 움직이는 구간이 아닐세.")+
+        (nearY("인연")?" 해마다 드는 운으로 보면 사람 인연이 움직이는 가장 가까운 해는 <b>"+nearY("인연")+"</b>일세"+(plan.인연[1]?", 그다음은 "+plan.인연[1]+"년이야.":"."):" 앞으로 10년 안에는 해마다 드는 운에서도 인연이 크게 튀는 해가 없으니, 사람 만나는 자리를 자네가 먼저 만들어야 하네.");
+      var health=(CB&&CB.health?CB.health+P:ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
         "반대로 "+mx+" 기운은 넘치는 편일세. 한쪽으로 몰린 기운도 무리하면 표가 나니 "+WEAK[mx]+" 쪽도 함께 살펴 두게."+P+
-        "몸이 편해지는 계절은 "+Y.season+"일세. 그때 몸을 많이 움직여 두면 한 해를 버틸 힘이 쌓이네."+P+
-        (st.strong?"타고난 힘이 센 편이라 안에 쌓아 두면 탈이 나네. 땀 흘리는 운동으로 밖으로 덜어내는 게 자네한텐 약일세."
-          :"타고난 힘이 약한 편이라 한번 몰아치면 오래 못 가네. 길게 무리하기보다 짧게 자주 쉬게. 잠이 제일 큰 보약일세.")+P+
+        "몸이 편해지는 계절은 "+Y.season+"일세."+P+
         "몸이 계속 불편하면 사주보다 병원이 먼저일세.";
       var DUTXT={"비견":"자립과 동료의 시기일세. 제 힘으로 밀고 나가기 좋으나 동업은 경계를 분명히 하게.","겁재":"경쟁과 지출의 시기야. 사람은 얻되 돈은 새기 쉬우니 관리가 핵심일세.","식신":"표현과 결실의 시기일세. 만들고 낳는 일에 볕이 들고 몸도 편안하네.","상관":"변화와 도전의 시기야. 틀을 깨는 힘이 강하나 윗사람과의 마찰은 조심하게.","편재":"큰돈이 오가는 시기일세. 기회가 많은 만큼 흔들림도 크네.","정재":"안정과 축적의 시기야. 성실함이 그대로 자산이 되네.","편관":"시험과 승부의 시기일세. 부담이 크지만 통과하면 급이 오르네.","정관":"명예와 자리의 시기야. 승진이든 합격이든 공적인 인정운이 밝네.","편인":"공부와 전환의 시기일세. 속으로 자라는 때이니 결정은 좀 묵혔다 내리게.","정인":"귀인과 문서의 시기야. 어른과 기관의 도움, 그리고 배움이 따르네."};
       /* 대운 구간별 해설. 간지만 늘어놓으면 자기 구간을 못 찾는다.
@@ -2541,9 +2570,9 @@
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
-        '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
+        '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
-                  :'자네는 힘이 얇으니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.')+
+                  :'자네는 힘이 얇으니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
@@ -2563,24 +2592,10 @@
         '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         seSec+
         (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
-          var nowY=new Date().getFullYear(),rows="";
+          var rows="";
           /* 해마다 영역 표시. 한 줄 십성 풀이만으로는 "언제 무엇을"에 답이 안 됐다.
              이동: 그해 지지가 일지·월지와 충이거나 일지·연지 기준 역마 / 인연: 배우자 별(남 재성·여 관성)의 해, 일지와 육합, 도화
              일: 관성·상관의 해 / 문서: 인성·편관의 해 / 돈: 재성의 해 / 지출: 겁재의 해, 신약이 재성을 만나는 해 */
-          var YM=[SJ_YEOKMA[sjSamhap(p.d.b)],SJ_YEOKMA[sjSamhap(p.y.b)]],DH=SJ_DOHWA[sjSamhap(p.d.b)];
-          var TAGS=["인연","이동","일","문서","돈","지출"];
-          var TAG_L={인연:"인연이 움직이는 해",이동:"자리나 집이 바뀌기 쉬운 해",일:"일과 자리에 변화가 오는 해",문서:"계약·시험·문서에 힘이 실리는 해",
-            돈:st.strong?"돈이 크게 도는 해":"돈이 크게 들고 나는 해(쥐는 힘이 약하니 지키는 쪽으로)",지출:"새는 돈을 조심할 해"};
-          function yTags(yy){var yp=sjPillars(yy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),gg=grp(tg),yb=yp.b,T=[];
-            if(gg===(male?"재성":"관성")||sjYukhap(p.d.b)===yb||yb===DH)T.push("인연");
-            if(Math.abs(yb-p.d.b)===6||Math.abs(yb-p.m.b)===6||YM.indexOf(yb)>=0)T.push("이동");
-            if(gg==="관성"||tg==="상관")T.push("일");
-            if(gg==="인성"||tg==="편관")T.push("문서");
-            if(gg==="재성")T.push("돈");
-            if(tg==="겁재")T.push("지출");
-            return T;}
-          var plan={};TAGS.forEach(function(t){plan[t]=[];});
-          for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){plan[t].push(fy);});}
           var has=TAGS.filter(function(t){return plan[t].length;});
           var planTxt=has.length
             ?'앞으로 10년 가운데 '+TAG_L[has[0]].replace(/\(.*\)/,"")+'는 <b>'+plan[has[0]].join("·")+'년</b>일세.'+
@@ -2642,7 +2657,8 @@
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
-      "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");}},
+      "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
+    el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);prefetch();}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"보살에게 묻고 뽑는 타로",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],

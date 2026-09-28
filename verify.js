@@ -258,6 +258,16 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("인생 시기표 영역 표시·앞으로 10년 요약 배선", sj.includes("yr-tags") && sj.includes("planTxt") && sj.includes('TAGS=["인연","이동","일","문서","돈","지출"]'), true);
 }
 
+// ── 사주 조합 원고(일간×격국) — 같은 일간이면 같은 문단을 받던 것을 격국까지 갈라 쓴다 ──
+{
+  const CO = require("./content_saju_combo.js"), IL = ["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"];
+  const TGS = ["bigyeon","geopjae","siksin","sanggwan","pyeonjae","jeongjae","pyeongwan","jeonggwan","pyeonin","jeongin"], F = ["core","money","job","love","health"];
+  const cells = IL.flatMap(i => TGS.map(t => (CO[i] || {})[t]));
+  t("사주 조합 원고 100조합 × 5칸", cells.filter(c => c && F.every(f => typeof c[f] === "string" && c[f].replace(/\s/g, "").length >= 100)).length, 100);
+  t("사주 조합 원고는 보살 말투", cells.filter(c => c && JONDAE.test(F.map(f => c[f]).join(" "))).length, 0);
+  t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
+}
+
 // ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
 {
   const tjSrc = toolBlock("tojeong");
