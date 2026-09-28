@@ -247,6 +247,17 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t(`${id} 헤드라인이 점수 카드 위에 렌더`, s.indexOf("tf-hl")>0 && s.indexOf("tf-hl") < s.indexOf('class="out"'), true);
 });
 
+// ── 사주 종합 풀이·영역별 시기 (2026-09 평가: 칸마다 따로 놀고 "언제"가 없었다) ──
+{
+  const sj = toolBlock("saju");
+  const arr = n => { const i = sj.indexOf("var " + n + "=["); return i < 0 ? 0 : (sj.slice(i, sj.indexOf("];", i)).match(/"[^"]+"/g) || []).length; };
+  t("사주 종합 풀이: 일간 결 10 · 이기는 방식 10", arr("STYLE")+"/"+arr("WIN"), "10/10");
+  const stg = sj.slice(sj.indexOf("var STAGE={"), sj.indexOf("};", sj.indexOf("var STAGE={")));
+  t("사주 종합 풀이: 격국 무대 십성 10개", (stg.match(/"[^"]+":/g) || []).length, 10);
+  t("사주 종합 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+synth+glance"), true);
+  t("인생 시기표 영역 표시·앞으로 10년 요약 배선", sj.includes("yr-tags") && sj.includes("planTxt") && sj.includes('TAGS=["인연","이동","일","문서","돈","지출"]'), true);
+}
+
 // ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
 {
   const tjSrc = toolBlock("tojeong");

@@ -420,6 +420,14 @@
   .bujeok .m{margin-top:9px;font-size:12.5px;line-height:1.7;opacity:.82;}
   .bujeok.locked{background:var(--surface-2);color:var(--muted);border:1px dashed var(--line-2);}
   .tf-id{margin-top:16px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;color:var(--muted);letter-spacing:.08em;}
+  .yr-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;}
+  .yt{font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:999px;border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink);}
+  .yt-인연{color:#b0457f;border-color:#b0457f66;} .yt-이동{color:#2f7fb8;border-color:#2f7fb866;} .yt-일{color:#7a5a12;border-color:#b0862d88;}
+  .yt-문서{color:#3d8a5c;border-color:#3d8a5c66;} .yt-돈{color:#b0862d;border-color:#b0862d88;} .yt-지출{color:#c0563f;border-color:#c0563f66;}
+  :root[data-theme="dark"] .yt-인연{color:#e59ac6;} :root[data-theme="dark"] .yt-이동{color:#8cc4ee;} :root[data-theme="dark"] .yt-일,:root[data-theme="dark"] .yt-돈{color:#e6b25a;}
+  :root[data-theme="dark"] .yt-문서{color:#8fd1a8;} :root[data-theme="dark"] .yt-지출{color:#f0a08e;}
+  .sj-synth{border:1.5px solid #E6B25A;border-radius:14px;padding:14px 16px;background:var(--surface);}
+  .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
@@ -2277,6 +2285,10 @@
         묘:"창고에 넣어 두는 자리라 속마음을 꺼내 놓기까지 시간이 걸리네.",절:"끊기고 새로 이어지는 자리라 관계에 변화가 잦을 수 있으니 약속을 분명히 하게.",
         태:"새 생명이 깃드는 자리라 관계가 조심스럽게 시작되어 천천히 자라네.",양:"품에서 길러지는 자리라 보살핌을 주고받는 따뜻한 관계가 맞네."};
       chars.forEach(function(c,ci){if(ci!==2)G[grp(sjTenGod(ds,c.s))]++;G[grp(sjTenGod(ds,SJ_BMAIN[c.b]))]++;});
+      // 격국이 데려가는 무대 — 직업운과 종합 풀이가 같이 쓴다
+      var STAGE={"비견":"제 힘으로 서야 하는 자리","겁재":"사람과 경쟁이 붐비는 자리","식신":"무언가를 만들어 내놓는 자리","상관":"틀을 깨고 말로 승부하는 자리",
+        "편재":"돈과 사람이 크게 도는 판","정재":"살림과 숫자를 꼼꼼히 맡는 자리","편관":"압박이 세고 위기를 다루는 자리","정관":"규칙과 책임이 분명한 조직",
+        "편인":"남다른 기술과 연구를 파는 자리","정인":"배우고 가르치며 문서를 다루는 자리"};
       var WEAK={목:"간·담과 눈, 근육",화:"심장·소장과 혈액순환",토:"위장·비장 등 소화기",금:"폐·대장과 호흡기·피부",수:"신장·방광과 뼈·귀"};
       /* 운세 4종. 판정 한 줄로 끝내면 읽고 나서 남는 게 없다.
          [판정] · [왜 — 명식의 근거] · [그래서 — 용신의 처방] 세 토막으로 쓴다.
@@ -2285,6 +2297,8 @@
       // 운세 본문에서 "지금 어느 때인가"를 쓰려면 현재 대운이 먼저 있어야 한다
       var duNow=duList.filter(function(d){return d.age<=(new Date().getFullYear()-y+1);}).pop()||duList[0];
       var duG=grp(duNow.tg);   // 지금 대운이 어느 십성 무리인지
+      var DU_NAME={"비견":"자립과 동료","겁재":"경쟁과 지출","식신":"표현과 결실","상관":"변화와 도전","편재":"큰돈과 기회","정재":"안정과 축적","편관":"시험과 승부","정관":"명예와 자리","편인":"공부와 전환","정인":"귀인과 문서"};
+      var DUTXT_NAME=function(tg){return DU_NAME[tg];};
       var moneyBase=G.재성===0?"돈 기운이 사주에 드러나 있지 않네. 한 번에 큰돈을 노리기보다 <b>월급이나 정기 수입처럼 꾸준히 들어오는 길</b>을 만드는 게 맞아. 차곡차곡 모으는 쪽이 자네 체질일세."
         :G.재성>=3?"사주에 돈 기운이 <b>많네</b>. 돈 냄새를 잘 맡고 기회도 자주 오지. 다만 들어오는 만큼 나가기도 쉬우니, 자네한텐 버는 것보다 <b>관리하고 나눠 두는 것</b>이 더 중요하네."
         :"돈 기운이 <b>알맞게</b> 들어 있네. 들어오고 나가는 걸 스스로 맞출 줄 아는 사람이야. 무리하게 일을 키우지만 않으면 돈은 무난하게 흐르겠어.";
@@ -2300,8 +2314,7 @@
         "사주 여덟 글자 가운데 돈 기운은 "+(G.재성?G.재성+"자리일세. ":"한 자리도 없네. ")+(st.strong
           ?"타고난 힘이 센 편이라 들어온 돈을 지킬 그릇은 되네. 기회가 오면 손을 뻗어도 좋아."
           :"다만 타고난 힘이 약한 편이라 큰돈을 혼자 감당하기엔 벅차네. 크게 벌이기보다 새는 돈부터 막게. 빚과 보증은 특히 조심하게.")+P+
-        "자네에게 필요한 기운은 <b>"+yEl+"</b>일세. 돈 문제에선 "+Y.color+" 계열을 가까이 두고 "+Y.dir+" 방향을 눈여겨보게. 일로는 "+Y.job+" 쪽이 돈 버는 길과 가깝네."+P+
-        "지금 자네는 10년 흐름으로 보면 <b>"+GRP_PLAIN[duG]+"</b>의 시기에 있네. "+DU_MONEY[duG];
+        "지금 자네는 10년 흐름으로 보면 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있네. "+DU_MONEY[duG];
       var jobBase=G.관성===0?"일·자리 기운이 드러나 있지 않네. 남이 정한 규칙에 매이면 답답해서 오래 못 버티는 사람이야. <b>전문 기술이든 프리랜서든 자기 사업이든</b>, 스스로 규칙을 정하는 자리에서 실력이 나오네."
         :G.관성>=3?"일·자리 기운이 <b>강하네</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 크지. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아."
         :G.식상>=3?"재주와 표현 기운이 <b>발달했네</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이야. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞네."
@@ -2309,7 +2322,7 @@
       var jobLean=G.식상>G.관성?"직접 만들어 내놓는 힘이 더 강한":(G.식상<G.관성?"맡은 자리를 지키는 힘이 더 강한":"두 힘이 비슷한");
       var job=jobBase+ilg("job")+P+
         "사주에서 일을 맡아 지키는 힘은 "+G.관성+", 만들어 내놓는 힘은 "+G.식상+", 배워서 쌓는 힘은 "+G.인성+"일세. 자네는 <b>"+jobLean+"</b> 사람이야."+P+
-        "자네에게 필요한 기운이 "+yEl+josa(yEl,"라/이라")+" "+Y.job+" 쪽 일이 결에 맞네. 일하다 막히거든 이런 걸 해 보게 — "+Y.act+"."+P+
+        "틀(격국)로 보면 자네가 서게 되는 자리는 <b>"+STAGE[wolTg]+"</b>이고, 필요한 기운("+yEl+")으로 보면 "+Y.job+" 쪽이 결에 맞네. 두 쪽이 겹치는 일을 고르면 오래 가네."+P+
         (st.strong?"타고난 힘이 센 편이라 <b>자기 이름을 걸고 하는 일</b>에서 힘이 나네. 남 밑에 오래 눌려 있으면 못 견디니, 결정권이 있는 자리로 옮겨 갈수록 잘 풀려."
           :"타고난 힘이 약한 편이라 <b>기댈 수 있는 조직이나 선배가 있는 자리</b>가 낫네. 혼자 다 짊어지면 금세 지치지. 좋은 조직과 스승을 만나면 실력이 두 배로 서네.");
       // 배우자를 뜻하는 기운: 남자는 돈 기운(재성), 여자는 일·자리 기운(관성)
@@ -2320,12 +2333,12 @@
       var love=loveBase+ilg("love")+P+
         "태어난 날의 아래 글자는 배우자 자리를 뜻하네. 자네는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 그 자리에 있어. "+(UN_PLAIN[ilUn]||"")+P+
         "곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세. 조건보다 같이 있을 때 숨이 트이는지를 보게."+P+
-        "지금 10년 흐름은 <b>"+GRP_PLAIN[duG]+"</b>의 시기일세. "+(duG===spouseG
+        "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기일세. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워. 사람 만나는 자리에 자주 나가 보게."
           :"인연이 곧바로 움직이는 시기는 아닐세. 조급해하기보다 자네 생활을 다져 두면 다음 흐름이 사람을 데려오네.");
       var health=(ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
         "반대로 "+mx+" 기운은 넘치는 편일세. 한쪽으로 몰린 기운도 무리하면 표가 나니 "+WEAK[mx]+" 쪽도 함께 살펴 두게."+P+
-        "몸이 편해지는 계절은 "+Y.season+"일세. 지칠 땐 이런 걸로 기운을 돌리게 — "+Y.act+"."+P+
+        "몸이 편해지는 계절은 "+Y.season+"일세. 그때 몸을 많이 움직여 두면 한 해를 버틸 힘이 쌓이네."+P+
         (st.strong?"타고난 힘이 센 편이라 안에 쌓아 두면 탈이 나네. 땀 흘리는 운동으로 밖으로 덜어내는 게 자네한텐 약일세."
           :"타고난 힘이 약한 편이라 한번 몰아치면 오래 못 가네. 길게 무리하기보다 짧게 자주 쉬게. 잠이 제일 큰 보약일세.")+P+
         "몸이 계속 불편하면 사주보다 병원이 먼저일세.";
@@ -2338,11 +2351,13 @@
         return e===yEl?"용신 "+yEl+josa(yEl,"와/과")+" 같은 기운이라 <b>순하게 풀리는 "+u+"</b>일세."
           // u가 "구간"이면 받침이 있고 "해"면 없다. 조사를 박아두면 "해이야"가 나온다
           :e===y2El?"보조로 쓰는 기운 "+y2El+josa(y2El,"와/과")+" 같은 기운이라 <b>도움이 붙는 "+u+"</b>"+josa(u,"야/이야")+"."
-          :"용신과는 결이 다른 "+u+josa(u,"라/이라")+" <b>벌이기보다 다지는 때</b>로 삼게.";}
+          :(u==="해"?"용신과는 결이 다른 해라 <b>큰 결정은 한 번 더 따져 보고</b> 내리게."
+            :"용신과는 결이 다른 "+u+josa(u,"라/이라")+" <b>벌이기보다 다지는 때</b>로 삼게.");}
+      function fitTag(e){return e===yEl?"순하게 풀리는 구간":e===y2El?"도움이 붙는 구간":"다지는 구간";}
       var duDetail=duList.map(function(dd){
         var cur=dd.age===duNow.age;
         return '<p style="margin:0 0 12px">'+(cur?'▶ ':'')+'<b>'+dd.age+'세 ~ '+(dd.age+9)+'세</b> · '+dd.g+' · '+dd.tg+' ('+dd.el+')'+
-          (cur?' <b style="color:var(--fun-ink)">지금 여기</b>':'')+'<br>'+DUTXT[dd.tg]+' '+duFit(dd.el)+'</p>';}).join("");
+          (cur?' <b style="color:var(--fun-ink)">지금 여기</b>':'')+' · '+fitTag(dd.el)+'<br>'+(cur?'바로 위 10년 흐름 칸에 풀어 두었네.':DUTXT[dd.tg])+'</p>';}).join("");
 
       /* 물음에 답하는 자리.
          사람들은 명식표를 보러 오지 않는다. "언제"와 "그래서 뭘"을 보러 온다.
@@ -2379,7 +2394,7 @@
         var next=pool.filter(function(dd){return dd.age>nowAge;})[0];   // 아직 시작 안 한 구간만
         return '<div class="sj-sec" style="border:1px solid var(--fun-ink);border-radius:12px;padding:14px 16px">'+
           '<h3 style="margin-top:0">자네가 물은 것 — '+M.t+'</h3>'+
-          '<p>지금은 <b>'+span(duNow)+'</b>, 10년 흐름으로 보면 '+GRP_PLAIN[grp(duNow.tg)]+'의 시기일세. '+
+          '<p>지금은 <b>'+span(duNow)+'</b>, 10년 흐름으로 보면 '+DU_NAME[duNow.tg]+'의 시기일세. '+
           (nowIn?'<b>지금이 바로 그때일세.</b> '+M.t+'에 볕이 드는 구간 안에 들어와 있네.'
                 :'물은 '+M.t+'과는 직접 닿지 않는 구간이야. 지금은 힘을 모으는 때일세.')+'</p>'+
           (pick.length
@@ -2398,7 +2413,7 @@
                       :'<p>큰 흐름으로 보면 '+M.t+'의 때는 지나왔네. 다만 지금은 '+GRP_PLAIN[grp(duNow.tg)]+
                         '의 시기라 <b>'+GRP_GOOD[grp(duNow.tg)]+'</b>에 힘이 실리는 때일세. '+
                         M.t+josa(M.t,"는/은")+' 이제 해마다 드는 운에서 갈리니 그쪽을 봐야 하네.</p>')))+
-          '<p>어느 때든 자네를 받치는 건 자네에게 필요한 기운인 '+yEl+'일세. '+Y.act+' — 이런 걸 곁에 두게.</p>'+
+          '<p>어느 때든 자네를 받치는 건 자네에게 필요한 기운인 '+yEl+'일세.</p>'+
           '<span style="color:var(--muted);font-size:12.5px">10년 단위 흐름(대운)을 자네에게 필요한 기운(용신)과 대조해 고른 시기입니다.</span></div>';
       }
 
@@ -2418,6 +2433,11 @@
       var nowD=new Date();
       var seP=sjPillars(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0,false);
       var seTg=sjTenGod(ds,seP.y.s), seEl=SJ_EL[SJ_ES[seP.y.s]];
+      var duOk=duNow.el===yEl||duNow.el===y2El, seOk=seEl===yEl||seEl===y2El;
+      var NOWFIT=duOk&&seOk?"큰 흐름도 올해도 자네를 받쳐 주니 미뤄 둔 일을 꺼내 볼 때야."
+        :duOk?"큰 흐름이 받쳐 주니 올해 막히는 일은 잠깐 걸리는 턱일세."
+        :seOk?"큰 흐름은 다지는 때지만 올해만큼은 한 걸음 내디뎌 볼 만하네."
+        :"큰 흐름도 올해도 다지는 때라, 판을 벌이기보다 실력과 사람을 쌓아 두게.";
       /* 간지는 입춘에 넘어가는데 제목에 양력 연도를 그대로 쓰면
          1월 1일부터 입춘까지 약 5주 동안 "2026 을사년"처럼 어긋난 짝이 나온다.
          간지가 가리키는 해를 따로 구해 쓴다. */
@@ -2427,9 +2447,7 @@
       var seSec='<div class="sj-sec"><h3>올해 흐름 (세운) — '+seYear+' '+
         SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</h3>'+
         '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+')일세. 자네에게는 <b>'+seTg+'</b>에 해당하네.<br><br>'+
-        DUTXT[seTg]+' '+duFit(seEl,"해")+'<br><br>'+
-        '대운이 십 년의 큰 결이라면 세운은 그해의 결일세. 큰 흐름이 좋아도 그해가 눌리면 더디게 가고, '+
-        '큰 흐름이 얇아도 그해가 받쳐주면 일이 되네. 두 개를 겹쳐 봐야 그해의 무게가 나오는 게야.'+
+        (seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해일세. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
         '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 그해 글자를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
         (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p></div>';
 
@@ -2437,7 +2455,7 @@
       var GRP_MEAN={비겁:"내 힘과 사람",식상:"표현과 재능",재성:"현실 감각과 돈",관성:"책임과 자리",인성:"배움과 받는 힘"};
       var gTop=Object.keys(G).sort(function(a,b){return G[b]-G[a];})[0];
       var gZero=Object.keys(G).filter(function(k){return G[k]===0;});
-      var gTxt='가장 두터운 자리는 <b>'+gTop+'</b>('+GRP_MEAN[gTop]+')일세. 자네 삶이 그 축으로 굴러간다는 뜻이야.'+
+      var gTxt='가장 두터운 자리는 <b>'+gTop+'</b>일세. 자네 삶이 그 축으로 굴러간다는 뜻이야.'+
         (gZero.length
           ?' 반대로 '+gZero.join("·")+josa(gZero[gZero.length-1],"가/이")+' 비어 있네. 없는 자리는 평생 목마른 자리라, '+
             '그쪽을 채워주는 사람이나 일을 곁에 두면 숨통이 트이네.'
@@ -2448,9 +2466,6 @@
         ?'자네는 힘이 넘치는 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 그 힘을 밖으로 빼주는 자리일세.'
         :'자네는 힘이 얇은 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 자네를 받쳐 채워주는 자리일세.')+
         ' 타고난 걸 억지로 바꾸라는 말이 아니야. 이 기운이 도는 자리에 몸을 두라는 말일세.';
-      var yongHow='옷이나 물건은 '+Y.color+' 쪽으로, 이사나 사무실은 '+Y.dir+' 방향으로 잡게. '+
-        '큰일은 '+Y.season+'에 벌이면 결이 맞고, 일은 '+Y.job+' 쪽이 몸에 붙네. '+
-        '지칠 땐 이런 걸로 기운을 돌리게 — '+Y.act+'.';
 
       /* 제목과 맺음말.
          여태 결과가 항목 나열로 시작해 나열로 끝났다. 읽는 사람은 자기 얘기가
@@ -2473,6 +2488,26 @@
           (p.h?'':'<br><br>태어난 시각을 모르니 그 자리는 비워 두었네. 시각을 넣으면 자녀와 말년의 결실 자리까지 읽어 주겠네.')+
           '<br><span style="color:var(--muted);font-size:12.5px">각 기둥 지지의 본기(本氣)가 일간에게 어떤 십성인지로 봅니다. 태어난 날의 하늘 글자는 자기 자신이라 아래 글자만 읽습니다.</span></p></div>';}
       var img=ILG_IMG[ds],need=st.strong?YONG_OUT[yEl]:YONG_IN[yEl];
+      /* 종합 풀이. 칸마다 따로 계산해 "치열한 자리에서 능력"(격국)과 "조용한 환경이 맞다"(직업)가 한 장에 부딪혔다.
+         일간은 싸우는 방식, 격국은 서게 되는 무대로 나눠 한 문장으로 묶는다(2026-09 감사) */
+      var STYLE=["곧게 밀고 올라가는","부드럽게 감고 뻗어 가는","환하게 드러내 앞장서는","곁을 비추며 사람을 챙기는","묵직하게 버텨 믿음을 쌓는",
+        "품어 기르며 실속을 챙기는","단칼에 결단하고 밀어붙이는","섬세하게 다듬어 값을 올리는","크게 흘러 판을 넓히는","조용히 스며들어 깊이 파고드는"];
+      var WIN=["원칙을 곧게 지켜서","사람과 상황에 맞춰 휘어 가며","먼저 나서서 분위기를 끌어서","곁의 사람을 하나하나 챙겨서","끝까지 버텨 믿음을 얻어서",
+        "실속을 챙기며 사람을 길러서","빠르게 결단하고 매듭지어서","남보다 정교하게 다듬어서","판을 넓게 보고 흐름을 타서","남이 못 본 걸 먼저 읽어 내서"];
+      var SIN_SYN={천을귀인:"막힐 때마다 손을 내미는 사람이 나타나는 복(천을귀인)도 있네.",문창귀인:"글과 공부로 이름을 얻는 재주(문창귀인)도 있지.",
+        도화살:"사람을 끄는 매력(도화)이 자네의 무기일세.",역마살:"한자리에 묶이기보다 움직일 때 기회가 열리는 기운(역마)도 있어.",
+        화개살:"혼자 깊이 파고드는 시간(화개)이 자네를 키우네.",양인살:"물러서지 않는 칼 같은 기세(양인)가 있어 승부처에 강하네.",
+        백호대살:"승부처에서 힘이 솟는 기운(백호)이 있지만 몸과 안전은 늘 챙기게.",괴강살:"한번 정하면 끝을 보는 강단(괴강)이 있네."};
+      var MISS={재성:"돈 기운이 비어 있으니 돈은 버는 쪽보다 새지 않게 지키는 쪽에 힘을 쓰게.",관성:"일·책임의 기운이 비어 있어 남이 짠 틀보다 스스로 정한 규칙 속에서 오래가네.",
+        인성:"배움·도움의 기운이 비어 있어 기댈 스승이나 어른을 일부러 찾아 두어야 하네.",식상:"재주·표현의 기운이 비어 있어 속에 든 걸 꺼내 보이는 연습이 필요하네.",
+        비겁:"경쟁·자립의 기운이 비어 있어 같은 편을 만드는 데 마음을 써야 하네."};
+      var synth='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+
+        '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 자네를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가네. '+
+        '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 자네 길일세. '+
+        (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘이 얇으니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.')+
+        '<br><br>'+[sinsal.slice(0,2).map(function(x){return SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return MISS[x];}).join(" ")].filter(Boolean).join(" ")+
+        (sinsal.length||gZero.length?'<br><br>':'')+
+        '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있네. '+NOWFIT+'</p></div>';
       var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
@@ -2483,7 +2518,7 @@
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+'일세. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.<br>'+
         '<b>자네에게 필요한 기운</b> — '+yEl+'일세. '+Y.color+' 계열, '+Y.dir+' 방향이 자네 편이야.<br>'+
-        '<b>지금 10년 흐름</b> — '+span(duNow)+', '+GRP_PLAIN[duG]+'의 시기일세.</p></div>';
+        '<b>지금 10년 흐름</b> — '+span(duNow)+', '+DU_NAME[duNow.tg]+'의 시기일세.</p></div>';
       var glossary='<div class="sj-sec sj-gloss"><h3>아래에 나오는 낱말 풀이</h3><p>아래에는 명리 용어가 나옵니다. 뜻은 이렇습니다.<br>'+
         '<b>일간</b> 나를 뜻하는 글자 · <b>신강·신약</b> 타고난 힘이 센 편·약한 편 · <b>용신</b> 나에게 필요한 기운 · <b>대운</b> 10년 단위 흐름 · <b>세운</b> 그해의 흐름<br>'+
         '<b>비겁</b> 경쟁·자립 · <b>식상</b> 재주·표현 · <b>재성</b> 돈 · <b>관성</b> 일·책임 · <b>인성</b> 배움·도움 · <b>격국</b> 타고난 그릇의 모양</p></div>';
@@ -2497,7 +2532,7 @@
           :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
       el.querySelector("#out").innerHTML=
-        headline+glance+secFortune+focusBlock()+glossary+
+        headline+synth+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>'+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
@@ -2519,24 +2554,48 @@
         (st.strong?"힘이 넘치니 그걸 <b>밖으로 써서 덜어내야</b> 하네.":"힘이 얇으니 <b>자네를 받쳐 채워줄</b> 기운이 있어야 하네.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.<br><br>'+strengthBand(st.ratio)+'</p></div>'+
         '<div class="sj-sec"><h3>나를 받쳐 주는 기운 (용신) — '+yEl+'</h3><p>'+yongWhy+'<br><br>'+
-        '· 색: <b>'+Y.color+'</b>  · 방향: <b>'+Y.dir+'</b>  · 계절: '+Y.season+'<br>· 잘 맞는 일: '+Y.job+'<br>· 도움이 되는 활동: '+Y.act+'<br><br>'+
-        yongHow+'</p></div>'+
+        '옷이나 물건은 <b>'+Y.color+'</b> 쪽으로, 이사나 사무실은 <b>'+Y.dir+'</b> 방향으로 잡게. 큰일은 '+Y.season+'에 벌이면 결이 맞고, 지칠 땐 '+Y.act+'으로 기운을 돌리게.</p></div>'+
         '<div class="sj-sec"><h3>다섯 기운의 균형 (오행)</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')'+josa(mn,"가/이")+' 상대적으로 약하네. 강한 기운은 재능인 동시에 과할 때 그림자가 되는 법일세. 모자란 '+mn+'의 자리를 일부러 채워주면 균형이 잡히네.'+
         '<br><br>여덟 글자를 오행으로 나누면 '+SJ_EL.map(function(e,i){return e+' '+cnt[i];}).join(" · ")+'일세. '+EL_HI[mx]+
         '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?mn+' 기운은 한 자리도 들지 않았네. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
-        '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'<br><br>'+
-        gTxt+'<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
+        '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>'+gTxt+'<br><br>'+
+        '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
+        '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         seSec+
         (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var nowY=new Date().getFullYear(),rows="";
+          /* 해마다 영역 표시. 한 줄 십성 풀이만으로는 "언제 무엇을"에 답이 안 됐다.
+             이동: 그해 지지가 일지·월지와 충이거나 일지·연지 기준 역마 / 인연: 배우자 별(남 재성·여 관성)의 해, 일지와 육합, 도화
+             일: 관성·상관의 해 / 문서: 인성·편관의 해 / 돈: 재성의 해 / 지출: 겁재의 해, 신약이 재성을 만나는 해 */
+          var YM=[SJ_YEOKMA[sjSamhap(p.d.b)],SJ_YEOKMA[sjSamhap(p.y.b)]],DH=SJ_DOHWA[sjSamhap(p.d.b)];
+          var TAGS=["인연","이동","일","문서","돈","지출"];
+          var TAG_L={인연:"인연이 움직이는 해",이동:"자리나 집이 바뀌기 쉬운 해",일:"일과 자리에 변화가 오는 해",문서:"계약·시험·문서에 힘이 실리는 해",
+            돈:st.strong?"돈이 크게 도는 해":"돈이 크게 들고 나는 해(쥐는 힘이 약하니 지키는 쪽으로)",지출:"새는 돈을 조심할 해"};
+          function yTags(yy){var yp=sjPillars(yy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),gg=grp(tg),yb=yp.b,T=[];
+            if(gg===(male?"재성":"관성")||sjYukhap(p.d.b)===yb||yb===DH)T.push("인연");
+            if(Math.abs(yb-p.d.b)===6||Math.abs(yb-p.m.b)===6||YM.indexOf(yb)>=0)T.push("이동");
+            if(gg==="관성"||tg==="상관")T.push("일");
+            if(gg==="인성"||tg==="편관")T.push("문서");
+            if(gg==="재성")T.push("돈");
+            if(tg==="겁재")T.push("지출");
+            return T;}
+          var plan={};TAGS.forEach(function(t){plan[t]=[];});
+          for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){plan[t].push(fy);});}
+          var has=TAGS.filter(function(t){return plan[t].length;});
+          var planTxt=has.length
+            ?'앞으로 10년 가운데 '+TAG_L[has[0]].replace(/\(.*\)/,"")+'는 <b>'+plan[has[0]].join("·")+'년</b>일세.'+
+              has.slice(1).map(function(t){return '<br>· '+TAG_L[t]+' — <b>'+plan[t].join("·")+'년</b>';}).join("")
+            :'앞으로 10년은 크게 튀는 해 없이 고르게 가네.';
           for(var yy=nowY-5;yy<=nowY+5;yy++){var age=yy-y+1;if(age<1)continue;
-            var yp=sjPillars(yy,7,1,null,0,false).y,ytg=sjTenGod(ds,yp.s),db=p.d.b,yb=yp.b;
+            var yp=sjPillars(yy,7,1,null,0,false).y,ytg=sjTenGod(ds,yp.s),db=p.d.b,yb=yp.b,yt=yTags(yy);
             var rel=Math.abs(yb-db)===6?"일지와 충":sjYukhap(db)===yb?"일지와 육합":(yb%4===db%4&&yb!==db)?"일지와 삼합":"";
             var du=duList.filter(function(x){return x.age<=age;}).pop();
             rows+='<div class="yr'+(yy===nowY?' now':yy<nowY?' past':'')+'" data-y="'+yy+'"><div class="yr-h"><b>'+yy+'</b><span>'+SJ_S[yp.s]+SJ_B[yb]+'년 · '+ytg+(rel?' · '+rel:'')+'</span><small>'+age+'세'+(du?' · '+du.g+' 대운':'')+'</small></div>'+
               '<p>'+DUTXT[ytg].split(".")[0]+'.</p>'+
+              (yt.length?'<div class="yr-tags">'+yt.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+
               (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
-          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
+          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>'+planTxt+
+            '<br><span style="color:var(--muted);font-size:12.5px">그해 하늘 글자가 자네에게 어떤 기운인지, 그해 띠 글자가 태어난 날·달 글자와 부딪히거나 붙는지, 역마·도화 자리인지로 표시했습니다. 인연은 연애·결혼뿐 아니라 동업·귀인처럼 사람이 드는 일을 함께 뜻합니다.</span></p><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
