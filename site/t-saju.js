@@ -186,13 +186,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주일세. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하게."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주일세. 생활 리듬이 맞는 사람과 오래가네.";
       var love=verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love")+P+
-        "배우자 자리(태어난 날의 아래 글자)에는 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어. "+(UN_PLAIN[ilUn]||"")+" 곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세."+P+
+        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았고 곁에 두면 편한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람일세. "+(UN_PLAIN[ilUn]||"")+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기일세. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워. 사람 만나는 자리에 자주 나가 보게."
           :"")+
         (nearY("인연")?" 해마다 드는 운으로 보면 사람 인연이 움직이는 가장 가까운 해는 <b>"+nearY("인연")+"</b>일세"+(plan.인연[1]?", 그다음은 "+plan.인연[1]+"년이야.":"."):" 앞으로 10년 안에는 해마다 드는 운에서도 인연이 크게 튀는 해가 없으니, 사람 만나는 자리를 자네가 먼저 만들어야 하네.");
-      var health=(CB&&CB.health?CB.health+P:ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+" 이어진다고 보니, 피곤이 쌓이면 그쪽부터 챙기게."+P+
-        "반대로 "+mx+" 기운은 넘치는 편일세. 한쪽으로 몰린 기운도 무리하면 표가 나니 "+WEAK[mx]+" 쪽도 함께 살펴 두게."+P+
+      var health=(CB&&CB.health?CB.health+P:ILG&&ILG.health?ILG.health[SK]+P:"")+"사주에서 가장 약한 기운은 <b>"+mn+"</b>, 넘치는 기운은 <b>"+mx+"</b>일세. 옛 풀이에서는 "+mn+josa(mn,"가/이")+" "+WEAK[mn]+josa(WEAK[mn],"와/과")+", "+mx+josa(mx,"가/이")+" "+WEAK[mx]+josa(WEAK[mx],"와/과")+" 이어진다고 보니 피곤이 쌓이면 약한 쪽부터 챙기고 몰린 쪽은 무리하지 말게."+P+
         "몸이 편해지는 계절은 "+Y.season+"일세."+P+
         "몸이 계속 불편하면 사주보다 병원이 먼저일세.";
       var DUTXT={"비견":"자립과 동료의 시기일세. 제 힘으로 밀고 나가기 좋으나 동업은 경계를 분명히 하게.","겁재":"경쟁과 지출의 시기야. 사람은 얻되 돈은 새기 쉬우니 관리가 핵심일세.","식신":"표현과 결실의 시기일세. 만들고 낳는 일에 볕이 들고 몸도 편안하네.","상관":"변화와 도전의 시기야. 틀을 깨는 힘이 강하나 윗사람과의 마찰은 조심하게.","편재":"큰돈이 오가는 시기일세. 기회가 많은 만큼 흔들림도 크네.","정재":"안정과 축적의 시기야. 성실함이 그대로 자산이 되네.","편관":"시험과 승부의 시기일세. 부담이 크지만 통과하면 급이 오르네.","정관":"명예와 자리의 시기야. 승진이든 합격이든 공적인 인정운이 밝네.","편인":"공부와 전환의 시기일세. 속으로 자라는 때이니 결정은 좀 묵혔다 내리게.","정인":"귀인과 문서의 시기야. 어른과 기관의 도움, 그리고 배움이 따르네."};
@@ -354,13 +353,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var MISS={재성:"돈 기운이 비어 있으니 돈은 버는 쪽보다 새지 않게 지키는 쪽에 힘을 쓰게.",관성:"일·책임의 기운이 비어 있어 남이 짠 틀보다 스스로 정한 규칙 속에서 오래가네.",
         인성:"배움·도움의 기운이 비어 있어 기댈 스승이나 어른을 일부러 찾아 두어야 하네.",식상:"재주·표현의 기운이 비어 있어 속에 든 걸 꺼내 보이는 연습이 필요하네.",
         비겁:"경쟁·자립의 기운이 비어 있어 같은 편을 만드는 데 마음을 써야 하네."};
-      var synth='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+
+      // 조합 파일의 종합 원고(s)가 있으면 그걸 쓰고, 없으면 아래 조립 문장으로
+      var CS=CB&&CB.s,fitK=duOk&&seOk?"both":duOk?"du":seOk?"se":"none";
+      var p1=CS&&CS.p1&&CS.p1[st.strong?"strong":"weak"];
+      var synth='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 자네를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가네. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 자네 길일세. '+
-        (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘이 얇으니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.')+
-        '<br><br>'+[sinsal.slice(0,2).map(function(x){return SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return MISS[x];}).join(" ")].filter(Boolean).join(" ")+
+        (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘이 얇으니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.'))+
+        '<br><br>'+[sinsal.slice(0,2).map(function(x){return (CS&&CS.sin&&CS.sin[x])||SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return (CS&&CS.miss&&CS.miss[x])||MISS[x];}).join(" ")].filter(Boolean).join(" ")+
         (sinsal.length||gZero.length?'<br><br>':'')+
-        '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있네. '+NOWFIT+'</p></div>';
+        '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있네. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
       var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+

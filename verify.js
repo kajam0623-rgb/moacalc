@@ -268,6 +268,9 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const VD = require("./content_saju_verdict.js"), BK = { money: ["none","mid","many"], job: ["none","many","craft","mid"], love: ["none","mid","many"] };
   t("사주 판정 문장: 일간×갈래 첫 문장 · 격국×갈래 설명 전부", Object.entries(BK).every(([a, bs]) => IL.every(i => bs.every(k => VD[a].head[i] && VD[a].head[i][k])) && TGS.every(tg => bs.every(k => VD[a].follow[tg] && VD[a].follow[tg][k]))), true);
   t("사주 판정 문장은 보살 말투", Object.values(VD).flatMap(o => [...Object.values(o.head), ...Object.values(o.follow)].flatMap(Object.values)).filter(x => JONDAE.test(x)).length, 0);
+  const SY = require("./content_saju_synth.js"), GRPS = ["비겁","식상","재성","관성","인성"], SINS = ["천을귀인","문창귀인","도화살","역마살","화개살","양인살","백호대살","괴강살"];
+  t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
+  t("사주 종합 원고는 보살 말투", JSON.stringify(SY).match(/습니다|합니다|입니다|하세요|십시오/g), null);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
 
