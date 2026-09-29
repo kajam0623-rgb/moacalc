@@ -451,6 +451,8 @@ t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clea
 // 사주 궁합 점수는 두 사람에게 같아야 한다(초대 링크로 보낸 사람·받은 사람이 같은 점수를 본다). 옛 코드는 순서를 바꾸면 무작위 100쌍 중 65쌍이 달라졌다(최대 14점)
 t("사주 궁합: 일간 십성은 두 방향을 평균 내 점수가 순서와 무관하다", src.includes("r2=sjTenGod(b.d.s,a.d.s)") && src.includes("sc+=((RD1[r1]||0)+(RD1[r2]||0))/2;") && src.includes("((AT[f.r1]||0)+(AT[f.r2]||0))/2") && src.includes("((TK[f.r1]||0)+(TK[f.r2]||0))/2"), true);
 t("이름 궁합: 순서를 바꾸면 점수가 달라진다는 안내가 글자 수가 같을 때도 있다", (src.match(/이름 1·2의 순서를 바꾸면 점수가 달라집니다/g) || []).length, 2);
+// 일간·일주·십성·띠·일진·월력 페이지가 강의로 가는 문맥 링크를 갖는다(본문 링크 0개였음)
+t("생성 페이지 6군이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "6|true");
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);

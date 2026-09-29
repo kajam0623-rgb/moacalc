@@ -792,6 +792,7 @@
 .lcard .ld{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);}
 .lcard.done .ld{background:#3d8a5c;border-color:#3d8a5c;position:relative;}.lcard.done .ld::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;}
 .learncta{margin:14px 0;clear:both;}
+.learnmore p{font-size:13.5px;color:var(--muted);line-height:1.8;margin:0 0 10px;}
 .lq-c li,.lp-ch li{padding:0;font-size:inherit;}.lq-c li::before,.lp-ch li::before{content:none;}.lp .ppl{display:none;}
 .lsteps li::before{content:none;}.lsteps li{padding:2px 0;font-size:14.5px;color:var(--ink);}.lsteps{list-style:decimal;padding-left:22px;}
 @media (max-width:759px){.toolhero.longh .th-bosal{display:none;}}

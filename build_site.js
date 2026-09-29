@@ -1312,6 +1312,7 @@ ${o.noTool ? "" : (o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`)}
 ${o.noTool ? "" : '<div class="card tool" id="tool"></div>'}
 <div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
 ${o.body}
+${o.learn || ""}
 ${lec ? learnBottom(lec) : ""}
 <section class="faq"><h2>자주 묻는 질문</h2>${o.faq.map(x=>'<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")}</section>
 <section class="guide"><h2>${o.sibTitle}</h2>${o.sibs}</section>
@@ -1441,6 +1442,7 @@ function starPage(s, i){
 function zodiacPage(z, i){
   return seoPage({
     crumb:`${z.ko}띠`,
+    learn: learnMore(`${z.ko}띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
     title:`${z.ko}띠 운세·성격·궁합 — 2026 | 동네보살`,
     desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2026 병오년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
@@ -1473,6 +1475,7 @@ function zodiacPage(z, i){
 function ilganPage(g){
   return seoPage({
     crumb:`${g.ko}${g.el} 일간`,
+    learn: learnMore(`${g.ko}${g.el} 일간은 여덟 글자 가운데 태어난 날의 위 글자입니다. 이 글자가 사주에서 나를 뜻하는 이유는 5강, 천간 열 글자의 짝과 성질은 3강, 오행의 상생·상극은 2강, 일간의 힘이 센지 약한지는 7강에서 순서대로 배울 수 있습니다.`, [5, 3, 2, 7]),
     title:`${g.ko} 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
     desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2026 병오년 운세.`,
     url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -1569,6 +1572,7 @@ function columnHubPage(){
 function sipseongPage(s){
   return seoPage({
     crumb:`${s.ko}`,
+    learn: learnMore(`${s.ko}${josa(s.ko,"은/는")} ${s.group}에 속하는 십성입니다. 열 가지 십성을 한 표로 찾는 법은 6강, 십성이 일간의 힘을 재는 데 쓰이는 방식은 7강, 사주의 틀(격국)을 정하는 방식은 9강에서 배웁니다.`, [6, 7, 9]),
     title:`${s.ko} — 뜻·성격·직업·재물 풀이 | 동네보살`,
     desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 약점. 연애·직업·재물에서 어떻게 나타나는지.`,
     url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -1667,6 +1671,7 @@ function mansePage(p){
   return seoPage({
     noindex: !MANSE_KEEP(p),
     crumb:`${p.y}년 ${p.mo}월 만세력`,
+    learn: learnMore(`${p.y}년 ${p.mo}월의 연주와 월주를 읽는 순서는 1강, 달이 절기(${jeol.name})에서 바뀌는 이유는 4강, 해마다 바뀌는 큰 흐름과 월운은 15강에서 배웁니다.`, [1, 4, 15]),
     title:`${p.y}년 ${p.mo}월 만세력 — 일진·음력·절기 | 동네보살`,
     desc:`${p.y}년 ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
@@ -1872,6 +1877,7 @@ function iljinPage(p){
     // 애드센스 반려 대응(2026-09): 60장이 간지만 바꾼 같은 틀이라 검색에서 뺀다. 오늘 일진(iljin.html)만 노출
     noindex: true,
     crumb:`${p.ko}일`,
+    learn: learnMore(`${p.ko}일은 그날의 천간과 지지를 붙여 부르는 이름입니다. 60갑자가 도는 원리는 3강, 이 날의 글자가 내 일간에게 어떤 십성인지는 6강, 해마다 바뀌는 큰 흐름은 15강에서 배웁니다.`, [3, 6, 15]),
     title:`${p.ko}일 일진 — 이 날의 기운과 일간별 운세 | 동네보살`,
     desc:`${p.ko}일(${p.han})은 ${p.rel.label}입니다. ${p.chung}띠는 충, ${p.samhap.filter(t=>t!==ENGINE.SJ_TTI[p.b]).join("·")}띠는 삼합. 일간 열 가지의 점수와 조언.`,
     url:`${DOMAIN}/iljin-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-todayfortune.webp",
@@ -1965,6 +1971,7 @@ function iljuPage(p){
   const first = (t, n) => t.trim().split(/(?<=[.?!])\s+/).slice(0, n).join(" ");
   return seoPage({
     crumb:`${p.ko}일주`,
+    learn: learnMore(`${p.ko}일주는 일간 ${gEl}과 일지 ${J.ko}(${J.tti}띠)가 만든 두 글자입니다. 일주를 읽는 순서는 1강, 일간의 뜻은 5강, 일지 ${J.ko} 속에 숨은 글자는 10강, 일간이 일지에서 놓이는 기운의 단계(${p.un})는 12강, 일지의 십성(${p.tengod})은 6강에서 배웁니다.`, [1, 5, 10, 12, 6]),
     title:`${p.ko}일주 성격 — ${C.tag}, 여자·남자 차이 | 동네보살`,
     desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(C.core,1)} 여자와 남자의 차이, 일과 재물까지.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -2332,6 +2339,10 @@ const learnBottom = c =>
   `<p class="lq-score" aria-live="polite"></p>` +
   `<div class="lmore" id="lmore" data-no="${c.no}"><p class="lp-lead">규칙에서 문제를 그때그때 만들어 냅니다. 누를 때마다 새 문제가 나오니 몇 번이든 풀어 보세요.</p><button type="button" class="lp-btn ghost" id="lmore-go">자동 출제로 3문제 풀어 보기</button><div class="lmore-out" aria-live="polite"></div><p class="lmore-score" aria-live="polite"></p></div></section>` +
   `<div class="lmark-row"><button type="button" class="lmarkbtn" data-no="${c.no}" aria-pressed="false">이 강 마쳤어요</button><span class="lmark-note">진도는 이 기기에만 저장됩니다</span></div>` + learnNav(c);
+function learnMore(lead, nos) {
+  return `<section class="guide learnmore"><h2>이 내용을 더 배우려면</h2><p>${lead}</p><div class="sibs">` +
+    nos.map(n => { const c = LEARN.LECTURES.find(x => x.no === n); if (!c) throw new Error("learnMore: 없는 강 " + n); return `<a href="${c.page}">${c.no}강 ${esc(c.short)}</a>`; }).join("") + `</div></section>`;
+}
 const learnCta = () => `<a class="dictcta learncta" href="learn.html"><b>명리학 배우기</b><span>사주 기초부터 대운까지 16강 · 내 생년월일로 실습하고 문제로 확인해요</span><i>→</i></a>`;
 const lectureChips = cur => '<div class="sibs">' + LEARN.LECTURES.map(x => x.no === cur ? `<span class="cur">${x.no}강 ${esc(x.short)}</span>` : `<a href="${x.page}">${x.no}강 ${esc(x.short)}</a>`).join("") + '</div>';
 const tablesHtml = tables => (tables || []).map(tb => `<section class="guide"><h2>${esc(tb.h)}</h2>` +
@@ -2806,6 +2817,7 @@ const extraCss = `
 .lcard .ld{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);}
 .lcard.done .ld{background:#3d8a5c;border-color:#3d8a5c;position:relative;}.lcard.done .ld::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;}
 .learncta{margin:14px 0;clear:both;}
+.learnmore p{font-size:13.5px;color:var(--muted);line-height:1.8;margin:0 0 10px;}
 .lq-c li,.lp-ch li{padding:0;font-size:inherit;}.lq-c li::before,.lp-ch li::before{content:none;}.lp .ppl{display:none;}
 .lsteps li::before{content:none;}.lsteps li{padding:2px 0;font-size:14.5px;color:var(--ink);}.lsteps{list-style:decimal;padding-left:22px;}
 @media (max-width:759px){.toolhero.longh .th-bosal{display:none;}}
