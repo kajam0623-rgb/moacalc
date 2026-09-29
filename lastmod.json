@@ -652,7 +652,7 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "f859b5a8",
+  "h": "1ee30020",
   "d": "2026-09-29"
  },
  "installment.html": {
@@ -1548,31 +1548,31 @@
   "d": "2026-09-29"
  },
  "column.html": {
-  "h": "70f4f987",
+  "h": "994370a1",
   "d": "2026-09-29"
  },
  "column-birth-time-unknown.html": {
-  "h": "353065eb",
+  "h": "fafba9bb",
   "d": "2026-09-29"
  },
  "column-new-year-start.html": {
-  "h": "11c4d384",
+  "h": "441e86c3",
   "d": "2026-09-29"
  },
  "column-star-cusp.html": {
-  "h": "ef8fe157",
+  "h": "d5e5eccf",
   "d": "2026-09-29"
  },
  "column-daeun-reading.html": {
-  "h": "55f895be",
+  "h": "f0f6e648",
   "d": "2026-09-29"
  },
  "column-tti-vs-saju-gunghap.html": {
-  "h": "9d070ccc",
+  "h": "0d9f6ab9",
   "d": "2026-09-29"
  },
  "column-tarot-vs-saju.html": {
-  "h": "b5c503ff",
+  "h": "48fb3b12",
   "d": "2026-09-29"
  },
  "dict.html": {
@@ -1857,6 +1857,10 @@
  },
  "tojeong.html": {
   "h": "ac939338",
+  "d": "2026-09-29"
+ },
+ "column-yearly-luck-table.html": {
+  "h": "05029ab4",
   "d": "2026-09-29"
  }
 }
