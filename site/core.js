@@ -1087,7 +1087,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
-        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;
+        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;if(bl2.length>cap2){bl2=bl2.slice(0,cap2);bl2[cap2-1]=bl2[cap2-1].replace(/.$/,"…");}
         for(var k2=0;k2<bl2.length&&k2<cap2;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}
       // 아기보살 — 점수에 맞는 자세. 본문을 네 줄로 줄여 겹치지 않게 한다
       if(o.bosalImg){var bh=300,bw=Math.round(o.bosalImg.width*bh/o.bosalImg.height);x.drawImage(o.bosalImg,(W-bw)/2,H-218-bh,bw,bh);}}
@@ -1125,6 +1125,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         bi.onload=function(){o2.bosalImg=bi;finish(fortuneCard(o2));};bi.onerror=function(){finish(fortuneCard(o2));};
         bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
       finish(fortuneCard(o2));});}
+  function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
+  // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
+  function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
+    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});

@@ -44,6 +44,7 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
       shareBtn()+
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
-      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
+      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");
+      saveScore(el,"별자리궁합","별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b],sc,grade,ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+" "+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+" 만나면 — "+grade,E[2]);askFx(el,{score:sc,grade:grade});}
     askWire(el,go,["두 사람의 별자리를 세운다","원소와 양태를 견준다","각도를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
     }});

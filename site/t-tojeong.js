@@ -52,6 +52,7 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
         shareBtn()+
         '<p class="note">토정비결은 조선 후기부터 전해 오는 한 해 신수 풀이입니다. 괘를 세우는 방법은 전통 작괘법(세는 나이·태세수, 생월 날수·월건수, 생일·일진수)을 그대로 따르고, 음력은 한국천문연구원 기준으로 계산합니다. 144괘의 풀이 문장은 전통 괘의 길흉과 상징을 바탕으로 동네보살이 새로 썼습니다. 참고용.</p>';
         bindShare(el,Y+" 토정비결",Y+"년 내 토정비결은 "+r.code+"괘 — "+g.title+". 동네보살에서 확인:");
+        saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.chongun,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
         askFx(el,{grade:g.grade==="흉"?"주의":g.grade==="평"?"평온":"길"});
       }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했네. 잠시 뒤 다시 눌러 주게.</p>';});}
     askWire(el,go,["음력 생일을 찾는다","그해 달력에서 태세·월건·일진을 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}});

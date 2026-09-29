@@ -1758,7 +1758,7 @@
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
-        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;
+        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;if(bl2.length>cap2){bl2=bl2.slice(0,cap2);bl2[cap2-1]=bl2[cap2-1].replace(/.$/,"…");}
         for(var k2=0;k2<bl2.length&&k2<cap2;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}
       // 아기보살 — 점수에 맞는 자세. 본문을 네 줄로 줄여 겹치지 않게 한다
       if(o.bosalImg){var bh=300,bw=Math.round(o.bosalImg.width*bh/o.bosalImg.height);x.drawImage(o.bosalImg,(W-bw)/2,H-218-bh,bw,bh);}}
@@ -1796,6 +1796,10 @@
         bi.onload=function(){o2.bosalImg=bi;finish(fortuneCard(o2));};bi.onerror=function(){finish(fortuneCard(o2));};
         bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
       finish(fortuneCard(o2));});}
+  function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
+  // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
+  function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
+    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});
@@ -3642,7 +3646,8 @@
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">요일마다 다스리는 행성(칠요)이 다릅니다. 내 별자리 수호성 '+ruler+'이 맡은 '+best+'요일이 한 주의 중심이고, '+ele+' 원소와 결이 맞는 행성의 날이 그다음입니다.</p></div>'+
       shareBtn()+
       '<p class="note">태어난 날의 태양 황경으로 별자리를 판정하고, 오늘 태양의 위치와 내 별자리가 이루는 각도(합·섹스타일·스퀘어·트라인·오포지션)로 흐름을 읽는 서양 점성술 방식입니다. 경계일(예: 8월 22~23일)에 태어났다면 태양 황경 계산이 날짜표보다 정확합니다. 참고용.</p>';
-      bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
+      bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — "+A[1]+" 관계. 동네보살에서 확인:");
+      saveScore(el,"별자리운세",ymd3(ty,tm,td)+" 별자리 운세",ST_KO[mine],score,grade,"오늘 태양과 "+A[1]+" 관계의 날",A[2]);askFx(el,{score:score,grade:grade});}
     askWire(el,go,["태양 황경으로 별자리를 잡는다","오늘 하늘의 각을 잰다","자네 별자리와 맞춰 본다"],"아직 안 물어봤네.");
     birthDial(el,"#d");}},
 
@@ -3692,7 +3697,8 @@
       '<div class="sj-sec"><h3>이 조합에게</h3><p>'+A[5]+' '+(er==="tense"?"기질이 다른 만큼 상대의 방식을 번역해서 듣는 연습이 필요합니다. 다름은 결함이 아니라 각도의 문제입니다.":"결이 맞는 조합일수록 관계를 당연하게 여기기 쉽습니다. 좋은 이유를 가끔 말로 확인해 주세요.")+'</p></div>'+
       shareBtn()+
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
-      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:sc,grade:grade});}
+      bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");
+      saveScore(el,"별자리궁합","별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b],sc,grade,ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+" "+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+" 만나면 — "+grade,E[2]);askFx(el,{score:sc,grade:grade});}
     askWire(el,go,["두 사람의 별자리를 세운다","원소와 양태를 견준다","각도를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
     }},
 
@@ -3746,7 +3752,8 @@
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
       shareBtn()+
       '<p class="note">띠 글자와 오늘 날짜 글자가 뭉치는지, 맞는지, 부딪히는지를 보고 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
-      bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");askFx(el,{score:score,grade:grade});}
+      bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");
+      saveScore(el,"띠별운세",ymd3(ty,tm,td)+" 띠별 운세",SJ_TTI[b]+"띠 · 오늘 일진 "+SJ_SH[today.d.s]+SJ_BH[tb],score,grade,SJ_TTI[b]+"띠, 오늘 지지와 "+(rel==="평"?"큰 합·충 없음":rel),Z[1]);askFx(el,{score:score,grade:grade});}
     askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
     }},
 
@@ -3854,7 +3861,8 @@
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       bindInvite(el,A,ga);
-      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}
+      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
+      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
     if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
@@ -3934,7 +3942,8 @@
       '<div class="sj-sec"><h3>태세와 나 — 십이운성 '+un+'</h3><p>태세 지지 '+SJ_B[YB]+'('+SJ_BH[YB]+')는 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 '+un+'의 자리일세. '+YR+'년 한 해 밑바탕에 깔리는 기운이 여기서 나오네.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       shareBtn()+
       '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
-      bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");askFx(el,{score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년엔 조심할 구간이 있네. 아래 '조심할 것'을 먼저 챙기게."});}
+      bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");
+      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년엔 조심할 구간이 있네. 아래 '조심할 것'을 먼저 챙기게."});}
     askWire(el,go,["그 해 태세를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   /* 토정비결 — 음력 생일과 볼 해의 음력 달력으로 상·중·하괘를 세워 144괘 가운데 하나를 뽑는다.
@@ -3994,6 +4003,7 @@
         shareBtn()+
         '<p class="note">토정비결은 조선 후기부터 전해 오는 한 해 신수 풀이입니다. 괘를 세우는 방법은 전통 작괘법(세는 나이·태세수, 생월 날수·월건수, 생일·일진수)을 그대로 따르고, 음력은 한국천문연구원 기준으로 계산합니다. 144괘의 풀이 문장은 전통 괘의 길흉과 상징을 바탕으로 동네보살이 새로 썼습니다. 참고용.</p>';
         bindShare(el,Y+" 토정비결",Y+"년 내 토정비결은 "+r.code+"괘 — "+g.title+". 동네보살에서 확인:");
+        saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.chongun,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
         askFx(el,{grade:g.grade==="흉"?"주의":g.grade==="평"?"평온":"길"});
       }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했네. 잠시 뒤 다시 눌러 주게.</p>';});}
     askWire(el,go,["음력 생일을 찾는다","그해 달력에서 태세·월건·일진을 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}},

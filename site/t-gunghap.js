@@ -102,7 +102,8 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       bindInvite(el,A,ga);
-      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}
+      bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
+      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
     if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
