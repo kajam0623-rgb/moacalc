@@ -532,6 +532,20 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       blocks.push('<div class="sj-sec"><h3>보살의 종합</h3><p>'+bosalImg("tarot","bs-side","카드를 펼쳐 든 아기보살")+flow+'</p>'+(rl?'<p>'+rl+'</p>':'')+'<p>'+elLine+(stage?' '+stage:'')+'</p><p>'+adv+'</p>'+
         '<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>');
       if(birth)blocks.push(sajuPart(ti,last,ques.sp[N-1][1]));
+      /* 꼬리질문 — 같은 패를 다른 고민에 비춰 보기(카드×주제 원고 그대로) · 카드마다 조언과 한마디 */
+      var TN2={love:["family","friend","money"],money:["work","exam","health"],work:["money","exam","friend"],exam:["work","family","health"],
+        family:["love","friend","health"],friend:["family","love","work"],health:["day","family","exam"],day:["love","money","work"]};
+      var cardTag=function(pk){return '<b>'+M[pk.i][1]+(pk.rev?'(역방향)':'')+'</b>';};
+      var tpool={};
+      TOPICS.forEach(function(t){if(t.k===topic.k)return;
+        tpool["t_"+t.k]={label:"이 패를 "+t.name+"에 비춰 보면?",next:(TN2[t.k]||[]).map(function(k){return "t_"+k;}).concat(["adv","one"]),ans:function(){
+          return '<p>같은 패를 <b>'+t.name+'</b>에 비춰 보면 이렇게 읽히네.</p>'+picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].topic[t.k][pk.rev?1:0]+'</p>';}).join("");}};});
+      tpool.adv={label:"카드마다 조언을 한마디씩 더 듣고 싶네",next:["one"].concat((TN2[topic.k]||[]).map(function(k){return "t_"+k;})),ans:function(){
+        return picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].role.advice+'</p>';}).join("");}};
+      tpool.one={label:"카드마다 보살의 한마디는?",next:["adv"].concat((TN2[topic.k]||[]).map(function(k){return "t_"+k;})),ans:function(){
+        return picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].one+'</p>';}).join("");}};
+      var tarotTail={tool:"tarot",intro:"패 풀이를 듣고 더 궁금한 게 있나?<br>어떤 내용이야?",first:(TN2[topic.k]||[]).map(function(k){return "t_"+k;}).concat(["adv"]),pool:tpool};
+      blocks.push('<div class="tail-wrap fold-skip" id="tailbox"></div>');
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
         '<div class="bs-opts"><span class="bs-opt save-btn" role="button" tabindex="0">이미지로 저장</span><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
       rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
@@ -544,6 +558,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
       bindSave(rd,{file:"동네보살-타로",draw:drawShare});
       [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
+      tailAsk(rd.querySelector("#tailbox"),tarotTail);
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
       track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});
       diaryAdd({t:"타로 · "+topic.name,h:picks.map(function(pk){return M[pk.i][1]+(pk.rev?"(역)":"");}).join(" · ")});}

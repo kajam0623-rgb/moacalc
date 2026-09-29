@@ -560,6 +560,45 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var btn=el.querySelector("#go"),out=el.querySelector("#out");
     if(out)out.innerHTML=askWait(waitMsg);
     if(btn)btn.addEventListener("click",function(){if(seer)seerThink(out,btn,steps,go,seer);else askThink(out,btn,steps,go);});}
+  /* 꼬리질문 — 결과 뒤에 보살이 "더 궁금한 게 있나? 어떤 내용이야?" 하고 묻는다. 칩을 누르면 답이 나오고,
+     그 답에서 이어지는 다음 질문을 또 내민다(pool[k].next). 처음 묻는 화면(재물·일 고르기, 타로 고민 고르기)은 그대로 두고 그 뒤에만 붙는다.
+     cfg: {tool, intro, first:[키], skip:[이미 물은 키], load:function(cb), pool:{키:{label, next:[키], ans:function(){return html;}}}} */
+  function tailAsk(host,cfg){
+    if(!host||!cfg)return;
+    var asked={},RMq=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    (cfg.skip||[]).forEach(function(k){asked[k]=1;});
+    host.innerHTML='<div class="tail"><div class="tail-h">'+bosalImg("magnifier","tail-bs","돋보기로 보는 아기보살")+'<div class="tail-say">'+cfg.intro+'</div></div>'+
+      '<div class="tail-log" aria-live="polite"></div><div class="tail-chips"></div></div>';
+    var log=host.querySelector(".tail-log"),chips=host.querySelector(".tail-chips");
+    function rest(){return Object.keys(cfg.pool).filter(function(k){return !asked[k];});}
+    function draw(list,more){
+      chips.innerHTML=list.map(function(k){return '<span class="tail-chip" role="button" tabindex="0" data-k="'+k+'">'+cfg.pool[k].label+'</span>';}).join("")+
+        (more?'<span class="tail-chip tail-more" role="button" tabindex="0" data-more="1">다른 것도 물어볼래</span>':"");}
+    function offer(ids){
+      var r=rest();
+      if(!r.length){chips.innerHTML='<p class="tail-end">궁금한 건 여기까지 다 짚었네. 다른 걸 또 보고 싶으면 위에서 다시 물어보게.</p>';return;}
+      var list=(ids||[]).filter(function(k){return cfg.pool[k]&&!asked[k];}).slice(0,3);
+      if(!list.length)list=r.slice(0,3);
+      draw(list,r.length>list.length);}
+    chips.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("tail-chip")){e.preventDefault();e.target.click();}});
+    chips.addEventListener("click",function(e){
+      var b=e.target.closest&&e.target.closest(".tail-chip");if(!b)return;
+      if(b.dataset.more){draw(rest(),false);return;}
+      var k=b.dataset.k,q=cfg.pool[k];if(!q||asked[k])return;
+      asked[k]=1;chips.innerHTML="";
+      log.insertAdjacentHTML("beforeend",'<div class="tail-q">'+q.label+'</div><div class="tail-a tail-wait" aria-label="보살이 짚어 보는 중"><span></span><span></span><span></span></div>');
+      var slot=log.lastElementChild;
+      track("tail_ask",{tool:cfg.tool});
+      function run(){
+        var h="";try{h=q.ans();}catch(err){h="";}
+        setTimeout(function(){
+          slot.className="tail-a";
+          slot.innerHTML=h||'<p>이 물음에 답할 글을 아직 못 불러왔네. 잠시 뒤에 다시 물어보게.</p>';
+          if(typeof plainWords==="function")try{plainWords(slot);}catch(err){}
+          try{slot.scrollIntoView({behavior:RMq?"auto":"smooth",block:"nearest"});}catch(err){}
+          offer(q.next);},RMq?0:800);}
+      if(cfg.load)cfg.load(run);else run();});
+    offer(cfg.first);}
   // 풀이가 긴 도구 — 진지한 보살이 짚어 보는 시간을 최소 o.min 동안 둔다. 짧으면 긴 풀이가 가볍게 읽힌다
   function seerThink(out,btn,steps,done,o){
     o=o||{};

@@ -61,6 +61,18 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       // 내일 미리보기 — 재방문 훅
       var tmr=new Date(ty,tm-1,td+1),tp=sjPillars(tmr.getFullYear(),tmr.getMonth()+1,tmr.getDate(),null,0,false);
       var tRel=sjTenGod(me.d.s,tp.d.s);
+      /* 꼬리질문 — 오늘 십성(rel)의 문장에 태어난 날 글자와의 충·합 한마디를 붙인다(tf/q.json) */
+      var TFQ=null;
+      function tfqLoad(cb){if(TFQ)return cb();
+        fetch("tf/q.json").then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(j){TFQ=j;cb();});}
+      var TFL={confess:"오늘 고백해도 될까?",contract:"오늘 계약·서명해도 될까?",interview:"면접·시험 보는 날인데, 오늘은?",spend:"오늘 큰돈 써도 될까?",
+        talk:"오늘 중요한 대화를 꺼내도 될까?",travel:"오늘 먼 길 나서도 될까?",start:"오늘 새 일을 시작해도 될까?",meet:"오늘 소개팅·모임에 나가도 될까?"};
+      var TFN={confess:["meet","talk","start"],contract:["spend","interview","start"],interview:["contract","start","talk"],spend:["contract","start","travel"],
+        talk:["confess","meet","travel"],travel:["start","spend","meet"],start:["contract","interview","spend"],meet:["confess","talk","travel"]};
+      var tfPool={};Object.keys(TFL).forEach(function(k){tfPool[k]={label:TFL[k],next:TFN[k],ans:function(){
+        var Q=(TFQ||{})[k];if(!Q||!Q.ten||!Q.ten[rel])return "";
+        return '<p>'+Q.ten[rel]+(bonusArt==="충"?" "+Q.chung:bonusArt?" "+Q.hap:"")+'</p><span class="tail-foot">오늘 날짜의 글자와 자네 사주를 맞춰 본 풀이입니다.</span>';}};});
+      var tfTail={tool:"todayfortune",intro:"오늘 일 가운데 더 궁금한 게 있나?<br>어떤 내용이야?",first:["confess","contract","interview","spend"],load:tfqLoad,pool:tfPool};
       el.querySelector("#out").innerHTML=
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
       '<div class="tf-hl">'+T[9]+hlSuf+'</div>'+
@@ -82,11 +94,13 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네 억부용신인 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>'+bosalImg("sleepy","bs-side","달 위에서 조는 아기보살")+'내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
+      '<div class="tail-wrap fold-skip" id="tailbox"></div>'+
       shareBtn()+
       '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 센 편이면 덜어내는 쪽, 약한 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       diaryAdd({t:"오늘의 운세",s:score,g:grade,h:TF_LINE[rel]});
+      tailAsk(el.querySelector("#tailbox"),tfTail);
       var sbx=el.querySelector("#out .share-btn");if(sbx)sbx.insertAdjacentHTML("beforebegin",diaryNote());
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});

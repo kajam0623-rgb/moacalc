@@ -258,9 +258,10 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       function span(dd){return dd.age+"세~"+(dd.age+9)+"세";}
       // 큰 흐름이 지났을 때, 지금 구간이 무엇에 좋은지로 답을 돌려주기 위한 표
       var GRP_GOOD={비겁:"사람과 자립",식상:"만들어 내놓는 일",재성:"재물",관성:"자리와 이름",인성:"배움과 문서"};
-      function focusBlock(){
-        if(!QMETA[Q])return "";
-        var M=QMETA[Q], nowAge=new Date().getFullYear()-y+1;
+      function focusBlock(qk){
+        qk=qk||Q;
+        if(!QMETA[qk])return "";
+        var M=QMETA[qk], nowAge=new Date().getFullYear()-y+1;
         var inGrp=function(dd){return M.grp.indexOf(grp(dd.tg))>=0;};
         var inYong=function(dd){return dd.el===yEl||dd.el===y2El;};
         /* 조건을 느슨하게 잡으면 여덟 구간이 전부 "좋은 때"로 나온다. 그건 답이 아니다.
@@ -412,6 +413,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           '</p></div>';}
       /* 달마다 흐름. 사주의 달은 절기(매달 4~8일께)에 바뀐다 — 각 양력 달 20일의 월주를 그 달로 본다.
          그달 하늘 글자가 자네에게 어떤 십성인지, 용신을 받쳐 주는지, 그달 지지가 일지와 충·합인지, 해마다와 같은 영역 표시 */
+      var MSC=[]; // 앞으로 열두 달의 점수(꼬리질문 "조심할 달"이 같은 값을 쓴다)
       function monthSec(){
         var MTG={"비견":["제 힘으로 밀고 나가는 달일세.","혼자 벌인 일에도 손이 붙으니 미뤄 둔 걸 시작하게.","고집이 부딪히기 쉬우니 같이 하는 일은 몫부터 나눠 두게."],
           "겁재":["사람과 돈이 함께 들썩이는 달이야.","경쟁이 붙어도 밀리지 않으니 붙을 판엔 붙어 보게.","빌려주거나 대신 내는 돈이 새기 쉬우니 지갑을 한 번 더 닫게."],
@@ -431,11 +433,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           var chung=Math.abs(mp.b-p.d.b)===6,hap=sjYukhap(p.d.b)===mp.b||(mp.b%4===p.d.b%4&&mp.b!==p.d.b);
           var mt=sjMonthTerms(sjJdKST(Y,M,20,12,0)),st0=sjKst(mt.prev).replace(/^\d+년 /,"").replace(/ \d\d:\d\d$/,"");
           var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
-          score.push({m:M,y:Y,sc:sc});
+          score.push({m:M,y:Y,sc:sc,tg:tg,i:i});
           rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
             '<p>'+MTG[tg][0]+' '+(fit===2?MTG[tg][1]:fit===1?"보조로 쓰는 기운이 붙어 한결 수월하네. "+MTG[tg][1]:MTG[tg][2])+
             (chung?' 태어난 날 글자와 부딪히는 달이라 이동과 다툼과 몸 관리에 한 번 더 조심하게.':hap?' 태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀리네.':'')+'</p>'+
             (T.length?'<div class="yr-tags">'+T.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+'</div>';}
+        MSC=score;
         var srt=score.slice().sort(function(a,b){return b.sc-a.sc;});
         var best=srt.filter(function(x){return x.sc>=3;}).slice(0,3),worst=srt.filter(function(x){return x.sc<0;}).reverse().slice(0,2);
         var nm=function(a){return a.map(function(x){return x.m+"월";}).join("·");};
@@ -492,6 +495,44 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           ?'모자란 '+mn+'의 자리를 채우고, 넘치는 힘은 밖으로 쓸 길을 열어두게. 그러면 그 힘이 짐이 아니라 연장이 되네.'
           :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
+      /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
+      var TQ=null;
+      function tqLoad(cb){if(TQ)return cb();
+        fetch("sj/q.json").then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(j){TQ=j;cb();});}
+      var TPRED={
+        quit:function(a){return (a.T.indexOf("일")>=0?1:0)+(a.T.indexOf("이동")>=0?1:0);},
+        exam:function(a){return a.gg==="인성"?2:(a.T.indexOf("문서")>=0?1:0);},
+        move:function(a){return a.T.indexOf("이동")>=0?2:0;},
+        marry:function(a){var sp=a.gg===spouseG,h=sjYukhap(p.d.b)===a.yb||a.yb===DH;return sp&&h?2:(sp||h?1:0);},
+        kids:function(a){var kd=a.gg===(male?"관성":"식상"),h=a.T.indexOf("집안")>=0;return kd&&h?2:(kd||h?1:0);},
+        people:function(a){var g=a.gg==="인성"||a.gg==="비겁",f=a.el===yEl||a.el===y2El;return g&&f?2:(g?1:0);},
+        startup:function(a){var g=a.gg==="식상"||a.gg==="재성",f=a.el===yEl||a.el===y2El;return g&&f?2:(g?1:0);}};
+      function tqYears(k){var c=[];
+        for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;
+          var yp=sjPillars(fy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),a={tg:tg,gg:grp(tg),el:SJ_EL[SJ_ES[yp.s]],yb:yp.b,T:tagsFor(yp.s,yp.b)},sc=TPRED[k](a);
+          if(sc>0)c.push({fy:fy,sc:sc,tg:tg});}
+        return c.sort(function(a,b){return b.sc-a.sc||a.fy-b.fy;});}
+      function tqAns(k){
+        var Q=(TQ||{})[k],foot='<span class="tail-foot">해마다 드는 운을 자네 사주와 맞춰 고른 시기입니다.</span>';
+        if(!Q)return "";
+        if(k==="month"){
+          var W=MSC.slice().sort(function(a,b){return a.sc-b.sc||a.i-b.i;}),w=W[0],mn=function(x){return (x.y!==nowY?x.y+"년 ":"")+x.m+"월";};
+          if(!w)return "";
+          if(w.sc>=1)return '<p>앞으로 열두 달 가운데 크게 무거운 달은 없네. 그래도 힘이 가장 덜 실리는 달은 <b>'+mn(w)+'</b>이니 큰일은 그달을 피해서 잡게.</p>'+foot;
+          var w2=W.filter(function(x){return x.sc<0&&x!==w;})[0];
+          return '<p>가장 조심할 달은 <b>'+mn(w)+'</b>일세. '+Q.ten[w.tg]+(w2?' 그다음으로 무거운 달은 <b>'+mn(w2)+'</b>일세.':'')+'</p>'+foot;}
+        var c=tqYears(k);
+        if(!c.length)return '<p>'+Q.none+'</p>'+foot;
+        var a=c[0],b=c.filter(function(x){return x.fy!==a.fy;})[0],ny=function(x){return x.fy===nowY?"올해("+x.fy+"년)":x.fy+"년";};
+        return '<p>가장 볼 만한 해는 <b>'+ny(a)+'</b>일세. '+Q.ten[a.tg]+(b?' 그다음은 <b>'+ny(b)+'</b>일세.':'')+'</p>'+foot;}
+      var TL={money:"재물운은 언제 붙나?",job:"일·사업은 언제까지 가나?",love:"인연은 언제 오나?",health:"몸은 어디를 조심하나?",
+        quit:"지금 이직해도 되나?",exam:"시험·합격 운은?",move:"이사·이동은 언제?",marry:"결혼 시기는?",kids:"자녀·집안 일은?",people:"사람·귀인 운은?",
+        startup:"창업은 언제가 좋나?",month:"조심할 달은 언제야?"};
+      var TN={money:["startup","quit","month"],job:["quit","startup","exam"],love:["marry","people","kids"],health:["month","move","people"],
+        quit:["startup","exam","month"],exam:["quit","people","month"],move:["marry","quit","month"],marry:["kids","people","move"],kids:["marry","people","money"],
+        people:["startup","quit","love"],startup:["money","quit","people"],month:["money","health","move"]};
+      var tailPool={};Object.keys(TL).forEach(function(k){tailPool[k]={label:TL[k],next:TN[k],ans:QMETA[k]?function(){return focusBlock(k);}:function(){return tqAns(k);}};});
+      var tailCfg={tool:"saju",intro:"여기까지 읽고 더 궁금한 게 있나?<br>어떤 내용이야?",first:["money","quit","marry","month"],skip:QMETA[Q]?[Q]:[],load:tqLoad,pool:tailPool};
       el.querySelector("#out").innerHTML=
         sjGridHtml(p,"날 자리(나)")+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
@@ -500,7 +541,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
-        headline+synth+hourSec()+glance+secFortune+focusBlock()+glossary+
+        headline+synth+hourSec()+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
         '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
@@ -586,6 +627,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       cardData.file="사주팔자";
       bindSave(el,cardData);
       bindYearFb(el,y+"-"+mo+"-"+d);
+      tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}

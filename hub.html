@@ -284,6 +284,22 @@
   .gh-mkinv .bs-side{margin-top:-2px;}
   .diary-note{display:flex;align-items:center;gap:10px;font-size:13.5px;margin:16px 0 4px;color:var(--muted);}.diary-note a{color:var(--accent);font-weight:700;}
   .dn-bosal{width:48px;flex:none;}
+  .tail{margin:22px 0;padding:14px 16px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);}
+  .tail-h{display:flex;gap:12px;align-items:center;}.tail-bs{width:56px;flex:none;}
+  .tail-say{font-size:15px;line-height:1.55;font-weight:800;}
+  .tail-log{display:flex;flex-direction:column;gap:10px;margin-top:12px;}
+  .tail-q{align-self:flex-end;max-width:88%;background:#E6B25A;color:#1b1406;padding:8px 13px;border-radius:14px 14px 4px 14px;font-size:14px;font-weight:700;}
+  .tail-a{align-self:flex-start;max-width:100%;background:var(--surface-2);border:1px solid var(--line);padding:12px 14px;border-radius:14px 14px 14px 4px;font-size:14.5px;line-height:1.75;}
+  .tail-a p{margin:0;}.tail-a .sj-sec{margin:0;border:0;padding:0;}.tail-foot{display:block;margin-top:8px;color:var(--muted);font-size:12.5px;line-height:1.6;}
+  .tail-wait{display:flex;gap:5px;padding:14px 16px;}.tail-wait span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:tailDot 1s infinite ease-in-out;}
+  .tail-wait span:nth-child(2){animation-delay:.15s;}.tail-wait span:nth-child(3){animation-delay:.3s;}
+  @keyframes tailDot{0%,80%,100%{opacity:.25;transform:translateY(0);}40%{opacity:1;transform:translateY(-3px);}}
+  @media (prefers-reduced-motion:reduce){.tail-wait span{animation:none;opacity:.6;}}
+  .tail-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+  .tail-chip{display:inline-block;padding:9px 14px;border-radius:999px;border:1px solid #E6B25A;background:var(--surface);color:var(--ink);font-size:13.5px;font-weight:700;cursor:pointer;}
+  .tail-chip:hover{background:#E6B25A;color:#1b1406;}.tail-chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+  .tail-more{border-style:dashed;border-color:var(--line-2);color:var(--muted);}
+  .tail-end{margin:0;color:var(--muted);font-size:13.5px;line-height:1.6;}
   .ppl{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;align-items:center;}
   .ppl-c,.ppl-add,.ppl-ok{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line-2);font-size:13px;font-weight:700;cursor:pointer;background:var(--surface);}
   .ppl-c.on{border-color:#E6B25A;background:#E6B25A;color:#1b1406;}
@@ -1199,6 +1215,45 @@
     var btn=el.querySelector("#go"),out=el.querySelector("#out");
     if(out)out.innerHTML=askWait(waitMsg);
     if(btn)btn.addEventListener("click",function(){if(seer)seerThink(out,btn,steps,go,seer);else askThink(out,btn,steps,go);});}
+  /* 꼬리질문 — 결과 뒤에 보살이 "더 궁금한 게 있나? 어떤 내용이야?" 하고 묻는다. 칩을 누르면 답이 나오고,
+     그 답에서 이어지는 다음 질문을 또 내민다(pool[k].next). 처음 묻는 화면(재물·일 고르기, 타로 고민 고르기)은 그대로 두고 그 뒤에만 붙는다.
+     cfg: {tool, intro, first:[키], skip:[이미 물은 키], load:function(cb), pool:{키:{label, next:[키], ans:function(){return html;}}}} */
+  function tailAsk(host,cfg){
+    if(!host||!cfg)return;
+    var asked={},RMq=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    (cfg.skip||[]).forEach(function(k){asked[k]=1;});
+    host.innerHTML='<div class="tail"><div class="tail-h">'+bosalImg("magnifier","tail-bs","돋보기로 보는 아기보살")+'<div class="tail-say">'+cfg.intro+'</div></div>'+
+      '<div class="tail-log" aria-live="polite"></div><div class="tail-chips"></div></div>';
+    var log=host.querySelector(".tail-log"),chips=host.querySelector(".tail-chips");
+    function rest(){return Object.keys(cfg.pool).filter(function(k){return !asked[k];});}
+    function draw(list,more){
+      chips.innerHTML=list.map(function(k){return '<span class="tail-chip" role="button" tabindex="0" data-k="'+k+'">'+cfg.pool[k].label+'</span>';}).join("")+
+        (more?'<span class="tail-chip tail-more" role="button" tabindex="0" data-more="1">다른 것도 물어볼래</span>':"");}
+    function offer(ids){
+      var r=rest();
+      if(!r.length){chips.innerHTML='<p class="tail-end">궁금한 건 여기까지 다 짚었네. 다른 걸 또 보고 싶으면 위에서 다시 물어보게.</p>';return;}
+      var list=(ids||[]).filter(function(k){return cfg.pool[k]&&!asked[k];}).slice(0,3);
+      if(!list.length)list=r.slice(0,3);
+      draw(list,r.length>list.length);}
+    chips.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("tail-chip")){e.preventDefault();e.target.click();}});
+    chips.addEventListener("click",function(e){
+      var b=e.target.closest&&e.target.closest(".tail-chip");if(!b)return;
+      if(b.dataset.more){draw(rest(),false);return;}
+      var k=b.dataset.k,q=cfg.pool[k];if(!q||asked[k])return;
+      asked[k]=1;chips.innerHTML="";
+      log.insertAdjacentHTML("beforeend",'<div class="tail-q">'+q.label+'</div><div class="tail-a tail-wait" aria-label="보살이 짚어 보는 중"><span></span><span></span><span></span></div>');
+      var slot=log.lastElementChild;
+      track("tail_ask",{tool:cfg.tool});
+      function run(){
+        var h="";try{h=q.ans();}catch(err){h="";}
+        setTimeout(function(){
+          slot.className="tail-a";
+          slot.innerHTML=h||'<p>이 물음에 답할 글을 아직 못 불러왔네. 잠시 뒤에 다시 물어보게.</p>';
+          if(typeof plainWords==="function")try{plainWords(slot);}catch(err){}
+          try{slot.scrollIntoView({behavior:RMq?"auto":"smooth",block:"nearest"});}catch(err){}
+          offer(q.next);},RMq?0:800);}
+      if(cfg.load)cfg.load(run);else run();});
+    offer(cfg.first);}
   // 풀이가 긴 도구 — 진지한 보살이 짚어 보는 시간을 최소 o.min 동안 둔다. 짧으면 긴 풀이가 가볍게 읽힌다
   function seerThink(out,btn,steps,done,o){
     o=o||{};
@@ -2467,9 +2522,10 @@
       function span(dd){return dd.age+"세~"+(dd.age+9)+"세";}
       // 큰 흐름이 지났을 때, 지금 구간이 무엇에 좋은지로 답을 돌려주기 위한 표
       var GRP_GOOD={비겁:"사람과 자립",식상:"만들어 내놓는 일",재성:"재물",관성:"자리와 이름",인성:"배움과 문서"};
-      function focusBlock(){
-        if(!QMETA[Q])return "";
-        var M=QMETA[Q], nowAge=new Date().getFullYear()-y+1;
+      function focusBlock(qk){
+        qk=qk||Q;
+        if(!QMETA[qk])return "";
+        var M=QMETA[qk], nowAge=new Date().getFullYear()-y+1;
         var inGrp=function(dd){return M.grp.indexOf(grp(dd.tg))>=0;};
         var inYong=function(dd){return dd.el===yEl||dd.el===y2El;};
         /* 조건을 느슨하게 잡으면 여덟 구간이 전부 "좋은 때"로 나온다. 그건 답이 아니다.
@@ -2621,6 +2677,7 @@
           '</p></div>';}
       /* 달마다 흐름. 사주의 달은 절기(매달 4~8일께)에 바뀐다 — 각 양력 달 20일의 월주를 그 달로 본다.
          그달 하늘 글자가 자네에게 어떤 십성인지, 용신을 받쳐 주는지, 그달 지지가 일지와 충·합인지, 해마다와 같은 영역 표시 */
+      var MSC=[]; // 앞으로 열두 달의 점수(꼬리질문 "조심할 달"이 같은 값을 쓴다)
       function monthSec(){
         var MTG={"비견":["제 힘으로 밀고 나가는 달일세.","혼자 벌인 일에도 손이 붙으니 미뤄 둔 걸 시작하게.","고집이 부딪히기 쉬우니 같이 하는 일은 몫부터 나눠 두게."],
           "겁재":["사람과 돈이 함께 들썩이는 달이야.","경쟁이 붙어도 밀리지 않으니 붙을 판엔 붙어 보게.","빌려주거나 대신 내는 돈이 새기 쉬우니 지갑을 한 번 더 닫게."],
@@ -2640,11 +2697,12 @@
           var chung=Math.abs(mp.b-p.d.b)===6,hap=sjYukhap(p.d.b)===mp.b||(mp.b%4===p.d.b%4&&mp.b!==p.d.b);
           var mt=sjMonthTerms(sjJdKST(Y,M,20,12,0)),st0=sjKst(mt.prev).replace(/^\d+년 /,"").replace(/ \d\d:\d\d$/,"");
           var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
-          score.push({m:M,y:Y,sc:sc});
+          score.push({m:M,y:Y,sc:sc,tg:tg,i:i});
           rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
             '<p>'+MTG[tg][0]+' '+(fit===2?MTG[tg][1]:fit===1?"보조로 쓰는 기운이 붙어 한결 수월하네. "+MTG[tg][1]:MTG[tg][2])+
             (chung?' 태어난 날 글자와 부딪히는 달이라 이동과 다툼과 몸 관리에 한 번 더 조심하게.':hap?' 태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀리네.':'')+'</p>'+
             (T.length?'<div class="yr-tags">'+T.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+'</div>';}
+        MSC=score;
         var srt=score.slice().sort(function(a,b){return b.sc-a.sc;});
         var best=srt.filter(function(x){return x.sc>=3;}).slice(0,3),worst=srt.filter(function(x){return x.sc<0;}).reverse().slice(0,2);
         var nm=function(a){return a.map(function(x){return x.m+"월";}).join("·");};
@@ -2701,6 +2759,44 @@
           ?'모자란 '+mn+'의 자리를 채우고, 넘치는 힘은 밖으로 쓸 길을 열어두게. 그러면 그 힘이 짐이 아니라 연장이 되네.'
           :'혼자 다 지려 말게. '+yEl+' 기운을 곁에 두면 자네 힘은 두 배로 서네. 기대는 건 약한 게 아닐세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
+      /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
+      var TQ=null;
+      function tqLoad(cb){if(TQ)return cb();
+        fetch("sj/q.json").then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(j){TQ=j;cb();});}
+      var TPRED={
+        quit:function(a){return (a.T.indexOf("일")>=0?1:0)+(a.T.indexOf("이동")>=0?1:0);},
+        exam:function(a){return a.gg==="인성"?2:(a.T.indexOf("문서")>=0?1:0);},
+        move:function(a){return a.T.indexOf("이동")>=0?2:0;},
+        marry:function(a){var sp=a.gg===spouseG,h=sjYukhap(p.d.b)===a.yb||a.yb===DH;return sp&&h?2:(sp||h?1:0);},
+        kids:function(a){var kd=a.gg===(male?"관성":"식상"),h=a.T.indexOf("집안")>=0;return kd&&h?2:(kd||h?1:0);},
+        people:function(a){var g=a.gg==="인성"||a.gg==="비겁",f=a.el===yEl||a.el===y2El;return g&&f?2:(g?1:0);},
+        startup:function(a){var g=a.gg==="식상"||a.gg==="재성",f=a.el===yEl||a.el===y2El;return g&&f?2:(g?1:0);}};
+      function tqYears(k){var c=[];
+        for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;
+          var yp=sjPillars(fy,7,1,null,0,false).y,tg=sjTenGod(ds,yp.s),a={tg:tg,gg:grp(tg),el:SJ_EL[SJ_ES[yp.s]],yb:yp.b,T:tagsFor(yp.s,yp.b)},sc=TPRED[k](a);
+          if(sc>0)c.push({fy:fy,sc:sc,tg:tg});}
+        return c.sort(function(a,b){return b.sc-a.sc||a.fy-b.fy;});}
+      function tqAns(k){
+        var Q=(TQ||{})[k],foot='<span class="tail-foot">해마다 드는 운을 자네 사주와 맞춰 고른 시기입니다.</span>';
+        if(!Q)return "";
+        if(k==="month"){
+          var W=MSC.slice().sort(function(a,b){return a.sc-b.sc||a.i-b.i;}),w=W[0],mn=function(x){return (x.y!==nowY?x.y+"년 ":"")+x.m+"월";};
+          if(!w)return "";
+          if(w.sc>=1)return '<p>앞으로 열두 달 가운데 크게 무거운 달은 없네. 그래도 힘이 가장 덜 실리는 달은 <b>'+mn(w)+'</b>이니 큰일은 그달을 피해서 잡게.</p>'+foot;
+          var w2=W.filter(function(x){return x.sc<0&&x!==w;})[0];
+          return '<p>가장 조심할 달은 <b>'+mn(w)+'</b>일세. '+Q.ten[w.tg]+(w2?' 그다음으로 무거운 달은 <b>'+mn(w2)+'</b>일세.':'')+'</p>'+foot;}
+        var c=tqYears(k);
+        if(!c.length)return '<p>'+Q.none+'</p>'+foot;
+        var a=c[0],b=c.filter(function(x){return x.fy!==a.fy;})[0],ny=function(x){return x.fy===nowY?"올해("+x.fy+"년)":x.fy+"년";};
+        return '<p>가장 볼 만한 해는 <b>'+ny(a)+'</b>일세. '+Q.ten[a.tg]+(b?' 그다음은 <b>'+ny(b)+'</b>일세.':'')+'</p>'+foot;}
+      var TL={money:"재물운은 언제 붙나?",job:"일·사업은 언제까지 가나?",love:"인연은 언제 오나?",health:"몸은 어디를 조심하나?",
+        quit:"지금 이직해도 되나?",exam:"시험·합격 운은?",move:"이사·이동은 언제?",marry:"결혼 시기는?",kids:"자녀·집안 일은?",people:"사람·귀인 운은?",
+        startup:"창업은 언제가 좋나?",month:"조심할 달은 언제야?"};
+      var TN={money:["startup","quit","month"],job:["quit","startup","exam"],love:["marry","people","kids"],health:["month","move","people"],
+        quit:["startup","exam","month"],exam:["quit","people","month"],move:["marry","quit","month"],marry:["kids","people","move"],kids:["marry","people","money"],
+        people:["startup","quit","love"],startup:["money","quit","people"],month:["money","health","move"]};
+      var tailPool={};Object.keys(TL).forEach(function(k){tailPool[k]={label:TL[k],next:TN[k],ans:QMETA[k]?function(){return focusBlock(k);}:function(){return tqAns(k);}};});
+      var tailCfg={tool:"saju",intro:"여기까지 읽고 더 궁금한 게 있나?<br>어떤 내용이야?",first:["money","quit","marry","month"],skip:QMETA[Q]?[Q]:[],load:tqLoad,pool:tailPool};
       el.querySelector("#out").innerHTML=
         sjGridHtml(p,"날 자리(나)")+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
@@ -2709,7 +2805,7 @@
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
-        headline+synth+hourSec()+glance+secFortune+focusBlock()+glossary+
+        headline+synth+hourSec()+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
         '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
@@ -2795,6 +2891,7 @@
       cardData.file="사주팔자";
       bindSave(el,cardData);
       bindYearFb(el,y+"-"+mo+"-"+d);
+      tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
       var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
@@ -3336,6 +3433,20 @@
       blocks.push('<div class="sj-sec"><h3>보살의 종합</h3><p>'+bosalImg("tarot","bs-side","카드를 펼쳐 든 아기보살")+flow+'</p>'+(rl?'<p>'+rl+'</p>':'')+'<p>'+elLine+(stage?' '+stage:'')+'</p><p>'+adv+'</p>'+
         '<blockquote class="tr-quote">'+R[last.i].one+'</blockquote><p>'+CLOSE[ti]+'</p></div>');
       if(birth)blocks.push(sajuPart(ti,last,ques.sp[N-1][1]));
+      /* 꼬리질문 — 같은 패를 다른 고민에 비춰 보기(카드×주제 원고 그대로) · 카드마다 조언과 한마디 */
+      var TN2={love:["family","friend","money"],money:["work","exam","health"],work:["money","exam","friend"],exam:["work","family","health"],
+        family:["love","friend","health"],friend:["family","love","work"],health:["day","family","exam"],day:["love","money","work"]};
+      var cardTag=function(pk){return '<b>'+M[pk.i][1]+(pk.rev?'(역방향)':'')+'</b>';};
+      var tpool={};
+      TOPICS.forEach(function(t){if(t.k===topic.k)return;
+        tpool["t_"+t.k]={label:"이 패를 "+t.name+"에 비춰 보면?",next:(TN2[t.k]||[]).map(function(k){return "t_"+k;}).concat(["adv","one"]),ans:function(){
+          return '<p>같은 패를 <b>'+t.name+'</b>에 비춰 보면 이렇게 읽히네.</p>'+picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].topic[t.k][pk.rev?1:0]+'</p>';}).join("");}};});
+      tpool.adv={label:"카드마다 조언을 한마디씩 더 듣고 싶네",next:["one"].concat((TN2[topic.k]||[]).map(function(k){return "t_"+k;})),ans:function(){
+        return picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].role.advice+'</p>';}).join("");}};
+      tpool.one={label:"카드마다 보살의 한마디는?",next:["adv"].concat((TN2[topic.k]||[]).map(function(k){return "t_"+k;})),ans:function(){
+        return picks.map(function(pk){return '<p>'+cardTag(pk)+' — '+R[pk.i].one+'</p>';}).join("");}};
+      var tarotTail={tool:"tarot",intro:"패 풀이를 듣고 더 궁금한 게 있나?<br>어떤 내용이야?",first:(TN2[topic.k]||[]).map(function(k){return "t_"+k;}).concat(["adv"]),pool:tpool};
+      blocks.push('<div class="tail-wrap fold-skip" id="tailbox"></div>');
       blocks.push('<p class="note">타로 풀이는 재미와 참고를 위한 것입니다. 돈·건강·법률에 관한 결정은 전문가와 상의하세요.</p>'+
         '<div class="bs-opts"><span class="bs-opt save-btn" role="button" tabindex="0">이미지로 저장</span><span class="bs-opt share-btn" role="button" tabindex="0">결과 공유하기</span><span class="bs-opt" id="tr-again" role="button" tabindex="0">다른 고민 물어보기</span></div>');
       rd.innerHTML=blocks.map(function(x){return '<div class="tr-blk">'+x+'</div>';}).join("");
@@ -3348,6 +3459,7 @@
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
       bindSave(rd,{file:"동네보살-타로",draw:drawShare});
       [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
+      tailAsk(rd.querySelector("#tailbox"),tarotTail);
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
       track("tarot_read",{topic:topic.k,n:N,saju:birth?1:0});
       diaryAdd({t:"타로 · "+topic.name,h:picks.map(function(pk){return M[pk.i][1]+(pk.rev?"(역)":"");}).join(" · ")});}
@@ -3417,6 +3529,18 @@
       // 내일 미리보기 — 재방문 훅
       var tmr=new Date(ty,tm-1,td+1),tp=sjPillars(tmr.getFullYear(),tmr.getMonth()+1,tmr.getDate(),null,0,false);
       var tRel=sjTenGod(me.d.s,tp.d.s);
+      /* 꼬리질문 — 오늘 십성(rel)의 문장에 태어난 날 글자와의 충·합 한마디를 붙인다(tf/q.json) */
+      var TFQ=null;
+      function tfqLoad(cb){if(TFQ)return cb();
+        fetch("tf/q.json").then(function(r){return r.ok?r.json():{};}).catch(function(){return {};}).then(function(j){TFQ=j;cb();});}
+      var TFL={confess:"오늘 고백해도 될까?",contract:"오늘 계약·서명해도 될까?",interview:"면접·시험 보는 날인데, 오늘은?",spend:"오늘 큰돈 써도 될까?",
+        talk:"오늘 중요한 대화를 꺼내도 될까?",travel:"오늘 먼 길 나서도 될까?",start:"오늘 새 일을 시작해도 될까?",meet:"오늘 소개팅·모임에 나가도 될까?"};
+      var TFN={confess:["meet","talk","start"],contract:["spend","interview","start"],interview:["contract","start","talk"],spend:["contract","start","travel"],
+        talk:["confess","meet","travel"],travel:["start","spend","meet"],start:["contract","interview","spend"],meet:["confess","talk","travel"]};
+      var tfPool={};Object.keys(TFL).forEach(function(k){tfPool[k]={label:TFL[k],next:TFN[k],ans:function(){
+        var Q=(TFQ||{})[k];if(!Q||!Q.ten||!Q.ten[rel])return "";
+        return '<p>'+Q.ten[rel]+(bonusArt==="충"?" "+Q.chung:bonusArt?" "+Q.hap:"")+'</p><span class="tail-foot">오늘 날짜의 글자와 자네 사주를 맞춰 본 풀이입니다.</span>';}};});
+      var tfTail={tool:"todayfortune",intro:"오늘 일 가운데 더 궁금한 게 있나?<br>어떤 내용이야?",first:["confess","contract","interview","spend"],load:tfqLoad,pool:tfPool};
       el.querySelector("#out").innerHTML=
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
       '<div class="tf-hl">'+T[9]+hlSuf+'</div>'+
@@ -3438,11 +3562,13 @@
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네 억부용신인 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>'+bosalImg("sleepy","bs-side","달 위에서 조는 아기보살")+'내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
+      '<div class="tail-wrap fold-skip" id="tailbox"></div>'+
       shareBtn()+
       '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 센 편이면 덜어내는 쪽, 약한 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       diaryAdd({t:"오늘의 운세",s:score,g:grade,h:TF_LINE[rel]});
+      tailAsk(el.querySelector("#tailbox"),tfTail);
       var sbx=el.querySelector("#out .share-btn");if(sbx)sbx.insertAdjacentHTML("beforebegin",diaryNote());
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
