@@ -887,7 +887,7 @@ const SITE_NAME = "동네보살";
 const THEME_JS = '<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dnbs_theme")}catch(e){}d.setAttribute("data-theme",t==="dark"?"dark":"light");'+
   'document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".theme-tg");if(!b)return;var n=d.getAttribute("data-theme")==="dark"?"light":"dark";d.setAttribute("data-theme",n);try{localStorage.setItem("dnbs_theme",n)}catch(x){}});})();</script>';
 const THEME_BTN = '<button type="button" class="theme-tg" aria-label="화면 밝기 바꾸기"><span class="tg-d">🌙 다크 모드</span><span class="tg-l">☀ 라이트 모드</span></button>';
-const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SITE_NAME}">`+
+const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SITE_NAME}"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
   (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
@@ -1284,6 +1284,7 @@ function seoPage(o){
     inLanguage:"ko",url:o.url,image:DOMAIN+"/"+o.img,
     publisher:{"@type":"Organization",name:"동네보살",url:DOMAIN+"/"},
     isPartOf:{"@type":"WebSite",name:"동네보살",url:DOMAIN+"/"}};
+  if (o.tags && o.tags.length) ld.keywords = o.tags.join(", ");
   // 칼럼처럼 날짜가 있는 글은 작성일과 작성 주체를 밝힌다
   if (o.date) { ld.datePublished = o.date; ld.dateModified = o.dateModified || o.date;
     ld.author = {"@type":"Organization",name:"동네보살 편집팀",url:DOMAIN+"/about.html"}; }
@@ -1484,7 +1485,7 @@ function ilganPage(g){
       `<section class="guide"><h2>${g.ko}${g.el}의 연애</h2><div class="intro" style="margin-top:0">${para(g.love)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 재물</h2><div class="intro" style="margin-top:0">${para(g.money)}</div></section>`+
-      `<section class="guide"><h2>${g.ko}${g.el}의 건강 — 약한 고리</h2><div class="intro" style="margin-top:0">${para(g.health)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 건강 — 약한 고리</h2><div class="intro" style="margin-top:0">${para(g.health)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">오행과 장부를 짝지어 읽는 전통 명리학의 해석이며 의학적 진단이 아닙니다. 몸에 불편이 있으면 의료진과 상의하세요.</p></div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(g.y2026)}</div></section>`,
     faq:[
       [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
@@ -2385,6 +2386,8 @@ ${footer}
 </body></html>`;
 }
 
+// 사주 사전 안에서 칼럼으로 가는 길 — 열두 편 전부, 최신순, 제목만
+const dictColumnsHtml = () => COLUMN_PAGES.length ? '<section class="guide"><h2>보살 칼럼 — 헷갈리는 것 자세히</h2><div class="sibs">' + [...COLUMN_PAGES].sort((a, b) => b.order - a.order).map(c => `<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("") + '</div></section>' : "";
 function dictPage(){
   const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
   const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 78장과 만세력 월력까지 뜻과 함께 찾아보세요.";
@@ -2404,6 +2407,7 @@ ${ORG_LD}
 <img class="bosal page-bosal" src="img/bosal/point.webp" alt="사전을 짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">사주 사전</h1>
 <p style="color:var(--muted);font-size:14px;margin-bottom:22px">사주·운세에 나오는 말이 낯설다면 여기서 찾아보세요. 이름마다 한 줄 뜻을 달았습니다.</p>
 ${learnCta()}
+${dictColumnsHtml()}
 <section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
 <p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
 ${iljuChips(null)}</section>

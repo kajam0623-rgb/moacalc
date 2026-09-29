@@ -331,6 +331,10 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
     t("배우기: 실습 통계 이벤트 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"learn_practice"/.test(fs.readFileSync("worker.js", "utf8")) && lsrc.includes('track("learn_practice"'), true);
     t("배우기: 허브·강의 페이지·끼워 넣기 빌드 코드", ["function learnHubPage()", "function lecturePage(", "function lectureByPage(", "learnBar(lec)", "learnBottom(lec)", 'smUrl("learn.html")'].every(x => bs.includes(x)), true);
   }
+  t("모든 페이지 공통 헤더에 og:locale·twitter:card 가 있다", /const headExtra = [^\n]*og:locale[^\n]*twitter:card/.test(bs), true);
+  t("글 페이지 구조화 데이터에 keywords 가 태그에서 나온다", bs.includes("ld.keywords = o.tags.join("), true);
+  t("일간 페이지 건강 절에 의학적 진단이 아니라는 고지가 있다", /para\(g\.health\)\}<p[^>]*>[^<]*의학적 진단이 아닙니다/.test(bs), true);
+  t("사주 사전에 칼럼 섹션이 있다", bs.includes("${dictColumnsHtml()}"), true);
   t("생년월일·시각·성별·이름을 저장하지도 읽지도 않는다", !/loadPrefs\(\)\.(birth|partnerBirth|gender|partnerGender|name|birthHour|birthTime)\b/.test(src) && !/savePrefs\(\{[^}]*\b(birth|gender|name|partner)/.test(src) && !/c\.birth=|\.birth;\}catch/.test(bs), true);
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
