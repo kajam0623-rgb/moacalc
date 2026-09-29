@@ -88,6 +88,26 @@
 - [용신(用神)](https://dongnebosal.com/concept-yongsin.html): 넘치면 덜어내고 모자라면 채우는, 균형을 잡는 글자입니다
 - [합충(合沖)](https://dongnebosal.com/concept-hapchung.html): 합은 묶여 성질이 바뀌는 것, 충은 부딪혀 흔들리는 것입니다
 
+## 명리학 배우기 (16강) — 사주 기초부터 대운까지, 내 생년월일로 실습
+
+- [명리학 배우기 16강](https://dongnebosal.com/learn.html): 명리학을 16강으로 나눠 배웁니다. 사주팔자와 오행에서 십성·신강·용신·격국·신살, 대운과 세운까지 순서대로 읽고 내 생년월일로 실습하고 확인 문제로 점검합니다. 결제도 가입도 없습니다.
+- [1강 사주팔자란 — 여덟 글자와 네 자리](https://dongnebosal.com/learn-eight-characters.html): 사주의 네 기둥과 여덟 글자가 무엇인지 설명하고, 내 사주표에서 나를 뜻하는 자리를 찾을 수 있습니다.
+- [2강 음양오행](https://dongnebosal.com/concept-eumyang-ohaeng.html): 목·화·토·금·수의 상생과 상극을 알고 내 사주의 오행 개수를 직접 셀 수 있습니다.
+- [3강 천간과 지지](https://dongnebosal.com/concept-cheongan-jiji.html): 열 개의 천간과 열두 개의 지지를 읽고 내 일간이 양간인지 음간인지 구분할 수 있습니다.
+- [4강 절기와 만세력](https://dongnebosal.com/concept-jeolgi.html): 연주는 입춘, 월주는 절기로 바뀐다는 것을 알고 내 월주가 어느 절기에서 시작됐는지 찾을 수 있습니다.
+- [5강 일간 — 나를 뜻하는 글자](https://dongnebosal.com/learn-day-master.html): 내 일간이 무엇인지 찾고 오행과 음양으로 성향의 바탕을 짚을 수 있습니다.
+- [6강 십성 — 열 가지 관계](https://dongnebosal.com/column-sipseong-lookup-table.html): 일간과 다른 글자의 오행 관계와 음양으로 십성 열 가지를 찾을 수 있습니다.
+- [7강 신강·신약 — 힘의 세기](https://dongnebosal.com/learn-strength.html): 돕는 기운과 덜어내는 기운을 나누어 내 사주의 힘의 세기를 직접 계산할 수 있습니다.
+- [8강 용신 — 나에게 필요한 기운](https://dongnebosal.com/concept-yongsin.html): 힘의 세기에 따라 내게 필요한 기운(용신)이 무엇인지 정할 수 있습니다.
+- [9강 격국 — 사주의 틀](https://dongnebosal.com/learn-gyeokguk.html): 월지 본기와 일간의 관계로 내 사주의 틀(격국)을 찾을 수 있습니다.
+- [10강 지장간 — 지지 속에 숨은 글자](https://dongnebosal.com/learn-hidden-stems.html): 지지 속에 숨은 천간의 순서(여기·중기·정기)를 읽고, 지지의 대표 글자인 정기를 찾을 수 있습니다.
+- [11강 합과 충](https://dongnebosal.com/concept-hapchung.html): 육합·삼합·충을 구분하고 내 사주 안 글자들의 관계를 찾을 수 있습니다.
+- [12강 십이운성](https://dongnebosal.com/concept-sibiunseong.html): 일간이 각 지지에서 놓인 열두 단계를 찾고 그 뜻을 바르게 읽을 수 있습니다.
+- [13강 신살 — 글자 조합이 만드는 상징](https://dongnebosal.com/learn-sinsal.html): 도화·역마·화개 등 대표 신살이 어떤 규칙으로 정해지는지 알고 내 사주에서 찾을 수 있습니다.
+- [14강 대운 — 10년의 흐름](https://dongnebosal.com/column-daeun-reading.html): 대운의 방향과 시작 나이를 계산하고 앞으로의 흐름을 읽는 순서를 알 수 있습니다.
+- [15강 세운과 월운](https://dongnebosal.com/column-yearly-luck-table.html): 해마다·달마다 오는 기운이 내 일간에게 어떤 십성인지 찾을 수 있습니다.
+- [16강 종합 — 내 사주 한 장 읽기](https://dongnebosal.com/learn-read-whole-chart.html): 1~15강에서 배운 것을 순서대로 적용해 내 사주 한 장을 읽을 수 있습니다.
+
 ## 타로 카드별 상세 (78) — 메이저 22 · 마이너 56
 
 - [바보 카드(The Fool)](https://dongnebosal.com/tarot-fool.html): 새로운 출발과 순수한 가능성 · 정방향 새로운 시작·자유·모험·순수함 · 역방향 무모함·준비 부족·현실 도피·경솔한 결정

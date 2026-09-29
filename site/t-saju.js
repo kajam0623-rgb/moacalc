@@ -91,12 +91,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var tot=cnt.reduce(function(a,b){return a+b;},0);
       var mx=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],mn=SJ_EL[cnt.indexOf(Math.min.apply(null,cnt))];
       // 대운
-      var fwd=(p.y.s%2===0)===male,jd0=sjJdKST(B.y,B.mo,B.d,h==null?12:h,h==null?0:B.mi);
-      function mIdxOf(jd){return Math.floor((((sjSunLong(jd)-315)%360)+360)%360/30);}
-      var base=mIdxOf(jd0),days=30;
-      for(var t=0.25;t<=32;t+=0.25){if(mIdxOf(jd0+(fwd?t:-t))!==base){days=t;break;}}
-      var su=Math.max(1,Math.min(10,Math.round(days/3)));
-      var m60=0;for(var k=0;k<60;k++)if(k%10===p.m.s&&k%12===p.m.b){m60=k;break;}
+      var DA=sjDaeunStart(p,male,sjJdKST(B.y,B.mo,B.d,h==null?12:h,h==null?0:B.mi)),fwd=DA.fwd,days=DA.days,su=DA.su,m60=DA.m60;
       var duHtml="",duList=[];for(var i2=1;i2<=8;i2++){var kk=((m60+(fwd?i2:-i2))%60+60)%60;
         var dTg=sjTenGod(ds,kk%10),dAge=su+10*(i2-1);
         // el: 대운 천간의 오행. 용신과 맞는 구간인지 판정하는 데 쓴다

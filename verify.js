@@ -288,6 +288,49 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 꼬리질문: 결과 뒤에 자리·질문 12개·엔진 연결", ["tailAsk(el.querySelector(\"#tailbox\"),tailCfg)", 'first:["money","quit","marry","month"]', 'fetch("sj/q.json")', "TPRED={"].every(x => toolBlock("saju").includes(x)) && ["quit","exam","move","marry","kids","people","startup","month","money","job","love","health"].every(k => toolBlock("saju").includes(k + ":")), true);
   t("오늘의 운세 꼬리질문: 자리·질문 8개·엔진 연결", ["tailAsk(el.querySelector(\"#tailbox\"),tfTail)", 'first:["confess","contract","interview","spend"]', 'fetch("tf/q.json")'].every(x => toolBlock("todayfortune").includes(x)) && ["confess","contract","interview","spend","talk","travel","start","meet"].every(k => toolBlock("todayfortune").includes(k + ":")), true);
   t("타로 꼬리질문: 자리·주제 비춰 보기·조언·한마디", ["tailAsk(rd.querySelector(\"#tailbox\"),tarotTail)", 'tpool.adv=', 'tpool.one=', '"이 패를 "+t.name+"에 비춰 보면?"'].every(x => toolBlock("tarot").includes(x)), true);
+  t("지장간 표: 열두 지지 · 일수 합 30 · 마지막(정기)이 SJ_BMAIN 과 같다", SJ_JJG.length === 12 && SJ_JJG.every((r, b) => r.reduce((a, x) => a + x[1], 0) === 30 && r[r.length - 1][0] === SJ_BMAIN[b]), true);
+  t("사주 도구가 대운 시작을 공용 sjDaeunStart 로 계산한다", toolBlock("saju").includes("sjDaeunStart(p,male,") && !toolBlock("saju").includes("function mIdxOf"), true);
+  // ── 명리학 배우기
+  { const LEARN = require("./content_learn.js"), L = LEARN.LECTURES, lsrc = fs.readFileSync("learn_client.js", "utf8");
+    t("배우기: 16강 · 번호 연속 · 4부", L.length === 16 && L.every((c, i) => c.no === i + 1) && LEARN.PARTS.length === 4, true);
+    t("배우기: 새 강의 7편(1·5·7·9·10·13·16)과 기존 페이지 9편", L.filter(c => c.en).map(c => c.no).join(",") + "|" + L.filter(c => c.url).length, "1,5,7,9,10,13,16|9");
+    const CONC = require("./content_concept.js").map(c => "concept-" + c.en + ".html"), COL = require("./content_column.js").map(c => "column-" + c.en + ".html");
+    t("배우기: 기존 페이지 강의는 실제 개념·칼럼 페이지를 가리킨다", L.filter(c => c.url).every(c => CONC.includes(c.url) || COL.includes(c.url)), true);
+    t("배우기: 확인 문제 3개씩 · 정답 번호 범위 · 선택지 4개", L.every(c => c.quiz.length === 3 && c.quiz.every(q => q.c.length === 4 && q.a >= 0 && q.a < 4 && q.why.length > 15)), true);
+    // 엔진으로 검증되는 확인 문제는 정답이 엔진 값과 같아야 한다
+    let chkN = 0, chkBad = [];
+    L.forEach(c => c.quiz.forEach((q, i) => { if (!q.chk) return; chkN++;
+      const ans = q.c[q.a];
+      if (q.chk.tenGod && sjTenGod(q.chk.tenGod[0], q.chk.tenGod[1]) !== ans) chkBad.push(c.no + "강 문제" + (i + 1));
+      if (q.chk.unseong && sjUnseong(q.chk.unseong[0], q.chk.unseong[1]) !== ans) chkBad.push(c.no + "강 문제" + (i + 1));
+      if (q.chk.chung && !(Math.abs(q.chk.chung[0] - q.chk.chung[1]) === 6 && ans.startsWith(SJ_B[q.chk.chung[1]]))) chkBad.push(c.no + "강 문제" + (i + 1)); }));
+    t("배우기: 엔진으로 검증되는 확인 문제 정답(" + chkN + "개)이 엔진 값과 같다", chkBad.join(","), "");
+    t("배우기: 확인 문제의 기준 값(갑-병 식신, 병-무 식신, 갑목 해 장생)이 엔진과 같다", sjTenGod(0, 2) === "식신" && sjTenGod(2, 4) === "식신" && sjUnseong(0, 11) === "장생", true);
+    t("배우기: 새 강의 본문·표·FAQ 4개·자리표시자 외 코드 이름 없음", L.filter(c => c.en).every(c => c.sections.length >= 4 && c.faq.length === 4 && c.sections.map(s => s[1].replace(/\s/g, "")).join("").length >= 700 &&
+      !/hub\.html|sjStrength|strengthBand|SJ_[A-Z]|엔진/.test(JSON.stringify([c.sections, c.faq, c.desc, c.lead, c.quiz]))), true);
+    // 자리표시자는 "경(庚)" 같은 한자 표기로 채워져 받침을 알 수 없으므로 그 바로 뒤에 은·는·가·을·를·과·와·로 를 붙이지 않는다
+    t("배우기: 새 강의 글에서 자리표시자 바로 뒤에 조사(은·는·가·을·를·과·와·로)가 붙지 않는다",
+      L.filter(c => c.en).flatMap(c => (JSON.stringify([c.sections, c.faq, c.quiz, c.desc, c.lead]).match(/\}\}(은|는|가|을|를|과|와|로|으로)(?![가-힣])/g) || []).map(m => c.no + "강 " + m)).join(","), "");
+    // 7강 가중치 표에 적은 숫자로 신강 비율을 다시 계산해 sjStrength 와 견준다
+    { const wt = {}; L.find(c => c.no === 7).tables({}, {})[0].rows.forEach(r => { wt[r[0]] = parseFloat(r[1]); });
+      let wbad = 0;
+      [[1976, 7, 27, 14], [1990, 3, 15, null], [2001, 11, 8, 23], [1984, 2, 4, 9], [1955, 9, 30, 6], [2010, 6, 21, 18], [1969, 12, 31, 1], [1993, 5, 5, 12], [2024, 8, 8, null], [1947, 1, 20, 21]].forEach(([y, mo, d, h]) => {
+        const q = sjPillars(y, mo, d, h, h == null ? 0 : 30, true), de = SJ_ES[q.d.s]; let sup = 0, tot = 0;
+        const add = (el, w) => { tot += w; if (el === de || (el + 1) % 5 === de) sup += w; };
+        add(SJ_EB[q.m.b], wt["월지"]); add(SJ_EB[q.d.b], wt["일지"]); add(SJ_ES[q.m.s], wt["월간"]); add(SJ_ES[q.y.s], wt["연간"]); add(SJ_EB[q.y.b], wt["연지"]);
+        if (q.h) { add(SJ_ES[q.h.s], wt["시간"]); add(SJ_EB[q.h.b], wt["시지"]); }
+        if (Math.abs(sup / tot - sjStrength(q).ratio) > 1e-9) wbad++; });
+      t("배우기: 7강 가중치 표(월지 3·일지 2·월간 1.5·나머지 1)가 sjStrength 와 같은 값이다", Object.keys(wt).length + ":" + wbad, "7:0"); }
+    t("배우기: 실습 열여섯 가지가 모두 정의돼 있다", [...lsrc.matchAll(/DEF\[(\d+)\] =/g)].map(m => +m[1]).sort((a, b) => a - b).join(","), "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16");
+    let lsyn = ""; try { new Function(lsrc); } catch (e) { lsyn = e.message; }
+    t("배우기: learn_client.js 구문", lsyn, "");
+    // 실습 코드가 쓰는 core.js 전역이 hub.html 엔진·공용 헬퍼에 실제로 있다
+    const used = ["sjPillars", "sjStrength", "sjTenGod", "sjUnseong", "sjSinsal", "sjSamhap", "sjYukhap", "sjDaeunStart", "sjJdKST", "sjMonthTerms", "sjKst", "sjIpchun", "sjHourOpts", "sjGridHtml", "birthDial", "SJ_JJG", "SJ_JS", "SJ_BMAIN", "SJ_GYEOK", "SJ_GYEOK_DESC", "SJ_SINSAL_DESC", "SJ_DOHWA", "SJ_YONG", "SJ_UN"];
+    t("배우기: 실습이 쓰는 전역 함수·표가 hub.html 에 정의돼 있다", used.filter(n => !new RegExp("function " + n + "\\(|var " + n + "\\s*=|," + n + "=").test(src)).join(","), "");
+    t("배우기: 실습은 생년월일을 저장하지 않는다(진도 키만 저장)", /localStorage\.setItem\(KEY/.test(lsrc) && !/setItem\([^)]*(birth|생일|dnbs")/.test(lsrc) && /var KEY = "dnbs_learn"/.test(lsrc), true);
+    t("배우기: 실습 통계 이벤트 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"learn_practice"/.test(fs.readFileSync("worker.js", "utf8")) && lsrc.includes('track("learn_practice"'), true);
+    t("배우기: 허브·강의 페이지·끼워 넣기 빌드 코드", ["function learnHubPage()", "function lecturePage(", "function lectureByPage(", "learnBar(lec)", "learnBottom(lec)", 'smUrl("learn.html")'].every(x => bs.includes(x)), true);
+  }
   t("생년월일·시각·성별·이름을 저장하지도 읽지도 않는다", !/loadPrefs\(\)\.(birth|partnerBirth|gender|partnerGender|name|birthHour|birthTime)\b/.test(src) && !/savePrefs\(\{[^}]*\b(birth|gender|name|partner)/.test(src) && !/c\.birth=|\.birth;\}catch/.test(bs), true);
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
@@ -409,7 +452,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

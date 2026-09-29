@@ -31,6 +31,11 @@ const SAJU_Q = require("./content_saju_q.js");         // 꼬리질문 — sj/q.
 const TODAY_Q = require("./content_today_q.js");       // 꼬리질문 — tf/q.json
 const SAJU_SYNTH = require("./content_saju_synth.js");     // 종합 칸 — 조합 파일에 그 일간·격국 몫만 // 판정 문장 — 조합 파일에 그 일간·격국 몫만 골라 싣는다  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
+const LEARN = require("./content_learn.js");             // 명리학 배우기 16강(learn/*.js)
+const LEARN_JS = fs.readFileSync(path.join(__dirname, "learn_client.js"), "utf8")   // 실습·확인 문제·진도 — site/learn.js 로 나간다
+  .replace("/*PAGES*/[]", JSON.stringify(LEARN.LECTURES.map(c => c.page)))
+  .replace("/*ILGAN_META*/[]", JSON.stringify(require("./content_ilgan.js").map(g => ({ en: g.en, m: g.metaphor }))));
+const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex").slice(0, 8);
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
@@ -274,7 +279,7 @@ todayfortune:{
  여기에 내 일지와 오늘 지지의 삼합·육합·충 관계를 더해 점수를 보정합니다. 삼합이면 사람의 도움이 더해지고, 충이면 계획이 흔들릴 수 있어 변수를 미리 잡아두는 편이 좋습니다.
  총점 아래로는 <b>애정·재물·직장·건강</b> 네 항목을 따로 보여줍니다. 같은 84점이라도 정재의 날은 재물 쪽이 높고 편관의 날은 건강 쪽이 낮게 나옵니다. 마지막 <b>행운 정보</b>는 내 일간을 생해 주는 오행(인성)에서 뽑습니다. 목이면 청록·동쪽·3·8, 화면 붉은색·남쪽·2·7, 토면 노랑·중앙·5·10, 금이면 흰색·서쪽·4·9, 수면 검정·북쪽·1·6입니다. 시간대는 오늘 일지와 육합이 되는 지지의 시각으로, 사람과 일이 맞물리기 쉬운 구간입니다.`,
  example:{t:"1990년 3월 15일생 · 기(己) 일간 기준",rows:[["오늘 일진","丙辰 (병진)"],["오늘 천간 丙 → 내 일간 己","정인"],["일지 관계","보정 없음"],["기본 점수","84점"],["행운 오행","화(火) — 己 토를 생함"],["행운 색·방위","빨강·자주 / 남쪽"]],res:["오늘","귀인과 배움의 날 · 길"]},
- caution:["<b>일진은 자정에 바뀝니다.</b> 밤 11시 이후를 다음 날로 보는 야자시 관점도 있지만 이 계산기는 자정 기준을 씁니다.",
+ caution:["<b>일진은 자정에 바뀝니다.</b> 밤 11시 이후를 다음 날로 보는 정자시 관점도 있지만 이 계산기는 자정 기준을 씁니다.",
  "<b>점수가 낮은 날이 나쁜 날은 아닙니다.</b> 주의가 필요한 구간을 미리 알려주는 신호이며, 조언대로 움직이면 실수를 줄이는 날이 됩니다.",
  "<b>매일 새로 확인하세요.</b> 어제와 오늘의 일진이 다르므로 결과도 달라집니다.",
  "<b>중요한 결정은 운세만으로 하지 마세요.</b> 흐름을 참고하되 판단의 근거는 사실과 준비입니다."]},
@@ -916,15 +921,15 @@ const TOOL_POSE = {tojeong:"scroll",todayfortune:"crystal",saju:"magnifier",gung
   zodiacfortune:"trophy",stargunghap:"phone",namematch:"diary",lunar:"scroll",manse:"scroll",dict:"point"};
 const thBosal = id => TOOL_POSE[id] ? `<img class="th-bosal" src="img/bosal/${TOOL_POSE[id]}.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()">` : "";
 // 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
-const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 저장·전송 안 함</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
+const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 서버로 안 보냄</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
 const TRUST_TAROT = '<div class="trust"><span>결제·가입 없음</span><span>섞는 순간 정해지는 78장</span><span>카드 뜻 78장 직접 집필</span><span>생일 넣으면 사주 대조</span></div>';
 // 모바일 하단 탭바 — 전역 길찾기가 "← 전체 도구" 하나뿐이었다
 const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfortune.html"><i>☀</i>오늘</a><a href="saju.html"><i>☯</i>사주</a><a href="gunghap.html"><i>♥</i>궁합</a><a href="tarot.html"><i>✦</i>타로</a><a href="dict.html"><i>☰</i>사전</a></nav>`;
 const footer = `<footer class="sfoot">
 <div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
-<p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 저장하지도 서버로 보내지도 않고, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
+<p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
-<div><h4>사이트</h4><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><h4>사이트</h4><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 </footer>
@@ -968,7 +973,8 @@ lunar:"음력 양력 변환 — 음력 생일·윤달 무료 변환",
 // 도구 페이지 본문에서 관련 칼럼으로 가는 링크 — 칼럼의 tool·related 를 거꾸로 이어 자동으로 만든다(그 도구가 주인인 칼럼을 앞에, 최신순, 3편까지, 제목만 — 도구 페이지끼리 같은 글이 반복돼 고유율이 떨어지지 않게)
 function toolColumnsHtml(id){
   const l = COLUMN_PAGES.filter(c=>c.tool===id||c.related.includes(id)).sort((a,b)=>(b.tool===id)-(a.tool===id)||b.order-a.order).slice(0,3);
-  return l.length ? '<section class="guide"><h2>관련 칼럼</h2><div class="sibs">'+l.map(c=>`<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("")+'</div></section>' : "";
+  const learnChip = id === "saju" ? '<a href="learn.html">명리학 배우기 16강</a>' : "";
+  return (l.length || learnChip) ? '<section class="guide"><h2>관련 칼럼</h2><div class="sibs">'+learnChip+l.map(c=>`<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("")+'</div></section>' : "";
 }
 function toolPage(t){
   const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 동네보살";
@@ -1091,6 +1097,7 @@ const ENGINE = new Function(
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
   "sjPillars,sjTenGod,sjUnseong,sjYukhap,TXT," +
+  "sjStrength,sjSinsal,sjDaeunStart,sjJdKST,SJ_JJG,SJ_GYEOK,SJ_CHEONEUL,SJ_MUNCHANG,SJ_YANGIN,SJ_DOHWA,SJ_YEOKMA,SJ_HWAGAE,SJ_BAEKHO,SJ_GWAEGANG," +
   "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")();
 
 
@@ -1264,6 +1271,7 @@ const crumbLd = rows => '<script type="application/ld+json">'+JSON.stringify({
 // 개별 페이지 공통 셸 — toolPage와 같은 레이아웃을 쓰되 본문이 원고다
 function seoPage(o){
   if(!o.img) throw new Error("seoPage: img 없음(og:image 가 /undefined 가 된다) — "+o.url);
+  const lec = lectureByPage(o.url);   // 강의로 쓰이는 페이지면 강 띠·실습·확인 문제를 끼운다
   const faqLd = '<script type="application/ld+json">'+JSON.stringify({"@context":"https://schema.org","@type":"FAQPage",
     mainEntity:o.faq.map(x=>({"@type":"Question",name:x[0],acceptedAnswer:{"@type":"Answer",text:x[1]}}))})+'</script>';
   /* 홈 → 부모 도구 → 이 페이지. o.parent 는 "saju.html" 같은 상대 경로다.
@@ -1293,11 +1301,13 @@ function seoPage(o){
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
 <main>
-<div class="toolhero"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
-${o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`}
-<div class="card tool" id="tool"></div>
+<div class="toolhero${o.h1.length > 22 ? " longh" : ""}"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+${lec ? learnBar(lec) : ""}
+${o.noTool ? "" : (o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`)}
+${o.noTool ? "" : '<div class="card tool" id="tool"></div>'}
 <div class="tags">${o.tags.map(x=>'<span>#'+esc(x)+'</span>').join("")}</div>
 ${o.body}
+${lec ? learnBottom(lec) : ""}
 <section class="faq"><h2>자주 묻는 질문</h2>${o.faq.map(x=>'<details><summary>'+esc(x[0])+'</summary><p>'+esc(x[1])+'</p></details>').join("")}</section>
 <section class="guide"><h2>${o.sibTitle}</h2>${o.sibs}</section>
 ${adSlot()}
@@ -1313,9 +1323,10 @@ ${siteNav(null)}
 ${footer}
 </div>
 <script src="core.js?v=${coreV}"></script>
-<script src="t-${o.tool}.js?v=${chunks.find(c=>c.id===o.tool).v}"></script>
+${o.noTool ? "" : `<script src="t-${o.tool}.js?v=${chunks.find(c=>c.id===o.tool).v}"></script>
 <script>mountTool("${o.tool}","tool");
-(function(){var s=document.querySelector("#tool #s");if(s){s.value="${o.preset}";s.dispatchEvent(new Event("change"));}})();</script>
+(function(){var s=document.querySelector("#tool #s");if(s){s.value="${o.preset}";s.dispatchEvent(new Event("change"));}})();</script>`}
+${lec ? `<script src="learn.js?v=${LEARN_V}"></script>` : ""}
 </body></html>`;
 }
 
@@ -1330,6 +1341,8 @@ const josa = (w, pair) => {
   const has = c >= 0xac00 && c <= 0xd7a3 && (c - 0xac00) % 28 > 0;
   return has ? a : b;
 };
+// 한자를 병기한 이름("신(辛)")은 앞 한글 글자의 받침으로 조사를 고른다. 둘 이상이면 앞의 것에 "과/와"를 붙여 잇는다
+const josaList = (arr, pair) => arr.map((x, i) => x + josa(x.replace(/\([^)]*\)$/, ""), i < arr.length - 1 ? "과/와" : pair) + (i < arr.length - 1 ? " " : "")).join("");
 
 // 신뢰 페이지(About·개인정보·약관). 도구 임베드 없이 원고만 있는 정적 페이지
 function sitePage(o){
@@ -1475,7 +1488,7 @@ function ilganPage(g){
       `<section class="guide"><h2>${g.ko}${g.el}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(g.y2026)}</div></section>`,
     faq:[
       [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
-      [`${g.ko}${g.el} 일간과 잘 맞는 일간은?`,`${g.best.join("와 ")}가 대표적입니다. 반대로 ${g.hard.join("와 ")}는 기운이 부딪히기 쉬워 조율이 필요합니다. 다만 궁합은 일간만으로 정해지지 않고 사주 전체의 균형을 함께 봅니다.`],
+      [`${g.ko}${g.el} 일간과 잘 맞는 일간은?`,`${josaList(g.best, "이/가")} 대표적입니다. 반대로 ${josaList(g.hard, "은/는")} 기운이 부딪히기 쉬워 조율이 필요합니다. 다만 궁합은 일간만으로 정해지지 않고 사주 전체의 균형을 함께 봅니다.`],
       [`일간이 사주에서 왜 중요한가요?`,`일간은 사주 여덟 글자 가운데 '나 자신'에 해당합니다. 나머지 일곱 글자가 나에게 어떤 관계인지(십성)를 판정하는 기준점이 일간이며, 신강·신약과 용신도 일간을 기준으로 정해집니다.`]],
     sibTitle:"다른 일간도 보기", sibs:ilganChips(g.en),
     related:["saju","todayfortune","gunghap","newyear"]});
@@ -1933,7 +1946,7 @@ function iljinPage(p){
       [`${p.ko}일은 무슨 날인가요?`,`천간 ${G.han}(${G.ko}${G.el})에 지지 ${J.han}(${J.ko}, ${J.tti}띠)가 놓인 날입니다. 두 글자의 오행 관계가 ${p.relKey}${josa(p.relKey,"이라/라")} ${p.rel.label}로 봅니다. 60갑자 가운데 ${p.k+1}번째이며 60일마다 돌아옵니다.`],
       [`${p.ko}일에 좋은 띠와 나쁜 띠는?`,`삼합인 ${p.samhap.join("·")}띠와 육합인 ${p.yukhap}띠가 힘을 받습니다. 충인 ${p.chung}띠는 일정이 흔들리기 쉬워 여유를 두는 편이 좋습니다. 다만 띠는 태어난 해 하나만 보는 방식이라 열두 갈래로만 나뉩니다.`],
       [`같은 ${p.ko}일인데 왜 사람마다 다른가요?`,`이 날의 천간 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 내 일간에게 어떤 십성인지가 사람마다 다르기 때문입니다. ${p.hi.ilgan.ko}${p.hi.ilgan.el} 일간에게는 ${p.hi.tengod}(${p.hi.score}점)이고 ${p.lo.ilgan.ko}${p.lo.ilgan.el} 일간에게는 ${p.lo.tengod}(${p.lo.score}점)입니다. 내 일간은 생년월일을 사주팔자 만세력에 넣으면 일주 위쪽 글자로 나옵니다.`],
-      [`일진은 언제 바뀌나요?`,`자정에 바뀝니다. 밤 11시 이후를 다음 날로 보는 야자시 관점도 있지만 이 사이트는 자정을 기준으로 계산합니다.`]],
+      [`일진은 언제 바뀌나요?`,`자정에 바뀝니다. 밤 11시 이후를 다음 날로 보는 정자시 관점도 있지만 이 사이트는 자정을 기준으로 계산합니다.`]],
     sibTitle:"다른 일진도 보기", sibs:iljinChips(p.en),
     related:["todayfortune","saju","zodiacfortune","newyear"]});
 }
@@ -2019,7 +2032,7 @@ function iljinHubPage(){
     ["일진이 무엇인가요?","날짜에 붙는 간지입니다. 해에 갑자년이 있듯 날에도 갑자일이 있습니다. 천간 열 자와 지지 열두 자가 함께 돌아 60일마다 같은 일진이 돌아옵니다."],
     ["오늘 일진은 어떻게 확인하나요?","이 페이지 맨 위에 오늘 일진이 표시됩니다. 브라우저에서 오늘 날짜로 직접 계산하므로 언제 열어도 그날 값이 나옵니다."],
     ["일진만 알면 내 운세를 알 수 있나요?","일진은 날의 기운입니다. 내 운세는 그 기운이 내 일간에게 어떤 관계인지에 따라 갈리므로, 생년월일을 넣는 오늘의 운세가 더 좁게 나옵니다."],
-    ["일진은 몇 시에 바뀌나요?","자정에 바뀝니다. 야자시 관점을 쓰는 곳도 있지만 이 사이트는 자정 기준입니다."]];
+    ["일진은 몇 시에 바뀌나요?","자정에 바뀝니다. 정자시 관점을 쓰는 곳도 있지만 이 사이트는 자정 기준입니다."]];
   const table = '<div class="sibs" style="margin-top:6px">'+ILJIN_PAGES.map(p=>
     `<a href="iljin-${p.en}.html">${p.k+1}. ${p.ko}일</a>`).join("")+'</div>';
   const body =
@@ -2203,6 +2216,175 @@ ${DREAM_NOTE}
 ${footer}
 </div></body></html>`;
 }
+/* ───────────── 명리학 배우기(16강) ─────────────
+   원고는 content_learn.js(learn/*.js). 새 강의 7편은 lecturePage(seoPage 를 도구 없이 씀), 기존 개념·칼럼 페이지 9편은
+   seoPage 가 lectureByPage 로 알아채 강 띠·실습·확인 문제를 끼운다. 실습 코드는 learn_client.js(site/learn.js). */
+const LEARN_HUB_DESC = "명리학을 16강으로 나눠 배웁니다. 사주팔자와 오행에서 십성·신강·용신·격국·신살, 대운과 세운까지 순서대로 읽고 내 생년월일로 실습하고 확인 문제로 점검합니다. 결제도 가입도 없습니다.";
+const PRACTICE_INFO = {
+  seats: "생년월일과 태어난 시각을 넣으면 내 사주표가 나옵니다. 네 자리 가운데 나를 뜻하는 자리가 어디인지 맞혀 보세요.",
+  elements: "내 여덟 글자를 오행으로 바꿔 나와 같은 오행의 글자가 몇 개인지 세어 보세요.",
+  stems: "내 일간이 양간인지 음간인지 맞히고 열 천간의 음양 배열을 확인해 보세요.",
+  terms: "내 월주가 어느 절기에서 시작된 달인지 맞히고 앞뒤 절기의 시각을 확인해 보세요.",
+  daymaster: "내 일간의 오행과 음양을 맞히고 일간 페이지로 이어서 읽어 보세요.",
+  tengod: "내 일간에게 태어난 달의 하늘 글자가 어떤 십성인지 규칙으로 따져 맞혀 보세요.",
+  strength: "자리별 점수로 돕는 기운의 비율을 계산해 내 사주가 어느 구간인지 맞혀 보세요.",
+  yongsin: "내 사주에 필요한 기운(용신)이 어떤 오행인지 힘의 세기로 따져 맞혀 보세요.",
+  gyeok: "태어난 달의 땅 글자와 본기, 일간의 관계로 내 격국을 맞혀 보세요.",
+  hidden: "내 일지 속에 숨은 천간의 순서(여기·중기·정기)를 맞히고 네 지지의 지장간을 모두 확인해 보세요.",
+  relations: "내 사주의 일지와 월지가 어떤 관계인지 맞히고 지지 사이의 합과 충을 모두 찾아 보세요.",
+  unseong: "내 일간이 일지에서 놓인 십이운성 단계를 맞히고 네 자리의 단계를 모두 확인해 보세요.",
+  sinsal: "내 사주에 도화살이 있는지 맞히고 여덟 신살을 모두 찾아 보세요.",
+  daeun: "성별과 생년월일로 첫 대운이 몇 세에 시작하는지 절기까지의 날수로 계산해 맞혀 보세요.",
+  seyun: "올해의 하늘 글자가 내 일간에게 어떤 십성인지 맞히고 이번 달의 기운도 확인해 보세요.",
+  whole: "생년월일과 성별을 넣으면 열두 단계로 내 사주 한 장을 순서대로 읽어 드립니다.",
+};
+
+// 예시 인물의 엔진 계산값(자리표시자 {{…}} 와 표 재료). SAMPLE_EXPECT 와 다르면 빌드가 멈춘다.
+let _learnX = null;
+function learnX() {
+  if (_learnX) return _learnX;
+  const E = ENGINE, S = LEARN.SAMPLE, HAN = "木火土金水";
+  const stem = i => `${E.SJ_S[i]}(${E.SJ_SH[i]})`, br = i => `${E.SJ_B[i]}(${E.SJ_BH[i]})`;
+  const gz = (a, b) => `${E.SJ_S[a]}${E.SJ_B[b]}(${E.SJ_SH[a]}${E.SJ_BH[b]})`;
+  const p = E.sjPillars(S.y, S.mo, S.d, S.h, S.mi, true), ds = p.d.s, de = E.SJ_ES[ds];
+  const stg = E.sjStrength(p), ss = E.sjSinsal(p);
+  const cnt = [0, 0, 0, 0, 0]; [p.y, p.m, p.d, p.h].forEach(c => { cnt[E.SJ_ES[c.s]]++; cnt[E.SJ_EB[c.b]]++; });
+  const da = E.sjDaeunStart(p, S.male, E.sjJdKST(S.y, S.mo, S.d, S.h, S.mi));
+  // 신강·신약을 표로 다시 계산하고 엔진 값과 대조한다
+  const pos = [["월지", E.SJ_EB[p.m.b], br(p.m.b), 3], ["일지", E.SJ_EB[p.d.b], br(p.d.b), 2], ["월간", E.SJ_ES[p.m.s], stem(p.m.s), 1.5],
+    ["연간", E.SJ_ES[p.y.s], stem(p.y.s), 1], ["연지", E.SJ_EB[p.y.b], br(p.y.b), 1], ["시간", E.SJ_ES[p.h.s], stem(p.h.s), 1], ["시지", E.SJ_EB[p.h.b], br(p.h.b), 1]];
+  let sup = 0, dr = 0;
+  const rows강약 = pos.map(([n, el, ch, w]) => { const help = el === de || (el + 1) % 5 === de; if (help) sup += w; else dr += w;
+    return [`${n} ${ch}`, `${E.SJ_EL[el]} · ${help ? "돕는 기운" : "덜어내는 기운"}`, `${help ? "돕는" : "덜어내는"} ${w}점`]; });
+  const tot = sup + dr, pct = Math.round(100 * sup / tot);
+  if (Math.abs(sup / tot - stg.ratio) > 1e-9) throw new Error("예시 인물의 신강·신약 표 계산이 엔진(sjStrength)과 다르다");
+  rows강약.push(["돕는 점수 합", `${sup}점`, ""], ["덜어내는 점수 합", `${dr}점`, ""], ["돕는 비율", `${sup} ÷ ${tot} = 약 ${pct}%`, stg.strong ? "신강" : "신약"]);
+  // 지지 사이의 관계
+  const bs = [["연지", p.y.b], ["월지", p.m.b], ["일지", p.d.b], ["시지", p.h.b]], rel = [];
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) { const a = bs[i][1], b = bs[j][1]; if (a === b) continue;
+    const kind = Math.abs(a - b) === 6 ? "충" : E.sjYukhap(a) === b ? "육합" : a % 4 === b % 4 ? "삼합(반합)" : "";
+    if (kind) rel.push(`${bs[i][0]} ${br(a)}와 ${bs[j][0]} ${br(b)}의 ${kind}`); }
+  const 합충요약 = rel.length ? `다음 관계가 있습니다. ${rel.join(", ")}.` : "육합·삼합·충은 없습니다(형·파·해는 세지 않습니다).";
+  const bm = i => E.SJ_BMAIN[i], tg = (a) => E.sjTenGod(ds, a);
+  const gy = E.SJ_GYEOK[tg(bm(p.m.b))];
+  const un = b => E.sjUnseong(ds, b);
+  const m60 = da.m60, dar = [];
+  for (let i = 1; i <= 8; i++) { const kk = ((m60 + (da.fwd ? i : -i)) % 60 + 60) % 60, age = da.su + 10 * (i - 1);
+    dar.push([`${age}세~${age + 9}세`, gz(kk % 10, kk % 12), tg(kk % 10)]); }
+  const 첫 = dar[0][1];
+  const hh = S.h, 시각 = `${hh < 12 ? "오전" : "오후"} ${hh % 12 === 0 ? 12 : hh % 12}시 ${S.mi}분`;
+  const T = {
+    생일: `${S.y}년 ${S.mo}월 ${S.d}일`, 시각, 시진: `${E.SJ_B[p.h.b]}시`, 성별: S.male ? "남자" : "여자", 띠: `${E.SJ_TTI[p.y.b]}띠`,
+    연주: gz(p.y.s, p.y.b), 월주: gz(p.m.s, p.m.b), 일주: gz(p.d.s, p.d.b), 시주: gz(p.h.s, p.h.b),
+    연간: stem(p.y.s), 월간: stem(p.m.s), 일간: stem(ds), 시간: stem(p.h.s), 연지: br(p.y.b), 월지: br(p.m.b), 일지: br(p.d.b), 시지: br(p.h.b),
+    일간이름: `${E.SJ_S[ds]}${E.SJ_EL[de]}(${E.SJ_SH[ds]}${HAN[de]})`, 일간오행: `${E.SJ_EL[de]}(${HAN[de]})`, 일간음양: ds % 2 === 0 ? "양" : "음",
+    오행개수: E.SJ_EL.map((e, i) => `${e} ${cnt[i]}`).join(" · "),
+    신강약: stg.strong ? "신강" : "신약", 돕는비율: pct + "%", 돕는점수: String(sup), 덜어내는점수: String(dr), 전체점수: String(tot),
+    용신: `${E.SJ_EL[stg.yong]}(${HAN[stg.yong]})`, 용신2: `${E.SJ_EL[stg.yong2]}(${HAN[stg.yong2]})`,
+    격국: gy, 월지본기: stem(bm(p.m.b)), 월지십성: tg(bm(p.m.b)),
+    연간십성: tg(p.y.s), 월간십성: tg(p.m.s), 시간십성: tg(p.h.s), 연지십성: tg(bm(p.y.b)), 일지십성: tg(bm(p.d.b)), 시지십성: tg(bm(p.h.b)),
+    연지운성: un(p.y.b), 월지운성: un(p.m.b), 일지운성: un(p.d.b), 시지운성: un(p.h.b),
+    신살목록: ss.join("·") || "없음", 신살개수: String(ss.length), 천을지지: E.SJ_CHEONEUL[ds].map(br).join("·"),
+    네지지: bs.map(x => br(x[1])).join("·"), 합충요약,
+    대운방향: da.fwd ? "순행" : "역행", 대운시작: `${da.su}세`, 절기일수: `${da.days}일`, 첫대운: 첫,
+  };
+  for (const [k, v] of Object.entries(LEARN.SAMPLE_EXPECT)) if (T[k] !== v) throw new Error(`예시 인물 ${k}: 기대 "${v}" ≠ 계산 "${T[k]}" — 엔진이 바뀌었다면 learn/*.js 본문의 설명과 SAMPLE_EXPECT 를 함께 고친다`);
+  const 지장간행 = bs.map(([n, b]) => { const list = E.SJ_JJG[b], nm = i => list.length === 2 ? ["여기", "정기"][i] : ["여기", "중기", "정기"][i];
+    return [`${n} ${br(b)}`, list.map((x, i) => `${nm(i)} ${stem(x[0])}`).join(" · "), `정기 ${stem(list[list.length - 1][0])} → 일간에게 ${tg(list[list.length - 1][0])}`]; });
+  const 종합행 = [
+    ["여덟 글자", `${T.연주} ${T.월주} ${T.일주} ${T.시주}`, "1강 · 3강 · 4강"], ["오행 개수", T.오행개수, "2강"], ["일간", T.일간이름, "5강"],
+    ["십성(하늘 글자)", `연간 ${T.연간십성} · 월간 ${T.월간십성} · 시간 ${T.시간십성}`, "6강"], ["신강·신약", `${T.신강약} · 돕는 비율 ${T.돕는비율}`, "7강"],
+    ["용신", `${T.용신} (보조 ${T.용신2})`, "8강"], ["격국", T.격국, "9강"], ["지지 사이의 합·충", rel.length ? rel.join(", ") : "육합·삼합·충 없음", "10강 · 11강"],
+    ["십이운성", `연지 ${T.연지운성} · 월지 ${T.월지운성} · 일지 ${T.일지운성} · 시지 ${T.시지운성}`, "12강"], ["신살", T.신살목록, "13강"],
+    ["대운", `${T.대운방향} · ${T.대운시작}에 시작 · 첫 대운 ${T.첫대운}`, "14강"], ["세운·월운", "15강 실습에서 올해 기준으로 확인", "15강"],
+  ];
+  _learnX = { T, rows: { 강약행: rows강약, 지장간행, 종합행, 대운행: dar } };
+  return _learnX;
+}
+const fillStr = s => s.replace(/\{\{([^}]+)\}\}/g, (m, k) => { const T = learnX().T; if (!(k in T)) throw new Error("알 수 없는 자리표시자 {{" + k + "}}"); return T[k]; });
+const fillDeep = v => typeof v === "string" ? fillStr(v) : Array.isArray(v) ? v.map(fillDeep) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fillDeep(x)])) : v;
+const _lecFull = {};
+function lectureFull(c) {   // 새 강의: 표 함수를 실행하고 자리표시자를 채운 사본
+  if (_lecFull[c.no]) return _lecFull[c.no];
+  const X = learnX(), tables = typeof c.tables === "function" ? c.tables(ENGINE, Object.assign({}, X.T, X.rows)) : c.tables;
+  return (_lecFull[c.no] = fillDeep(Object.assign({}, c, { tables })));
+}
+function lectureByPage(urlOrPage) {
+  const page = String(urlOrPage || "").split("/").pop();
+  return LEARN.LECTURES.find(c => c.page === page) || null;
+}
+const learnNav = c => { const L = LEARN.LECTURES, pv = L[c.no - 2], nx = L[c.no];
+  return `<div class="lbar-nav">${pv ? `<a href="${pv.page}">← ${pv.no}강 ${esc(pv.short)}</a>` : `<a class="off" aria-hidden="true" tabindex="-1">.</a>`}${nx ? `<a href="${nx.page}">${nx.no}강 ${esc(nx.short)} →</a>` : `<a href="learn.html">목차로 →</a>`}</div>`; };
+const learnBar = c => { const part = LEARN.PARTS.find(p => p.no === c.part);
+  return `<div class="lbar" data-lecture="${c.no}"><div class="lbar-top"><a href="learn.html">명리학 배우기 · 16강</a><span>${esc(part.title)} · ${esc(part.sub)}</span></div>` +
+    `<div class="lbar-no">제 ${c.no}강 <b>${esc(c.short)}</b></div>` +
+    `<div class="lbar-dots" role="navigation" aria-label="강의 목차">${LEARN.LECTURES.map(x => `<a class="ldot${x.no === c.no ? " cur" : ""}" data-no="${x.no}" href="${x.page}" title="${x.no}강 ${esc(x.short)}" aria-label="${x.no}강 ${esc(x.short)}">${x.no}</a>`).join("")}</div>` +
+    learnNav(c) + `<p class="lbar-goal"><b>이 강을 마치면</b> ${esc(c.goal)}</p></div>`; };
+const learnBottom = c =>
+  `<section class="guide lpractice" id="lpractice" data-no="${c.no}" data-practice="${c.practice}"><h2>내 사주로 해 보기</h2><p class="lp-lead">${esc(PRACTICE_INFO[c.practice])}</p><div class="lp-mount"></div><noscript><p class="lp-lead">실습은 자바스크립트를 켜면 쓸 수 있습니다.</p></noscript></section>` +
+  `<section class="guide lquiz" id="lquiz" data-no="${c.no}"><h2>확인 문제 3개</h2>` +
+  c.quiz.map((q, i) => `<div class="lq" data-i="${i}" data-a="${q.a}"><p class="lq-q">${i + 1}. ${esc(q.q)}</p><ul class="lq-c">${q.c.map((t, j) => `<li><button type="button" class="lq-b" data-c="${j}">${esc(t)}</button></li>`).join("")}</ul><p class="lq-why" hidden>${esc(q.why)}</p></div>`).join("") +
+  `<p class="lq-score" aria-live="polite"></p></section>` +
+  `<div class="lmark-row"><button type="button" class="lmark" data-no="${c.no}" aria-pressed="false">이 강 마쳤어요</button><span class="lmark-note">진도는 이 기기에만 저장됩니다</span></div>` + learnNav(c);
+const learnCta = () => `<a class="dictcta learncta" href="learn.html"><b>명리학 배우기</b><span>사주 기초부터 대운까지 16강 · 내 생년월일로 실습하고 문제로 확인해요</span><i>→</i></a>`;
+const lectureChips = cur => '<div class="sibs">' + LEARN.LECTURES.map(x => x.no === cur ? `<span class="cur">${x.no}강 ${esc(x.short)}</span>` : `<a href="${x.page}">${x.no}강 ${esc(x.short)}</a>`).join("") + '</div>';
+const tablesHtml = tables => (tables || []).map(tb => `<section class="guide"><h2>${esc(tb.h)}</h2>` +
+  (tb.lead ? `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">${esc(tb.lead)}</p>` : "") +
+  `<div class="exbox">` + tb.rows.map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>` +
+    (r[2] ? `<p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(r[2])}</p>` : "")).join("") + `</div></section>`).join("");
+
+function lecturePage(c0) {
+  const c = lectureFull(c0);
+  return seoPage({
+    crumb: c.crumb, title: `${c.title} | 동네보살`, desc: c.desc,
+    url: `${DOMAIN}/${c.page}`, img: "img/tool/h-saju.webp", hero: "img/tool/h-saju.webp",
+    h1: c.title, sub: c.lead, parent: "learn.html", parentName: "명리학 배우기",
+    tool: "saju", noTool: true, tags: c.tags, date: c.date,
+    body: c.sections.map(([h, t]) => `<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("") + tablesHtml(c.tables),
+    faq: c.faq, sibTitle: "다른 강의 보기", sibs: lectureChips(c.no), related: c.related });
+}
+
+function learnHubPage() {
+  const url = `${DOMAIN}/learn.html`, title = "명리학 배우기 — 사주 기초부터 대운까지 16강";
+  const cards = LEARN.PARTS.map(part => `<section class="guide lpart"><h2>${esc(part.title)} <small>${esc(part.sub)}</small></h2>` +
+    LEARN.LECTURES.filter(c => c.part === part.no).map(c => `<a class="lcard" href="${c.page}" data-no="${c.no}"><span class="ln">${c.no}</span><span class="lt"><b>${esc(c.short)}</b><small>${esc(c.goal)}</small><em>${c.en ? "새 강의 · 내 사주 실습" : "기존 글 + 내 사주 실습"}</em></span><i class="ld" aria-hidden="true"></i></a>`).join("") + `</section>`).join("");
+  const faq = [
+    ["명리학이란 무엇인가요", "사주팔자, 곧 태어난 해·달·날·시각의 간지 여덟 글자로 사람의 성향과 시간의 흐름을 읽는 동양의 전통 해석 체계입니다. 과학적으로 검증된 예측 방법은 아니며 이 강의는 해석 규칙을 이해하는 데 목적이 있습니다."],
+    ["순서대로 배워야 하나요", "처음에는 순서대로 권합니다. 앞 강의의 결과가 뒤 강의의 재료가 되기 때문입니다. 예를 들어 6강의 십성을 알아야 9강의 격국 이름이 붙습니다. 이미 아는 강은 건너뛰고 실습만 해 보셔도 됩니다."],
+    ["진도는 어디에 저장되나요", "마친 강의 번호만 이 기기의 브라우저에 저장합니다. 다른 기기나 다른 브라우저에서는 보이지 않으며 브라우저 데이터를 지우면 사라집니다. 서버로 보내지 않습니다."],
+    ["실습에 넣은 생년월일은 저장되나요", "저장하지 않고 서버로도 보내지 않습니다. 계산은 모두 브라우저 안에서 이루어지고, 페이지를 벗어나면 입력한 값은 남지 않습니다."],
+    ["16강을 마치면 무엇을 할 수 있나요", "사주 결과 화면의 여덟 글자, 오행, 십성, 신강·신약, 용신, 격국, 십이운성, 신살, 대운을 순서대로 읽고 각 값이 어디서 나왔는지 설명할 수 있습니다. 16강에서 열두 단계로 종합해 봅니다."],
+  ];
+  const faqLd = '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(x => ({ "@type": "Question", name: x[0], acceptedAnswer: { "@type": "Answer", text: x[1] } })) }) + '</script>';
+  const listLd = '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@type": "ItemList", name: title,
+    itemListElement: LEARN.LECTURES.map(c => ({ "@type": "ListItem", position: c.no, name: `${c.no}강 ${c.short}`, url: `${DOMAIN}/${c.page}` })) }) + '</script>';
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(title)} | 동네보살</title>
+<meta name="description" content="${esc(LEARN_HUB_DESC)}">
+<link rel="canonical" href="${url}">
+<meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(LEARN_HUB_DESC)}"><meta property="og:url" content="${url}">
+${OG_IMG_TAG}
+<link rel="stylesheet" href="style.css?v=${styleV}">
+${headExtra}
+${ORG_LD}
+<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "홈", item: DOMAIN + "/" }, { "@type": "ListItem", position: 2, name: "명리학 배우기", item: url }] })}</script>${listLd}${faqLd}</head><body>
+<div class="wrap">
+<a class="back" href="./">← 홈</a>
+<img class="bosal page-bosal" src="img/bosal/point.webp" alt="칠판을 짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">명리학 배우기</h1>
+<p style="color:var(--muted);font-size:14px;margin-bottom:14px">사주 기초부터 대운까지 16강. 읽고, 내 사주로 따라 해 보고, 문제로 확인합니다.</p>
+<div class="lprog" id="lprog" aria-live="polite"><span id="lprogtxt">0 / 16강 마쳤어요</span><div class="lprog-bar"><i style="width:0%"></i></div></div>
+<section class="guide"><h2>이렇게 배웁니다</h2><ol class="lsteps"><li><b>읽습니다.</b> 한 강마다 핵심을 짧게 정리했고, 예시 인물의 계산과 표가 함께 있습니다.</li><li><b>내 사주로 해 봅니다.</b> 생년월일을 넣으면 그 강에서 배운 규칙으로 내 사주의 해당 부분을 먼저 맞혀 보게 하고, 정답과 풀이 순서를 보여 드립니다.</li><li><b>문제로 확인합니다.</b> 강마다 세 문제이고 풀이가 바로 나옵니다.</li></ol></section>
+<section class="guide"><h2>예시 인물</h2><p style="margin:0 0 8px">새로 쓴 강의는 모두 ${esc(learnX().T.생일)} ${esc(learnX().T.시각)}에 태어난 ${esc(learnX().T.성별)}를 따라갑니다. 여덟 글자는 ${esc(learnX().T.연주)}·${esc(learnX().T.월주)}·${esc(learnX().T.일주)}·${esc(learnX().T.시주)}이고, 한 사람의 사주를 1강에서 16강까지 이어서 읽습니다.</p><p style="color:var(--muted);font-size:13px;margin:0">사주는 전통적인 해석 체계이며 결과를 확정하지 않습니다. 이 강의는 해석 규칙을 이해하는 데 초점을 둡니다.</p></section>
+${cards}
+<section class="faq"><h2>자주 묻는 질문</h2>${faq.map(x => '<details><summary>' + esc(x[0]) + '</summary><p>' + esc(x[1]) + '</p></details>').join("")}</section>
+<section class="guide"><h2>함께 보면 좋은 곳</h2><div class="sibs"><a href="dict.html">사주 사전</a><a href="column.html">보살 칼럼</a><a href="saju.html">사주팔자 만세력</a><a href="manse.html">무료 만세력</a></div></section>
+${footer}
+</div>
+<script src="learn.js?v=${LEARN_V}"></script>
+</body></html>`;
+}
+
 function dictPage(){
   const url = `${DOMAIN}/dict.html`, title = "사주 사전 — 일주·일간·십성·별자리·띠·타로 카드 뜻";
   const desc = "사주와 운세에 나오는 말을 한곳에 모았습니다. 일주 60, 일간 10, 십성 10, 별자리 12, 띠 12, 타로 78장과 만세력 월력까지 뜻과 함께 찾아보세요.";
@@ -2221,6 +2403,7 @@ ${ORG_LD}
 <a class="back" href="./">← 홈</a>
 <img class="bosal page-bosal" src="img/bosal/point.webp" alt="사전을 짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h1 style="font-size:30px;font-weight:900;letter-spacing:-1px;margin:0 0 6px">사주 사전</h1>
 <p style="color:var(--muted);font-size:14px;margin-bottom:22px">사주·운세에 나오는 말이 낯설다면 여기서 찾아보세요. 이름마다 한 줄 뜻을 달았습니다.</p>
+${learnCta()}
 <section class="guide"><h2>일주 60 — 태어난 날의 두 글자</h2>
 <p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간은 나 자신, 일지는 배우자 자리입니다. 내 일주는 <a href="saju.html">사주팔자 만세력</a>에서 확인할 수 있습니다.</p>
 ${iljuChips(null)}</section>
@@ -2262,7 +2445,7 @@ function indexPage(){
   // 홈 전용 FAQ — 도구 페이지 FAQ와 겹치지 않는 것만.
   const HOME_FAQ = [
     ["정말 전부 무료인가요?",pubMeta.length+"가지 모두 무료입니다. 회원가입도 로그인도 없고 결제 단계가 아예 없습니다. 결과를 더 보려면 돈을 내라는 구간도 없습니다."],
-    ["생년월일을 넣으면 어디에 저장되나요?","입력한 값은 브라우저 안에만 남습니다. 다음에 왔을 때 다시 넣지 않아도 되도록 저장해 두는 것이고, 서버로 보내지 않습니다. 브라우저 기록을 지우면 함께 사라집니다."],
+    ["생년월일을 넣으면 어디에 저장되나요?","어디에도 저장하지 않습니다. 입력한 값은 브라우저 안에서 계산에만 쓰고 서버로 보내지 않으며, 페이지를 닫으면 사라집니다. 가족 생일 저장 버튼을 직접 눌러 저장하신 경우에만 이 기기의 브라우저에 남고, 브라우저 데이터를 지우면 함께 사라집니다."],
     ["운세가 랜덤으로 나오는 건 아닌가요?","아닙니다. 생년월일과 날짜로 사주 여덟 글자와 일진을 세운 뒤 그 관계를 읽어 문장을 고릅니다. 같은 사람이 같은 날 몇 번을 눌러도 결과가 같습니다."],
     ["다른 사주 사이트와 결과가 다른데요?","절기 경계와 진태양시를 어떻게 처리하느냐에서 갈립니다. 절기가 바뀌는 날 태어났거나 자시·오시처럼 경계 시각에 태어났으면 사이트마다 월주나 시주가 달라질 수 있습니다."],
     ["결과가 매일 바뀌나요?","운세는 매일 바뀝니다. 날에 붙는 간지인 일진이 자정마다 넘어가기 때문입니다. 사주 여덟 글자와 만세력은 태어난 순간으로 정해지므로 입력이 같으면 언제나 같은 값이 나옵니다."],
@@ -2297,11 +2480,12 @@ function indexPage(){
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/heart.webp" alt="하트를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
 <nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a></nav>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/point.webp" alt="짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
-<div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일을 남기지 않습니다</b><p>가입을 받지 않고, 넣은 생년월일은 저장하지도 서버로 보내지도 않습니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
+<div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일을 서버로 보내지 않습니다</b><p>가입을 받지 않고, 넣은 생년월일은 서버로 보내지 않으며 직접 저장을 누르기 전에는 이 기기에도 남기지 않습니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
 ${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
 <div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
   `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
+${learnCta()}
 <a class="dictcta" href="dict.html"><img class="bosal dc-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 78장 뜻을 한곳에</span><i>→</i></a>
 ${homeFaqHtml}
 ${adSlot()}
@@ -2381,6 +2565,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
+  smUrl("learn.html")+"\n"+LEARN.LECTURES.filter(c=>c.en).map(c=>smUrl(c.page)).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
   smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+smUrl("dream.html")+"\n"+DREAM.map(c=>smUrl("dream-"+c.id+".html")).join("\n")+"\n"+
@@ -2429,6 +2614,11 @@ ${SIPSEONG_PAGES.map(s=>`- [${s.ko}(${s.han})](${DOMAIN}/sipseong-${s.en}.html):
 ## 명리 개념 해설 (6) — 용어의 뜻과 근거
 
 ${CONCEPT_PAGES.map(c=>`- [${c.ko}(${c.han})](${DOMAIN}/concept-${c.en}.html): ${c.oneline}`).join("\n")}
+
+## 명리학 배우기 (16강) — 사주 기초부터 대운까지, 내 생년월일로 실습
+
+- [명리학 배우기 16강](${DOMAIN}/learn.html): ${LEARN_HUB_DESC}
+${LEARN.LECTURES.map(c=>`- [${c.no}강 ${c.short}](${DOMAIN}/${c.page}): ${c.goal}`).join("\n")}
 
 ## 타로 카드별 상세 (78) — 메이저 22 · 마이너 56
 
@@ -2540,6 +2730,66 @@ const extraCss = `
 .zr-wait{color:var(--muted);font-size:13px;padding:8px 2px;}
 .dictcta{display:flex;align-items:center;gap:12px;margin:22px 0;padding:16px;border-radius:14px;border:1.5px solid #E6B25A;text-decoration:none;color:var(--ink);background:var(--surface);}
 .dictcta b{font-size:17px;white-space:nowrap;}.dictcta span{flex:1;font-size:13px;color:var(--muted);}.dictcta i{font-style:normal;font-weight:800;}
+/* 명리학 배우기 */
+.lbar{border:1px solid var(--line-2);border-radius:14px;background:var(--surface);padding:12px 14px;margin:14px 0;}
+.lbar-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);}
+.lbar-top a{color:var(--muted);font-weight:800;text-decoration:none;}.lbar-top span{text-align:right;}
+.lbar-no{font-size:15px;margin:6px 0 8px;}.lbar-no b{font-weight:900;}
+.lbar-dots{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 10px;}
+.ldot{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line-2);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--muted);text-decoration:none;background:var(--surface);}
+.ldot.cur{border-color:#E6B25A;color:var(--ink);box-shadow:0 0 0 2px #E6B25A66;}
+.ldot.on{background:#E6B25A;border-color:#E6B25A;color:#1b1406;}
+.lbar-nav{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin:8px 0;}
+.lbar-nav a{flex:1;padding:9px 10px;border:1px solid var(--line-2);border-radius:10px;text-decoration:none;color:var(--ink);font-weight:700;line-height:1.35;background:var(--surface);}
+.lbar-nav a:last-child{text-align:right;}.lbar-nav a.off{visibility:hidden;}
+.lbar-goal{margin:10px 0 0;font-size:13.5px;line-height:1.65;color:var(--muted);}.lbar-goal b{color:var(--ink);}
+.lp-lead{margin:0 0 12px;font-size:14px;line-height:1.65;color:var(--muted);}
+.lp{border:1px solid var(--line-2);border-radius:14px;background:var(--surface);padding:14px 14px 16px;}
+.lp-form{display:grid;gap:10px;}.lp-form label{display:block;font-size:13px;font-weight:800;margin:0 0 4px;}
+.lp-form select,.lp-form input[type=date]{width:100%;padding:10px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;}
+.lp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}@media (max-width:560px){.lp-row{grid-template-columns:1fr;}}
+.lp-btn{padding:12px 14px;border:none;border-radius:12px;background:#E6B25A;color:#1b1406;font:inherit;font-weight:800;cursor:pointer;}
+.lp-btn.ghost{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);}
+.lp-btn:focus-visible,.lq-b:focus-visible,.lmark:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.lp-mat{margin:14px 0 6px;padding:10px 12px;border:1px dashed var(--line-2);border-radius:12px;background:var(--surface-2);font-size:14px;line-height:1.7;}
+.lp-mat .sj-grid{margin-top:8px;}.lp-mat b{font-weight:800;}
+.lp-q{margin:14px 0 8px;font-size:15px;font-weight:800;line-height:1.55;}
+.lp-hint{margin:0 0 8px;font-size:12.5px;color:var(--muted);}
+.lp-ch{display:grid;gap:8px;margin:0;padding:0;list-style:none;}
+.lp-ch button,.lq-b{width:100%;text-align:left;padding:11px 13px;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-size:14.5px;line-height:1.5;cursor:pointer;}
+.lp-ch button:hover,.lq-b:hover{border-color:#E6B25A;}
+.lp-ch button.ok,.lq-b.ok{border-color:#3d8a5c;background:#3d8a5c22;font-weight:800;}
+.lp-ch button.no,.lq-b.no{border-color:#b04a3a;background:#b04a3a1c;}
+.lp-ch button[disabled],.lq-b[disabled]{cursor:default;}
+.lp-reveal{margin:14px 0 0;padding:12px 14px;border-radius:12px;background:var(--surface-2);border:1px solid var(--line);font-size:14px;line-height:1.75;}
+.lp-reveal .lp-say{font-weight:800;margin:0 0 8px;}.lp-reveal p{margin:0 0 8px;}.lp-reveal table{border-collapse:collapse;width:100%;margin:6px 0;font-size:13.5px;}
+.lp-reveal td,.lp-reveal th{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left;vertical-align:top;}
+.lp-reveal .lp-links{margin:8px 0 0;font-size:13px;}
+.lp-again{margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;}
+.lq{margin:14px 0;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);}
+.lq-q{margin:0;font-weight:800;line-height:1.55;}.lq-c{list-style:none;padding:0;display:grid;gap:8px;margin:10px 0 0;}
+.lq-why{margin:10px 0 0;font-size:13.5px;line-height:1.7;color:var(--muted);}
+.lq-score{margin:8px 0 0;font-weight:800;font-size:14px;}
+.lmark-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 8px;}
+.lmark{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
+.lmark[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
+.lmark-note{font-size:12.5px;color:var(--muted);}
+.lprog{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
+.lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}
+.lsteps{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.7;}
+.lpart h2 small{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:6px;}
+.lcard{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line-2);border-radius:12px;background:var(--surface);text-decoration:none;color:var(--ink);margin:8px 0;}
+.lcard:hover{border-color:#E6B25A;}
+.lcard .ln{flex:none;width:34px;height:34px;border-radius:50%;background:#E6B25A;color:#1b1406;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;}
+.lcard .lt{flex:1;display:grid;gap:3px;}.lcard .lt b{font-size:15.5px;}.lcard .lt small{font-size:13px;color:var(--muted);line-height:1.55;}.lcard .lt em{font-style:normal;font-size:12px;color:var(--fun-ink,#8a5a00);font-weight:700;}
+.lcard .ld{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);}
+.lcard.done .ld{background:#3d8a5c;border-color:#3d8a5c;position:relative;}.lcard.done .ld::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;}
+.learncta{margin:14px 0;}
+.lq-c li,.lp-ch li{padding:0;font-size:inherit;}.lq-c li::before,.lp-ch li::before{content:none;}.lp .ppl{display:none;}
+.lsteps li::before{content:none;}.lsteps li{padding:2px 0;font-size:14.5px;color:var(--ink);}.lsteps{list-style:decimal;padding-left:22px;}
+@media (max-width:759px){.toolhero.longh .th-bosal{display:none;}}
+@media (prefers-reduced-motion:reduce){.lprog-bar i{transition:none;}}
+
 .tabbar{display:none;}
 @media (max-width:759px){
   .tabbar{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:50;background:var(--surface);border-top:1px solid var(--line-2);padding:4px 4px calc(4px + env(safe-area-inset-bottom));}
@@ -2628,6 +2878,9 @@ ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), il
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
 CONCEPT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"concept-"+c.en+".html"), conceptPage(c)));
+fs.writeFileSync(path.join(OUT,"learn.html"), learnHubPage());
+LEARN.LECTURES.filter(c=>c.en).forEach(c=>fs.writeFileSync(path.join(OUT,c.page), lecturePage(c)));
+fs.writeFileSync(path.join(OUT,"learn.js"), LEARN_JS);
 ILJIN_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"iljin-"+p.en+".html"), iljinPage(p)));
 MANSE_PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"manse-"+p.en+".html"), mansePage(p)));
 fs.writeFileSync(path.join(OUT,"manse.html"), manseHubPage());
@@ -2657,6 +2910,8 @@ const rssRows = [
   [DOMAIN + "/manse-howto.html", "만세력 보는법 — 원국표 읽는 여섯 단계", "만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운을 예시로 풀었습니다."],
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
   ...COLUMN_PAGES.map(c => [`${DOMAIN}/column-${c.en}.html`, c.title, c.desc]),
+  [DOMAIN + "/learn.html", "명리학 배우기 — 사주 기초부터 대운까지 16강", LEARN_HUB_DESC],
+  ...LEARN.LECTURES.filter(c => c.en).map(c => [`${DOMAIN}/${c.page}`, c.title, c.desc]),
   // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
   // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
   ...(() => {
