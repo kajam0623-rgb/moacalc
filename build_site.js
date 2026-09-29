@@ -2328,7 +2328,7 @@ const learnBottom = c =>
   c.quiz.map((q, i) => `<div class="lq" data-i="${i}" data-a="${q.a}"><p class="lq-q">${i + 1}. ${esc(q.q)}</p><ul class="lq-c">${q.c.map((t, j) => `<li><button type="button" class="lq-b" data-c="${j}">${esc(t)}</button></li>`).join("")}</ul><p class="lq-why" hidden>${esc(q.why)}</p></div>`).join("") +
   `<p class="lq-score" aria-live="polite"></p>` +
   `<div class="lmore" id="lmore" data-no="${c.no}"><p class="lp-lead">규칙에서 문제를 그때그때 만들어 냅니다. 누를 때마다 새 문제가 나오니 몇 번이든 풀어 보세요.</p><button type="button" class="lp-btn ghost" id="lmore-go">자동 출제로 3문제 풀어 보기</button><div class="lmore-out" aria-live="polite"></div><p class="lmore-score" aria-live="polite"></p></div></section>` +
-  `<div class="lmark-row"><button type="button" class="lmark" data-no="${c.no}" aria-pressed="false">이 강 마쳤어요</button><span class="lmark-note">진도는 이 기기에만 저장됩니다</span></div>` + learnNav(c);
+  `<div class="lmark-row"><button type="button" class="lmarkbtn" data-no="${c.no}" aria-pressed="false">이 강 마쳤어요</button><span class="lmark-note">진도는 이 기기에만 저장됩니다</span></div>` + learnNav(c);
 const learnCta = () => `<a class="dictcta learncta" href="learn.html"><b>명리학 배우기</b><span>사주 기초부터 대운까지 16강 · 내 생년월일로 실습하고 문제로 확인해요</span><i>→</i></a>`;
 const lectureChips = cur => '<div class="sibs">' + LEARN.LECTURES.map(x => x.no === cur ? `<span class="cur">${x.no}강 ${esc(x.short)}</span>` : `<a href="${x.page}">${x.no}강 ${esc(x.short)}</a>`).join("") + '</div>';
 const tablesHtml = tables => (tables || []).map(tb => `<section class="guide"><h2>${esc(tb.h)}</h2>` +
@@ -2474,8 +2474,8 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo.png" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
-<img class="hero-bosal" id="heroBosal" src="img/mascot.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
+<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo-68.webp" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
+<img class="hero-bosal" id="heroBosal" src="img/mascot-460.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
 <h1 class="hero-h">무료사주 사이트 동네보살<br><b>사주풀이·<span class="nw">오늘의 운세</span>·<span class="nw">궁합·타로</span></b></h1>
 <div class="hero-sub">가입 없이 생일 하나로 끝까지 무료. 결과마다 어떻게 계산했는지 근거를 함께 보여 줍니다.</div>
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="date" id="hb" value="1995-01-01"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-note">생일은 저장하지 않고, 서버로도 보내지 않습니다.</p></div></div>
@@ -2500,7 +2500,7 @@ ${adSlot()}
 ${footer}
 </div>
 ${homeFaqLd}
-<script>(function(){var hb=document.getElementById("heroBosal"),hr=new Date().getHours();if(hb&&(hr>=22||hr<5)){hb.onerror=function(){this.onerror=null;this.src="img/mascot.webp";};hb.src="img/bosal/lantern.webp";hb.alt="초롱을 들고 밤마중 나온 아기보살";}})();</script>
+<script>(function(){var hb=document.getElementById("heroBosal"),hr=new Date().getHours();if(hb&&(hr>=22||hr<5)){hb.onerror=function(){this.onerror=null;this.src="img/mascot-460.webp";};hb.src="img/bosal/lantern.webp";hb.alt="초롱을 들고 밤마중 나온 아기보살";}})();</script>
 <script>(function(){var box=document.getElementById("today");if(!box)return;var form=box.innerHTML;
 function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
 var midT=null;
@@ -2760,7 +2760,7 @@ const extraCss = `
 .lp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}@media (max-width:560px){.lp-row{grid-template-columns:1fr;}}
 .lp-btn{padding:12px 14px;border:none;border-radius:12px;background:#E6B25A;color:#1b1406;font:inherit;font-weight:800;cursor:pointer;}
 .lp-btn.ghost{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);}
-.lp-btn:focus-visible,.lq-b:focus-visible,.lmark:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.lp-btn:focus-visible,.lq-b:focus-visible,.lmarkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .lp-mat{margin:14px 0 6px;padding:10px 12px;border:1px dashed var(--line-2);border-radius:12px;background:var(--surface-2);font-size:14px;line-height:1.7;}
 .lp-mat .sj-grid{margin-top:8px;}.lp-mat b{font-weight:800;}
 .lp-q{margin:14px 0 8px;font-size:15px;font-weight:800;line-height:1.55;}
@@ -2785,8 +2785,8 @@ const extraCss = `
 .ltest-res{margin-top:12px;padding:14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);}.ltest-res:focus{outline:none;}
 .ltest-score{font-size:34px;font-weight:900;margin:0 0 6px;letter-spacing:-1px;}.ltest-again-lead{font-weight:800;margin:12px 0 6px;}
 .lmark-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 8px;}
-.lmark{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
-.lmark[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
+.lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
+.lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
 .lprog{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}

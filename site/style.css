@@ -739,7 +739,7 @@
 .lp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}@media (max-width:560px){.lp-row{grid-template-columns:1fr;}}
 .lp-btn{padding:12px 14px;border:none;border-radius:12px;background:#E6B25A;color:#1b1406;font:inherit;font-weight:800;cursor:pointer;}
 .lp-btn.ghost{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);}
-.lp-btn:focus-visible,.lq-b:focus-visible,.lmark:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.lp-btn:focus-visible,.lq-b:focus-visible,.lmarkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .lp-mat{margin:14px 0 6px;padding:10px 12px;border:1px dashed var(--line-2);border-radius:12px;background:var(--surface-2);font-size:14px;line-height:1.7;}
 .lp-mat .sj-grid{margin-top:8px;}.lp-mat b{font-weight:800;}
 .lp-q{margin:14px 0 8px;font-size:15px;font-weight:800;line-height:1.55;}
@@ -764,8 +764,8 @@
 .ltest-res{margin-top:12px;padding:14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);}.ltest-res:focus{outline:none;}
 .ltest-score{font-size:34px;font-weight:900;margin:0 0 6px;letter-spacing:-1px;}.ltest-again-lead{font-weight:800;margin:12px 0 6px;}
 .lmark-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 8px;}
-.lmark{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
-.lmark[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
+.lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
+.lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
 .lprog{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}

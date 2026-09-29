@@ -24,7 +24,7 @@
     $$(".lcard").forEach(function (e) { e.classList.toggle("done", d.indexOf(+e.getAttribute("data-no")) >= 0); });
     var t = $("#lprogtxt");
     if (t) { t.textContent = d.length + " / " + N + "강 마쳤어요" + (d.length === N ? " — 모두 마쳤어요! 아래 종합 테스트로 확인해 보세요." : ""); var b = $("#lprog .lprog-bar i"); if (b) b.style.width = Math.round(d.length * 100 / N) + "%"; }
-    $$(".lmark").forEach(function (b) { var on = d.indexOf(+b.getAttribute("data-no")) >= 0; b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "마쳤어요 ✓ (누르면 취소)" : "이 강 마쳤어요"; });
+    $$(".lmarkbtn").forEach(function (b) { var on = d.indexOf(+b.getAttribute("data-no")) >= 0; b.setAttribute("aria-pressed", on ? "true" : "false"); b.textContent = on ? "마쳤어요 ✓ (누르면 취소)" : "이 강 마쳤어요"; });
   }
 
   // ───────── 확인 문제
@@ -625,7 +625,7 @@
   }
 
   function init() {
-    $$(".lmark").forEach(function (b) { b.addEventListener("click", function () { var no = +b.getAttribute("data-no"); mark(no, getDone().indexOf(no) < 0); }); });
+    $$(".lmarkbtn").forEach(function (b) { b.addEventListener("click", function () { var no = +b.getAttribute("data-no"); mark(no, getDone().indexOf(no) < 0); }); });
     initQuiz();
     initMore();
     initTest();

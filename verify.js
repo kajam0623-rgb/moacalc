@@ -422,7 +422,8 @@ t("파비콘은 보살 마크(= 아이콘 잔재 없음)", !/%3D<\/text>/.test(b
 t("파비콘 규격 파일 존재", ["favicon.ico","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png"]
   .every(f=>fs.existsSync("img/"+f)), true);
 t("웹매니페스트 출력", /site\.webmanifest/.test(bs), true);
-t("헤더 로고는 이미지", /class="lmark" src="img\/logo\.png"/.test(bs) && /class=\\"lmark\\" src=\\"img\/logo\.png\\"/.test(inner) || /class="lmark" src="img\/logo\.png"/.test(bs), true);
+t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
+t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
 t("로고 파일 존재·정사각", fs.existsSync("img/logo.png") && fs.statSync("img/logo.png").size > 5000, true);
 // 승인 전 빈 광고 자리는 완성도만 깎는다
 t("광고 자리 플레이스홀더 제거", !/배너 자리/.test(bs) && !/배너 자리/.test(src), true);
