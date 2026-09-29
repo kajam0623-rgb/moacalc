@@ -886,7 +886,7 @@ const FAVICON = `<link rel="icon" href="/img/favicon.ico" sizes="any">`+
    신호를 한 군데서 전 페이지에 내보낸다. */
 const SITE_NAME = "동네보살";
 const THEME_JS = '<script>(function(){var d=document.documentElement,t;try{t=localStorage.getItem("dnbs_theme")}catch(e){}d.setAttribute("data-theme",t==="dark"?"dark":"light");'+
-  'document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".theme-tg");if(!b)return;var n=d.getAttribute("data-theme")==="dark"?"light":"dark";d.setAttribute("data-theme",n);try{localStorage.setItem("dnbs_theme",n)}catch(x){}});})();</script>';
+  'document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest(".theme-tg");if(!b)return;var n=d.getAttribute("data-theme")==="dark"?"light":"dark";d.setAttribute("data-theme",n);try{localStorage.setItem("dnbs_theme",n)}catch(x){}});addEventListener("beforeprint",function(){var q=document.querySelectorAll("details"),i;for(i=0;i<q.length;i++)q[i].open=true});})();</script>';
 const THEME_BTN = '<button type="button" class="theme-tg" aria-label="화면 밝기 바꾸기"><span class="tg-d">🌙 다크 모드</span><span class="tg-l">☀ 라이트 모드</span></button>';
 const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SITE_NAME}"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
@@ -2791,6 +2791,7 @@ const extraCss = `
 .lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
 .lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
+@media print{.lbar,.lprog,.lpractice,.lquiz,.lmore,.ltest,.lmark-row,.lbar-nav{display:none!important;}}
 .lprog{clear:both;margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}
 .lsteps{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.7;}

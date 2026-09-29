@@ -634,8 +634,9 @@
   @media print{
     :root{--bg:#fff;--surface:#fff;--surface-2:#fff;--ink:#111;--muted:#555;
           --line:#ddd;--line-2:#ccc;--accent-weak:#f3f4f9;--on-accent:#111}
-    .back,.trust,.tags,.guide,.sibs,.foot,.crumb,.share,.adbox,
-    .intro,.exbox,.faq,.rail,.rcard,.sitenav,.sfoot{display:none!important}
+    .back,.trust,.tags,.sibs,.foot,.crumb,.share,.adbox,.rail,.rcard,.sitenav,.sfoot{display:none!important}
+    body:has(#out>:not(.ask-wait)) :is(.guide,.intro,.exbox,.faq){display:none!important}
+    .ask-wait{display:none!important}
     /* 폼은 항목을 하나씩 지우면 새 입력칸이 생길 때마다 샌다.
        결과지에 남길 건 #out 하나뿐이니 나머지를 통째로 지운다. */
     .card.tool>*{display:none!important}
@@ -650,6 +651,14 @@
     #out::after{content:"무료 사주는 동네보살 · dongnebosal.com";display:block;
       text-align:center;margin-top:20px;padding-top:12px;border-top:1px solid #ddd;
       color:#666;font-size:12px}
+    #out,#out *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .toolhero{border:none;margin:0 0 10px}
+    .toolhero .cap{background:none;padding:0}
+    .toolhero .cap h1{color:#111;text-shadow:none}
+    .toolhero .cap .tl{color:#555}
+    .sj-char,.exbox .row{break-inside:avoid;page-break-inside:avoid}
+    h1,h2,h3{break-after:avoid;page-break-after:avoid}
+    .share-btn,.save-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
     @page{margin:14mm}
   }
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
@@ -771,6 +780,7 @@
 .lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
 .lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
+@media print{.lbar,.lprog,.lpractice,.lquiz,.lmore,.ltest,.lmark-row,.lbar-nav{display:none!important;}}
 .lprog{clear:both;margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}
 .lsteps{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.7;}
