@@ -1540,7 +1540,7 @@ function columnPage(c){
       // 편마다 직접 계산하거나 정리한 표. 문장만 있는 글보다 이 페이지에만 있는 자료가 되게 한다
       (c.tables || []).map(tb=>`<section class="guide"><h2>${esc(tb.h)}</h2>`+
         (tb.lead ? `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">${esc(tb.lead)}</p>` : "")+
-        `<div class="exbox">`+tb.rows.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`+
+        `<div class="exbox">`+tb.rows.map(r=>`<div class="row${tb.rows.some(x => x[1].length >= 26) ? " stack" : ""}"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`+
           (r[2] ? `<p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(r[2])}</p>` : "")).join("")+
         `</div></section>`).join("")+
       (c.sources && c.sources.length ? `<section class="guide"><h2>참고한 자료</h2><div class="intro" style="margin-top:0"><p>`+
@@ -2333,7 +2333,7 @@ const learnCta = () => `<a class="dictcta learncta" href="learn.html"><b>명리�
 const lectureChips = cur => '<div class="sibs">' + LEARN.LECTURES.map(x => x.no === cur ? `<span class="cur">${x.no}강 ${esc(x.short)}</span>` : `<a href="${x.page}">${x.no}강 ${esc(x.short)}</a>`).join("") + '</div>';
 const tablesHtml = tables => (tables || []).map(tb => `<section class="guide"><h2>${esc(tb.h)}</h2>` +
   (tb.lead ? `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">${esc(tb.lead)}</p>` : "") +
-  `<div class="exbox">` + tb.rows.map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>` +
+  `<div class="exbox">` + tb.rows.map(r => `<div class="row${tb.rows.some(x => x[1].length >= 26) ? " stack" : ""}"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>` +
     (r[2] ? `<p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(r[2])}</p>` : "")).join("") + `</div></section>`).join("");
 
 function lecturePage(c0) {
@@ -2788,7 +2788,7 @@ const extraCss = `
 .lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
 .lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
-.lprog{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
+.lprog{clear:both;margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}
 .lsteps{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.7;}
 .lpart h2 small{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:6px;}
@@ -2798,7 +2798,7 @@ const extraCss = `
 .lcard .lt{flex:1;display:grid;gap:3px;}.lcard .lt b{font-size:15.5px;}.lcard .lt small{font-size:13px;color:var(--muted);line-height:1.55;}.lcard .lt em{font-style:normal;font-size:12px;color:var(--fun-ink,#8a5a00);font-weight:700;}
 .lcard .ld{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);}
 .lcard.done .ld{background:#3d8a5c;border-color:#3d8a5c;position:relative;}.lcard.done .ld::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;}
-.learncta{margin:14px 0;}
+.learncta{margin:14px 0;clear:both;}
 .lq-c li,.lp-ch li{padding:0;font-size:inherit;}.lq-c li::before,.lp-ch li::before{content:none;}.lp .ppl{display:none;}
 .lsteps li::before{content:none;}.lsteps li{padding:2px 0;font-size:14.5px;color:var(--ink);}.lsteps{list-style:decimal;padding-left:22px;}
 @media (max-width:759px){.toolhero.longh .th-bosal{display:none;}}

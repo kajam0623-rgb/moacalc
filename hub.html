@@ -117,6 +117,7 @@
   .exbox .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--line-2);font-size:13.5px;}
   .exbox .row:last-of-type{border-bottom:none;}
   .exbox .row b{font-family:var(--mono);font-weight:700;}
+  @media (max-width:560px){.exbox .row.stack{flex-direction:column;gap:3px;}.exbox .row.stack b{text-align:left;}}
   .exbox .res{margin-top:10px;padding-top:10px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;font-weight:800;font-size:15px;}
   .exbox .res b{font-family:var(--mono);color:var(--accent-ink);}
   .warns{margin-top:14px;}
@@ -256,7 +257,7 @@
   .r2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   /* 좁은 화면에서 2단을 유지하면 한 칸이 150px 밑으로 눌린다.
      생년월일 다이얼의 '1990년'이 45px 칸에 들어가 글자가 겹쳐 보였다. */
-  @media (max-width:560px){.r2{grid-template-columns:1fr;gap:12px;}}
+  @media (max-width:560px){.r2{grid-template-columns:1fr;gap:12px;}.tool .r2>div+div>label:first-child{margin-top:6px;}}
   .out{position:relative;overflow:hidden;background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:17px 18px 16px;margin-top:22px;}
   .out::before{content:"";position:absolute;top:-55%;right:-12%;width:52%;height:150%;pointer-events:none;
     background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 24%,transparent),transparent 70%);opacity:.55;}
@@ -1933,8 +1934,8 @@
     el.innerHTML=
       '<div class="r2"><div><label>변환 방향</label><select id="dir"><option value="s2l">양력 → 음력</option><option value="l2s">음력 → 양력</option></select></div>'+
       '<div><label>윤달 (음→양일 때만)</label><select id="leap"><option value="0">평달</option><option value="1">윤달</option></select></div></div>'+
-      '<div id="pane-s2l"><label for="sd">양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
-      '<div id="pane-l2s" style="display:none"><div class="r2"><div><label for="ly">음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
+      '<div id="pane-s2l" style="margin-top:18px"><label for="sd">양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
+      '<div id="pane-l2s" style="display:none;margin-top:18px"><div class="r2"><div><label for="ly">음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
       '<div><label for="lm">음력 월</label><input type="number" id="lm" min="1" max="12" value="1"></div></div>'+
       '<label for="ld">음력 일</label><input type="number" id="ld" min="1" max="30" value="1"></div>'+
       '<div class="out" style="margin-top:14px"><div class="k" id="k">음력</div><div class="v" id="v">—</div><div class="s" id="s"></div></div>'+

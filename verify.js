@@ -430,6 +430,9 @@ t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp
   t("오류 기록: 브라우저는 js_error 에만 메시지·파일·주소를 보내고 오류 리스너는 하나뿐이다", src.includes('JSON.stringify(ev==="js_error"&&p?{e:ev,m:p.m,f:p.f,p:location.pathname}:{e:ev})') && (src.match(/addEventListener\("error"/g) || []).length === 1, true);
   t("오류 기록: 개인정보처리방침에 오류 메시지 보관(30일)이 적혀 있다", /오류 메시지\(120자 이내, 숫자 네 자리 이상은 지움\)/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("오류 메시지는 30일 뒤"), true); }
 t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
+// 모바일 화면 점검(2026-09)에서 나온 깨짐: 떠 있는 캐릭터 옆에 카드가 좁게 눌리거나 모서리를 덮이던 것, 값이 긴 표에서 라벨이 한 글자 폭으로 눌리던 것
+t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clear:both — 옆에 끼면 카드가 좁게 눌린다)", /\.learncta\{[^}]*clear:both/.test(bs) && /\.lprog\{clear:both;/.test(bs), true);
+t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
 t("로고 파일 존재·정사각", fs.existsSync("img/logo.png") && fs.statSync("img/logo.png").size > 5000, true);
 // 승인 전 빈 광고 자리는 완성도만 깎는다

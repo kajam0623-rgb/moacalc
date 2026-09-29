@@ -116,6 +116,7 @@
   .exbox .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--line-2);font-size:13.5px;}
   .exbox .row:last-of-type{border-bottom:none;}
   .exbox .row b{font-family:var(--mono);font-weight:700;}
+  @media (max-width:560px){.exbox .row.stack{flex-direction:column;gap:3px;}.exbox .row.stack b{text-align:left;}}
   .exbox .res{margin-top:10px;padding-top:10px;border-top:2px solid var(--ink);display:flex;justify-content:space-between;font-weight:800;font-size:15px;}
   .exbox .res b{font-family:var(--mono);color:var(--accent-ink);}
   .warns{margin-top:14px;}
@@ -255,7 +256,7 @@
   .r2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
   /* 좁은 화면에서 2단을 유지하면 한 칸이 150px 밑으로 눌린다.
      생년월일 다이얼의 '1990년'이 45px 칸에 들어가 글자가 겹쳐 보였다. */
-  @media (max-width:560px){.r2{grid-template-columns:1fr;gap:12px;}}
+  @media (max-width:560px){.r2{grid-template-columns:1fr;gap:12px;}.tool .r2>div+div>label:first-child{margin-top:6px;}}
   .out{position:relative;overflow:hidden;background:var(--surface-2);border:1px solid var(--line-2);border-radius:14px;padding:17px 18px 16px;margin-top:22px;}
   .out::before{content:"";position:absolute;top:-55%;right:-12%;width:52%;height:150%;pointer-events:none;
     background:radial-gradient(closest-side,color-mix(in srgb,var(--accent) 24%,transparent),transparent 70%);opacity:.55;}
@@ -767,7 +768,7 @@
 .lmarkbtn{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
 .lmarkbtn[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
 .lmark-note{font-size:12.5px;color:var(--muted);}
-.lprog{margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
+.lprog{clear:both;margin:0 0 16px;padding:12px 14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);font-weight:800;font-size:14px;}
 .lprog-bar{height:8px;border-radius:999px;background:var(--surface-2);margin-top:8px;overflow:hidden;}.lprog-bar i{display:block;height:100%;background:#E6B25A;border-radius:999px;transition:width .3s;}
 .lsteps{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14.5px;line-height:1.7;}
 .lpart h2 small{font-size:12.5px;font-weight:600;color:var(--muted);margin-left:6px;}
@@ -777,7 +778,7 @@
 .lcard .lt{flex:1;display:grid;gap:3px;}.lcard .lt b{font-size:15.5px;}.lcard .lt small{font-size:13px;color:var(--muted);line-height:1.55;}.lcard .lt em{font-style:normal;font-size:12px;color:var(--fun-ink,#8a5a00);font-weight:700;}
 .lcard .ld{flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line-2);}
 .lcard.done .ld{background:#3d8a5c;border-color:#3d8a5c;position:relative;}.lcard.done .ld::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;}
-.learncta{margin:14px 0;}
+.learncta{margin:14px 0;clear:both;}
 .lq-c li,.lp-ch li{padding:0;font-size:inherit;}.lq-c li::before,.lp-ch li::before{content:none;}.lp .ppl{display:none;}
 .lsteps li::before{content:none;}.lsteps li{padding:2px 0;font-size:14.5px;color:var(--ink);}.lsteps{list-style:decimal;padding-left:22px;}
 @media (max-width:759px){.toolhero.longh .th-bosal{display:none;}}
