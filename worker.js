@@ -21,6 +21,7 @@ export default {
   async scheduled(_, env) {
     await env.DB.prepare("DELETE FROM visitors WHERE day < ?").bind(kstDay(90)).run();
     await env.DB.prepare("DELETE FROM invites WHERE day < ?").bind(kstDay(7)).run();
+    try { await env.DB.prepare("DELETE FROM errors WHERE day < ?").bind(kstDay(30)).run(); } catch {}
   },
 };
 
@@ -31,10 +32,12 @@ async function hit(req, env) {
   let b;
   try { b = JSON.parse((await req.text()).slice(0, 2000)); } catch { return ok; }
   const day = kstDay(), stmts = [];
+  let jsErr = null;
   // ponytail: 요청마다 D1 에 최대 3건 쓴다. 무료 한도(하루 쓰기 10만)면 조회 3만 회 남짓까지. 넘으면 Analytics Engine 으로 옮긴다
   if (typeof b.e === "string") {
     if (!EVENTS.has(b.e)) return ok;
     stmts.push(env.DB.prepare("INSERT INTO events VALUES (?,?,1) ON CONFLICT(day,name) DO UPDATE SET n=n+1").bind(day, b.e));
+    if (b.e === "js_error") jsErr = errRow(b);
   } else {
     const path = typeof b.p === "string" && PATH_RE.test(b.p) ? (b.p === "/" ? "/index.html" : b.p) : null;
     if (!path) return ok;
@@ -48,7 +51,17 @@ async function hit(req, env) {
     if (!SELF.test(host)) stmts.push(env.DB.prepare("INSERT INTO refs VALUES (?,?,1) ON CONFLICT(day,host) DO UPDATE SET n=n+1").bind(day, host || "(직접 방문)"));
   }
   await env.DB.batch(stmts);
+  // 오류 내용은 별도 표에 넣는다 — 표가 없거나 실패해도 위의 조회·이벤트 기록에는 영향이 없다
+  if (jsErr) { try { await env.DB.prepare("INSERT INTO errors VALUES (?,?,?,1) ON CONFLICT(day,path,msg) DO UPDATE SET n=n+1").bind(day, jsErr.path, jsErr.msg).run(); } catch {} }
   return ok;
+}
+// 스크립트 오류 한 건 → {path, msg}. 메시지는 120자까지, 숫자 4자리 이상(연도·날짜 조각)은 지우고, 파일 이름은 뒤에 붙인다
+function errRow(b) {
+  if (typeof b.m !== "string") return null;
+  const msg = b.m.replace(/\d{4,}/g, "#").replace(/[\u0000-\u001f]/g, " ").trim().slice(0, 120);
+  if (!msg) return null;
+  const file = typeof b.f === "string" ? b.f.replace(/[^\w.\-]/g, "").slice(0, 40) : "";
+  return { path: typeof b.p === "string" && PATH_RE.test(b.p) ? (b.p === "/" ? "/index.html" : b.p) : "", msg: file ? msg + " @" + file : msg };
 }
 
 // ---- 궁합 초대 링크
@@ -99,6 +112,8 @@ async function admin(req, env) {
     q("SELECT (SELECT COUNT(*) FROM visitors WHERE day = ?) tv, (SELECT COALESCE(SUM(n),0) FROM views WHERE day = ?) tp", today, today),
   ])).map(r => r.results);
 
+  let errs = [];
+  try { errs = (await q("SELECT path, msg, SUM(n) n FROM errors WHERE day >= ? GROUP BY path, msg ORDER BY n DESC LIMIT 20", from).all()).results; } catch {}
   const byDay = {};
   for (let i = days - 1; i >= 0; i--) byDay[kstDay(i)] = { v: 0, m: 0, p: 0 };
   for (const r of dv) if (byDay[r.day]) Object.assign(byDay[r.day], { v: r.v, m: r.m });
@@ -130,6 +145,7 @@ td.n,th.n{text-align:right}.bar{height:8px;background:var(--bar);border-radius:4
 <h2>많이 본 페이지</h2><div class="box">${table(["페이지", "조회수"], pages.map(r => `<tr><td><a href="${esc(r.path)}" style="color:inherit">${esc(r.path)}</a></td><td class="n">${r.n}</td></tr>`))}</div>
 <h2>들어온 곳</h2><div class="box">${table(["사이트", "방문"], refs.map(r => `<tr><td>${esc(r.host)}</td><td class="n">${r.n}</td></tr>`))}</div>
 <h2>도구 사용</h2><div class="box">${table(["행동", "횟수"], evs.map(r => `<tr><td>${esc(EV_KO[r.name] || r.name)}</td><td class="n">${r.n}</td></tr>`))}</div>
+<h2>스크립트 오류 내용</h2><div class="box">${table(["페이지", "오류", "횟수"], errs.map(r => `<tr><td>${esc(r.path || "-")}</td><td style="white-space:normal">${esc(r.msg)}</td><td class="n">${r.n}</td></tr>`))}</div><p class="mu">오류가 났을 때의 메시지(120자까지, 숫자 4자리 이상은 지움)와 페이지 주소만 30일 동안 둡니다.</p>
 <p class="mu" style="margin-top:24px">기록은 이 대시보드를 만든 날부터 쌓입니다. 그 이전 방문은 구글 애널리틱스(GA4)에 있습니다.</p>
 </div></body></html>`;
   return new Response(html, { headers: { ...PRIV, "content-type": "text/html; charset=utf-8" } });

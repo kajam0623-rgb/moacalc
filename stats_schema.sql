@@ -7,3 +7,5 @@ CREATE TABLE IF NOT EXISTS refs     (day TEXT NOT NULL, host TEXT NOT NULL, n IN
 CREATE TABLE IF NOT EXISTS events   (day TEXT NOT NULL, name TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, name));
 -- 궁합 초대 링크: 보낸 사람의 사주 글자(연·월·일 천간·지지 6개)와 성별·호칭만. 생년월일은 받지 않는다. 7일 뒤 지운다
 CREATE TABLE IF NOT EXISTS invites  (id TEXT PRIMARY KEY, data TEXT NOT NULL, day TEXT NOT NULL);
+-- 스크립트 오류 내용(메시지 120자·주소). 숫자 4자리 이상은 지운다. 30일 뒤 지운다
+CREATE TABLE IF NOT EXISTS errors (day TEXT NOT NULL, path TEXT NOT NULL, msg TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (day, path, msg));

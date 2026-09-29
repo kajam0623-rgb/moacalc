@@ -423,6 +423,12 @@ t("파비콘 규격 파일 존재", ["favicon.ico","favicon-32.png","icon-192.pn
   .every(f=>fs.existsSync("img/"+f)), true);
 t("웹매니페스트 출력", /site\.webmanifest/.test(bs), true);
 t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp-row 는 음력 선택기 것)", ["lmark", "lp-row"].map(n => (bs.slice(bs.indexOf(".lbar{border:1px"), bs.indexOf(".tabbar{display:none;}", bs.indexOf(".lbar{border:1px"))).match(new RegExp("\\." + n + "[{\\[:, ]", "g")) || []).length).join(","), "0,0");
+// 스크립트 오류 기록: 내용은 서버 표(errors)에도 남고, 실패해도 조회·이벤트 기록에 영향이 없으며, 같은 오류를 두 번 세지 않는다
+{ const wk = fs.readFileSync("worker.js", "utf8");
+  t("오류 기록: 서버가 메시지·주소를 errors 표에 넣되 실패는 삼킨다", /if \(jsErr\) \{ try \{ await env\.DB\.prepare\("INSERT INTO errors/.test(wk) && wk.includes("DELETE FROM errors") && fs.readFileSync("stats_schema.sql", "utf8").includes("CREATE TABLE IF NOT EXISTS errors"), true);
+  t("오류 기록: 메시지는 숫자 4자리 이상을 지우고 120자로 자른다", /replace\(\/\\d\{4,\}\/g, "#"\)/.test(wk) && wk.includes(".slice(0, 120)"), true);
+  t("오류 기록: 브라우저는 js_error 에만 메시지·파일·주소를 보내고 오류 리스너는 하나뿐이다", src.includes('JSON.stringify(ev==="js_error"&&p?{e:ev,m:p.m,f:p.f,p:location.pathname}:{e:ev})') && (src.match(/addEventListener\("error"/g) || []).length === 1, true);
+  t("오류 기록: 개인정보처리방침에 오류 메시지 보관(30일)이 적혀 있다", /오류 메시지\(120자 이내, 숫자 네 자리 이상은 지움\)/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("오류 메시지는 30일 뒤"), true); }
 t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
 t("로고 파일 존재·정사각", fs.existsSync("img/logo.png") && fs.statSync("img/logo.png").size > 5000, true);

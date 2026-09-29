@@ -426,14 +426,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return '<div class="tf-me"><div class="tf-me-k">자네 개인 오늘 운세 <span>오늘의 운세 기준</span></div>'+
       '<div class="tf-me-v">'+t.score+'<small>점 · '+t.grade+' · '+t.rel+'의 날</small></div>'+
       '<p>아래는 같은 무리로 태어난 사람 모두에게 똑같이 나오는 공통 흐름일세. 자네 하루의 기준은 개인 운세야. 둘이 엇갈리면 개인 쪽을 따르게. <a href="todayfortune.html">개인 운세 자세히 →</a></p></div>';}
-  function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify({e:ev}));}catch(e){}}
+  function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify(ev==="js_error"&&p?{e:ev,m:p.m,f:p.f,p:location.pathname}:{e:ev}));}catch(e){}}
   // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
   if(typeof window!=="undefined"){
     window.addEventListener("error",function(e){
       track("js_error",{m:String(e.message||"").slice(0,100),f:String(e.filename||"").split("/").pop()});});
     window.addEventListener("unhandledrejection",function(e){
       track("js_error",{m:("promise: "+(e.reason&&e.reason.message||e.reason||"")).slice(0,100)});});}
-  if(typeof window!=="undefined")window.addEventListener("error",function(e){track("js_error",{m:String(e.message||"").slice(0,100)});});
   function rateBar(n,v){var c=v>=80?"var(--fun)":v>=65?"var(--accent)":"var(--deduct)";
     return '<div class="sj-bar"><span class="n">'+n+'</span><span class="t" role="meter" aria-valuenow="'+v+'" aria-valuemin="0" aria-valuemax="100" aria-label="'+n+' '+v+'점"><i style="width:'+v+'%;background:'+c+'"></i></span><span class="c">'+v+'</span></div>';}
   // ---------- 물어보기 게이트 ----------
