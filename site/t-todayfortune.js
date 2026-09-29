@@ -71,7 +71,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
         talk:["confess","meet","travel"],travel:["start","spend","meet"],start:["contract","interview","spend"],meet:["confess","talk","travel"]};
       var tfPool={};Object.keys(TFL).forEach(function(k){tfPool[k]={label:TFL[k],next:TFN[k],ans:function(){
         var Q=(TFQ||{})[k];if(!Q||!Q.ten||!Q.ten[rel])return "";
-        return '<p>'+Q.ten[rel]+(bonusArt==="충"?" "+Q.chung:bonusArt?" "+Q.hap:"")+'</p><span class="tail-foot">오늘 날짜의 글자와 자네 사주를 맞춰 본 풀이입니다.</span>';}};});
+        return '<p>'+Q.ten[rel]+(bonusArt==="충"?" "+Q.chung:bonusArt?" "+Q.hap:"")+'</p><span class="tail-foot">오늘 날짜의 글자와 자네 사주를 맞춰 본 풀이입니다. <a href="column-sipseong-lookup-table.html">십성 조견표 보기</a></span>';}};});
       var tfTail={tool:"todayfortune",intro:"오늘 일 가운데 더 궁금한 게 있나?<br>어떤 내용이야?",first:["confess","contract","interview","spend"],load:tfqLoad,pool:tfPool};
       el.querySelector("#out").innerHTML=
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+

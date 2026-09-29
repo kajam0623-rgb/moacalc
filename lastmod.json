@@ -652,7 +652,7 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "2fe35f6e",
+  "h": "e48953cf",
   "d": "2026-09-29"
  },
  "installment.html": {
@@ -1548,31 +1548,31 @@
   "d": "2026-09-29"
  },
  "column.html": {
-  "h": "44791563",
+  "h": "328278ef",
   "d": "2026-09-29"
  },
  "column-birth-time-unknown.html": {
-  "h": "3eda6a48",
+  "h": "83e80da3",
   "d": "2026-09-29"
  },
  "column-new-year-start.html": {
-  "h": "b78f71e9",
+  "h": "5fcd7b09",
   "d": "2026-09-29"
  },
  "column-star-cusp.html": {
-  "h": "9b5d6b97",
+  "h": "bfa32a1f",
   "d": "2026-09-29"
  },
  "column-daeun-reading.html": {
-  "h": "dfa5793b",
+  "h": "75cfa215",
   "d": "2026-09-29"
  },
  "column-tti-vs-saju-gunghap.html": {
-  "h": "03a203bf",
+  "h": "a110ee65",
   "d": "2026-09-29"
  },
  "column-tarot-vs-saju.html": {
-  "h": "f750382c",
+  "h": "3f8b32f2",
   "d": "2026-09-29"
  },
  "dict.html": {
@@ -1860,11 +1860,15 @@
   "d": "2026-09-29"
  },
  "column-yearly-luck-table.html": {
-  "h": "376f9532",
+  "h": "aef6bf24",
   "d": "2026-09-29"
  },
  "column-zodiac-move-years.html": {
-  "h": "70e93793",
+  "h": "00b18c59",
+  "d": "2026-09-29"
+ },
+ "column-sipseong-lookup-table.html": {
+  "h": "be43f393",
   "d": "2026-09-29"
  }
 }
