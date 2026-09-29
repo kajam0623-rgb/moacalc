@@ -513,7 +513,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           if(sc>0)c.push({fy:fy,sc:sc,tg:tg});}
         return c.sort(function(a,b){return b.sc-a.sc||a.fy-b.fy;});}
       function tqAns(k){
-        var Q=(TQ||{})[k],foot='<span class="tail-foot">해마다 드는 운을 자네 사주와 맞춰 고른 시기입니다. <a href="column-yearly-luck-table.html">내 일간의 앞으로 10년 표 보기</a></span>';
+        var Q=(TQ||{})[k],foot='<span class="tail-foot">해마다 드는 운을 자네 사주와 맞춰 고른 시기입니다. <a href="column-yearly-luck-table.html">내 일간의 앞으로 10년 표 보기</a>'+(k==="move"||k==="marry"||k==="quit"?' · <a href="column-zodiac-move-years.html">띠별 충·합 해 표 보기</a>':'')+'</span>';
         if(!Q)return "";
         if(k==="month"){
           var W=MSC.slice().sort(function(a,b){return a.sc-b.sc||a.i-b.i;}),w=W[0],mn=function(x){return (x.y!==nowY?x.y+"년 ":"")+x.m+"월";};
