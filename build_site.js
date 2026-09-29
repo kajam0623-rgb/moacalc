@@ -965,6 +965,11 @@ tarot:"무료 타로 사이트 — 보살에게 묻고 뽑는 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
 lunar:"음력 양력 변환 — 음력 생일·윤달 무료 변환",
 };
+// 도구 페이지 본문에서 관련 칼럼으로 가는 링크 — 칼럼의 tool·related 를 거꾸로 이어 자동으로 만든다(그 도구가 주인인 칼럼을 앞에, 최신순, 3편까지, 제목만 — 도구 페이지끼리 같은 글이 반복돼 고유율이 떨어지지 않게)
+function toolColumnsHtml(id){
+  const l = COLUMN_PAGES.filter(c=>c.tool===id||c.related.includes(id)).sort((a,b)=>(b.tool===id)-(a.tool===id)||b.order-a.order).slice(0,3);
+  return l.length ? '<section class="guide"><h2>관련 칼럼</h2><div class="sibs">'+l.map(c=>`<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("")+'</div></section>' : "";
+}
 function toolPage(t){
   const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 동네보살";
   const desc = (intro[t.id]||t.desc).slice(0,155);
@@ -1031,7 +1036,7 @@ ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
 ${introHtml}
-${guideHtml}${elemHtml}${exHtml}${cauHtml}${faqHtml}
+${guideHtml}${elemHtml}${exHtml}${cauHtml}${toolColumnsHtml(t.id)}${faqHtml}
 ${adSlot()}
 </main>
 <aside class="rail">
