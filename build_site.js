@@ -136,6 +136,7 @@ acqtax:"주택 취득가액을 입력하면 유상취득 기준 취득세율과 
 brokerfee:"매매 또는 전월세 거래금액에 대한 부동산 중개보수 상한을 계산합니다.",
 pyeong:"평과 제곱미터(㎡)를 서로 변환합니다. 1평은 약 3.3058㎡입니다.",
 jeonse:"전세 보증금과 전환율로 환산 월세를 계산합니다.",
+gongmang:"태어난 날의 일주가 속한 순(旬)에서 짝을 얻지 못한 두 지지, 공망을 찾습니다. 연지·월지·시지 중 공망에 든 자리까지 무료로 확인하세요.",
 lunar:"양력 날짜를 음력으로, 음력 날짜를 양력으로 바꿉니다. 한국천문연구원 기준이며 윤달까지 구분합니다. 음력 생일로 사주를 볼 때 먼저 양력으로 바꾸는 데 씁니다.",
 age:"생년월일을 입력하면 만 나이와 태어난 지 며칠인지 계산합니다.",
 dday:"두 날짜 사이의 남은 일수 또는 지난 일수(D-day)를 계산합니다.",
@@ -205,6 +206,7 @@ brokerfee:["중개수수료 계산","복비 계산","부동산 중개보수"],
 rentyield:["임대수익률 계산","월세 수익률","부동산 투자"],
 jeonse:["전월세 전환율","보증금 월세 전환","반전세 계산"],
 pyeong:["평 제곱미터 변환","평수 계산","전용면적"],
+gongmang:["공망 찾기","내 공망","일주 공망","공망 계산기","공망 뜻"],
 lunar:["음력 양력 변환","음력 생일 양력","윤달","음력 달력"],
 age:["만 나이 계산기","만나이 계산","나이 계산"],
 dday:["디데이 계산기","D-day","날짜 계산"],
@@ -331,6 +333,17 @@ charcount:{
  "<b>문자 메시지는 바이트로 셉니다.</b> 한글 45자(90바이트)를 넘으면 장문(LMS)으로 전환되어 요금이 달라집니다.",
  "<b>줄바꿈도 공백으로 셉니다.</b> 문단을 나누면 공백 포함 글자수가 늘어납니다.",
  "<b>붙여넣기 시 서식 문자에 주의하세요.</b> 워드에서 복사하면 보이지 않는 공백이 함께 넘어올 수 있습니다."]},
+// 공망 찾기 해설(2026-09-30). 순별 공망은 육십갑자를 열 개씩 묶어 남는 지지 두 개이며, 예시는 엔진(sjGongmang)으로 계산한 값이다
+gongmang:{
+ intro:`공망(空亡)은 '비어 있다'는 뜻으로, 사주에서 어느 지지가 짝을 얻지 못한 채 남았는지를 보는 전통 개념입니다. 육십갑자는 천간 열 글자와 지지 열두 글자가 짝을 지어 예순 개를 만드는데, 갑자·갑술·갑신·갑오·갑진·갑인으로 시작하는 열 개씩 여섯 묶음(순, 旬)으로 나눌 수 있습니다. 각 묶음은 천간 열 개가 지지 열 개와 짝을 짓고, 지지 두 개가 짝 없이 남습니다. 이 두 지지가 그 순의 공망입니다.
+ 공망을 정하는 가장 흔한 방법은 태어난 날의 일주가 어느 순에 속하는지 보는 것입니다. 갑자순(갑자~계유)의 공망은 술·해, 갑술순은 신·유, 갑신순은 오·미, 갑오순은 진·사, 갑진순은 인·묘, 갑인순은 자·축입니다. 이 도구는 생년월일로 일주를 세우고 순과 공망을 찾은 뒤, 연지·월지(시각을 넣으면 시지까지)가 공망에 드는지 확인합니다.
+ 공망에 든 자리는 '비어 있다'고 읽습니다. 연지는 조상과 어린 시절, 월지는 부모와 사회, 시지는 자녀와 말년의 자리로 보기 때문에, 그 자리의 기운이 채워지지 않는 듯 작용한다는 풀이가 전해집니다. 다만 해석은 학파마다 크게 갈립니다. 비어 있어 집착이 줄고 정신적·학문적으로 쓰인다는 풀이도 있고, 운에서 그 지지가 들어와 채워지면 풀린다는 견해도 있습니다. 그래서 공망은 결론이 아니라 살펴볼 자리를 알려 주는 표시로 읽는 편이 안전합니다.
+ 공망은 사주팔자를 읽는 여러 도구 가운데 하나입니다. 나를 뜻하는 일간과 힘의 세기, 십성과 대운을 함께 보아야 하며 공망 하나로 좋고 나쁨을 정하지 않습니다. 사주 전체는 <a href="saju.html">사주팔자 만세력</a>에서, 일주별 공망은 <a href="dict.html">일주 페이지</a>에서 확인할 수 있습니다.`,
+ example:{t:"1990년 3월 15일생(기묘일) 기준",rows:[["일주","기묘일주"],["속한 순","갑술순(갑술~계미)"],["공망","신(申) · 유(酉)"]],res:["연지 오·월지 묘","공망에 든 글자 없음"]},
+ caution:["<b>공망은 학파마다 해석이 다릅니다.</b> 좋고 나쁨을 정하는 도구가 아니라 살펴볼 자리를 알려 주는 표시로 쓰세요.",
+ "<b>일주 기준이 가장 흔합니다.</b> 연주 기준을 함께 보는 학파도 있어 참고로만 적었습니다.",
+ "<b>태어난 시각을 모르면 시지는 살피지 않습니다.</b> 연지와 월지만으로 봅니다.",
+ "<b>공망이 있어도 나쁜 사주라는 뜻이 아닙니다.</b> 사주는 여덟 글자 전체의 균형으로 봅니다."]},
 // 음력 변환 해설(2026-09, 애드센스 반려 대응 4단계). 날짜 예시는 전부 vendor-lunar.js 로 계산해 확인한 값이다
 lunar:{
  intro:`음력은 달이 차고 기우는 주기로 달을 나눈 달력입니다. 달이 한 바퀴 도는 데 평균 29.5일쯤 걸려서 음력의 한 달은 29일 아니면 30일이고, 열두 달을 모아도 354일 안팎이라 양력 1년보다 11일쯤 짧습니다.
@@ -774,6 +787,7 @@ ltv:["LTV(주택담보인정비율)로 담보가 대비 최대 대출액을 정�
 fire:["FIRE 목표 자산 = 연 지출 × 25 (연 4% 인출 가정).","저축액과 투자수익률이 높을수록 은퇴 시점이 빨라집니다."],
 jeonse:["환산 월세 = 보증금 × 전환율 ÷ 12.","법정 전환율 상한은 기준금리에 연동됩니다."],
 pyeong:["1평 = 3.305785㎡.","분양·부동산 면적을 평과 ㎡로 빠르게 변환합니다."],
+gongmang:["생년월일을 넣고, 아는 만큼 태어난 시각도 고릅니다(모르면 모름).","태어난 날의 일주로 속한 순(旬)을 찾고, 그 순에서 짝 없이 남는 두 지지를 공망으로 잡습니다.","연지·월지·시지가 공망에 드는지 확인해 그 자리의 뜻과 함께 읽습니다."],
 lunar:["양력 → 음력: 양력 날짜를 고르면 음력 날짜와 윤달 여부가 나옵니다.","음력 → 양력: 음력 날짜와 평달·윤달을 고르면 양력 날짜가 나옵니다.","한국천문연구원(KASI) 기준 데이터로 1000년부터 2050년까지 바꿉니다."],
 age:["만 나이는 생일이 지났는지에 따라 세는 나이보다 1~2살 적습니다.","2023년부터 법적·행정 나이는 만 나이로 통일되었습니다."],
 dday:["두 날짜의 차이를 일수로 계산합니다.","시험·기념일까지 남은 날을 셀 때 씁니다."],
@@ -833,6 +847,7 @@ ltv:[["LTV가 뭔가요?","집값 대비 빌릴 수 있는 최대 비율입니�
 fire:[["FIRE가 뭔가요?","일찍 은퇴해 경제적 자유를 얻는 것으로, 보통 연 지출의 25배 자산이 목표입니다."],["왜 25배인가요?","연 4%씩 인출해도 자산이 유지된다는 4% 법칙에서 나옵니다."]],
 jeonse:[["전월세 전환율이 뭔가요?","보증금을 월세로 바꿀 때 적용하는 연 이율입니다."],["상한이 있나요?","법정 상한은 기준금리에 연동되어 정해집니다."]],
 pyeong:[["1평은 몇 ㎡인가요?","약 3.31㎡입니다."],["전용면적과 공급면적이 다른가요?","네, 전용면적이 실제 사용 공간이고 공급면적은 공용부가 포함됩니다."]],
+gongmang:[["공망이란 무엇인가요?","육십갑자를 열 개씩 묶은 순(旬)에서 짝을 얻지 못하고 남는 두 지지입니다. 비어 있다는 뜻이라 공망(空亡)이라 부릅니다."],["공망이 있으면 나쁜가요?","그렇게 단정하지 않습니다. 그 자리의 기운이 채워지지 않는 듯 작용한다는 풀이가 있지만, 집착이 줄고 정신적·학문적으로 쓰인다고 보는 풀이도 있습니다. 사주 전체의 균형과 운에서 채워지는지를 함께 봅니다."],["일주 기준과 연주 기준 중 무엇을 쓰나요?","일주 기준이 가장 널리 쓰입니다. 연주 기준을 함께 보는 학파도 있어, 이 도구는 일주 기준을 본문으로 하고 연주 기준을 참고로 함께 보여 줍니다."],["일지는 왜 공망에 들지 않나요?","공망은 일주가 속한 순에서 짝을 얻지 못한 지지이고, 일지는 그 순에서 일간과 짝을 이룬 지지라 자기 일주의 공망에는 들 수 없습니다."]],
 lunar:[["음력 생일은 왜 해마다 양력 날짜가 바뀌나요?","음력 1년이 양력보다 11일쯤 짧고, 그 차이를 몇 해마다 윤달로 메우기 때문입니다. 음력 3월 15일생은 양력으로 2025년 4월 12일, 2026년 5월 1일, 2027년 4월 21일이 생일입니다."],["윤달에 태어났으면 어떻게 넣나요?","음력 → 양력으로 바꿀 때 윤달을 고르면 됩니다. 2025년처럼 윤6월이 있는 해에는 6월이 두 번이라, 평달을 고르면 한 달쯤 앞선 날짜가 나옵니다."],["사주를 볼 때 음력 생일을 그대로 넣어도 되나요?","동네보살 사주팔자와 만세력은 양력 생년월일을 받습니다. 여기서 양력으로 바꾼 뒤 넣으세요. 사주의 달은 음력 달이 아니라 절기로 나뉩니다."],["설날과 추석은 양력으로 언제인가요?","2026년 설날(음력 1월 1일)은 양력 2월 17일, 추석(음력 8월 15일)은 9월 25일입니다. 2027년 설날은 2월 7일입니다."],["결과 날짜 뒤에 (윤)이 붙어 있으면 무슨 뜻인가요?","그 날이 윤달에 속한다는 표시입니다. 양력 → 음력으로 바꿨는데 (윤)이 붙었다면 음력 생일을 적을 때도 윤달이라고 함께 적어 두어야 나중에 양력으로 되돌릴 때 날짜가 맞습니다."]],
 age:[["만 나이와 세는 나이 차이는요?","만 나이는 생일 기준이라 세는 나이보다 1~2살 적습니다."],["언제부터 만 나이인가요?","2023년 6월부터 법적·행정 나이가 만 나이로 통일됐습니다."]],
 dday:[["D-day는 어떻게 계산하나요?","목표일에서 오늘을 빼 남은 일수를 구합니다."],["당일은 어떻게 표시되나요?","당일은 D-DAY로 표시됩니다."]],
@@ -921,7 +936,7 @@ const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
 
 // 도구마다 어울리는 아기보살 자세(img/bosal/<자세>.webp, 작은 판은 img/bosal/s/)
 const TOOL_POSE = {tojeong:"scroll",todayfortune:"crystal",saju:"magnifier",gunghap:"heart",tarot:"tarot",newyear:"newyear",horoscope:"sleepy",
-  zodiacfortune:"trophy",stargunghap:"phone",namematch:"diary",lunar:"scroll",manse:"scroll",dict:"point"};
+  zodiacfortune:"trophy",stargunghap:"phone",namematch:"diary",gongmang:"magnifier",lunar:"scroll",manse:"scroll",dict:"point"};
 const thBosal = id => TOOL_POSE[id] ? `<img class="th-bosal" src="img/bosal/${TOOL_POSE[id]}.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()">` : "";
 // 도구 위 신뢰 칩. 사용자가 궁금한 건 테스트 개수가 아니라 돈·가입·개인정보·근거다(2026-09 감사)
 const TRUST_GEN = '<div class="trust"><span>결제·가입 없음</span><span>생일은 서버로 안 보냄</span><span>같은 생일·같은 날 = 같은 결과</span><span>사람이 쓴 풀이</span></div>';
@@ -972,6 +987,7 @@ tojeong:"2027 토정비결 — 무료 토정비결 보기 144괘",
 newyear:"2027 신년운세 — 정미년·병오년 무료 운세",
 tarot:"무료 타로 사이트 — 보살에게 묻고 뽑는 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
+gongmang:"공망 찾기 — 내 일주 공망 무료 계산",
 lunar:"음력 양력 변환 — 음력 생일·윤달 무료 변환",
 };
 // 도구 페이지 본문에서 관련 칼럼으로 가는 링크 — 칼럼의 tool·related 를 거꾸로 이어 자동으로 만든다(그 도구가 주인인 칼럼을 앞에, 최신순, 3편까지, 제목만 — 도구 페이지끼리 같은 글이 반복돼 고유율이 떨어지지 않게)
@@ -1100,7 +1116,7 @@ const ENGINE = new Function(
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
-  "sjPillars,sjTenGod,sjUnseong,sjYukhap,TXT," +
+  "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,TXT," +
   "sjStrength,sjSinsal,sjDaeunStart,sjJdKST,SJ_JJG,SJ_GYEOK,SJ_CHEONEUL,SJ_MUNCHANG,SJ_YANGIN,SJ_DOHWA,SJ_YEOKMA,SJ_HWAGAE,SJ_BAEKHO,SJ_GWAEGANG," +
   "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")();
 
@@ -1254,6 +1270,7 @@ const ILJU_PAGES = Array.from({length:60}, (_, k) => {
     chung:ENGINE.SJ_TTI[(b + 6) % 12],
     samhap:[0,4,8].map(o=>ENGINE.SJ_TTI[(b + o) % 12]),
     yukhap:ENGINE.SJ_TTI[ENGINE.sjYukhap(b)],
+    gm:ENGINE.sjGongmang(s, b),                    // 공망: 일주가 속한 순에서 짝 없이 남는 지지 두 개
   };
 });
 const iljuChips = cur => '<div class="sibs">'+ILJU_PAGES.map(p=>p.en===cur
@@ -1971,6 +1988,7 @@ function iljinPage(p){
 /* 일주 개별 페이지 — "갑자일주 여자 성격" 같은 검색어를 받는다.
    일진 페이지와 간지는 같지만 보는 대상이 다르다. 여기서는 날이 아니라 사람을 본다.
    일간 = 나, 일지 = 배우자 자리라는 틀만 쓰고 일진 쪽 어휘(이 날·도래일·점수)는 쓰지 않는다. */
+function gmTxt(g){ return `${ENGINE.SJ_B[g.empty[0]]}(${ENGINE.SJ_BH[g.empty[0]]}) · ${ENGINE.SJ_B[g.empty[1]]}(${ENGINE.SJ_BH[g.empty[1]]})`; }
 function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
@@ -1994,13 +2012,15 @@ function iljuPage(p){
        ["십이운성",`${p.un} (${gEl}${josa(gEl,"이/가")} ${J.ko}에서 서는 자리)`],
        ["일지 십성",`${p.tengod} (지장간 본기 ${p.bmain}${josa(p.bmain,"을/를")} 기준)`],
        ["삼합 띠",p.samhap.join(" · ")],
-       ["육합 띠",p.yukhap]]
+       ["육합 띠",p.yukhap],
+       ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+
 
       `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. 60갑자 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
       `${para(C.core)}</div>`+
       `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 하나만 떼어 본 성격·일·재물 풀이는 <a href="ilgan-${G.en}.html">${gEl} 일간</a> 페이지에 있습니다.</p>`+
+      `<p style="color:var(--muted);font-size:13px;margin:6px 2px 0">${p.ko}일주가 속한 순은 ${p.gm.sun}이고, 이 순에서 짝 없이 남는 지지 ${gmTxt(p.gm)}이 공망(空亡)입니다. 연지·월지·시지까지 견주어 보려면 <a href="gongmang.html">공망 찾기</a>에 생년월일을 넣어 보세요.</p>`+
 
       `<section class="guide"><h2>${C.tag} — ${p.ko}일주가 드러나는 장면</h2>`+
       `<div class="intro" style="margin-top:0">${para(C.scene)}</div></section>`+
@@ -2606,7 +2626,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
 const robots = `User-agent: *\nAllow: /\nSitemap: ${DOMAIN}/sitemap.xml\nSitemap: ${DOMAIN}/rss.xml`;
 
 // llms.txt — 생성형 검색(ChatGPT·Perplexity 등)이 사이트를 정확히 인용하도록 돕는 안내 파일
-const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tojeong","tarot","namematch"];
+const fortuneIds = ["saju","todayfortune","horoscope","zodiacfortune","gunghap","stargunghap","newyear","tojeong","tarot","namematch","gongmang"];
 const llmsTxt = `# 동네보살 (dongnebosal)
 
 > 무료 사주·운세 사이트. 태양황경을 직접 계산하는 만세력 엔진으로 사주팔자·오늘의 운세·별자리 운세·궁합을 풀이한다. 문구를 무작위로 뽑지 않고 계산 결과로 조립하므로, 같은 생일에 같은 날이면 언제 조회해도 같은 결과가 나온다.

@@ -219,7 +219,7 @@ const toolBlock = id => { const i = inner.indexOf('{id:"'+id+'"'); const j = inn
 t("운세 8종 물어보기 배선(askWire)", FORTUNE_GATED.every(id=>/askWire\(el,go,\[/.test(toolBlock(id))), true);
 // 버튼 클릭 외에 결과를 그리는 경로가 남아 있으면 게이트가 샌다(select change·초기 go() 모두)
 t("운세 8종 자동 실행 제거", FORTUNE_GATED.every(id=>{const b=toolBlock(id);return !/;go\(\);/.test(b) && !/addEventListener\("change",go\)/.test(b);}), true);
-t("버튼 문구 통일(ASK_LABEL)", (inner.match(/'\+ASK_LABEL\+'<\/button>/g)||[]).length, 8);
+t("버튼 문구 통일(ASK_LABEL)", (inner.match(/'\+ASK_LABEL\+'<\/button>/g)||[]).length, 9);
 t("물어보기 전 대기 화면", /function askWait/.test(inner) && /ask-wait/.test(src), true);
 // 도파민 1 — 짚어 보는 연출(릴 + 단계 문구), 2 — 점수 카운트업·막대 채우기·등급, 3 — 스트릭·부적
 t("연출1 짚어보기(릴+단계)", /function askThink/.test(inner) && /ask-reel/.test(src) && /reelspin/.test(src), true);
@@ -478,6 +478,12 @@ t("보안 헤더: 프레임 삽입 금지·쓰지 않는 기능 차단(_headers)
   t("2027 칼럼 표: 띠 12줄의 관계가 띠 페이지 2027 원고의 관계와 같다 (어긋난 것: " + badZ.join(",") + ")", badZ.length, 0);
   t("2027 칼럼: 개별 페이지 34곳으로 가는 링크가 있다", (CL.sections[4][1].match(/href=\"(zodiac|ilgan|star)-[a-z]+\.html\"/g) || []).length, 34); }
 t("홈: 신년 성수기 링크(2027 한눈에 칼럼)가 도구 타일 아래에 있다 — 입춘(2027-02-04) 뒤 시즌이 끝나면 지운다", bs.includes('class="dictcta seasoncta" href="column-zodiac-2027.html"'), true);
+// 공망: 60갑자 전수 — 손으로 적은 순별 표(갑자순 술해, 갑술순 신유, 갑신순 오미, 갑오순 진사, 갑진순 인묘, 갑인순 자축)와 엔진이 같다
+{ const HAND = [["갑자순", "술", "해"], ["갑술순", "신", "유"], ["갑신순", "오", "미"], ["갑오순", "진", "사"], ["갑진순", "인", "묘"], ["갑인순", "자", "축"]];
+  const badGm = []; for (let k = 0; k < 60; k++) { const s = k % 10, b = k % 12, h = HAND[Math.floor(k / 10)], g = sjGongmang(s, b); if (g.sun !== h[0] || SJ_B[g.empty[0]] !== h[1] || SJ_B[g.empty[1]] !== h[2]) badGm.push(SJ_S[s] + SJ_B[b]); }
+  t("공망: 60갑자 전수가 손으로 적은 순별 표와 같다 (어긋난 것: " + badGm.slice(0, 4).join(",") + ")", badGm.length, 0);
+  t("공망: 일지는 자기 일주의 공망에 들지 않는다(60갑자)", Array.from({ length: 60 }, (_, k) => sjGongmang(k % 10, k % 12).empty.includes(k % 12)).filter(Boolean).length, 0); }
+t("공망: 일주 60쪽이 한눈에 표에 공망 행을 갖고 공망 찾기 도구로 잇는다", bs.includes("gm:ENGINE.sjGongmang(s, b)") && bs.includes("[\"공망(空亡)\",`${gmTxt(p.gm)} — ${p.gm.sun}`]") && bs.includes('<a href=\"gongmang.html\">공망 찾기</a>'), true);
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
@@ -529,7 +535,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjGongmang","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
