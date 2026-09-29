@@ -15,7 +15,7 @@
 - [사주팔자 만세력](https://dongnebosal.com/saju.html): 무료 사주풀이. 생년월일시만 넣으면 사주팔자 만세력과 재물·직업·애정·건강운, 10년 대운까지 쉬운 말로 풀어 드립니다.
 - [오늘의 운세](https://dongnebosal.com/todayfortune.html): 생년월일만 넣으면 오늘 일진과 내 일간의 관계로 총운·애정·재물·직장·건강운과 행운의 색·방위를 풀이합니다.
 - [별자리 운세](https://dongnebosal.com/horoscope.html): 생년월일로 별자리를 판정하고, 오늘 태양과 이루는 각도로 총운·애정·재물운과 이번주 흐름을 봅니다.
-- [띠별 운세](https://dongnebosal.com/zodiacfortune.html): 내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2026 병오년 흐름까지 무료로.
+- [띠별 운세](https://dongnebosal.com/zodiacfortune.html): 내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2027 정미년·2026 병오년 흐름까지 무료로.
 - [궁합 보기](https://dongnebosal.com/gunghap.html): 무료 사주궁합. 두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합해 봅니다.
 - [별자리 궁합](https://dongnebosal.com/stargunghap.html): 두 별자리의 원소 관계와 황도 각도, 수호성 친화로 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다.
 - [신년운세](https://dongnebosal.com/newyear.html): 2027 정미년과 2026 병오년 무료 신년운세. 생년월일만 넣으면 그 해 천간과 내 일간의 십성 관계, 태세 지지와 내 띠·일지의 합충으로 한 해의 흐름과 상·하반기 전략을 풀이합니다.

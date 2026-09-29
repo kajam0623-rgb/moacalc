@@ -453,6 +453,21 @@ t("사주 궁합: 일간 십성은 두 방향을 평균 내 점수가 순서와 
 t("이름 궁합: 순서를 바꾸면 점수가 달라진다는 안내가 글자 수가 같을 때도 있다", (src.match(/이름 1·2의 순서를 바꾸면 점수가 달라집니다/g) || []).length, 2);
 // 일간·일주·십성·띠·일진·월력 페이지가 강의로 가는 문맥 링크를 갖는다(본문 링크 0개였음)
 t("생성 페이지 6군이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "6|true");
+// 2027 정미(丁未)년 원고: 띠는 태세 지지 미(未)와의 관계, 일간은 천간 정(丁)과 미 본기 기(己)의 십성이 엔진 계산과 같아야 한다
+{ const ZO = require("./content_zodiac.js"), IL = require("./content_ilgan.js");
+  const REL = b => b === 7 ? "본명년" : (b + 6) % 12 === 7 ? "충(沖) 관계" : sjYukhap(b) === 7 ? "육합을 이룹니다" : b % 4 === 3 ? "삼합" : b === 0 ? "해(害) 관계" : b === 10 ? "형(刑)이자 파(破)" : "충·합 관계가 없습니다";
+  const badZ = ZO.filter(z => { const b = SJ_B.indexOf(z.ji[0]); return b < 0 || typeof z.y2027 !== "string" || z.y2027.replace(/\s/g, "").length < 240 || !z.y2027.includes(REL(b)) || !/2027년/.test(z.y2027); }).map(z => z.ko);
+  t("띠 12: 2027 원고가 있고 태세 미(未)와의 관계(충·합·해·형·본명년)가 엔진 계산과 같다 (어긋난 것: " + badZ.join(",") + ")", badZ.length, 0);
+  const badI = IL.filter(g => { const i = SJ_S.indexOf(g.ko); if (i < 0) return true; const a = sjTenGod(i, 3), c = sjTenGod(i, SJ_BMAIN[7]); return typeof g.y2027 !== "string" || g.y2027.replace(/\s/g, "").length < 200 || !g.y2027.includes(a + ", 지지 미토(未)의 본기 기토(己)는 " + c + "에 해당"); }).map(g => g.ko);
+  t("일간 10: 2027 원고가 있고 천간 정(丁)·미 본기 기(己)의 십성이 엔진 계산과 같다 (어긋난 것: " + badI.join(",") + ")", badI.length, 0);
+  t("띠·일간 페이지 생성기가 2027 섹션·제목·FAQ 를 쓴다", (bs.match(/y2027/g) || []).length >= 4 && bs.includes("— 2027 정미년 | 동네보살") && bs.includes("2027 운세 | 동네보살"), true); }
+// 별자리 2027: 2027 외행성 위치(토성·해왕성 양자리, 천왕성 쌍둥이자리, 명왕성 물병자리, 목성 사자→처녀 7/26)와 별자리 단위 각을 이루는 행성을 원고가 모두 언급한다
+{ const ST = require("./content_star.js"), EN = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"];
+  const PL = [["토성", 0], ["해왕성", 0], ["천왕성", 2], ["명왕성", 10], ["목성", 4], ["목성", 5]], ASP = new Set([0, 2, 3, 4, 6, 8, 9, 10]);
+  const badS = ST.filter(s => { const i = EN.indexOf(s.en); if (i < 0) return true; const need = [...new Set(PL.filter(x => ASP.has((x[1] - i + 12) % 12)).map(x => x[0]))]; return typeof s.y2027 !== "string" || s.y2027.replace(/\s/g, "").length < 200 || !/2027년/.test(s.y2027) || need.some(n => !s.y2027.includes(n)); }).map(s => s.ko);
+  t("별자리 12: 2027 원고가 있고 2027 외행성과 각을 이루는 행성을 모두 언급한다 (어긋난 것: " + badS.join(",") + ")", badS.length, 0);
+  t("별자리 페이지 생성기가 2027 섹션·제목·FAQ·행성 위치 안내를 쓴다", bs.includes("${para(s.y2027)}") && bs.includes("— 2027 | 동네보살") && bs.includes("목성은 7월 26일에 사자자리에서 처녀자리로 옮깁니다"), true); }
+t("보안 헤더: 프레임 삽입 금지·쓰지 않는 기능 차단(_headers)", bs.includes("X-Frame-Options: SAMEORIGIN") && bs.includes("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()"), true);
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);

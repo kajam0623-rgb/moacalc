@@ -168,7 +168,7 @@ saju:"무료 사주풀이. 생년월일시만 넣으면 사주팔자 만세력�
 tarot:"무료 타로 사이트. 고민과 질문을 고르고 카드를 직접 섞어 뽑으면 보살이 자리마다 풀어 줍니다. 생일을 넣으면 사주와 함께 봅니다.",
 todayfortune:"생년월일만 넣으면 오늘 일진과 내 일간의 관계로 총운·애정·재물·직장·건강운과 행운의 색·방위를 풀이합니다.",
 horoscope:"생년월일로 별자리를 판정하고, 오늘 태양과 이루는 각도로 총운·애정·재물운과 이번주 흐름을 봅니다.",
-zodiacfortune:"내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2026 병오년 흐름까지 무료로.",
+zodiacfortune:"내 띠와 오늘 일진의 삼합·육합·충 관계로 12띠 오늘의 운세를 풀이합니다. 2027 정미년·2026 병오년 흐름까지 무료로.",
 stargunghap:"두 별자리의 원소 관계와 황도 각도, 수호성 친화로 궁합 점수와 끌림·대화·일상·롱런 네 축을 풀이합니다.",
 gunghap:"무료 사주궁합. 두 사람의 생년월일로 일간 천간합, 띠·일지의 삼합·육합·충, 오행 보완까지 종합해 봅니다.",
 tojeong:"2026 병오년·2027 정미년 무료 토정비결. 음력 생일로 전통 작괘법대로 144괘 가운데 내 괘를 뽑아 총운과 음력 달마다 흐름을 봅니다. 괘를 세운 셈까지 그대로 보여 드립니다.",
@@ -227,7 +227,7 @@ password:["비밀번호 생성기","랜덤 패스워드","안전한 비밀번호
 saju:["무료 사주","사주팔자","만세력","신강 신약","용신 찾기","격국","신살","십이운성","오행 분석","십성 대운"],
 todayfortune:["오늘의 운세","오늘운세","무료 운세","일진 운세","오늘의 행운 색깔","무료 오늘의 운세"],
 horoscope:["별자리 운세","오늘의 별자리 운세","별자리 궁합 기간","12별자리","이번주 별자리 운세","무료 별자리 운세"],
-zodiacfortune:["띠별 운세","오늘의 띠별 운세","12띠 운세","2026 띠별 운세","무료 띠 운세"],
+zodiacfortune:["띠별 운세","오늘의 띠별 운세","12띠 운세","2027 띠별 운세","2026 띠별 운세","무료 띠 운세"],
 stargunghap:["별자리 궁합","별자리 커플 궁합","12별자리 궁합","별자리 궁합표","무료 별자리 궁합"],
 gunghap:["궁합 보기","사주 궁합","무료 궁합","띠 궁합"],
 tojeong:["토정비결","2027 토정비결","무료 토정비결","2026 토정비결","토정비결 보기","토정비결 144괘"],
@@ -1410,15 +1410,15 @@ ${THEME_JS}${FAVICON}</head><body>
 function starPage(s, i){
   return seoPage({
     crumb:`${s.ko}`,
-    title:`${s.ko} 운세·성격·궁합 | 동네보살`,
-    desc:`${s.ko}(${s.range}) 성격과 연애 스타일, 잘 맞는 별자리와 어려운 별자리. 태양황경으로 판정하는 오늘의 ${s.ko} 운세.`,
+    title:`${s.ko} 운세·성격·궁합 — 2027 | 동네보살`,
+    desc:`${s.ko}(${s.range}) 성격과 연애 스타일, 잘 맞는 별자리와 어려운 별자리. 태양황경으로 판정하는 오늘의 ${s.ko} 운세와 2027년 흐름.`,
     // img=OG용 캐릭터(정사각), hero=배너용 가로 이미지. 정사각을 16:7 배너에 넣으면 얼굴이 잘린다
     url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`, hero:"img/tool/h-horoscope.webp",
     h1:`${s.sym} ${s.ko} — 성격·연애·궁합·오늘의 운세`,
     sub:`${s.range} · ${s.ele} 원소 · ${s.mode} · 수호성 ${s.ruler}`,
     parent:"horoscope.html", parentName:"별자리 운세",
     tool:"horoscope", preset:String(i),
-    tags:[`${s.ko} 성격`,`${s.ko} 궁합`,`오늘의 ${s.ko} 운세`,`${s.ko} 연애`,`${s.ko} 기간`],
+    tags:[`${s.ko} 성격`,`${s.ko} 궁합`,`오늘의 ${s.ko} 운세`,`2027 ${s.ko} 운세`,`${s.ko} 연애`,`${s.ko} 기간`],
     body:`<div class="exbox"><h2>${s.ko} 한눈에 보기</h2>`+
       [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
@@ -1430,9 +1430,11 @@ function starPage(s, i){
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>잘 맞는 별자리 — ${esc(s.match.best.join(", "))}</b><br>${s.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>조율이 필요한 별자리 — ${esc(s.match.hard.join(", "))}</b><br>${s.match.hardWhy}</p></div></section>`+
       starMonthSection(s, ENGINE.ST_KO.indexOf(s.ko))+
+      `<section class="guide"><h2>${s.ko}의 2027년</h2><div class="intro" style="margin-top:0">${para(s.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">토성·해왕성은 양자리, 천왕성은 쌍둥이자리, 명왕성은 물병자리에 머물고, 목성은 7월 26일에 사자자리에서 처녀자리로 옮깁니다. 각은 별자리 단위로 본 것이라 정밀한 해석은 출생 차트가 필요합니다.</p></div></section>`+
       `<section class="guide"><h2>${s.ko}의 2026년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
     faq:[
       [`${s.ko}는 몇 월생인가요?`,`${s.range} 사이에 태어난 사람이 ${s.ko}입니다. 다만 태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎으로 달라지므로, 경계일 출생이면 날짜표 대신 별자리 운세 페이지에서 생년월일로 판정하는 편이 정확합니다.`],
+      [`${s.ko}에게 2027년은 어떤 해인가요?`,s.y2027.split("\n")[0].trim()],
       [`${s.ko}와 잘 맞는 별자리는?`,`${s.match.best.join("와 ")}가 대표적입니다. ${s.match.why} 반대로 ${s.match.hard.join("와 ")}는 조율이 필요한 조합입니다.`],
       [`${s.ko} 성격의 핵심은 무엇인가요?`,`${s.ele} 원소, ${s.mode}, 수호성 ${s.ruler}의 조합으로 봅니다. 이 셋이 겹치는 지점이 ${s.ko}의 성격을 만듭니다. 자세한 내용은 위 본문에서 확인하세요.`]],
     sibTitle:"다른 별자리도 보기", sibs:starChips(s.en),
@@ -1443,14 +1445,14 @@ function zodiacPage(z, i){
   return seoPage({
     crumb:`${z.ko}띠`,
     learn: learnMore(`${z.ko}띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
-    title:`${z.ko}띠 운세·성격·궁합 — 2026 | 동네보살`,
-    desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2026 병오년 흐름.`,
+    title:`${z.ko}띠 운세·성격·궁합 — 2027 정미년 | 동네보살`,
+    desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2027 정미년·2026 병오년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
     h1:`${z.ko}띠 — 성격·연애·궁합·오늘의 운세`,
     sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
     parent:"zodiacfortune.html", parentName:"띠별 운세",
     tool:"zodiacfortune", preset:String(i),
-    tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
+    tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2027 ${z.ko}띠`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
     body:`<div class="exbox"><h2>${z.ko}띠 한눈에 보기</h2>`+
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
@@ -1462,10 +1464,12 @@ function zodiacPage(z, i){
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>삼합 — ${esc(z.match.best.join(", "))}</b><br>${z.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>육합 — ${esc(z.match.hap)}</b><br>${z.match.hapWhy}</p>`+
       `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p></div></section>`+
+      `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
     faq:[
       [`${z.ko}띠와 잘 맞는 띠는?`,`삼합인 ${z.match.best.join("와 ")}, 육합인 ${z.match.hap}가 대표적입니다. ${z.match.why}`],
       [`${z.ko}띠가 조심할 띠는?`,`충 관계인 ${z.match.hard.join("와 ")}입니다. ${z.match.hardWhy}`],
+      [`${z.ko}띠에게 2027년은 어떤 해인가요?`,z.y2027.split("\n")[0].trim()],
       [`띠는 언제 바뀌나요?`,`사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.`]],
     sibTitle:"다른 띠도 보기", sibs:zodiacChips(z.en),
     related:["zodiacfortune","gunghap","todayfortune","newyear"]});
@@ -1476,8 +1480,8 @@ function ilganPage(g){
   return seoPage({
     crumb:`${g.ko}${g.el} 일간`,
     learn: learnMore(`${g.ko}${g.el} 일간은 여덟 글자 가운데 태어난 날의 위 글자입니다. 이 글자가 사주에서 나를 뜻하는 이유는 5강, 천간 열 글자의 짝과 성질은 3강, 오행의 상생·상극은 2강, 일간의 힘이 센지 약한지는 7강에서 순서대로 배울 수 있습니다.`, [5, 3, 2, 7]),
-    title:`${g.ko} 일간 — 성격·연애·직업·2026 운세 | 동네보살`,
-    desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2026 병오년 운세.`,
+    title:`${g.ko} 일간 — 성격·연애·직업·2027 운세 | 동네보살`,
+    desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2027 정미년·2026 병오년 운세.`,
     url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${g.han} ${g.ko}${g.el} 일간 — ${g.metaphor}`,
     sub:`${g.el} 기운 · ${g.yy}간 · 잘 맞는 일간 ${g.best.join(" · ")}`,
@@ -1493,10 +1497,12 @@ function ilganPage(g){
       `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 재물</h2><div class="intro" style="margin-top:0">${para(g.money)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 건강 — 약한 고리</h2><div class="intro" style="margin-top:0">${para(g.health)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">오행과 장부를 짝지어 읽는 전통 명리학의 해석이며 의학적 진단이 아닙니다. 몸에 불편이 있으면 의료진과 상의하세요.</p></div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(g.y2027)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(g.y2026)}</div></section>`,
     faq:[
       [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
       [`${g.ko}${g.el} 일간과 잘 맞는 일간은?`,`${josaList(g.best, "이/가")} 대표적입니다. 반대로 ${josaList(g.hard, "은/는")} 기운이 부딪히기 쉬워 조율이 필요합니다. 다만 궁합은 일간만으로 정해지지 않고 사주 전체의 균형을 함께 봅니다.`],
+      [`${g.ko}${g.el} 일간에게 2027년은 어떤 해인가요?`,g.y2027.split("\n")[0].trim()],
       [`일간이 사주에서 왜 중요한가요?`,`일간은 사주 여덟 글자 가운데 '나 자신'에 해당합니다. 나머지 일곱 글자가 나에게 어떤 관계인지(십성)를 판정하는 기준점이 일간이며, 신강·신약과 용신도 일간을 기준으로 정해집니다.`]],
     sibTitle:"다른 일간도 보기", sibs:ilganChips(g.en),
     related:["saju","todayfortune","gunghap","newyear"]});
@@ -3028,7 +3034,7 @@ fs.writeFileSync(path.join(OUT, INDEXNOW_KEY+".txt"), INDEXNOW_KEY);
 fs.writeFileSync(path.join(OUT,"_redirects"), "/ /index.html 200\n/lotto.html / 301\n/draw.html / 301\n/ladder.html / 301\n");
 fs.writeFileSync(path.join(OUT,"404.html"), notFoundPage());
 fs.writeFileSync(path.join(OUT,"_headers"),
-  "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n" +
+  "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()\n" +
   "/*.ics\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=86400\n/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=31536000, immutable\n/*.css\n  Cache-Control: public, max-age=31536000, immutable\n");
 { // 달력 구독 파일
   const Y0 = new Date().getFullYear(), stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
