@@ -112,7 +112,7 @@
   "d": "2026-09-16"
  },
  "gunghap.html": {
-  "h": "fe3a55f3",
+  "h": "ffcb8390",
   "d": "2026-09-29"
  },
  "horoscope.html": {
@@ -652,7 +652,7 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "e48953cf",
+  "h": "ce64e4f2",
   "d": "2026-09-29"
  },
  "installment.html": {
@@ -1224,7 +1224,7 @@
   "d": "2026-09-29"
  },
  "newyear.html": {
-  "h": "b1496cf2",
+  "h": "b6e3ebb9",
   "d": "2026-09-29"
  },
  "password.html": {
@@ -1256,7 +1256,7 @@
   "d": "2026-09-16"
  },
  "saju.html": {
-  "h": "ab68e0f1",
+  "h": "8038177a",
   "d": "2026-09-29"
  },
  "salary.html": {
@@ -1472,7 +1472,7 @@
   "d": "2026-09-29"
  },
  "todayfortune.html": {
-  "h": "8348e1ab",
+  "h": "c9e3d126",
   "d": "2026-09-29"
  },
  "unit.html": {
@@ -1548,31 +1548,31 @@
   "d": "2026-09-29"
  },
  "column.html": {
-  "h": "328278ef",
+  "h": "fdaf34a9",
   "d": "2026-09-29"
  },
  "column-birth-time-unknown.html": {
-  "h": "83e80da3",
+  "h": "7d9b9210",
   "d": "2026-09-29"
  },
  "column-new-year-start.html": {
-  "h": "5fcd7b09",
+  "h": "215863e6",
   "d": "2026-09-29"
  },
  "column-star-cusp.html": {
-  "h": "bfa32a1f",
+  "h": "d2464850",
   "d": "2026-09-29"
  },
  "column-daeun-reading.html": {
-  "h": "75cfa215",
+  "h": "7105e447",
   "d": "2026-09-29"
  },
  "column-tti-vs-saju-gunghap.html": {
-  "h": "a110ee65",
+  "h": "1430b403",
   "d": "2026-09-29"
  },
  "column-tarot-vs-saju.html": {
-  "h": "3f8b32f2",
+  "h": "da2445d2",
   "d": "2026-09-29"
  },
  "dict.html": {
@@ -1856,19 +1856,31 @@
   "d": "2026-09-29"
  },
  "tojeong.html": {
-  "h": "595b6db9",
+  "h": "f8e0ce7c",
   "d": "2026-09-29"
  },
  "column-yearly-luck-table.html": {
-  "h": "aef6bf24",
+  "h": "9b72a732",
   "d": "2026-09-29"
  },
  "column-zodiac-move-years.html": {
-  "h": "00b18c59",
+  "h": "884fe611",
   "d": "2026-09-29"
  },
  "column-sipseong-lookup-table.html": {
-  "h": "be43f393",
+  "h": "d98c255d",
+  "d": "2026-09-29"
+ },
+ "column-online-saju-checklist.html": {
+  "h": "52c155a5",
+  "d": "2026-09-29"
+ },
+ "column-free-saju-result-items.html": {
+  "h": "0fb50f97",
+  "d": "2026-09-29"
+ },
+ "column-saju-helper-guide.html": {
+  "h": "42ed9628",
   "d": "2026-09-29"
  }
 }
