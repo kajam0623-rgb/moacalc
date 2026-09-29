@@ -1,6 +1,6 @@
 <style>
   :root{
-    --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;
+    --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;
     --line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
     --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;
     /* 한글 폴백을 명시하지 않으면 monospace가 굴림 계열로 떨어져 자간이 벌어진다.
@@ -10,7 +10,7 @@
   @media (prefers-color-scheme:dark){:root{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;
     --muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;
     --fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}}
-  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
+  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
   :root[data-theme="dark"]{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;--muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}
   *{margin:0;box-sizing:border-box;}
   /* 한글은 낱말 중간에서 끊지 않는다("않 / 으면" 같은 줄바꿈). 긴 숫자·주소는 넘치지 않게 끊는다 */
@@ -24,7 +24,7 @@
   .shell{display:grid;grid-template-columns:minmax(0,1fr);gap:26px;}
   @media (min-width:900px){.shell{grid-template-columns:minmax(0,1fr) 300px;align-items:start;}
     .rail{position:sticky;top:24px;}}
-  .rail h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700;}
+  .rail h4,.rail .h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700;}
   .rail .rcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 6px;margin-bottom:14px;}
   .rail a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;min-height:44px;border-bottom:1px solid var(--line);
     text-decoration:none;color:var(--ink);font-size:13.5px;font-weight:600;}
@@ -80,7 +80,8 @@
   @media (prefers-reduced-motion:reduce){.hero>*,.hero-wrap>*{animation:none;}}
   .sfoot{border-top:2px solid var(--ink);margin-top:44px;padding-top:22px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px;font-size:12.5px;}
   @media (max-width:600px){.sfoot{grid-template-columns:1fr;}}
-  .sfoot h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
+  .sfoot h4,.sfoot .h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
+  .sfoot .foot{grid-column:1/-1;margin-top:8px;}
   .sfoot a{display:flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;margin:0;}
   .sfoot a:hover{color:var(--accent);}
   .sfoot .fbrand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:var(--ink);margin-bottom:8px;}
@@ -111,7 +112,8 @@
   .tags a:hover{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-weak);}
   /* 예시·주의 블록 */
   .exbox{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px;}
-  .exbox h3{font-size:13px;letter-spacing:.02em;color:var(--accent-ink);margin-bottom:10px;font-weight:800;}
+  .exbox h3,.exbox h2{font-size:13px;letter-spacing:.02em;color:var(--accent-ink);margin:13px 0 10px;font-weight:800;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
   .exbox .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--line-2);font-size:13.5px;}
   .exbox .row:last-of-type{border-bottom:none;}
   .exbox .row b{font-family:var(--mono);font-weight:700;}
@@ -180,6 +182,8 @@
   /* 모바일 터치 타겟 44px 확보 — 시각 크기는 그대로 두고 여백으로 누를 면적만 넓힌다 */
   /* 한글에 monospace를 쓰면 글자폭이 고정돼 자간이 벌어져 보인다. 한글 UI 텍스트는 본문 폰트로 둔다 */
   .back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:6px;}
+  .skip{position:absolute;left:-9999px;top:0;z-index:1000;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:0 0 10px 0;font-size:14px;font-weight:700;text-decoration:none;}
+  .skip:focus{left:0;}
   .back:hover{color:var(--accent);}
   /* 사진과 캡션을 같은 칸에 겹친다. 모바일에서 두 줄 제목+부제가 16:7 사진보다 높으면 박스가 늘어나고 사진이 그 높이를 채운다
      (캡션을 absolute 로 두면 사진 높이에 갇혀 h1 윗줄이 잘렸다) */
@@ -378,6 +382,8 @@
   .sj-cell+.sj-cell{border-top:1px dotted var(--line-2);}
   .sj-tg{font-size:10px;color:var(--fun-ink);padding-bottom:7px;margin-top:-4px;}
   .el-목{color:#3d9960;} .el-화{color:#d05548;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#3f7ec2;}
+  /* 밝은 배경에서는 글자 대비 4.5:1 을 넘도록 한 단계 진하게(어두운 모드는 위 색 그대로) */
+  :root:not([data-theme="dark"]) .el-목{color:#2b7a48;} :root:not([data-theme="dark"]) .el-화{color:#b8402f;} :root:not([data-theme="dark"]) .el-토{color:#8f6415;} :root:not([data-theme="dark"]) .el-금{color:#626771;} :root:not([data-theme="dark"]) .el-수{color:#2f6aa8;}
   :root[data-theme="dark"] .el-금{color:#aab1bb;}
   .sj-bars{margin-top:18px;}
   .sj-bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px;}
@@ -1818,7 +1824,7 @@
     el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
   {id:"severance",cat:"급여·노동",icon:"🧾",name:"퇴직금 계산기",desc:"입퇴사일로 계산",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>입사일</label><input type="date" id="j" value="2021-03-02"></div><div><label>퇴사일</label><input type="date" id="l" value="2026-08-07"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="j">입사일</label><input type="date" id="j" value="2021-03-02"></div><div><label for="l">퇴사일</label><input type="date" id="l" value="2026-08-07"></div></div>'+
     '<label>월 평균임금(세전)</label><div class="field"><input class="money" id="w" value="3,500,000"><span class="suf">원</span></div>'+
     '<div class="out"><div class="k">예상 퇴직금(세전)</div><div class="v" id="r">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">퇴직금=1일 평균임금×30×(재직일수/365). 1년 미만은 지급 대상 아님. 퇴직소득세 별도.</p>';
@@ -1831,7 +1837,7 @@
 
   {id:"annual",cat:"급여·노동",icon:"🌴",name:"연차수당 계산기",desc:"미사용 연차 수당",render:function(el){
     el.innerHTML='<label>월 통상임금(세전)</label><div class="field"><input class="money" id="w" value="3,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>월 소정근로시간</label><input class="money" id="h" value="209"></div><div><label>미사용 연차(일)</label><input class="money" id="d" value="5"></div></div>'+
+    '<div class="r2"><div><label for="h">월 소정근로시간</label><input class="money" id="h" value="209"></div><div><label for="d">미사용 연차(일)</label><input class="money" id="d" value="5"></div></div>'+
     '<div class="out"><div class="k">연차수당</div><div class="v" id="r">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">연차수당=시간당 통상임금×8시간×미사용일수. 시간당=월 통상임금÷월 소정근로시간(보통 209).</p>';
     function calc(){var w=num(el.querySelector("#w").value),h=num(el.querySelector("#h").value)||209,d=num(el.querySelector("#d").value);
@@ -1841,7 +1847,7 @@
 
   {id:"hourly",cat:"급여·노동",icon:"⏱️",name:"시급→월급 변환",desc:"시급·근로시간→월급",render:function(el){
     el.innerHTML='<label>시급</label><div class="field"><input class="money" id="w" value="10,320"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>주 근로시간</label><input class="money" id="h" value="40"></div><div><label>주휴 포함</label><select id="p"><option value="1">예</option><option value="0">아니오</option></select></div></div>'+
+    '<div class="r2"><div><label for="h">주 근로시간</label><input class="money" id="h" value="40"></div><div><label>주휴 포함</label><select id="p"><option value="1">예</option><option value="0">아니오</option></select></div></div>'+
     '<div class="out"><div class="k">예상 월급(세전)</div><div class="v" id="r">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">2026 최저시급 10,320원. 주휴수당=주 15시간 이상 시 유급. 월=주×4.345.</p>';
     function calc(){var w=num(el.querySelector("#w").value),h=num(el.querySelector("#h").value),p=el.querySelector("#p").value==="1";
@@ -1861,7 +1867,7 @@
 
   {id:"loan",cat:"금융",icon:"🏦",name:"대출 이자 계산기",desc:"원리금균등 월상환",render:function(el){
     el.innerHTML='<label>대출 원금</label><div class="field"><input class="money" id="p" value="100,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>연이자율(%)</label><input class="money" id="r" value="4.5"></div><div><label>기간(개월)</label><input class="money" id="n" value="360"></div></div>'+
+    '<div class="r2"><div><label for="r">연이자율(%)</label><input class="money" id="r" value="4.5"></div><div><label for="n">기간(개월)</label><input class="money" id="n" value="360"></div></div>'+
     '<div class="out"><div class="k">월 상환액</div><div class="v" id="m">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div>';
     function calc(){var P=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100/12,n=num(el.querySelector("#n").value);
@@ -1872,7 +1878,7 @@
 
   {id:"savings",cat:"금융",icon:"🐖",name:"적금 만기 계산기",desc:"월납 적금 만기금",render:function(el){
     el.innerHTML='<label>월 납입액</label><div class="field"><input class="money" id="p" value="500,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>연이자율(%)</label><input class="money" id="r" value="3.5"></div><div><label>기간(개월)</label><input class="money" id="n" value="12"></div></div>'+
+    '<div class="r2"><div><label for="r">연이자율(%)</label><input class="money" id="r" value="3.5"></div><div><label for="n">기간(개월)</label><input class="money" id="n" value="12"></div></div>'+
     '<div class="out"><div class="k">만기 수령액(세후)</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">단리·이자소득세 15.4% 반영. 원금+세후이자.</p>';
     function calc(){var p=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100,n=num(el.querySelector("#n").value);
@@ -1901,7 +1907,7 @@
     bindMoney(el);el.querySelector("#p")._cb=calc;calc();}},
 
   {id:"pyeong",cat:"부동산·세금",icon:"📐",name:"평↔㎡ 변환",desc:"평수 제곱미터",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>평</label><input class="money" id="p" value="34"></div><div><label>㎡</label><input class="money" id="m" value="112.4"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="p">평</label><input class="money" id="p" value="34"></div><div><label for="m">㎡</label><input class="money" id="m" value="112.4"></div></div>'+
     '<p class="note">1평 = 3.305785㎡. 한쪽을 입력하면 다른 쪽이 자동 변환됩니다.</p>';
     var K=3.305785,lock=false;
     function fromP(){if(lock)return;lock=true;el.querySelector("#m").value=(num(el.querySelector("#p").value)*K).toFixed(2);lock=false;}
@@ -1928,10 +1934,10 @@
     el.innerHTML=
       '<div class="r2"><div><label>변환 방향</label><select id="dir"><option value="s2l">양력 → 음력</option><option value="l2s">음력 → 양력</option></select></div>'+
       '<div><label>윤달 (음→양일 때만)</label><select id="leap"><option value="0">평달</option><option value="1">윤달</option></select></div></div>'+
-      '<div id="pane-s2l"><label>양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
-      '<div id="pane-l2s" style="display:none"><div class="r2"><div><label>음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
-      '<div><label>음력 월</label><input type="number" id="lm" min="1" max="12" value="1"></div></div>'+
-      '<label>음력 일</label><input type="number" id="ld" min="1" max="30" value="1"></div>'+
+      '<div id="pane-s2l"><label for="sd">양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
+      '<div id="pane-l2s" style="display:none"><div class="r2"><div><label for="ly">음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
+      '<div><label for="lm">음력 월</label><input type="number" id="lm" min="1" max="12" value="1"></div></div>'+
+      '<label for="ld">음력 일</label><input type="number" id="ld" min="1" max="30" value="1"></div>'+
       '<div class="out" style="margin-top:14px"><div class="k" id="k">음력</div><div class="v" id="v">—</div><div class="s" id="s"></div></div>'+
       '<p class="note">한국천문연구원(KASI) 기준 음력입니다. 1000~2050년 범위를 지원하며, 윤달은 월 뒤에 (윤)으로 표시합니다.</p>';
     function calc(){
@@ -1962,7 +1968,7 @@
     calc();}},
 
   {id:"age",cat:"생활",icon:"🎂",name:"만 나이 계산기",desc:"생년월일→만 나이",render:function(el){
-    el.innerHTML='<label>생년월일</label><input type="date" id="b" value="1990-01-01">'+
+    el.innerHTML='<label for="b">생년월일</label><input type="date" id="b" value="1990-01-01">'+
     '<div class="out"><div class="k">만 나이</div><div class="v" id="v">0<small>세</small></div><div class="s" id="s"></div></div>';
     function calc(){var b=new Date(el.querySelector("#b").value),n=new Date();if(isNaN(b))return;
       var a=n.getFullYear()-b.getFullYear();if(n.getMonth()<b.getMonth()||(n.getMonth()===b.getMonth()&&n.getDate()<b.getDate()))a--;
@@ -1970,7 +1976,7 @@
     el.querySelector("#b").addEventListener("change",calc);calc();}},
 
   {id:"dday",cat:"생활",icon:"📅",name:"D-day 계산기",desc:"날짜 사이 일수",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>시작일</label><input type="date" id="a"></div><div><label>목표일</label><input type="date" id="b"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">시작일</label><input type="date" id="a"></div><div><label for="b">목표일</label><input type="date" id="b"></div></div>'+
     '<div class="out"><div class="k">남은/지난 일수</div><div class="v" id="v">D-0</div><div class="s" id="s"></div></div>';
     var t=new Date();el.querySelector("#a").value=t.toISOString().slice(0,10);var f=new Date(t.getTime()+100*864e5);el.querySelector("#b").value=f.toISOString().slice(0,10);
     function calc(){var a=new Date(el.querySelector("#a").value),b=new Date(el.querySelector("#b").value);if(isNaN(a)||isNaN(b))return;
@@ -1989,7 +1995,7 @@
     el.querySelector("#t").addEventListener("input",calc);calc();}},
 
   {id:"bmi",cat:"생활",icon:"⚖️",name:"BMI 계산기",desc:"체질량·표준체중",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>키(cm)</label><input class="money" id="h" value="170"></div><div><label>몸무게(kg)</label><input class="money" id="w" value="65"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="h">키(cm)</label><input class="money" id="h" value="170"></div><div><label for="w">몸무게(kg)</label><input class="money" id="w" value="65"></div></div>'+
     '<div class="out"><div class="k">BMI</div><div class="v" id="v">0</div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div>';
     function calc(){var h=num(el.querySelector("#h").value)/100,w=num(el.querySelector("#w").value);if(!h)return;
@@ -1999,7 +2005,7 @@
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
   {id:"discount",cat:"생활",icon:"🏷️",name:"할인가 계산기",desc:"정가·할인율→가격",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>정가</label><div class="field"><input class="money" id="p" value="50,000"></div></div><div><label>할인율(%)</label><input class="money" id="r" value="30"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label>정가</label><div class="field"><input class="money" id="p" value="50,000"></div></div><div><label for="r">할인율(%)</label><input class="money" id="r" value="30"></div></div>'+
     '<div class="out"><div class="k">할인가</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>';
     function calc(){var p=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value);var f=p*(1-r/100);
       el.querySelector("#v").innerHTML=won(f)+'<small>원</small>';el.querySelector("#s").textContent=won(p*r/100)+"원 할인";}
@@ -2007,7 +2013,7 @@
 
   {id:"deposit",cat:"금융",icon:"💵",name:"예금 만기 계산기",desc:"복리 예치 만기금",render:function(el){
     el.innerHTML='<label>예치금</label><div class="field"><input class="money" id="p" value="10,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>연이율(%)</label><input class="money" id="r" value="3.5"></div><div><label>기간(개월)</label><input class="money" id="n" value="12"></div></div>'+
+    '<div class="r2"><div><label for="r">연이율(%)</label><input class="money" id="r" value="3.5"></div><div><label for="n">기간(개월)</label><input class="money" id="n" value="12"></div></div>'+
     '<div class="out"><div class="k">만기 수령액(세후)</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">월복리·이자소득세 15.4% 반영.</p>';
     function calc(){var p=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100,n=num(el.querySelector("#n").value);
@@ -2047,7 +2053,7 @@
 
   {id:"loanequal",cat:"금융",icon:"",name:"원금균등 상환",desc:"매달 원금 동일",render:function(el){
     el.innerHTML='<label>대출 원금</label><div class="field"><input class="money" id="p" value="100,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>연이자율(%)</label><input class="money" id="r" value="4.5"></div><div><label>기간(개월)</label><input class="money" id="n" value="120"></div></div>'+
+    '<div class="r2"><div><label for="r">연이자율(%)</label><input class="money" id="r" value="4.5"></div><div><label for="n">기간(개월)</label><input class="money" id="n" value="120"></div></div>'+
     '<div class="out"><div class="k">첫 달 상환액</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">매달 원금(원금÷개월) 고정 + 잔액 이자. 상환액은 매달 감소합니다.</p>';
     function calc(){var P=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100/12,n=num(el.querySelector("#n").value)||1;
@@ -2067,7 +2073,7 @@
 
   {id:"prepay",cat:"금융",icon:"",name:"중도상환수수료",desc:"잔액×율×잔여",render:function(el){
     el.innerHTML='<label>중도상환 금액</label><div class="field"><input class="money" id="a" value="50,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>수수료율(%)</label><input class="money" id="r" value="1.2"></div><div><label>잔여기간(개월)</label><input class="money" id="rm" value="24"></div></div>'+
+    '<div class="r2"><div><label for="r">수수료율(%)</label><input class="money" id="r" value="1.2"></div><div><label for="rm">잔여기간(개월)</label><input class="money" id="rm" value="24"></div></div>'+
     '<label>대출 총기간(개월)</label><div class="field"><input class="money" id="tm" value="36"></div>'+
     '<div class="out"><div class="k">중도상환수수료</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">수수료=상환금액×수수료율×(잔여기간÷대출총기간). 보통 3년 경과 시 면제됩니다.</p>';
@@ -2077,7 +2083,7 @@
 
   {id:"compound",cat:"금융",icon:"",name:"복리 계산기",desc:"원금·이율→미래가치",render:function(el){
     el.innerHTML='<label>원금</label><div class="field"><input class="money" id="p" value="10,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>연이율(%)</label><input class="money" id="r" value="5"></div><div><label>기간(년)</label><input class="money" id="y" value="10"></div></div>'+
+    '<div class="r2"><div><label for="r">연이율(%)</label><input class="money" id="r" value="5"></div><div><label for="y">기간(년)</label><input class="money" id="y" value="10"></div></div>'+
     '<div class="out"><div class="k">만기 금액</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">연 복리 기준. 미래가치=원금×(1+이율)^년수.</p>';
     function calc(){var p=num(el.querySelector("#p").value),r=num(el.querySelector("#r").value)/100,y=num(el.querySelector("#y").value);
@@ -2094,7 +2100,7 @@
 
   {id:"percent",cat:"변환·기타",icon:"",name:"퍼센트 계산기",desc:"비율 3종",render:function(el){
     el.innerHTML='<label>계산 종류</label><select id="m"><option value="0">A는 B의 몇 %인가</option><option value="1">B의 A%는 얼마</option><option value="2">A에서 B로 몇 % 증감</option></select>'+
-    '<div class="r2" style="margin-top:14px"><div><label>A</label><input class="money" id="a" value="30"></div><div><label>B</label><input class="money" id="b" value="200"></div></div>'+
+    '<div class="r2" style="margin-top:14px"><div><label for="a">A</label><input class="money" id="a" value="30"></div><div><label for="b">B</label><input class="money" id="b" value="200"></div></div>'+
     '<div class="out"><div class="k">결과</div><div class="v" id="v">0</div></div>';
     function calc(){var m=el.querySelector("#m").value,a=num(el.querySelector("#a").value),b=num(el.querySelector("#b").value),r;
       if(m==="0")r=(b?a/b*100:0).toFixed(2)+"%";else if(m==="1")r=won(b*a/100);else r=(a?((b-a)/a*100).toFixed(2):0)+"%";
@@ -2126,7 +2132,7 @@
     el.querySelector("#b").addEventListener("click",gen);el.querySelectorAll("input").forEach(function(e){e.addEventListener("input",gen);e.addEventListener("change",gen);});gen();}},
 
   {id:"worktime",cat:"생활",icon:"",name:"근무시간 계산기",desc:"출퇴근→근무시간",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>출근</label><input type="time" id="i" value="09:00"></div><div><label>퇴근</label><input type="time" id="o" value="18:00"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="i">출근</label><input type="time" id="i" value="09:00"></div><div><label for="o">퇴근</label><input type="time" id="o" value="18:00"></div></div>'+
     '<label>휴게시간(분)</label><div class="field"><input class="money" id="b" value="60"><span class="suf">분</span></div>'+
     '<div class="out"><div class="k">실 근무시간</div><div class="v" id="v">0<small>시간</small></div><div class="s" id="s"></div></div>';
     function calc(){var i=el.querySelector("#i").value.split(":"),o=el.querySelector("#o").value.split(":"),b=num(el.querySelector("#b").value);
@@ -2135,7 +2141,7 @@
     bindMoney(el);el.querySelector("#b")._cb=calc;el.querySelectorAll("#i,#o").forEach(function(e){e.addEventListener("change",calc);});calc();}},
 
   {id:"duedate",cat:"생활",icon:"",name:"출산 예정일",desc:"마지막 생리+280일",render:function(el){
-    el.innerHTML='<label>마지막 생리 시작일</label><input type="date" id="d">'+
+    el.innerHTML='<label for="d">마지막 생리 시작일</label><input type="date" id="d">'+
     '<div class="out"><div class="k">출산 예정일</div><div class="v" id="v" style="font-size:26px">-</div><div class="s" id="s"></div></div>'+
     '<p class="note">네겔레 법칙(마지막 생리 시작일+280일) 기준 추정. 개인차가 있어 병원 확인이 필요합니다.</p>';
     el.querySelector("#d").value=new Date(Date.now()-56*864e5).toISOString().slice(0,10);
@@ -2144,7 +2150,7 @@
     el.querySelector("#d").addEventListener("change",calc);calc();}},
 
   {id:"smoke",cat:"생활",icon:"",name:"흡연 비용 계산기",desc:"하루 흡연→연·10년",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>하루 개비 수</label><input class="money" id="c" value="10"></div><div><label>한 갑 가격</label><input class="money" id="p" value="4,500"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="c">하루 개비 수</label><input class="money" id="c" value="10"></div><div><label for="p">한 갑 가격</label><input class="money" id="p" value="4,500"></div></div>'+
     '<div class="out"><div class="k">10년 흡연 비용</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">한 갑 20개비 기준.</p>';
     function calc(){var c=num(el.querySelector("#c").value),p=num(el.querySelector("#p").value),day=c/20*p;
@@ -2153,7 +2159,7 @@
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
   {id:"anniversary",cat:"생활",icon:"",name:"기념일 계산기",desc:"사귄 날부터 D일",render:function(el){
-    el.innerHTML='<label>시작일 (사귄 날 등)</label><input type="date" id="d">'+
+    el.innerHTML='<label for="d">시작일 (사귄 날 등)</label><input type="date" id="d">'+
     '<div class="out"><div class="k">오늘로</div><div class="v" id="v">0<small>일째</small></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">시작일을 1일째로 계산합니다.</p>';
     el.querySelector("#d").value=new Date(Date.now()-100*864e5).toISOString().slice(0,10);
@@ -2178,7 +2184,7 @@
 
   {id:"installment",cat:"금융",icon:"",name:"카드 할부 수수료",desc:"할부 이자 계산",render:function(el){
     el.innerHTML='<label>할부 금액</label><div class="field"><input class="money" id="p" value="1,200,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>할부 개월</label><input class="money" id="n" value="6"></div><div><label>수수료율(연 %)</label><input class="money" id="r" value="15"></div></div>'+
+    '<div class="r2"><div><label for="n">할부 개월</label><input class="money" id="n" value="6"></div><div><label for="r">수수료율(연 %)</label><input class="money" id="r" value="15"></div></div>'+
     '<div class="out"><div class="k">총 수수료</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<div class="rows" id="rows"></div><p class="note">잔액 기준 월 수수료 합산(근사). 실제는 카드사 방식에 따라 다릅니다.</p>';
     function calc(){var p=num(el.querySelector("#p").value),n=num(el.querySelector("#n").value)||1,r=num(el.querySelector("#r").value)/100/12;
@@ -2189,7 +2195,7 @@
 
   {id:"savegoal",cat:"금융",icon:"",name:"목표 저축 계산기",desc:"목표까지 월 저축",render:function(el){
     el.innerHTML='<label>목표 금액</label><div class="field"><input class="money" id="g" value="10,000,000"><span class="suf">원</span></div>'+
-    '<div class="r2"><div><label>기간(개월)</label><input class="money" id="n" value="24"></div><div><label>연이율(%)</label><input class="money" id="r" value="3"></div></div>'+
+    '<div class="r2"><div><label for="n">기간(개월)</label><input class="money" id="n" value="24"></div><div><label for="r">연이율(%)</label><input class="money" id="r" value="3"></div></div>'+
     '<div class="out"><div class="k">매달 저축액</div><div class="v" id="v">0<small>원</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">적금 복리 가정. 이율 0이면 목표÷개월입니다.</p>';
     function calc(){var g=num(el.querySelector("#g").value),n=num(el.querySelector("#n").value)||1,r=num(el.querySelector("#r").value)/100/12;
@@ -2197,7 +2203,7 @@
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});calc();}},
 
   {id:"realreturn",cat:"금융",icon:"",name:"실질 수익률",desc:"물가 반영 수익",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>명목 수익률(%)</label><input class="money" id="a" value="5"></div><div><label>물가상승률(%)</label><input class="money" id="b" value="3"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">명목 수익률(%)</label><input class="money" id="a" value="5"></div><div><label for="b">물가상승률(%)</label><input class="money" id="b" value="3"></div></div>'+
     '<div class="out"><div class="k">실질 수익률</div><div class="v" id="v">0<small>%</small></div><div class="s">물가를 뺀 진짜 수익</div></div>'+
     '<p class="note">실질 = (1+명목)/(1+물가) − 1.</p>';
     function calc(){var a=num(el.querySelector("#a").value)/100,b=num(el.querySelector("#b").value)/100;el.querySelector("#v").innerHTML=(((1+a)/(1+b)-1)*100).toFixed(2)+'<small>%</small>';}
@@ -2255,7 +2261,7 @@
     bindMoney(el);el.querySelector("#n")._cb=calc;el.querySelector("#d").addEventListener("change",calc);calc();}},
 
   {id:"sleep",cat:"생활",icon:"",name:"수면 시간 계산기",desc:"기상 시각 역산",render:function(el){
-    el.innerHTML='<label>기상 시각</label><input type="time" id="t" value="07:00">'+
+    el.innerHTML='<label for="t">기상 시각</label><input type="time" id="t" value="07:00">'+
     '<div class="rows" id="rows" style="margin-top:16px"></div><p class="note">수면주기 90분 + 입면 14분 기준 추천 취침시각.</p>';
     function calc(){var p=el.querySelector("#t").value.split(":"),wake=(+p[0]*60+ +p[1]);
       el.querySelector("#rows").innerHTML=[6,5,4].map(function(c){var m=((wake-(c*90+14))%1440+1440)%1440,h=Math.floor(m/60),mm=m%60;
@@ -2264,15 +2270,15 @@
 
   {id:"calorie",cat:"생활",icon:"",name:"운동 칼로리 소모",desc:"운동·시간·체중",render:function(el){
     el.innerHTML='<label>운동</label><select id="m"><option value="3.5">걷기</option><option value="8">달리기</option><option value="6">자전거</option><option value="7">수영</option><option value="6">등산</option><option value="5">웨이트</option></select>'+
-    '<div class="r2"><div><label>체중(kg)</label><input class="money" id="w" value="65"></div><div><label>시간(분)</label><input class="money" id="t" value="30"></div></div>'+
+    '<div class="r2"><div><label for="w">체중(kg)</label><input class="money" id="w" value="65"></div><div><label for="t">시간(분)</label><input class="money" id="t" value="30"></div></div>'+
     '<div class="out"><div class="k">소모 칼로리</div><div class="v" id="v">0<small>kcal</small></div><div class="s">MET × 체중 × 시간(근사)</div></div>';
     function calc(){var met=+el.querySelector("#m").value,w=num(el.querySelector("#w").value),t=num(el.querySelector("#t").value)/60;
       el.querySelector("#v").innerHTML=Math.round(met*w*t*1.05)+'<small>kcal</small>';}
     bindMoney(el);el.querySelectorAll("input.money").forEach(function(e){e._cb=calc;});el.querySelector("#m").addEventListener("change",calc);calc();}},
 
   {id:"bmr",cat:"생활",icon:"",name:"기초대사량(BMR)",desc:"하루 소모 칼로리",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>성별</label><select id="g"><option value="m">남</option><option value="f">여</option></select></div><div><label>나이</label><input class="money" id="a" value="30"></div></div>'+
-    '<div class="r2"><div><label>키(cm)</label><input class="money" id="h" value="170"></div><div><label>몸무게(kg)</label><input class="money" id="w" value="65"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label>성별</label><select id="g"><option value="m">남</option><option value="f">여</option></select></div><div><label for="a">나이</label><input class="money" id="a" value="30"></div></div>'+
+    '<div class="r2"><div><label for="h">키(cm)</label><input class="money" id="h" value="170"></div><div><label for="w">몸무게(kg)</label><input class="money" id="w" value="65"></div></div>'+
     '<div class="out"><div class="k">기초대사량</div><div class="v" id="v">0<small>kcal</small></div><div class="s" id="s"></div></div>'+
     '<p class="note">Mifflin-St Jeor 공식. 활동대사량은 BMR×1.4~1.7.</p>';
     function calc(){var g=el.querySelector("#g").value,a=num(el.querySelector("#a").value),h=num(el.querySelector("#h").value),w=num(el.querySelector("#w").value);
@@ -2319,7 +2325,7 @@
         :"돕는 기운이 삼 할에 못 미치네. 꽤 얇은 편일세. 혼자 다 짊어지면 금세 지치니, 기댈 사람과 쉬어 갈 자리부터 챙기게.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
     '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
     // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
     sjHourOpts(-1)+'</select></div></div>'+
@@ -2328,7 +2334,7 @@
     '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value=""></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
+    '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
     '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
@@ -3500,7 +3506,7 @@
      "혼자 있고 싶어지는 날이야. 상대는 그걸 거리 두기로 오해하네. 말없이 사라지지 말고 한마디만 남기고 들어가게.","자료를 파고들거나 구조를 다시 짜는 데는 오늘만 한 날이 없어. 반대로 즉답이 필요한 회의나 협상은 오늘 잡지 말게.","머리는 바쁜데 몸은 처지는 날일세. 눕고 나서 생각이 꼬리를 물지 않게 화면을 일찍 끄게.",TF_LINE["편인"]],
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.",TF_LINE["정인"]]};
-    el.innerHTML='<label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    el.innerHTML='<label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
@@ -3586,7 +3592,7 @@
     askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
     ST_KO.map(function(n,i){var qs=(location.search.match(/[?&]s=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qs!=null&&+qs===i?" selected":"")+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
@@ -3691,7 +3697,7 @@
     "해":[60,"자네 띠와 오늘 지지가 해(害)로 만났네. 사소한 어긋남이 감정을 건드리기 쉬운 날일세.","약속 시간이나 금액 같은 작은 숫자에서 착오가 나. 두 번씩 확인하게.","말투 때문에 오해가 생기는 날이야. 문자보다 목소리로 하게.","오늘의 서운함은 대개 사실 확인 한 번이면 풀리네. 담아두지 말게.",[-8,-4,-4,-2]],
     "형":[56,"자네 띠와 오늘 지지가 형(刑)일세. 밀어붙일수록 마찰이 커지는 날이야.","서류든 계약이든 법적인 문제든 다툼이 나기 쉬워. 도장은 내일 찍게.","날 선 말이 오가네. 이기려 들지 말게.","오늘 참으면 내일 자네가 유리해져. 정면충돌은 오늘의 방식이 아닐세.",[-8,-6,-8,-8]],
     "충":[52,"자네 띠와 오늘 지지가 충(沖)일세. 정해둔 게 흔들리고 변수가 튀어나오는 날이야.","이동이며 변경이며 취소가 잦아. 여유 시간을 미리 빼두게.","감정 기복이 큰 날일세. 중요한 대화는 하루 미루게.","충은 나쁜 게 아니라 움직이는 기운일세. 어차피 움직일 거라면 자네가 먼저 정하게.",[-10,-8,-6,-10]]};
-    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="y">태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
     SJ_TTI.map(function(n,i){var qb=(location.search.match(/[?&]b=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qb!=null&&+qb===i?" selected":"")+'>'+n+'띠</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
@@ -3736,8 +3742,8 @@
     }},
 
   {id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
-    '<div><label>상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
+    '<div><label for="b">상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
     // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
     (function(){var g="f",pg="m";
       function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}
@@ -3868,7 +3874,7 @@
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해일세. 자격증·공부·기획에 유리하고, 결정은 좀 묵혔다 내리는 게 좋네.","혼자 파고드는 시간이 하반기의 반전을 만들어."],
     "정인":["귀인과 문서의 해","어른이든 스승이든 기관이든, 위에서 도움이 오는 해일세. 계약·합격·승인 같은 문서운이 밝네.","배움에 쓰는 돈이 올해 자네한테 제일 수익률 높은 투자야."]};
     el.innerHTML='<label>어느 해</label><select id="yr">'+Object.keys(YEARS).map(function(k){return '<option value="'+k+'"'+(+k===defY?" selected":"")+'>'+k+' '+YEARS[k].ko+'년 ('+YEARS[k].ani+')</option>';}).join("")+'</select>'+
-    '<label style="margin-top:12px">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    '<label for="d" style="margin-top:12px">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){
@@ -3942,7 +3948,7 @@
     var MON=["정월","이월","삼월","사월","오월","유월","칠월","팔월","구월","시월","동짓달","섣달"];
     var nowD=new Date(),Y0=nowD.getFullYear(),YS=[Y0,Y0+1],defY=nowD.getMonth()>=9?Y0+1:Y0;
     el.innerHTML='<label>어느 해</label><select id="yr">'+YS.map(function(y){var i=((y-4)%10+10)%10,j=((y-4)%12+12)%12;return '<option value="'+y+'"'+(y===defY?" selected":"")+'>'+y+' '+SJ_S[i]+SJ_B[j]+'년</option>';}).join("")+'</select>'+
-    '<label style="margin-top:12px">생년월일 (양력 · 음력이면 아래에서 바꿔 넣기)</label><input type="date" id="d" value="1990-03-15">'+
+    '<label for="d" style="margin-top:12px">생년월일 (양력 · 음력이면 아래에서 바꿔 넣기)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function lib(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
@@ -3991,8 +3997,8 @@
       if(c<0xAC00||c>0xD7A3)return 3;
       var s=c-0xAC00,cho=Math.floor(s/588),jung=Math.floor((s%588)/28),jong=s%28;
       return CHO[cho]+JUNG[jung]+JONG[jong];}
-    el.innerHTML='<div class="r2"><div><label>이름 1</label><input id="a" value="김철수" style="text-align:left;font-family:inherit"></div>'+
-    '<div><label>이름 2</label><input id="b" value="이영희" style="text-align:left;font-family:inherit"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">이름 1</label><input id="a" value="김철수" style="text-align:left;font-family:inherit"></div>'+
+    '<div><label for="b">이름 2</label><input id="b" value="이영희" style="text-align:left;font-family:inherit"></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">궁합 계산</button>'+
     '<div id="out"></div>';
     function go(){

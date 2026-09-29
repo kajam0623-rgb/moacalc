@@ -8,7 +8,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
     "해":[60,"자네 띠와 오늘 지지가 해(害)로 만났네. 사소한 어긋남이 감정을 건드리기 쉬운 날일세.","약속 시간이나 금액 같은 작은 숫자에서 착오가 나. 두 번씩 확인하게.","말투 때문에 오해가 생기는 날이야. 문자보다 목소리로 하게.","오늘의 서운함은 대개 사실 확인 한 번이면 풀리네. 담아두지 말게.",[-8,-4,-4,-2]],
     "형":[56,"자네 띠와 오늘 지지가 형(刑)일세. 밀어붙일수록 마찰이 커지는 날이야.","서류든 계약이든 법적인 문제든 다툼이 나기 쉬워. 도장은 내일 찍게.","날 선 말이 오가네. 이기려 들지 말게.","오늘 참으면 내일 자네가 유리해져. 정면충돌은 오늘의 방식이 아닐세.",[-8,-6,-8,-8]],
     "충":[52,"자네 띠와 오늘 지지가 충(沖)일세. 정해둔 게 흔들리고 변수가 튀어나오는 날이야.","이동이며 변경이며 취소가 잦아. 여유 시간을 미리 빼두게.","감정 기복이 큰 날일세. 중요한 대화는 하루 미루게.","충은 나쁜 게 아니라 움직이는 기운일세. 어차피 움직일 거라면 자네가 먼저 정하게.",[-10,-8,-6,-10]]};
-    el.innerHTML='<div class="r2"><div><label>태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="y">태어난 해 (양력)</label><input type="number" id="y" value="1990" min="1900" max="2100"></div>'+
     '<div><label>또는 띠 직접 선택</label><select id="s"><option value="-1">태어난 해로 자동 판정</option>'+
     SJ_TTI.map(function(n,i){var qb=(location.search.match(/[?&]b=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qb!=null&&+qb===i?" selected":"")+'>'+n+'띠</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+

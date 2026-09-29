@@ -1,5 +1,5 @@
 :root{
-    --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;
+    --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;
     --line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
     --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;
     /* 한글 폴백을 명시하지 않으면 monospace가 굴림 계열로 떨어져 자간이 벌어진다.
@@ -9,7 +9,7 @@
   @media (prefers-color-scheme:dark){:root{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;
     --muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;
     --fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}}
-  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#6b7178;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
+  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
   :root[data-theme="dark"]{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;--muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}
   *{margin:0;box-sizing:border-box;}
   /* 한글은 낱말 중간에서 끊지 않는다("않 / 으면" 같은 줄바꿈). 긴 숫자·주소는 넘치지 않게 끊는다 */
@@ -23,7 +23,7 @@
   .shell{display:grid;grid-template-columns:minmax(0,1fr);gap:26px;}
   @media (min-width:900px){.shell{grid-template-columns:minmax(0,1fr) 300px;align-items:start;}
     .rail{position:sticky;top:24px;}}
-  .rail h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700;}
+  .rail h4,.rail .h4{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:700;}
   .rail .rcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 14px 6px;margin-bottom:14px;}
   .rail a{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 0;min-height:44px;border-bottom:1px solid var(--line);
     text-decoration:none;color:var(--ink);font-size:13.5px;font-weight:600;}
@@ -79,7 +79,8 @@
   @media (prefers-reduced-motion:reduce){.hero>*,.hero-wrap>*{animation:none;}}
   .sfoot{border-top:2px solid var(--ink);margin-top:44px;padding-top:22px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px;font-size:12.5px;}
   @media (max-width:600px){.sfoot{grid-template-columns:1fr;}}
-  .sfoot h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
+  .sfoot h4,.sfoot .h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
+  .sfoot .foot{grid-column:1/-1;margin-top:8px;}
   .sfoot a{display:flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;margin:0;}
   .sfoot a:hover{color:var(--accent);}
   .sfoot .fbrand{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;color:var(--ink);margin-bottom:8px;}
@@ -110,7 +111,8 @@
   .tags a:hover{color:var(--accent-ink);border-color:var(--accent);background:var(--accent-weak);}
   /* 예시·주의 블록 */
   .exbox{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-top:14px;}
-  .exbox h3{font-size:13px;letter-spacing:.02em;color:var(--accent-ink);margin-bottom:10px;font-weight:800;}
+  .exbox h3,.exbox h2{font-size:13px;letter-spacing:.02em;color:var(--accent-ink);margin:13px 0 10px;font-weight:800;}
+  .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
   .exbox .row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--line-2);font-size:13.5px;}
   .exbox .row:last-of-type{border-bottom:none;}
   .exbox .row b{font-family:var(--mono);font-weight:700;}
@@ -179,6 +181,8 @@
   /* 모바일 터치 타겟 44px 확보 — 시각 크기는 그대로 두고 여백으로 누를 면적만 넓힌다 */
   /* 한글에 monospace를 쓰면 글자폭이 고정돼 자간이 벌어져 보인다. 한글 UI 텍스트는 본문 폰트로 둔다 */
   .back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--muted);font-size:13px;text-decoration:none;margin-bottom:6px;}
+  .skip{position:absolute;left:-9999px;top:0;z-index:1000;background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:0 0 10px 0;font-size:14px;font-weight:700;text-decoration:none;}
+  .skip:focus{left:0;}
   .back:hover{color:var(--accent);}
   /* 사진과 캡션을 같은 칸에 겹친다. 모바일에서 두 줄 제목+부제가 16:7 사진보다 높으면 박스가 늘어나고 사진이 그 높이를 채운다
      (캡션을 absolute 로 두면 사진 높이에 갇혀 h1 윗줄이 잘렸다) */
@@ -377,6 +381,8 @@
   .sj-cell+.sj-cell{border-top:1px dotted var(--line-2);}
   .sj-tg{font-size:10px;color:var(--fun-ink);padding-bottom:7px;margin-top:-4px;}
   .el-목{color:#3d9960;} .el-화{color:#d05548;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#3f7ec2;}
+  /* 밝은 배경에서는 글자 대비 4.5:1 을 넘도록 한 단계 진하게(어두운 모드는 위 색 그대로) */
+  :root:not([data-theme="dark"]) .el-목{color:#2b7a48;} :root:not([data-theme="dark"]) .el-화{color:#b8402f;} :root:not([data-theme="dark"]) .el-토{color:#8f6415;} :root:not([data-theme="dark"]) .el-금{color:#626771;} :root:not([data-theme="dark"]) .el-수{color:#2f6aa8;}
   :root[data-theme="dark"] .el-금{color:#aab1bb;}
   .sj-bars{margin-top:18px;}
   .sj-bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px;}

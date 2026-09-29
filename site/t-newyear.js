@@ -15,7 +15,7 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
     "편인":["공부와 전환의 해","겉보다 속이 자라는 해일세. 자격증·공부·기획에 유리하고, 결정은 좀 묵혔다 내리는 게 좋네.","혼자 파고드는 시간이 하반기의 반전을 만들어."],
     "정인":["귀인과 문서의 해","어른이든 스승이든 기관이든, 위에서 도움이 오는 해일세. 계약·합격·승인 같은 문서운이 밝네.","배움에 쓰는 돈이 올해 자네한테 제일 수익률 높은 투자야."]};
     el.innerHTML='<label>어느 해</label><select id="yr">'+Object.keys(YEARS).map(function(k){return '<option value="'+k+'"'+(+k===defY?" selected":"")+'>'+k+' '+YEARS[k].ko+'년 ('+YEARS[k].ani+')</option>';}).join("")+'</select>'+
-    '<label style="margin-top:12px">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    '<label for="d" style="margin-top:12px">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function go(){

@@ -7,8 +7,8 @@ TOOLS.push({id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",des
       if(c<0xAC00||c>0xD7A3)return 3;
       var s=c-0xAC00,cho=Math.floor(s/588),jung=Math.floor((s%588)/28),jong=s%28;
       return CHO[cho]+JUNG[jung]+JONG[jong];}
-    el.innerHTML='<div class="r2"><div><label>이름 1</label><input id="a" value="김철수" style="text-align:left;font-family:inherit"></div>'+
-    '<div><label>이름 2</label><input id="b" value="이영희" style="text-align:left;font-family:inherit"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">이름 1</label><input id="a" value="김철수" style="text-align:left;font-family:inherit"></div>'+
+    '<div><label for="b">이름 2</label><input id="b" value="이영희" style="text-align:left;font-family:inherit"></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">궁합 계산</button>'+
     '<div id="out"></div>';
     function go(){

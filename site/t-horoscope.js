@@ -1,5 +1,5 @@
 TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
     '<div><label>또는 별자리 직접 선택</label><select id="s"><option value="-1">생년월일로 자동 판정</option>'+
     ST_KO.map(function(n,i){var qs=(location.search.match(/[?&]s=(\d+)/)||[])[1];return '<option value="'+i+'"'+(qs!=null&&+qs===i?" selected":"")+'>'+ST_SYM[i]+' '+n+' ('+ST_RANGE[i]+')</option>';}).join("")+'</select></div></div>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+

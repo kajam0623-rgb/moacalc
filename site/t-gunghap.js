@@ -1,6 +1,6 @@
 TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:"사주 오행·합충 궁합",render:function(el){
-    el.innerHTML='<div class="r2"><div><label>내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
-    '<div><label>상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
+    el.innerHTML='<div class="r2"><div><label for="a">내 생년월일</label><input type="date" id="a" value="1990-03-15"></div>'+
+    '<div><label for="b">상대 생년월일</label><input type="date" id="b" value="1992-07-20"></div></div>'+
     // 성별은 점수에 쓰지 않는다(궁합 네 축은 성별과 무관). 두 사람의 캐릭터 그림과 호칭에만 쓴다
     (function(){var g="f",pg="m";
       function sel(id,v){return '<select id="'+id+'"><option value="f"'+(v==="f"?" selected":"")+'>여</option><option value="m"'+(v==="m"?" selected":"")+'>남</option></select>';}

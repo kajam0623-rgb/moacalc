@@ -890,8 +890,7 @@ const THEME_BTN = '<button type="button" class="theme-tg" aria-label="화면 밝
 const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SITE_NAME}"><meta property="og:locale" content="ko_KR"><meta name="twitter:card" content="summary_large_image">`+
   (GSC_VERIFY?`<meta name="google-site-verification" content="${GSC_VERIFY}">`:"")+
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
-  (ANALYTICS_ID?`<script async src="https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}"></script>`+
-    `<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');</script>`:"")+
+  (ANALYTICS_ID?`<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');addEventListener('load',function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}';document.head.appendChild(s);});</script>`:"")+
   // 자체 통계(worker.js /api/hit). 쿠키 없이 주소와 들어온 곳만 보낸다
   `<script>addEventListener("load",function(){try{navigator.sendBeacon("/api/hit",JSON.stringify({p:location.pathname,r:document.referrer}))}catch(e){}});</script>`+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
@@ -928,12 +927,13 @@ const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfor
 const footer = `<footer class="sfoot">
 <div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며, 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
-<div><h4>만세력</h4><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
-<div><h4>사이트</h4><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><h4>운세</h4><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
+<div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
+<div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
+<div class="foot">© 2026 동네보살</div>
 </footer>
-<div class="foot">© 2026 동네보살</div>${tabbar}`;
+${tabbar}`;
 
 // 애드센스 승인 전에는 아무것도 그리지 않는다.
 // 빈 자리 표시는 사용자에게 광고를 보여주지도 못하면서 완성도만 깎고,
@@ -996,7 +996,7 @@ function toolPage(t){
   const introHtml = d
     ? '<div class="intro">'+d.intro.trim().split(/\n\s*/).map(p=>'<p style="margin-bottom:10px">'+p+'</p>').join("")+'</div>'
     : '<p class="intro">'+esc(intro[t.id]||t.desc)+'</p>';
-  const exHtml = d && d.example ? '<div class="exbox"><h3>예시로 보기 — '+esc(d.example.t)+'</h3>'+
+  const exHtml = d && d.example ? '<div class="exbox"><h2>예시로 보기 — '+esc(d.example.t)+'</h2>'+
     d.example.rows.map(r=>'<div class="row"><span>'+esc(r[0])+'</span><b>'+esc(r[1])+'</b></div>').join("")+
     '<div class="res"><span>'+esc(d.example.res[0])+'</span><b>'+esc(d.example.res[1])+'</b></div></div>' : '';
   const cauHtml = d && d.caution ? '<section class="guide"><h2>이것만은 확인하세요</h2><ul class="warns">'+
@@ -1030,7 +1030,7 @@ function toolPage(t){
 <div class="shell">
 <main>
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
- ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" onerror="this.closest('.toolhero').remove()">${thBosal(t.id)}<div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
+ ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()">${thBosal(t.id)}<div class="cap"><h1>${t.name}</h1><div class="tl">${t.desc}</div></div></div>`
  : `<h1 class="th">${t.name}</h1>\n<div class="tl">${t.desc}</div>`}
 ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` : ""}
 <div class="card tool" id="tool"></div>
@@ -1046,9 +1046,9 @@ ${guideHtml}${elemHtml}${exHtml}${cauHtml}${toolColumnsHtml(t.id)}${faqHtml}
 ${adSlot()}
 </main>
 <aside class="rail">
-<div class="rcard"><img class="rart" width="1200" height="800" src="img/${CAT_IMG[crumbCat]}.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · ${crumbCat}</h4>
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/${CAT_IMG[crumbCat]}.webp" alt="" loading="lazy" onerror="this.remove()"><div class="h4">같은 분야 · ${crumbCat}</div>
 ${(PUB_TOOL(t) ? pubMeta : meta.filter(x=>x.cat===t.cat)).filter(x=>x.id!==t.id).slice(0,6).map(x=>`<a href="${x.id}.html">${x.name}<span>→</span></a>`).join("")}</div>
-<div class="rcard"><h4>많이 찾는 도구</h4>
+<div class="rcard"><div class="h4">많이 찾는 도구</div>
 ${["todayfortune","horoscope","zodiacfortune","saju","tarot","gunghap","newyear"].filter(id=>id!==t.id).slice(0,6).map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 </aside>
 </div>
@@ -1302,7 +1302,7 @@ function seoPage(o){
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
 <main>
-<div class="toolhero${o.h1.length > 22 ? " longh" : ""}"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+<div class="toolhero${o.h1.length > 22 ? " longh" : ""}"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
 ${lec ? learnBar(lec) : ""}
 ${o.noTool ? "" : (o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`)}
 ${o.noTool ? "" : '<div class="card tool" id="tool"></div>'}
@@ -1314,9 +1314,9 @@ ${lec ? learnBottom(lec) : ""}
 ${adSlot()}
 </main>
 <aside class="rail">
-<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><h4>함께 보면 좋은 운세</h4>
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><div class="h4">함께 보면 좋은 운세</div>
 ${o.related.map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
-<div class="rcard"><h4>많이 찾는 도구</h4>
+<div class="rcard"><div class="h4">많이 찾는 도구</div>
 ${["todayfortune","saju","gunghap","tarot","horoscope"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 </aside>
 </div>
@@ -1393,13 +1393,13 @@ function notFoundPage(){
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="/style.css?v=${styleV}">
 ${THEME_JS}${FAVICON}</head><body>
-<div class="wrap" style="text-align:center;padding-top:40px">
+<div class="wrap" style="text-align:center;padding-top:40px"><main id="main">
 <img src="/img/bosal/lost.webp" alt="길을 잃은 아기보살" width="160" style="width:160px;height:auto" onerror="this.src='/img/mascot.webp'">
 <h1 style="font-size:26px;font-weight:900;margin:14px 0 8px">찾으시는 페이지가 없습니다</h1>
 <p style="color:var(--muted);font-size:14.5px;margin-bottom:22px">주소가 바뀌었거나 잘못 입력된 것 같습니다. 아래에서 보고 싶은 풀이를 골라 주세요.</p>
 <div style="display:grid;gap:10px;max-width:360px;margin:0 auto">`+
   links.map(([h,t])=>`<a class="btn" href="/${h}" style="display:block;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);text-decoration:none;font-weight:700">${t}</a>`).join("")+
-`</div></div></body></html>`;
+`</div></main></div></body></html>`;
 }
 
 function starPage(s, i){
@@ -1414,7 +1414,7 @@ function starPage(s, i){
     parent:"horoscope.html", parentName:"별자리 운세",
     tool:"horoscope", preset:String(i),
     tags:[`${s.ko} 성격`,`${s.ko} 궁합`,`오늘의 ${s.ko} 운세`,`${s.ko} 연애`,`${s.ko} 기간`],
-    body:`<div class="exbox"><h3>${s.ko} 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${s.ko} 한눈에 보기</h2>`+
       [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>어려운 별자리</span><b>${esc(s.match.hard.join(" · "))}</b></div></div>`+
@@ -1445,7 +1445,7 @@ function zodiacPage(z, i){
     parent:"zodiacfortune.html", parentName:"띠별 운세",
     tool:"zodiacfortune", preset:String(i),
     tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
-    body:`<div class="exbox"><h3>${z.ko}띠 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${z.ko}띠 한눈에 보기</h2>`+
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
@@ -1477,7 +1477,7 @@ function ilganPage(g){
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju",
     tags:[`${g.ko}${g.el} 일간`,`${g.ko}${g.el} 성격`,`${g.ko}${g.el} 궁합`,`${g.ko}${g.el} 직업`,`일간 ${g.ko}`],
-    body:`<div class="exbox"><h3>${g.ko}${g.el} 일간 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${g.ko}${g.el} 일간 한눈에 보기</h2>`+
       [["천간",`${g.han} ${g.ko}`],["오행",g.el],["음양",`${g.yy}간`],["상징",g.metaphor],["잘 맞는 일간",g.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>조율이 필요한 일간</span><b>${esc(g.hard.join(" · "))}</b></div></div>`+
@@ -1510,7 +1510,7 @@ function conceptPage(c){
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju",
     tags:c.tags,
-    body:`<div class="exbox"><h3>${c.ko} 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${c.ko} 한눈에 보기</h2>`+
       c.facts.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `</div>`+
       c.qa.map(x=>`<section class="guide"><h2>${esc(x.q)}</h2><div class="intro" style="margin-top:0">${para(x.a)}</div></section>`).join("")+
@@ -1573,7 +1573,7 @@ function sipseongPage(s){
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju",
     tags:[`${s.ko} 뜻`,`${s.ko} 성격`,`사주 ${s.ko}`,`${s.ko} 직업`,`${s.ko} 많은 사주`],
-    body:`<div class="exbox"><h3>${s.ko} 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${s.ko} 한눈에 보기</h2>`+
       [["한자",s.han],["분류",s.group],["판정 규칙",s.rule],["강점",s.strong],["짝이 되는 십성",s.pair]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>과할 때</span><b>${esc(s.weak)}</b></div></div>`+
@@ -1608,7 +1608,7 @@ function tarotPage(c){
     parent:"tarot.html", parentName:"타로 카드",
     tool:"tarot",
     tags:[`${c.ko} 카드 뜻`,`${c.ko} 역방향`,`타로 ${c.ko} 연애`,`${c.ko} 카드 재회`,`${c.ko} 예스노`],
-    body:`<div class="exbox"><h3>${c.ko} 카드 한눈에 보기</h3>`+
+    body:`<div class="exbox"><h2>${c.ko} 카드 한눈에 보기</h2>`+
       [["구분",c.no<22?`메이저 아르카나 ${c.no}번 (${ROMAN[c.no]})`:`마이너 아르카나 · ${tarotGroup(c)[0]} 벌`],["영문 이름",c.eng],["정방향",c.upWords.join(" · ")],["역방향",c.revWords.join(" · ")],["예/아니오",c.yesno]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>조언</span><b>${esc(c.advice)}</b></div></div>`+
@@ -1673,7 +1673,7 @@ function mansePage(p){
     tags:[`${p.y}년 ${p.mo}월 만세력`, `${p.y} ${p.mo}월 음력 달력`, `${p.mo}월 일진`,
           `${jeol.name} ${p.y}`, `${jung.name} ${p.y}`, `${p.y}년 ${p.mo}월 절기`],
     body:
-      `<div class="exbox"><h3>${p.y}년 ${p.mo}월 한눈에 보기</h3>`+
+      `<div class="exbox"><h2>${p.y}년 ${p.mo}월 한눈에 보기</h2>`+
       [["절기(節氣)", `${jeol.name} · ${termAt(jeol)}`],
        ["중기(中氣)", `${jung.name} · ${termAt(jung)}`],
        ["월지(月支)", `${T.ji} — ${T.season}`],
@@ -1713,7 +1713,7 @@ function mansePage(p){
 
       `<section class="guide"><h2>${p.y}년 ${p.mo}월 날짜별 일진과 음력</h2>`+
       `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일진은 날에 붙는 간지이며 60일마다 돌아옵니다. 간지를 누르면 그 일진의 풀이로 갑니다. 음력은 한국천문연구원 기준 변환입니다.</p>`+
-      `<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th>일</th><th>요일</th><th>일진</th><th>음력</th><th>비고</th></tr></thead><tbody>${rows}</tbody></table></div></section>`+
+      `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="날짜별 일진과 음력 표 (좌우로 스크롤)"><table class="mtbl"><thead><tr><th>일</th><th>요일</th><th>일진</th><th>음력</th><th>비고</th></tr></thead><tbody>${rows}</tbody></table></div></section>`+
 
       /* 띠날 목록 — "이번 달 말날"처럼 날짜로 찾는 수요를 받는다.
          일진이 해마다 닷새씩 밀려서 같은 달이라도 해가 다르면 날짜가 전부 어긋난다 */
@@ -1820,7 +1820,7 @@ function manseHowtoPage(){
   const cnt = [0,0,0,0,0]; cols.forEach(([,q])=>{cnt[E.SJ_ES[q.s]]++;cnt[E.SJ_EB[q.b]]++;});
   const tg = (q, stem) => stem ? (q===P.d ? "나(일간)" : E.sjTenGod(ds, q.s)) : E.sjTenGod(ds, E.SJ_BMAIN[q.b]);
   const kyeong = jdToKst(E.sjTermJd(1990, 345));
-  const table = `<div style="overflow-x:auto"><table class="mtbl"><thead><tr><th></th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>`+
+  const table = `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="예시 원국표 (좌우로 스크롤)"><table class="mtbl"><thead><tr><th><span class="sr">구분</span></th>${cols.map(c=>`<th>${c[0]}</th>`).join("")}</tr></thead><tbody>`+
     `<tr><td>천간(위)</td>${cols.map(([,q])=>`<td>${E.SJ_SH[q.s]} ${E.SJ_S[q.s]} · ${E.SJ_EL[E.SJ_ES[q.s]]}</td>`).join("")}</tr>`+
     `<tr><td>지지(아래)</td>${cols.map(([,q])=>`<td>${E.SJ_BH[q.b]} ${E.SJ_B[q.b]} · ${E.SJ_EL[E.SJ_EB[q.b]]}</td>`).join("")}</tr>`+
     `<tr><td>천간 십성</td>${cols.map(([,q])=>`<td>${tg(q,true)}</td>`).join("")}</tr>`+
@@ -1877,7 +1877,7 @@ function iljinPage(p){
     tool:"todayfortune", preset:"",
     tags:[`${p.ko}일`,`${p.ko}일 운세`,`오늘 일진`,`일진 ${p.ko}`,`${p.han}`,`${J.tti}띠 날`],
     body:
-      `<div class="exbox"><h3>${p.ko}일 한눈에 보기</h3>`+
+      `<div class="exbox"><h2>${p.ko}일 한눈에 보기</h2>`+
       [["일진",`${p.han} ${p.ko}일 (60갑자 ${p.k+1}번째)`],
        ["천간",`${G.han} ${G.ko}${G.el} · ${G.yy}간`],
        ["지지",`${J.han} ${J.ko} · ${J.tti}띠 · ${J.el}`],
@@ -1970,7 +1970,7 @@ function iljuPage(p){
     tool:"saju", preset:"",
     tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`일주 ${p.ko}`],
     body:
-      `<div class="exbox"><h3>${p.ko}일주 한눈에 보기</h3>`+
+      `<div class="exbox"><h2>${p.ko}일주 한눈에 보기</h2>`+
       [["일주",`${p.han} ${p.ko}일주 (60갑자 ${p.k+1}번째)`],
        ["일간 — 나 자신",`${G.han} ${gEl} · ${G.yy}간 · ${G.metaphor}`],
        ["일지 — 배우자 자리",`${J.han} ${jEl} · ${J.tti}띠`],
@@ -2037,7 +2037,7 @@ function iljinHubPage(){
   const table = '<div class="sibs" style="margin-top:6px">'+ILJIN_PAGES.map(p=>
     `<a href="iljin-${p.en}.html">${p.k+1}. ${p.ko}일</a>`).join("")+'</div>';
   const body =
-    `<div class="exbox" id="today"><h3>오늘 일진</h3><div class="row"><span>계산 중</span><b>—</b></div></div>`+
+    `<div class="exbox" id="today"><h2>오늘 일진</h2><div class="row"><span>계산 중</span><b>—</b></div></div>`+
     `<div class="intro"><p style="margin-bottom:10px">일진(日辰)은 <b>날에 붙는 간지</b>입니다. 해에 병오년이 있고 달에 갑인월이 있듯, 하루에도 각각 간지가 있습니다. 천간 열 자와 지지 열두 자가 나란히 돌아 60일 만에 제자리로 오므로 일진은 모두 60가지입니다.</p>`+
     `<p style="margin-bottom:10px">같은 날이라도 사람마다 운세가 다른 이유가 여기 있습니다. 그날 일진의 천간이 내 일간에게 재성이면 재물이 움직이는 날, 관성이면 일과 책임의 날, 인성이면 배움과 귀인의 날입니다. 아래 60개 페이지에는 일진마다 열 일간이 각각 어떤 자리에 서는지 점수와 함께 정리해 두었습니다.</p>`+
     `<p style="margin-bottom:10px">내 생년월일까지 넣어 좁게 보려면 <a href="todayfortune.html">오늘의 운세</a>, 띠 하나로 간단히 보려면 <a href="zodiacfortune.html">띠별 운세</a>를 쓰세요.</p></div>`+
@@ -2061,13 +2061,13 @@ function iljinHubPage(){
 <a class="back" href="todayfortune.html">← 오늘의 운세</a>
 <div class="shell">
 <main>
-<div class="toolhero"><img src="img/tool/h-todayfortune.webp" alt="일진 달력" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>일진 달력 — 오늘 일진과 60갑자</h1><div class="tl">날에 붙는 간지 60가지</div></div></div>
+<div class="toolhero"><img src="img/tool/h-todayfortune.webp" alt="일진 달력" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()"><div class="cap"><h1>일진 달력 — 오늘 일진과 60갑자</h1><div class="tl">날에 붙는 간지 60가지</div></div></div>
 ${TRUST_GEN}
 ${body}
 ${adSlot()}
 </main>
 <aside class="rail">
-<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><h4>같은 분야 · 재미·운세</h4>
+<div class="rcard"><img class="rart" width="1200" height="800" src="img/cat-fortune.webp" alt="" loading="lazy" onerror="this.remove()"><div class="h4">같은 분야 · 재미·운세</div>
 ${["todayfortune","saju","zodiacfortune","horoscope","gunghap"].map(id=>{const x=meta.find(m=>m.id===id);return x?`<a href="${x.id}.html">${x.name}<span>→</span></a>`:"";}).join("")}</div>
 </aside>
 </div>
@@ -2086,7 +2086,7 @@ ${footer}
   var box=document.getElementById("today");
   var wd=["일","월","화","수","목","금","토"][t.getDay()];
   var ds=t.getFullYear()+"년 "+(t.getMonth()+1)+"월 "+t.getDate()+"일 ("+wd+")";
-  box.innerHTML='<h3>오늘 일진</h3><div class="row"><span>'+ds+'</span><b>'+KO[k]+'일</b></div>'+
+  box.innerHTML='<h2>오늘 일진</h2><div class="row"><span>'+ds+'</span><b>'+KO[k]+'일</b></div>'+
     '<div class="res"><span>이 날 풀이 보기</span><b><a href="iljin-'+EN[k]+'.html">'+KO[k]+'일 자세히 →</a></b></div>';
 })();
 </script>
@@ -2168,7 +2168,7 @@ draw();})();</script>
 }
 /* 꿈해몽 — 찾기 한 쪽(dream.html) + 분류마다 한 쪽. 풀이는 보살 말투, 분류 소개와 안내는 존댓말 */
 const DREAM_N = DREAM.reduce((t,c)=>t+c.items.length,0);
-const DREAM_KIND = {길몽:"#3f9d6a",흉몽:"#c0563f",태몽:"#b0689a",반반:"#8a7a55"};
+const DREAM_KIND = {길몽:"#2e7d52",흉몽:"#b84f39",태몽:"#9c5488",반반:"#7a6b45"};
 const dreamBadge = k => `<span class="dm-k" style="background:${DREAM_KIND[k]}">${k}</span>`;
 const dreamHead = (url, title, desc, crumbs) => `<!doctype html><html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -2535,6 +2535,8 @@ const coreJs = `${helpers}\nvar TOOLS=[];\n`+
   `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"){var g=el.querySelector("#go");if(g)setTimeout(function(){g.click();},250);}`+
   // 도구들은 <label>이름</label><input id=…> 로 쓰고 for 를 안 붙였다. 바로 뒤 입력칸과 이어 준다(스크린리더·라벨 클릭)
   // 생년월일은 이름표와 입력칸 사이에 연대 칩이 끼어 있어, 다음 이름표 전까지 형제를 따라가며 첫 입력칸을 찾는다
+  // 결과 소제목(h3)은 페이지 h1 바로 아래에 나오므로 스크린리더에는 2단계로 읽히게 한다(결과는 클릭 뒤에 그려지니 변화를 지켜본다)
+  `var lv=function(){[].forEach.call(el.querySelectorAll("h3:not([aria-level])"),function(h){h.setAttribute("aria-level","2");});};lv();if(window.MutationObserver)new MutationObserver(lv).observe(el,{childList:true,subtree:true});`+
   `var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};`;
 // 구문 파손 즉시 빌드 실패 (파싱만, 실행 안 함)
 new Function(coreJs);
@@ -2896,6 +2898,35 @@ if (COLUMN_PAGES.length) {
   fs.writeFileSync(path.join(OUT,"column.html"), columnHubPage());
   COLUMN_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"column-"+c.en+".html"), columnPage(c)));
 }
+/* 접근성 뼈대 — 페이지를 다 쓴 뒤 한 번에 다듬는다(템플릿 아홉 곳을 따로 고치지 않으려고).
+   ① <main> 이 없는 페이지에 본문 영역을 만든다(홈은 머리 로고·h1 바로 아래부터, 끝은 사이트 메뉴 앞)
+   ② 뒤로가기 링크를 nav 로 감싼다 ③ 본문 바로가기 링크를 맨 앞에 둔다.
+   글자는 하나도 바꾸지 않으므로 사이트맵 lastmod(본문 글 해시)에는 영향이 없다. */
+function polishLandmarks() {
+  let n = { main: 0, back: 0, skip: 0 };
+  for (const f of fs.readdirSync(OUT)) {
+    if (!f.endsWith(".html")) continue;
+    const p = path.join(OUT, f);
+    let h = fs.readFileSync(p, "utf8");
+    const before = h;
+    if (!/<main[\s>]/.test(h)) {
+      const W = '<div class="wrap">', w = h.indexOf(W);
+      if (w >= 0) {
+        let from = w + W.length;
+        const hd = h.indexOf("</header>", from);
+        if (hd >= 0 && /^\s*<header/.test(h.slice(from, from + 40))) from = hd + "</header>".length;
+        const nav = h.indexOf('<nav class="sitenav">', from), ft = h.indexOf('<footer class="sfoot">', from);
+        const end = nav >= 0 ? nav : ft;
+        if (end > from) { h = h.slice(0, from) + '<main id="main">' + h.slice(from, end) + "</main>" + h.slice(end); n.main++; }
+      }
+    } else if (!/<main[^>]*\bid=/.test(h)) h = h.replace(/<main(?=[\s>])/, '<main id="main"');
+    if (h.includes('<a class="back"') && !h.includes('class="backnav"')) { h = h.replace(/(<a class="back"[^>]*>[\s\S]*?<\/a>)/, '<nav class="backnav" aria-label="이전 페이지">$1</nav>'); n.back++; }
+    if (/<main[^>]*\bid="main"/.test(h) && !h.includes('class="skip"')) { h = h.replace(/<body([^>]*)>/, '<body$1><a class="skip" href="#main">본문 바로가기</a>'); n.skip++; }
+    if (h !== before) fs.writeFileSync(p, h);
+  }
+  console.log("   접근성 뼈대: main " + n.main + " · 뒤로가기 nav " + n.back + " · 바로가기 링크 " + n.skip);
+}
+polishLandmarks();
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 /* RSS 2.0 — 네이버 서치어드바이저가 사이트맵과 별개로 받는 수집 경로.
    전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
@@ -2971,7 +3002,7 @@ fs.writeFileSync(path.join(OUT,"_redirects"), "/ /index.html 200\n/lotto.html / 
 fs.writeFileSync(path.join(OUT,"404.html"), notFoundPage());
 fs.writeFileSync(path.join(OUT,"_headers"),
   "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n" +
-  "/*.ics\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=86400\n/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=86400\n/*.css\n  Cache-Control: public, max-age=86400\n");
+  "/*.ics\n  Content-Type: text/calendar; charset=utf-8\n  Cache-Control: public, max-age=86400\n/img/*\n  Cache-Control: public, max-age=2592000\n/*.js\n  Cache-Control: public, max-age=31536000, immutable\n/*.css\n  Cache-Control: public, max-age=31536000, immutable\n");
 { // 달력 구독 파일
   const Y0 = new Date().getFullYear(), stamp = new Date().toISOString().replace(/[-:]/g, "").slice(0, 15) + "Z";
   const icsEsc = s => String(s).replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");

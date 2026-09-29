@@ -7,10 +7,10 @@ TOOLS.push({id:"lunar",cat:"생활",icon:"🌙",name:"음력 양력 변환",desc
     el.innerHTML=
       '<div class="r2"><div><label>변환 방향</label><select id="dir"><option value="s2l">양력 → 음력</option><option value="l2s">음력 → 양력</option></select></div>'+
       '<div><label>윤달 (음→양일 때만)</label><select id="leap"><option value="0">평달</option><option value="1">윤달</option></select></div></div>'+
-      '<div id="pane-s2l"><label>양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
-      '<div id="pane-l2s" style="display:none"><div class="r2"><div><label>음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
-      '<div><label>음력 월</label><input type="number" id="lm" min="1" max="12" value="1"></div></div>'+
-      '<label>음력 일</label><input type="number" id="ld" min="1" max="30" value="1"></div>'+
+      '<div id="pane-s2l"><label for="sd">양력 날짜</label><input type="date" id="sd" value="'+iso(today)+'"></div>'+
+      '<div id="pane-l2s" style="display:none"><div class="r2"><div><label for="ly">음력 연</label><input type="number" id="ly" value="'+today.getFullYear()+'"></div>'+
+      '<div><label for="lm">음력 월</label><input type="number" id="lm" min="1" max="12" value="1"></div></div>'+
+      '<label for="ld">음력 일</label><input type="number" id="ld" min="1" max="30" value="1"></div>'+
       '<div class="out" style="margin-top:14px"><div class="k" id="k">음력</div><div class="v" id="v">—</div><div class="s" id="s"></div></div>'+
       '<p class="note">한국천문연구원(KASI) 기준 음력입니다. 1000~2050년 범위를 지원하며, 윤달은 월 뒤에 (윤)으로 표시합니다.</p>';
     function calc(){

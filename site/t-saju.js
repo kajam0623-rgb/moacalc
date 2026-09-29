@@ -40,7 +40,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :"돕는 기운이 삼 할에 못 미치네. 꽤 얇은 편일세. 혼자 다 짊어지면 금세 지치니, 기댈 사람과 쉬어 갈 자리부터 챙기게.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label>생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
     '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
     // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
     sjHourOpts(-1)+'</select></div></div>'+
@@ -49,7 +49,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value=""></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<div style="margin-top:10px"><label>이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
+    '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
     '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
