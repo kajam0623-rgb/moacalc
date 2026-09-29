@@ -1969,7 +1969,7 @@ function iljinPage(p){
       `var s=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")+" ("+w[d.getDay()]+")";`+
       `out+='<div class="row"><span>'+(m===0?(off===0?"오늘이 ":"가장 가까운 "):"")+"${p.ko}일"+'</span><b>'+s+'</b></div>';}`+
       `document.getElementById("nextdays").innerHTML=out;})();</script>`+
-      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 열 자와 지지 열두 자가 함께 돌아 60일마다 같은 일진이 옵니다. ${p.ko}일은 60갑자 가운데 ${p.k+1}번째입니다. 오늘 일진은 <a href="iljin.html">일진 달력</a>에서 확인하세요.</p></section>`+
+      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 열 자와 지지 열두 자가 함께 돌아 60일마다 같은 일진이 옵니다. ${p.ko}일은 <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째입니다. 오늘 일진은 <a href="iljin.html">일진 달력</a>에서 확인하세요.</p></section>`+
 
       /* 같은 간지로 일주 페이지가 따로 있다. 둘이 무엇을 다루는지 명시해야
          구글이 중복으로 보지 않고 검색 의도별로 각각 띄운다. */
@@ -2017,7 +2017,7 @@ function iljuPage(p){
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+
 
-      `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. 60갑자 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
+      `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
       `${para(C.core)}</div>`+
       `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 하나만 떼어 본 성격·일·재물 풀이는 <a href="ilgan-${G.en}.html">${gEl} 일간</a> 페이지에 있습니다.</p>`+
       `<p style="color:var(--muted);font-size:13px;margin:6px 2px 0">${p.ko}일주가 속한 순은 ${p.gm.sun}이고, 이 순에서 짝 없이 남는 지지 ${gmTxt(p.gm)}이 공망(空亡)입니다. 연지·월지·시지까지 견주어 보려면 <a href="gongmang.html">공망 찾기</a>에 생년월일을 넣어 보세요.</p>`+
