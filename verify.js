@@ -321,6 +321,21 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
         if (q.h) { add(SJ_ES[q.h.s], wt["시간"]); add(SJ_EB[q.h.b], wt["시지"]); }
         if (Math.abs(sup / tot - sjStrength(q).ratio) > 1e-9) wbad++; });
       t("배우기: 7강 가중치 표(월지 3·일지 2·월간 1.5·나머지 1)가 sjStrength 와 같은 값이다", Object.keys(wt).length + ":" + wbad, "7:0"); }
+    // 자동 출제: 열여섯 강이 모두 문제를 만들고, 4지선다·정답 번호·풀이가 갖춰지며, 엔진과 바로 맞출 수 있는 종류는 정답이 엔진 값과 같다
+    // (엔진과 별개로 손으로 적은 표와의 대조는 C:\\tmp\\moacalc-learn\\learngen_test.js 가 한다)
+    { const greg = lsrc.slice(lsrc.indexOf("// ───────── 실습 재료"), lsrc.indexOf("// ───────── 실습 화면")), gE = lsrc.slice(lsrc.indexOf("function E(s)"), lsrc.indexOf("\n", lsrc.indexOf("function E(s)")));
+      const GH = eval("(function(){var PAGES=[],ILGAN_META=[],SHORTS=[];" + gE + "\n" + greg + "\nreturn {GEN:GEN,rng:rng};})()");
+      const lab = (a, b) => a + "(" + b + ")", stL = i => lab(SJ_S[i], SJ_SH[i]), brL = i => lab(SJ_B[i], SJ_BH[i]);
+      const engine1 = { tg: a => sjTenGod(a[0], a[1]), unseong: a => sjUnseong(a[0], a[1]), gyeok: a => SJ_GYEOK[sjTenGod(a[0], SJ_BMAIN[a[1]])], bmain: a => stL(SJ_BMAIN[a[0]]), yukhap: a => brL(sjYukhap(a[0])),
+        jangsaeng: a => brL(SJ_JS[a[0]]), munchang: a => brL(SJ_MUNCHANG[a[0]]), samhap: a => ["신·자·진", "사·유·축", "인·오·술", "해·묘·미"][sjSamhap(a[0])] };
+      let gn = 0; const gbad = [], gk = {};
+      for (let no = 1; no <= 16; no++) for (let seed = 1; seed <= 120; seed++) { const r = GH.rng(seed * 6151 + no);
+        GH.GEN[no].forEach(fn => { const g = fn(r); gn++; gk[g.kind] = 1;
+          if (!(g.no === no && g.c.length === 4 && new Set(g.c).size === 4 && g.a >= 0 && g.a < 4 && g.q.length > 8 && g.why.length > 12 && !/undefined|NaN|\[object|null/.test(g.q + g.c.join("") + g.why))) gbad.push(no + ":" + g.kind);
+          if (engine1[g.kind] && g.c[g.a] !== engine1[g.kind](g.args)) gbad.push("엔진 불일치 " + no + ":" + g.kind + JSON.stringify(g.args)); }); }
+      t("배우기: 자동 출제 열여섯 강 × 33종류 문제(" + gn + "개)가 4지선다·풀이를 갖추고 정답이 엔진 값과 같다", Object.keys(gk).length + ":" + gbad.slice(0, 3).join("|"), "33:"); }
+    t("배우기: 강 페이지에 자동 출제 칸, 허브에 종합 테스트 칸이 있다", bs.includes('id="lmore" data-no="${c.no}"') && bs.includes('id="ltest"') && bs.includes('"/*SHORTS*/[]"') && /initMore\(\);\s*initTest\(\);/.test(lsrc), true);
+    t("배우기: 종합 테스트 통계 이벤트 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"learn_test"/.test(fs.readFileSync("worker.js", "utf8")) && lsrc.includes('track("learn_test"'), true);
     t("배우기: 실습 열여섯 가지가 모두 정의돼 있다", [...lsrc.matchAll(/DEF\[(\d+)\] =/g)].map(m => +m[1]).sort((a, b) => a - b).join(","), "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16");
     let lsyn = ""; try { new Function(lsrc); } catch (e) { lsyn = e.message; }
     t("배우기: learn_client.js 구문", lsyn, "");

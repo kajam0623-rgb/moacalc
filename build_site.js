@@ -34,6 +34,7 @@ const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6
 const LEARN = require("./content_learn.js");             // 명리학 배우기 16강(learn/*.js)
 const LEARN_JS = fs.readFileSync(path.join(__dirname, "learn_client.js"), "utf8")   // 실습·확인 문제·진도 — site/learn.js 로 나간다
   .replace("/*PAGES*/[]", JSON.stringify(LEARN.LECTURES.map(c => c.page)))
+  .replace("/*SHORTS*/[]", JSON.stringify(LEARN.LECTURES.map(c => c.short)))
   .replace("/*ILGAN_META*/[]", JSON.stringify(require("./content_ilgan.js").map(g => ({ en: g.en, m: g.metaphor }))));
 const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex").slice(0, 8);
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
@@ -2325,7 +2326,8 @@ const learnBottom = c =>
   `<section class="guide lpractice" id="lpractice" data-no="${c.no}" data-practice="${c.practice}"><h2>내 사주로 해 보기</h2><p class="lp-lead">${esc(PRACTICE_INFO[c.practice])}</p><div class="lp-mount"></div><noscript><p class="lp-lead">실습은 자바스크립트를 켜면 쓸 수 있습니다.</p></noscript></section>` +
   `<section class="guide lquiz" id="lquiz" data-no="${c.no}"><h2>확인 문제 3개</h2>` +
   c.quiz.map((q, i) => `<div class="lq" data-i="${i}" data-a="${q.a}"><p class="lq-q">${i + 1}. ${esc(q.q)}</p><ul class="lq-c">${q.c.map((t, j) => `<li><button type="button" class="lq-b" data-c="${j}">${esc(t)}</button></li>`).join("")}</ul><p class="lq-why" hidden>${esc(q.why)}</p></div>`).join("") +
-  `<p class="lq-score" aria-live="polite"></p></section>` +
+  `<p class="lq-score" aria-live="polite"></p>` +
+  `<div class="lmore" id="lmore" data-no="${c.no}"><p class="lp-lead">규칙에서 문제를 그때그때 만들어 냅니다. 누를 때마다 새 문제가 나오니 몇 번이든 풀어 보세요.</p><button type="button" class="lp-btn ghost" id="lmore-go">자동 출제로 3문제 풀어 보기</button><div class="lmore-out" aria-live="polite"></div><p class="lmore-score" aria-live="polite"></p></div></section>` +
   `<div class="lmark-row"><button type="button" class="lmark" data-no="${c.no}" aria-pressed="false">이 강 마쳤어요</button><span class="lmark-note">진도는 이 기기에만 저장됩니다</span></div>` + learnNav(c);
 const learnCta = () => `<a class="dictcta learncta" href="learn.html"><b>명리학 배우기</b><span>사주 기초부터 대운까지 16강 · 내 생년월일로 실습하고 문제로 확인해요</span><i>→</i></a>`;
 const lectureChips = cur => '<div class="sibs">' + LEARN.LECTURES.map(x => x.no === cur ? `<span class="cur">${x.no}강 ${esc(x.short)}</span>` : `<a href="${x.page}">${x.no}강 ${esc(x.short)}</a>`).join("") + '</div>';
@@ -2354,6 +2356,7 @@ function learnHubPage() {
     ["순서대로 배워야 하나요", "처음에는 순서대로 권합니다. 앞 강의의 결과가 뒤 강의의 재료가 되기 때문입니다. 예를 들어 6강의 십성을 알아야 9강의 격국 이름이 붙습니다. 이미 아는 강은 건너뛰고 실습만 해 보셔도 됩니다."],
     ["진도는 어디에 저장되나요", "마친 강의 번호만 이 기기의 브라우저에 저장합니다. 다른 기기나 다른 브라우저에서는 보이지 않으며 브라우저 데이터를 지우면 사라집니다. 서버로 보내지 않습니다."],
     ["실습에 넣은 생년월일은 저장되나요", "저장하지 않고 서버로도 보내지 않습니다. 계산은 모두 브라우저 안에서 이루어지고, 페이지를 벗어나면 입력한 값은 남지 않습니다."],
+    ["종합 테스트와 자동 출제 문제는 어떻게 만들어지나요", "1~16강의 규칙을 사이트의 사주 계산에 대입해 그때그때 문제를 만듭니다. 그래서 정답은 언제나 사이트의 계산값과 같고 누를 때마다 다른 문제가 나옵니다. 점수와 고른 답은 저장하지도 서버로 보내지도 않습니다."],
     ["16강을 마치면 무엇을 할 수 있나요", "사주 결과 화면의 여덟 글자, 오행, 십성, 신강·신약, 용신, 격국, 십이운성, 신살, 대운을 순서대로 읽고 각 값이 어디서 나왔는지 설명할 수 있습니다. 16강에서 열두 단계로 종합해 봅니다."],
   ];
   const faqLd = '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq.map(x => ({ "@type": "Question", name: x[0], acceptedAnswer: { "@type": "Answer", text: x[1] } })) }) + '</script>';
@@ -2378,6 +2381,7 @@ ${ORG_LD}
 <section class="guide"><h2>이렇게 배웁니다</h2><ol class="lsteps"><li><b>읽습니다.</b> 한 강마다 핵심을 짧게 정리했고, 예시 인물의 계산과 표가 함께 있습니다.</li><li><b>내 사주로 해 봅니다.</b> 생년월일을 넣으면 그 강에서 배운 규칙으로 내 사주의 해당 부분을 먼저 맞혀 보게 하고, 정답과 풀이 순서를 보여 드립니다.</li><li><b>문제로 확인합니다.</b> 강마다 세 문제이고 풀이가 바로 나옵니다.</li></ol></section>
 <section class="guide"><h2>예시 인물</h2><p style="margin:0 0 8px">새로 쓴 강의는 모두 ${esc(learnX().T.생일)} ${esc(learnX().T.시각)}에 태어난 ${esc(learnX().T.성별)}를 따라갑니다. 여덟 글자는 ${esc(learnX().T.연주)}·${esc(learnX().T.월주)}·${esc(learnX().T.일주)}·${esc(learnX().T.시주)}이고, 한 사람의 사주를 1강에서 16강까지 이어서 읽습니다.</p><p style="color:var(--muted);font-size:13px;margin:0">사주는 전통적인 해석 체계이며 결과를 확정하지 않습니다. 이 강의는 해석 규칙을 이해하는 데 초점을 둡니다.</p></section>
 ${cards}
+<section class="guide ltest" id="ltest" data-core="core.js?v=${coreV}"><h2>16강 종합 테스트 — 20문제</h2><p class="lp-lead">1~16강의 규칙을 사이트의 사주 계산으로 그때그때 문제로 만듭니다. 강마다 한 문제씩 16문제에, 자주 헷갈리는 네 강(십성·격국·십이운성·신살)에서 4문제를 더해 모두 20문제입니다. 누를 때마다 다른 문제가 나오고 점수와 답은 저장하지 않습니다.</p><button type="button" class="lp-btn" id="ltest-go">테스트 시작</button><div class="ltest-out" aria-live="polite"></div><noscript><p class="lp-lead">테스트는 자바스크립트를 켜면 쓸 수 있습니다.</p></noscript></section>
 <section class="faq"><h2>자주 묻는 질문</h2>${faq.map(x => '<details><summary>' + esc(x[0]) + '</summary><p>' + esc(x[1]) + '</p></details>').join("")}</section>
 <section class="guide"><h2>함께 보면 좋은 곳</h2><div class="sibs"><a href="dict.html">사주 사전</a><a href="column.html">보살 칼럼</a><a href="saju.html">사주팔자 만세력</a><a href="manse.html">무료 만세력</a></div></section>
 ${footer}
@@ -2776,6 +2780,10 @@ const extraCss = `
 .lq-q{margin:0;font-weight:800;line-height:1.55;}.lq-c{list-style:none;padding:0;display:grid;gap:8px;margin:10px 0 0;}
 .lq-why{margin:10px 0 0;font-size:13.5px;line-height:1.7;color:var(--muted);}
 .lq-score{margin:8px 0 0;font-weight:800;font-size:14px;}
+.lmore{margin:18px 0 4px;padding-top:14px;border-top:1px dashed var(--line-2);}.lmore-out{margin-top:10px;}.lmore-score{margin:8px 0 0;font-weight:800;font-size:14px;}
+.ltest-head{font-size:14px;margin:12px 0 8px;}.ltest-head b{font-weight:900;}.ltest .lq{margin:10px 0;}
+.ltest-res{margin-top:12px;padding:14px;border:1px solid var(--line-2);border-radius:14px;background:var(--surface);}.ltest-res:focus{outline:none;}
+.ltest-score{font-size:34px;font-weight:900;margin:0 0 6px;letter-spacing:-1px;}.ltest-again-lead{font-weight:800;margin:12px 0 6px;}
 .lmark-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 8px;}
 .lmark{padding:11px 16px;border:1.5px solid #E6B25A;border-radius:12px;background:var(--surface);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;}
 .lmark[aria-pressed="true"]{background:#E6B25A;color:#1b1406;}
