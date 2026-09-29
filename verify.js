@@ -441,6 +441,13 @@ t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clea
 { const nBtn = (src.match(/shareBtn\(\)\+/g) || []).length;
   const nSave = (src.match(/(?<!function )saveScore\(el,/g) || []).length + (src.match(/bindSave\(el,cardData\)/g) || []).length + (src.match(/bindSave\(el,\{file:"오늘의운세"/g) || []).length;
   t("저장 버튼(shareBtn)을 그리는 도구 " + nBtn + "곳은 모두 이미지 저장(saveScore/bindSave)이 연결돼 있다", nBtn + "|" + nSave, "8|8"); }
+// 공유 미리보기 카드(img/og, tools/og_cards.js 가 만든다): 규격과 개수
+{ const jpgDims = f => { const b = fs.readFileSync(f); let i = 2; while (i < b.length) { if (b[i] !== 0xFF) { i++; continue; } const m = b[i + 1]; if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)]; i += 2 + b.readUInt16BE(i + 2); } return null; };
+  const ogs = fs.existsSync("img/og") ? fs.readdirSync("img/og").filter(f => f.endsWith(".jpg")) : [];
+  const badOg = ogs.filter(f => { const d = jpgDims("img/og/" + f); return !d || d[0] !== 1200 || d[1] !== 630 || fs.statSync("img/og/" + f).size > 300000; });
+  t("공유 미리보기 카드 50장 이상(img/og)", ogs.length >= 50, true);
+  t("공유 미리보기 카드는 모두 1200×630 JPG · 300KB 이하 (어긋난 것: " + badOg.slice(0, 3).join(",") + ")", badOg.length, 0);
+  t("빌드가 페이지 이름의 카드를 og:image 로 쓴다(폭·높이 메타 포함)", bs.includes("const hasOgCard = slug =>") && bs.includes('<meta property="og:image:width" content="1200">') && bs.includes("ogTag(o.id)"), true); }
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);

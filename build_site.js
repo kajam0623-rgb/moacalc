@@ -899,7 +899,10 @@ const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SIT
 const IMG_SRC = path.join(DIR,"img");
 const CAT_IMG = {"급여·노동":"cat-pay","금융":"cat-fin","부동산·세금":"cat-estate","생활":"cat-life","변환·기타":"cat-conv","재미·운세":"cat-fortune"};
 // 페이지별 OG: 운세 도구는 자기 히어로 배너, 나머지는 공통 og.jpg
+const ogCardMeta = slug => `<meta property="og:image" content="${DOMAIN}/img/og/${slug}.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
+const hasOgCard = slug => !!slug && fs.existsSync(path.join(IMG_SRC,"og",slug+".jpg"));
 function ogTag(id){
+  if(hasOgCard(id)) return ogCardMeta(id);
   const heroP = id && fs.existsSync(path.join(IMG_SRC,"tool","h-"+id+".webp"));
   return heroP
     ? `<meta property="og:image" content="${DOMAIN}/img/tool/h-${id}.webp">`
@@ -1296,7 +1299,7 @@ function seoPage(o){
 <link rel="canonical" href="${o.url}">${o.noindex ? '\n<meta name="robots" content="noindex, follow">' : ""}
 <meta property="og:type" content="article"><meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.desc)}"><meta property="og:url" content="${o.url}">
-<meta property="og:image" content="${DOMAIN}/${o.img}">
+${hasOgCard(o.url.replace(/^.*\//,"").replace(/\.html$/,"")) ? ogCardMeta(o.url.replace(/^.*\//,"").replace(/\.html$/,"")) : `<meta property="og:image" content="${DOMAIN}/${o.img}">`}
 <link rel="stylesheet" href="style.css?v=${styleV}">
 <script type="application/ld+json">${JSON.stringify(ld)}</script>${faqLd}${crumb}${headExtra}
 </head><body><div class="wrap">
@@ -1366,7 +1369,7 @@ function sitePage(o){
 <meta property="og:title" content="${esc(o.title)}">
 <meta property="og:description" content="${esc(o.desc)}">
 <meta property="og:url" content="${url}">
-${OG_IMG_TAG}
+${ogTag(o.id)}
 <link rel="stylesheet" href="style.css?v=${styleV}">
 ${headExtra}
 ${ORG_LD}
@@ -2368,7 +2371,7 @@ function learnHubPage() {
 <meta name="description" content="${esc(LEARN_HUB_DESC)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(LEARN_HUB_DESC)}"><meta property="og:url" content="${url}">
-${OG_IMG_TAG}
+${ogTag("learn")}
 <link rel="stylesheet" href="style.css?v=${styleV}">
 ${headExtra}
 ${ORG_LD}
@@ -2401,7 +2404,7 @@ function dictPage(){
 <meta name="description" content="${esc(desc)}">
 <link rel="canonical" href="${url}">
 <meta property="og:type" content="website"><meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:url" content="${url}">
-${OG_IMG_TAG}
+${ogTag("dict")}
 <link rel="stylesheet" href="style.css?v=${styleV}">
 ${headExtra}
 ${ORG_LD}
