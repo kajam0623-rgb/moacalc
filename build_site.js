@@ -1303,7 +1303,7 @@ function seoPage(o){
 <a class="back" href="${o.parent}">← ${o.parentName}</a>
 <div class="shell">
 <main>
-<div class="toolhero${o.h1.length > 22 ? " longh" : ""}"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
+<div class="toolhero${o.h1.length > 14 ? " longh" : ""}"><img src="${o.hero || o.img}" alt="${esc(o.h1)}" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()">${thBosal(o.tool)}<div class="cap"><h1>${esc(o.h1)}</h1><div class="tl">${esc(o.sub)}</div></div></div>
 ${lec ? learnBar(lec) : ""}
 ${o.noTool ? "" : (o.tool==="tarot" ? `${TRUST_TAROT}` : `${TRUST_GEN}`)}
 ${o.noTool ? "" : '<div class="card tool" id="tool"></div>'}
@@ -2707,6 +2707,9 @@ const extraCss = `
 .dy-clear{font-size:12.5px;color:var(--muted);text-decoration:underline;cursor:pointer;}.dy-empty{text-align:center;padding:30px 10px;}
 .toolhero img.th-bosal{grid-area:1/1;justify-self:end;align-self:start;width:92px;height:auto;aspect-ratio:auto;object-fit:contain;margin:10px 10px 0 0;z-index:1;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55));animation:bosalBob 3.4s ease-in-out infinite;}
 @media (min-width:760px){.toolhero img.th-bosal{width:150px;margin:14px 18px 0 0;}}
+.toolhero:has(>img.th-bosal)>.cap{padding-right:104px;}
+@media (min-width:760px){.toolhero:has(>img.th-bosal)>.cap{padding-right:196px;}}
+@media (max-width:759px){.toolhero.longh:has(>img.th-bosal)>.cap{padding-right:22px;}}
 @media (prefers-reduced-motion:reduce){.th-bosal{animation:none}}
 .tgrid a{align-items:center;text-align:center;padding:10px 6px 12px;}.tgrid .tile-bosal{height:58px;width:auto;margin:0 auto 4px;}
 .today{margin:18px 0 6px;max-width:640px;}
