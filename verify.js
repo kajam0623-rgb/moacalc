@@ -468,6 +468,15 @@ t("생성 페이지 6군이 강의 링크 블록(learnMore)을 갖는다", (bs.m
   t("별자리 12: 2027 원고가 있고 2027 외행성과 각을 이루는 행성을 모두 언급한다 (어긋난 것: " + badS.join(",") + ")", badS.length, 0);
   t("별자리 페이지 생성기가 2027 섹션·제목·FAQ·행성 위치 안내를 쓴다", bs.includes("${para(s.y2027)}") && bs.includes("— 2027 | 동네보살") && bs.includes("목성은 7월 26일에 사자자리에서 처녀자리로 옮깁니다"), true); }
 t("보안 헤더: 프레임 삽입 금지·쓰지 않는 기능 차단(_headers)", bs.includes("X-Frame-Options: SAMEORIGIN") && bs.includes("Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()"), true);
+// 칼럼 "2027 정미년 한눈에": 표가 엔진 계산·개별 페이지 원고와 같다
+{ const CL = require("./columns/zodiac-2027.js"), ZO = require("./content_zodiac.js"), IL = require("./content_ilgan.js");
+  const gRows = CL.tables[1].rows, zRows = CL.tables[0].rows;
+  const badG = IL.filter((g, k) => { const i = SJ_S.indexOf(g.ko); return zRows.length !== 12 || gRows[i][1] !== "정 " + sjTenGod(i, 3) + " · 기 " + sjTenGod(i, SJ_BMAIN[7]); }).map(g => g.ko);
+  t("2027 칼럼 표: 일간 10줄의 십성이 엔진(sjTenGod)과 같다 (어긋난 것: " + badG.join(",") + ")", badG.length + "|" + gRows.length, "0|10");
+  const KEY = { "해(害)·원진": "해(害) 관계", "충(축미충)": "충(沖) 관계", "합충 없음": "충·합 관계가 없습니다", "삼합(반합)": "삼합", "육합": "육합을 이룹니다", "본명년(같은 띠)": "본명년", "형·파": "형(刑)이자 파(破)", "삼합의 두 글자(공합)": "삼합" };
+  const badZ = ZO.filter(z => { const b = SJ_B.indexOf(z.ji[0]), rel = zRows[b][1], key = rel.startsWith("합충 없음") ? KEY["합충 없음"] : KEY[rel]; return !key || !z.y2027.includes(key); }).map(z => z.ko);
+  t("2027 칼럼 표: 띠 12줄의 관계가 띠 페이지 2027 원고의 관계와 같다 (어긋난 것: " + badZ.join(",") + ")", badZ.length, 0);
+  t("2027 칼럼: 개별 페이지 34곳으로 가는 링크가 있다", (CL.sections[4][1].match(/href=\"(zodiac|ilgan|star)-[a-z]+\.html\"/g) || []).length, 34); }
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);

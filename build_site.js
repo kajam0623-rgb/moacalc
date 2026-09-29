@@ -1430,7 +1430,7 @@ function starPage(s, i){
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>잘 맞는 별자리 — ${esc(s.match.best.join(", "))}</b><br>${s.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>조율이 필요한 별자리 — ${esc(s.match.hard.join(", "))}</b><br>${s.match.hardWhy}</p></div></section>`+
       starMonthSection(s, ENGINE.ST_KO.indexOf(s.ko))+
-      `<section class="guide"><h2>${s.ko}의 2027년</h2><div class="intro" style="margin-top:0">${para(s.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">토성·해왕성은 양자리, 천왕성은 쌍둥이자리, 명왕성은 물병자리에 머물고, 목성은 7월 26일에 사자자리에서 처녀자리로 옮깁니다. 각은 별자리 단위로 본 것이라 정밀한 해석은 출생 차트가 필요합니다.</p></div></section>`+
+      `<section class="guide"><h2>${s.ko}의 2027년</h2><div class="intro" style="margin-top:0">${para(s.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">토성·해왕성은 양자리, 천왕성은 쌍둥이자리, 명왕성은 물병자리에 머물고, 목성은 7월 26일에 사자자리에서 처녀자리로 옮깁니다. 각은 별자리 단위로 본 것이라 정밀한 해석은 출생 차트가 필요합니다. 12별자리를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p></div></section>`+
       `<section class="guide"><h2>${s.ko}의 2026년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
     faq:[
       [`${s.ko}는 몇 월생인가요?`,`${s.range} 사이에 태어난 사람이 ${s.ko}입니다. 다만 태양이 별자리 경계를 넘는 시각은 해마다 하루 안팎으로 달라지므로, 경계일 출생이면 날짜표 대신 별자리 운세 페이지에서 생년월일로 판정하는 편이 정확합니다.`],
@@ -1464,7 +1464,7 @@ function zodiacPage(z, i){
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>삼합 — ${esc(z.match.best.join(", "))}</b><br>${z.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>육합 — ${esc(z.match.hap)}</b><br>${z.match.hapWhy}</p>`+
       `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p></div></section>`+
-      `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}</div></section>`+
+      `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">12띠를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p></div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
     faq:[
       [`${z.ko}띠와 잘 맞는 띠는?`,`삼합인 ${z.match.best.join("와 ")}, 육합인 ${z.match.hap}가 대표적입니다. ${z.match.why}`],
@@ -1497,7 +1497,7 @@ function ilganPage(g){
       `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 재물</h2><div class="intro" style="margin-top:0">${para(g.money)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 건강 — 약한 고리</h2><div class="intro" style="margin-top:0">${para(g.health)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">오행과 장부를 짝지어 읽는 전통 명리학의 해석이며 의학적 진단이 아닙니다. 몸에 불편이 있으면 의료진과 상의하세요.</p></div></section>`+
-      `<section class="guide"><h2>${g.ko}${g.el}의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(g.y2027)}</div></section>`+
+      `<section class="guide"><h2>${g.ko}${g.el}의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(g.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">일간 열 가지를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p></div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(g.y2026)}</div></section>`,
     faq:[
       [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
