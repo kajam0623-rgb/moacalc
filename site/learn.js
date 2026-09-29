@@ -594,7 +594,7 @@
     var timeHtml = '<div><label for="lp-t">태어난 시각 (선택)</label><select id="lp-t"><option value="">모름 (시주 제외)</option>' + sjHourOpts(-1) + '</select></div>';
     var genHtml = def.gender ? '<div><label for="lp-g">성별</label><select id="lp-g"><option value="m">남</option><option value="f">여</option></select></div>' : '';
     mount.innerHTML = '<div class="lp"><div class="lp-form"><div><label for="lp-d">생년월일 (양력)</label><input type="date" id="lp-d" value="1990-03-15" min="1900-01-01" max="2099-12-31"></div>' +
-      (def.time || def.gender ? '<div class="lp-row">' + (def.time ? timeHtml : '') + genHtml + '</div>' : '') + '<button type="button" class="lp-btn" id="lp-go">실습 시작</button></div><div class="lp-out" aria-live="polite"></div></div>';
+      (def.time || def.gender ? '<div class="lp-cols">' + (def.time ? timeHtml : '') + genHtml + '</div>' : '') + '<button type="button" class="lp-btn" id="lp-go">실습 시작</button></div><div class="lp-out" aria-live="polite"></div></div>';
     try { if (typeof birthDial === "function") birthDial(mount, "#lp-d"); } catch (e) { }
     var out = $(".lp-out", mount);
     function start() {

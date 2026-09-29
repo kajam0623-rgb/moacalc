@@ -2756,8 +2756,8 @@ const extraCss = `
 .lp-lead{margin:0 0 12px;font-size:14px;line-height:1.65;color:var(--muted);}
 .lp{border:1px solid var(--line-2);border-radius:14px;background:var(--surface);padding:14px 14px 16px;}
 .lp-form{display:grid;gap:10px;}.lp-form label{display:block;font-size:13px;font-weight:800;margin:0 0 4px;}
-.lp-form select,.lp-form input[type=date]{width:100%;padding:10px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;}
-.lp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}@media (max-width:560px){.lp-row{grid-template-columns:1fr;}}
+.lp-cols select,.lp-form input[type=date]{width:100%;padding:10px;border:1px solid var(--line-2);border-radius:10px;background:var(--surface);color:var(--ink);font:inherit;}
+.lp-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;}@media (max-width:560px){.lp-cols{grid-template-columns:1fr;}}
 .lp-btn{padding:12px 14px;border:none;border-radius:12px;background:#E6B25A;color:#1b1406;font:inherit;font-weight:800;cursor:pointer;}
 .lp-btn.ghost{background:var(--surface);border:1px solid var(--line-2);color:var(--ink);}
 .lp-btn:focus-visible,.lq-b:focus-visible,.lmarkbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
