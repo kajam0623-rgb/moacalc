@@ -748,6 +748,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
       else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
     // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
+    var pc=el.querySelectorAll(".ppl-c.on");
+    if(pc.length===1&&el.querySelectorAll(".ppl").length===1&&!out.querySelector(".nm-done")){var pn=((pc[0].firstChild&&pc[0].firstChild.nodeValue)||"").trim();if(pn&&!/^(나|내|저|본인|자신)$/.test(pn))nmSwap(out,nmHon(pn));}
     plainWords(out);foldAll(out,{open:o.open||1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
@@ -876,8 +878,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
           if(!jo&&PLAIN_AMBIG[term]&&/^\s+[가-힣]/.test(str.slice(off+m.length)))return m;
           var first=!seen[term],word=first?plain+"("+term+")":plain;
           seen[term]=1;
-          // 조사는 소리 나는 마지막 낱말 기준 — 괄호를 붙인 첫 등장은 괄호 안 용어로 고른다
-          var base=first?term:plain;
+          // 조사는 괄호 앞의 말(쉬운 말)에 맞춘다 — "느긋한 재주(식신)를", "나를 뜻하는 글자(일간)는"
+          var base=plain;
           return pre+word+(jo?(PLAIN_JOSA[jo]?josa(base,PLAIN_JOSA[jo]):jo):"")+(jo2||"");});
       });
       if(s!==t.nodeValue)t.nodeValue=s;
@@ -1370,16 +1372,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(H<0||H>23||M>59)return {ok:false,v:"",say:"",err:"시각을 읽지 못했네. 숫자 4자리(24시간제)로 적어 주게. 예) 오전 9시 30분은 0930, 오후 2시 30분은 1430일세."};
     return {ok:true,v:(H<10?"0"+H:""+H)+":"+(M<10?"0"+M:""+M),say:clockSay(H,M),err:""};}
   // 이름을 물었으면 결과에서 그 이름으로 부른다("민지 님"). 엄마·아빠처럼 이미 호칭이면 님을 더 붙이지 않는다
-  function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모)$/.test(n)?n:n+" 님";}
+  function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모|남편|아내|남친|여친|아들|딸|친구)$/.test(n)?n:n+" 님";}
   // 결과 글의 섹션마다 첫 "자네"를 이름으로 바꾼다(한 섹션에 한 번). 조사는 이름의 받침에 맞춘다. 종합(.sj-synth)은 글 쓸 때 이미 이름을 넣는다
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec"),function(sec){
-      if(sec.classList.contains("sj-synth"))return;
+      if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
       var w=document.createTreeWalker(sec,NodeFilter.SHOW_TEXT,null,false),tn;
       while((tn=w.nextNode())){
         if(tn.parentElement&&tn.parentElement.closest(".gh-note,.note"))continue;
         var s=tn.nodeValue,m=/자네(는|가|를|와|에게는|에게|의|도|만|한테|께)?(?![가-힣])/.exec(s);
-        if(m){tn.nodeValue=s.slice(0,m.index)+n+(m[1]?(JO[m[1]]?josa(n,JO[m[1]]):m[1]):"")+s.slice(m.index+m[0].length);return;}}});}
+        if(m){tn.nodeValue=s.slice(0,m.index)+n+(m[1]?(JO[m[1]]?josa(n,JO[m[1]]):m[1]):"")+s.slice(m.index+m[0].length);sec.classList.add("nm-done");return;}}});}
   /* 사주 종합 — 원고 D(content_saju_easy.js → sj/easy.json)에서 이 사람의 일간·힘의 세기·짜임(월지 십성)·눈에 띄는 별·비어 있는 기운·지금의 큰 흐름과 올해로 쉬운 문장을 골라 잇는다.
      f = {ds,strong,yong:용신 오행 이름,wolTg,sin:[신살 이름],miss:[비어 있는 십성 무리],duTg,seTg,duOk,seOk,nm:"민지 님"|""}. 문단(HTML) 배열을 돌려준다. 순수 함수 — verify 가 무작위 명식으로 검사한다 */
   var SJ_MISS_LAB={재성:"돈",관성:"일과 책임",인성:"배움과 도움",식상:"재주와 표현",비겁:"동료와 자립"};

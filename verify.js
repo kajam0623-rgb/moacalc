@@ -606,7 +606,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     exact += Math.min(...[[false, false], [true, false], [false, true], [true, true]].map(v => L({ ...base, duOk: v[0], seOk: v[1] }))) - L0;
     t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 예전 종합(공백 빼고 약 450자)의 1.5배를 넘는 700자 이상, 평균 950자 이상", exact >= 700 && minL >= exact && sumL / 3000 >= 950, true); }
   // 이름 부르기: 엄마·아빠는 님을 더 붙이지 않고 이름에는 님을 붙이며, 결과 글의 섹션마다 첫 '자네'를 바꾼다(조사는 받침대로)
-  t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon("")].join("|"), "민지 님|민지 님|엄마|이수현씨||");
+  t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon(""), nmHon("남친"), nmHon("딸")].join("|"), "민지 님|민지 님|엄마|이수현씨|||남친|딸");
   { const sj = toolBlock("saju");
     t("사주 도구: 쉬운 종합 원고(sj/easy.json)를 받아 종합을 쓰고, 못 받으면 예전 문장으로 대신하며, 결과의 섹션마다 이름을 부른다",
       [sj.includes('fetch("sj/easy.json")'), sj.includes("synthOld"), sj.includes("sjEasy({ds:ds"), sj.includes("nmSwap(outEl,nmHon(nm))"), sj.includes("쉽게 말하면</b> — 태어난 시각은"), bs.includes('"sj","easy.json"')].join(","), "true,true,true,true,true,true"); } }
