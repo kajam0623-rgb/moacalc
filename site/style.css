@@ -78,7 +78,7 @@
   .hero-wrap>*:nth-child(2){animation-delay:.18s;}
   @media (prefers-reduced-motion:reduce){.hero>*,.hero-wrap>*{animation:none;}}
   .sfoot{border-top:2px solid var(--ink);margin-top:44px;padding-top:22px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px;font-size:12.5px;}
-  @media (max-width:600px){.sfoot{grid-template-columns:1fr;}}
+  @media (max-width:600px){.sfoot{grid-template-columns:1fr 1fr;column-gap:14px;}.sfoot>div:first-child{grid-column:1/-1;}.sfoot>div:nth-child(4){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;}.sfoot>div:nth-child(4) .h4{grid-column:1/-1;}}
   .sfoot h4,.sfoot .h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
   .sfoot .foot{grid-column:1/-1;margin-top:8px;}
   .sfoot a{display:flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;margin:0;}
@@ -461,6 +461,12 @@
   .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
   .sj-persona p{margin:9px 0;line-height:1.85;word-break:keep-all;}.sj-persona p b{color:var(--accent-ink);}
+  .fold-flat>.fold-sum+.fold-body{margin-top:-8px;}
+  .dial-typed~.lunar-pick{margin-bottom:2px;}.dial-typed~.dial-tog{margin-top:6px;}
+  .tool .r2+.r2{margin-top:16px;}
+  .tool input#nm,.tool input#y{text-align:left;font-family:inherit;font-size:15px;padding-right:2px;}
+  .dial-box{height:0;overflow:hidden;visibility:hidden;}.dial-box.open{height:auto;overflow:visible;visibility:visible;margin-top:8px;}
+  .dial-tog{display:inline-block;margin:10px 0 0;padding:7px 14px;border:1.5px solid var(--line-2);border-radius:99px;font-size:13.5px;font-weight:700;color:var(--accent-ink);cursor:pointer;user-select:none;}.dial-tog:hover{border-color:var(--accent);}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */
@@ -740,7 +746,7 @@
 .diff b{display:block;font-size:16px;margin-bottom:4px;}.diff p{font-size:13.5px;line-height:1.7;color:var(--muted);margin:0;}
 .zrank{list-style:none;margin:0;padding:0;display:grid;gap:6px;}@media (min-width:760px){.zrank{grid-template-columns:repeat(2,1fr);}}
 .zrank a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);text-decoration:none;color:var(--ink);}
-.zrank em{font-style:normal;font-weight:900;width:22px;color:var(--muted);}.zrank li:nth-child(-n+3) em{color:#E6B25A;}.zrank b{width:64px;}.zrank span{flex:1;font-size:13px;color:var(--muted);}.zrank i{font-style:normal;font-weight:800;}
+.zrank em{font-style:normal;font-weight:900;width:22px;color:var(--muted);}.zrank li:nth-child(-n+3) em{color:#E6B25A;}.zrank b{min-width:64px;white-space:nowrap;}.zrank span{flex:1;font-size:13px;color:var(--muted);}.zrank i{font-style:normal;font-weight:800;}
 .zr-wait{color:var(--muted);font-size:13px;padding:8px 2px;}
 .dictcta{display:flex;align-items:center;gap:12px;margin:22px 0;padding:16px;border-radius:14px;border:1.5px solid #E6B25A;text-decoration:none;color:var(--ink);background:var(--surface);}
 .dictcta b{font-size:17px;white-space:nowrap;}.dictcta span{flex:1;font-size:13px;color:var(--muted);}.dictcta i{font-style:normal;font-weight:800;}

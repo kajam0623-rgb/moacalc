@@ -526,7 +526,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function diaryAdd(e){try{var a=JSON.parse(localStorage.getItem("dnbs_diary")||"[]"),n=new Date(),k=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
     var old=a.filter(function(x){return x.d===k&&x.t===e.t;})[0];e.d=k;if(old&&old.v)e.v=old.v;
     a=a.filter(function(x){return !(x.d===k&&x.t===e.t);});a.unshift(e);localStorage.setItem("dnbs_diary",JSON.stringify(a.slice(0,120)));}catch(_){}}
-  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</p>';}
+  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'<span>이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</span></p>';}
   /* 아기보살 — 동네보살의 얼굴. 자세별 그림(img/bosal/<자세>.webp)을 자리마다 골라 쓴다.
      점수로 고를 때: 85 이상 만세(cheer), 60 이상 미소(smile), 그 아래 걱정하며 토닥(worry) */
   function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}
@@ -644,7 +644,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
       else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
     // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
-    plainWords(out);foldAll(out,{open:1});
+    plainWords(out);foldAll(out,{open:o.open||1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
     if(o.score!=null&&top&&!out.querySelector(".bosal-say")){
@@ -832,11 +832,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       while(sec.firstChild)body.appendChild(sec.firstChild);
       // 접을 내용이 없으면 화살표가 헛돈다. 그때는 details 대신 펼쳐진 한 줄로 둔다
       var has=body.textContent.trim().length>0||!!body.querySelector("img,table,.chips,.sj-daeun");
-      var d=document.createElement(has?"details":"div");
-      d.className="fold"+(has?"":" fold-flat");
-      if(has&&n++<(opts.open||0))d.open=true;
-      var s=document.createElement(has?"summary":"div");
-      s.className=has?"":"fold-sum";
+      /* 첫 문장을 뽑고 남은 글이 한두 줄(70자 미만)이면 접을 까닭이 없다 — 눌러서 한 문장 더 보는 카드가 줄줄이 이어지면 내용이 적어 보인다.
+         그때는 접지 않고 제목·핵심 문장·남은 글을 그대로 펼쳐 둔다 */
+      var flat=has&&body.textContent.trim().length<70&&!body.querySelector("img,table,.chips,.sj-daeun,a,input,button,select"),fold=has&&!flat;
+      var d=document.createElement(fold?"details":"div");
+      d.className="fold"+(fold?"":" fold-flat");
+      if(has){var nth=n++;if(fold&&nth<(opts.open||0))d.open=true;}
+      var s=document.createElement(fold?"summary":"div");
+      s.className=fold?"":"fold-sum";
       s.innerHTML='<span class="fold-lab"></span><b class="fold-key"></b>';
       s.querySelector(".fold-lab").textContent=label;
       s.querySelector(".fold-key").textContent=key||label;
@@ -876,14 +879,17 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var cols={y:build("y",1930,nowY,Y,"년"),m:build("m",1,12,M,"월"),d:build("d",1,daysIn(Y,M),D,"일")};
     wrap.appendChild(cols.y);wrap.appendChild(cols.m);wrap.appendChild(cols.d);
     var selBar=document.createElement("div");selBar.className="dial-sel";wrap.appendChild(selBar);
-    // 다이얼을 input 자리에 놓고, input은 아래로 옮겨 '직접 입력'으로 남긴다
+    /* 숫자 8자리를 직접 치는 칸이 기본이다(달력·다이얼은 폰에서 손이 많이 간다 — 궁합은 다이얼 둘이 화면 두 개 분량이었다).
+       다이얼은 '돌려서 고르기'를 눌러야 펼쳐진다. 값은 늘 2000-01-01 꼴 문자열이라 각 도구의 계산은 그대로다 */
     inp.classList.add("dial-typed");
-    host.insertBefore(wrap,inp);
-    host.insertBefore(gan,inp);
-    var typedLabel=document.createElement("div");
-    typedLabel.className="dial-typed-label";
-    typedLabel.textContent="직접 입력";
-    host.insertBefore(typedLabel,inp);
+    inp.type="text";inp.inputMode="numeric";inp.maxLength=10;inp.placeholder="예) 19900315";inp.autocomplete="off";
+    var err=document.createElement("p");err.className="tf-err";err.setAttribute("role","alert");
+    var box=document.createElement("div");box.className="dial-box";
+    var anchor=document.createElement("div");anchor.className="dial-anchor";
+    var tog=document.createElement("span");tog.className="dial-tog";tog.setAttribute("role","button");tog.tabIndex=0;tog.setAttribute("aria-expanded","false");tog.textContent="돌려서 고르기";
+    var after=inp.nextSibling;
+    host.insertBefore(err,after);host.insertBefore(gan,after);host.insertBefore(anchor,after);host.insertBefore(tog,after);host.insertBefore(box,after);
+    box.appendChild(wrap);
     function center(col){ // 스크롤 위치로 가운데 항목을 판정한다
       var items=col.querySelectorAll(".dial-item");
       var idx=Math.round(col.scrollTop/44);
@@ -909,7 +915,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       chip.setAttribute("role","button");chip.tabIndex=0;
       chip.textContent=(e%100<10?"0":"")+(e%100)+"년대";
       era.appendChild(chip);}
-    host.insertBefore(era,wrap);
+    box.insertBefore(era,wrap);
     era.addEventListener("keydown",function(ev){
       if(ev.key!=="Enter"&&ev.key!==" ")return;
       var t=ev.target.closest(".dial-era-chip");if(!t)return;
@@ -1022,6 +1028,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     // 직접 입력 → 다이얼 위치를 맞춘다 (달력에서 고르거나 타이핑한 경우)
     function syncFromInput(){
       if(selfSet)return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(inp.value||""))return; // 치는 도중의 반쪽 값(1983-06-2)을 다이얼이 06-02 로 채워 마지막 숫자를 밀어내지 않게
       var v=(inp.value||"").split("-");
       if(v.length<3)return;
       var y=+v[0],m=+v[1],d=+v[2];
@@ -1030,6 +1037,19 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       // 즉시 이동 — 부드럽게 굴리면 지나가는 중간 연도가 scroll 판정으로 확정돼 입력을 덮어쓴다(1987 입력 → 1988로 계산)
       scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);
       mark(cols.y);mark(cols.m);mark(cols.d);commit();}
+    // 숫자만 쳐도 1990-03-15 꼴로 이어 붙이고, 칸을 누르면 통째로 선택해 바로 덮어쓸 수 있게 한다
+    inp.addEventListener("input",function(){if(this.selectionStart===this.value.length){var dg=this.value.replace(/[^0-9]/g,"").slice(0,8),f=dg.slice(0,4)+(dg.length>4?"-"+dg.slice(4,6):"")+(dg.length>6?"-"+dg.slice(6,8):"");if(f!==this.value)this.value=f;}err.textContent="";});
+    inp.addEventListener("focus",function(){var e2=this;setTimeout(function(){e2.select();},0);});
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();var goBtn=el.querySelector("#go");if(goBtn)goBtn.click();}});
+    function bdOk(v){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||"");if(!m)return false;var y=+m[1],mo=+m[2],d=+m[3],t=new Date(y,mo-1,d);return y>=1900&&t.getFullYear()===y&&t.getMonth()===mo-1&&t.getDate()===d&&t<=new Date();}
+    // 틀린 값이면 이유를 밝히고 물어보기로 가지 않는다(조상 요소의 캡처 단계라 도구의 버튼 처리보다 먼저 돈다)
+    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go")||host.offsetParent===null||bdOk(inp.value))return;
+      var dg=inp.value.replace(/[^0-9]/g,"");err.textContent=dg.length===8?"없는 날짜예요. 다시 확인해 주세요.":"생년월일 8자리를 숫자로 입력해 주세요. 예) 19900315";
+      e.stopImmediatePropagation();e.preventDefault();inp.focus();},true);
+    function dialOpen(o){box.classList.toggle("open",o);tog.setAttribute("aria-expanded",String(o));tog.textContent=o?"접기":"돌려서 고르기";
+      if(o)requestAnimationFrame(function(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);mark(cols.y);mark(cols.m);mark(cols.d);});}
+    tog.addEventListener("click",function(){dialOpen(!box.classList.contains("open"));});
+    tog.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();dialOpen(!box.classList.contains("open"));}});
     inp.addEventListener("change",syncFromInput);
     inp.addEventListener("input",syncFromInput);
     // rAF는 백그라운드 탭에서 실행되지 않아 휠이 0(1930년)에 머문 채 값과 어긋난다.
@@ -1037,8 +1057,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
-    lunarPick(host,inp,era,nowY);
-    peopleChips(host,inp,host.querySelector(".lunar-pick")||era);
+    lunarPick(host,inp,anchor,nowY);
+    peopleChips(host,inp,host.querySelector(".lunar-pick")||anchor);
     return wrap;}
   /* 여러 사람 저장 — 나·가족·연인 생일을 이름표로 두고 눌러서 바로 넣는다. 기기 안(localStorage)에만, 8명까지.
      궁합처럼 입력이 둘인 도구는 칸마다 같은 목록을 쓴다 */
@@ -1240,4 +1260,4 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // ---------- TOOLS ----------
   
 var TOOLS=[];
-window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"&&(id==="todayfortune"||id==="saju")){try{var hh=JSON.parse(sessionStorage.getItem("dnbs_hb")||"null"),bi=el.querySelector("#d");sessionStorage.removeItem("dnbs_hb");if(hh&&hh.v&&Date.now()-hh.t<6e5&&bi){bi.value=bi.type==="date"?hh.v:hh.v.replace(/-/g,".");bi.dispatchEvent(new Event("change",{bubbles:true}));}}catch(e){}}if(location.hash==="#go"){var g=el.querySelector("#go"),ni=el.querySelector("#d");if(g&&!(ni&&ni.inputMode==="numeric"&&!ni.value))setTimeout(function(){g.click();},250);}var lv=function(){[].forEach.call(el.querySelectorAll("h3:not([aria-level])"),function(h){h.setAttribute("aria-level","2");});};lv();if(window.MutationObserver)new MutationObserver(lv).observe(el,{childList:true,subtree:true});var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};
+window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"&&(id==="todayfortune"||id==="saju")){try{var hh=JSON.parse(sessionStorage.getItem("dnbs_hb")||"null"),bi=el.querySelector("#d");sessionStorage.removeItem("dnbs_hb");if(hh&&hh.v&&Date.now()-hh.t<6e5&&bi){bi.value=id==="todayfortune"?hh.v.replace(/-/g,"."):hh.v;bi.dispatchEvent(new Event("change",{bubbles:true}));}}catch(e){}}if(location.hash==="#go"){var g=el.querySelector("#go"),ni=el.querySelector("#d");if(g&&!(ni&&ni.inputMode==="numeric"&&!ni.value))setTimeout(function(){g.click();},250);}var lv=function(){[].forEach.call(el.querySelectorAll("h3:not([aria-level])"),function(h){h.setAttribute("aria-level","2");});};lv();if(window.MutationObserver)new MutationObserver(lv).observe(el,{childList:true,subtree:true});var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};

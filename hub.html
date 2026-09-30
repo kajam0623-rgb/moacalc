@@ -79,7 +79,7 @@
   .hero-wrap>*:nth-child(2){animation-delay:.18s;}
   @media (prefers-reduced-motion:reduce){.hero>*,.hero-wrap>*{animation:none;}}
   .sfoot{border-top:2px solid var(--ink);margin-top:44px;padding-top:22px;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:18px;font-size:12.5px;}
-  @media (max-width:600px){.sfoot{grid-template-columns:1fr;}}
+  @media (max-width:600px){.sfoot{grid-template-columns:1fr 1fr;column-gap:14px;}.sfoot>div:first-child{grid-column:1/-1;}.sfoot>div:nth-child(4){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;column-gap:14px;}.sfoot>div:nth-child(4) .h4{grid-column:1/-1;}}
   .sfoot h4,.sfoot .h4{font-size:10.5px;letter-spacing:.14em;color:var(--muted);margin-bottom:9px;font-weight:700;}
   .sfoot .foot{grid-column:1/-1;margin-top:8px;}
   .sfoot a{display:flex;align-items:center;min-height:44px;color:var(--muted);text-decoration:none;margin:0;}
@@ -462,6 +462,12 @@
   .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
   .sj-persona p{margin:9px 0;line-height:1.85;word-break:keep-all;}.sj-persona p b{color:var(--accent-ink);}
+  .fold-flat>.fold-sum+.fold-body{margin-top:-8px;}
+  .dial-typed~.lunar-pick{margin-bottom:2px;}.dial-typed~.dial-tog{margin-top:6px;}
+  .tool .r2+.r2{margin-top:16px;}
+  .tool input#nm,.tool input#y{text-align:left;font-family:inherit;font-size:15px;padding-right:2px;}
+  .dial-box{height:0;overflow:hidden;visibility:hidden;}.dial-box.open{height:auto;overflow:visible;visibility:visible;margin-top:8px;}
+  .dial-tog{display:inline-block;margin:10px 0 0;padding:7px 14px;border:1.5px solid var(--line-2);border-radius:99px;font-size:13.5px;font-weight:700;color:var(--accent-ink);cursor:pointer;user-select:none;}.dial-tog:hover{border-color:var(--accent);}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */
@@ -1206,7 +1212,7 @@
   function diaryAdd(e){try{var a=JSON.parse(localStorage.getItem("dnbs_diary")||"[]"),n=new Date(),k=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
     var old=a.filter(function(x){return x.d===k&&x.t===e.t;})[0];e.d=k;if(old&&old.v)e.v=old.v;
     a=a.filter(function(x){return !(x.d===k&&x.t===e.t);});a.unshift(e);localStorage.setItem("dnbs_diary",JSON.stringify(a.slice(0,120)));}catch(_){}}
-  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</p>';}
+  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'<span>이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</span></p>';}
   /* 아기보살 — 동네보살의 얼굴. 자세별 그림(img/bosal/<자세>.webp)을 자리마다 골라 쓴다.
      점수로 고를 때: 85 이상 만세(cheer), 60 이상 미소(smile), 그 아래 걱정하며 토닥(worry) */
   function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}
@@ -1324,7 +1330,7 @@
       if(sb)sb.insertAdjacentHTML("beforebegin",bujeokHtml(o.score,o.grade));
       else out.insertAdjacentHTML("beforeend",bujeokHtml(o.score,o.grade));}
     // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
-    plainWords(out);foldAll(out,{open:1});
+    plainWords(out);foldAll(out,{open:o.open||1});
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
     if(o.score!=null&&top&&!out.querySelector(".bosal-say")){
@@ -1512,11 +1518,14 @@
       while(sec.firstChild)body.appendChild(sec.firstChild);
       // 접을 내용이 없으면 화살표가 헛돈다. 그때는 details 대신 펼쳐진 한 줄로 둔다
       var has=body.textContent.trim().length>0||!!body.querySelector("img,table,.chips,.sj-daeun");
-      var d=document.createElement(has?"details":"div");
-      d.className="fold"+(has?"":" fold-flat");
-      if(has&&n++<(opts.open||0))d.open=true;
-      var s=document.createElement(has?"summary":"div");
-      s.className=has?"":"fold-sum";
+      /* 첫 문장을 뽑고 남은 글이 한두 줄(70자 미만)이면 접을 까닭이 없다 — 눌러서 한 문장 더 보는 카드가 줄줄이 이어지면 내용이 적어 보인다.
+         그때는 접지 않고 제목·핵심 문장·남은 글을 그대로 펼쳐 둔다 */
+      var flat=has&&body.textContent.trim().length<70&&!body.querySelector("img,table,.chips,.sj-daeun,a,input,button,select"),fold=has&&!flat;
+      var d=document.createElement(fold?"details":"div");
+      d.className="fold"+(fold?"":" fold-flat");
+      if(has){var nth=n++;if(fold&&nth<(opts.open||0))d.open=true;}
+      var s=document.createElement(fold?"summary":"div");
+      s.className=fold?"":"fold-sum";
       s.innerHTML='<span class="fold-lab"></span><b class="fold-key"></b>';
       s.querySelector(".fold-lab").textContent=label;
       s.querySelector(".fold-key").textContent=key||label;
@@ -1556,14 +1565,17 @@
     var cols={y:build("y",1930,nowY,Y,"년"),m:build("m",1,12,M,"월"),d:build("d",1,daysIn(Y,M),D,"일")};
     wrap.appendChild(cols.y);wrap.appendChild(cols.m);wrap.appendChild(cols.d);
     var selBar=document.createElement("div");selBar.className="dial-sel";wrap.appendChild(selBar);
-    // 다이얼을 input 자리에 놓고, input은 아래로 옮겨 '직접 입력'으로 남긴다
+    /* 숫자 8자리를 직접 치는 칸이 기본이다(달력·다이얼은 폰에서 손이 많이 간다 — 궁합은 다이얼 둘이 화면 두 개 분량이었다).
+       다이얼은 '돌려서 고르기'를 눌러야 펼쳐진다. 값은 늘 2000-01-01 꼴 문자열이라 각 도구의 계산은 그대로다 */
     inp.classList.add("dial-typed");
-    host.insertBefore(wrap,inp);
-    host.insertBefore(gan,inp);
-    var typedLabel=document.createElement("div");
-    typedLabel.className="dial-typed-label";
-    typedLabel.textContent="직접 입력";
-    host.insertBefore(typedLabel,inp);
+    inp.type="text";inp.inputMode="numeric";inp.maxLength=10;inp.placeholder="예) 19900315";inp.autocomplete="off";
+    var err=document.createElement("p");err.className="tf-err";err.setAttribute("role","alert");
+    var box=document.createElement("div");box.className="dial-box";
+    var anchor=document.createElement("div");anchor.className="dial-anchor";
+    var tog=document.createElement("span");tog.className="dial-tog";tog.setAttribute("role","button");tog.tabIndex=0;tog.setAttribute("aria-expanded","false");tog.textContent="돌려서 고르기";
+    var after=inp.nextSibling;
+    host.insertBefore(err,after);host.insertBefore(gan,after);host.insertBefore(anchor,after);host.insertBefore(tog,after);host.insertBefore(box,after);
+    box.appendChild(wrap);
     function center(col){ // 스크롤 위치로 가운데 항목을 판정한다
       var items=col.querySelectorAll(".dial-item");
       var idx=Math.round(col.scrollTop/44);
@@ -1589,7 +1601,7 @@
       chip.setAttribute("role","button");chip.tabIndex=0;
       chip.textContent=(e%100<10?"0":"")+(e%100)+"년대";
       era.appendChild(chip);}
-    host.insertBefore(era,wrap);
+    box.insertBefore(era,wrap);
     era.addEventListener("keydown",function(ev){
       if(ev.key!=="Enter"&&ev.key!==" ")return;
       var t=ev.target.closest(".dial-era-chip");if(!t)return;
@@ -1702,6 +1714,7 @@
     // 직접 입력 → 다이얼 위치를 맞춘다 (달력에서 고르거나 타이핑한 경우)
     function syncFromInput(){
       if(selfSet)return;
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(inp.value||""))return; // 치는 도중의 반쪽 값(1983-06-2)을 다이얼이 06-02 로 채워 마지막 숫자를 밀어내지 않게
       var v=(inp.value||"").split("-");
       if(v.length<3)return;
       var y=+v[0],m=+v[1],d=+v[2];
@@ -1710,6 +1723,19 @@
       // 즉시 이동 — 부드럽게 굴리면 지나가는 중간 연도가 scroll 판정으로 확정돼 입력을 덮어쓴다(1987 입력 → 1988로 계산)
       scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);
       mark(cols.y);mark(cols.m);mark(cols.d);commit();}
+    // 숫자만 쳐도 1990-03-15 꼴로 이어 붙이고, 칸을 누르면 통째로 선택해 바로 덮어쓸 수 있게 한다
+    inp.addEventListener("input",function(){if(this.selectionStart===this.value.length){var dg=this.value.replace(/[^0-9]/g,"").slice(0,8),f=dg.slice(0,4)+(dg.length>4?"-"+dg.slice(4,6):"")+(dg.length>6?"-"+dg.slice(6,8):"");if(f!==this.value)this.value=f;}err.textContent="";});
+    inp.addEventListener("focus",function(){var e2=this;setTimeout(function(){e2.select();},0);});
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();var goBtn=el.querySelector("#go");if(goBtn)goBtn.click();}});
+    function bdOk(v){var m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(v||"");if(!m)return false;var y=+m[1],mo=+m[2],d=+m[3],t=new Date(y,mo-1,d);return y>=1900&&t.getFullYear()===y&&t.getMonth()===mo-1&&t.getDate()===d&&t<=new Date();}
+    // 틀린 값이면 이유를 밝히고 물어보기로 가지 않는다(조상 요소의 캡처 단계라 도구의 버튼 처리보다 먼저 돈다)
+    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go")||host.offsetParent===null||bdOk(inp.value))return;
+      var dg=inp.value.replace(/[^0-9]/g,"");err.textContent=dg.length===8?"없는 날짜예요. 다시 확인해 주세요.":"생년월일 8자리를 숫자로 입력해 주세요. 예) 19900315";
+      e.stopImmediatePropagation();e.preventDefault();inp.focus();},true);
+    function dialOpen(o){box.classList.toggle("open",o);tog.setAttribute("aria-expanded",String(o));tog.textContent=o?"접기":"돌려서 고르기";
+      if(o)requestAnimationFrame(function(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);mark(cols.y);mark(cols.m);mark(cols.d);});}
+    tog.addEventListener("click",function(){dialOpen(!box.classList.contains("open"));});
+    tog.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();dialOpen(!box.classList.contains("open"));}});
     inp.addEventListener("change",syncFromInput);
     inp.addEventListener("input",syncFromInput);
     // rAF는 백그라운드 탭에서 실행되지 않아 휠이 0(1930년)에 머문 채 값과 어긋난다.
@@ -1717,8 +1743,8 @@
     function settle(){scrollTo(cols.y,Y,false);scrollTo(cols.m,M,false);scrollTo(cols.d,D,false);commit();}
     requestAnimationFrame(settle);setTimeout(settle,0);
     setTimeout(settle,180);
-    lunarPick(host,inp,era,nowY);
-    peopleChips(host,inp,host.querySelector(".lunar-pick")||era);
+    lunarPick(host,inp,anchor,nowY);
+    peopleChips(host,inp,host.querySelector(".lunar-pick")||anchor);
     return wrap;}
   /* 여러 사람 저장 — 나·가족·연인 생일을 이름표로 두고 눌러서 바로 넣는다. 기기 안(localStorage)에만, 8명까지.
      궁합처럼 입력이 둘인 도구는 칸마다 같은 목록을 쓴다 */
@@ -2446,7 +2472,7 @@
     sjHourOpts(-1)+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value=""></div>'+
+    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="5" placeholder="예) 1430 (모르면 비워 두세요)" autocomplete="off" value=""></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
     '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
@@ -2467,7 +2493,7 @@
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
     /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
        지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
-    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=el.querySelector("#tm").value,tv=el.querySelector("#t").value;
+    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=(function(v){return /^([01]\d|2[0-3]):[0-5]\d$/.test(v)?v:"";})(el.querySelector("#tm").value),tv=el.querySelector("#t").value;
       if(tm&&y){var sh=krClockShift(y,mo,d).min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
         return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,exact:tm};}
       var h=tv===""?null:+tv;return {y:y,mo:mo,d:d,h:h,mi:h==null?0:30,sh:0,exact:""};}
@@ -3032,7 +3058,8 @@
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
     el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);
-    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});prefetch();}},
+    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});
+    el.querySelector("#tm").addEventListener("input",function(){if(this.selectionStart===this.value.length){var dg=this.value.replace(/[^0-9]/g,"").slice(0,4),f=dg.slice(0,2)+(dg.length>2?":"+dg.slice(2,4):"");if(f!==this.value)this.value=f;}if(/^([01]\d|2[0-3]):[0-5]\d$/.test(this.value))this.dispatchEvent(new Event("change",{bubbles:true}));});prefetch();}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"보살에게 묻고 뽑는 타로",render:function(el){
     var M=[["0","바보","🃏","새로운 출발과 순수한 가능성. 계산 없이 내딛는 첫걸음이 행운을 부릅니다.","무모함과 준비 부족. 낭만에 취해 현실의 절벽을 못 볼 수 있습니다."],
@@ -3706,7 +3733,7 @@
       var sbx=el.querySelector("#out .share-btn");if(sbx)sbx.insertAdjacentHTML("beforebegin",diaryNote());
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
-      askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
+      askFx(el,{score:score,grade:grade,streak:true,bujeok:true,open:5});}
     bdBind(el,"#d","#derr");
     askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");}},
 

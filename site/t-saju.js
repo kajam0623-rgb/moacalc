@@ -46,7 +46,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     sjHourOpts(-1)+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="time" id="tm" value=""></div>'+
+    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="5" placeholder="예) 1430 (모르면 비워 두세요)" autocomplete="off" value=""></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
     '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
@@ -67,7 +67,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
     /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
        지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
-    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=el.querySelector("#tm").value,tv=el.querySelector("#t").value;
+    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=(function(v){return /^([01]\d|2[0-3]):[0-5]\d$/.test(v)?v:"";})(el.querySelector("#tm").value),tv=el.querySelector("#t").value;
       if(tm&&y){var sh=krClockShift(y,mo,d).min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
         return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,exact:tm};}
       var h=tv===""?null:+tv;return {y:y,mo:mo,d:d,h:h,mi:h==null?0:30,sh:0,exact:""};}
@@ -632,4 +632,5 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
     el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);
-    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});prefetch();}});
+    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});
+    el.querySelector("#tm").addEventListener("input",function(){if(this.selectionStart===this.value.length){var dg=this.value.replace(/[^0-9]/g,"").slice(0,4),f=dg.slice(0,2)+(dg.length>2?":"+dg.slice(2,4):"");if(f!==this.value)this.value=f;}if(/^([01]\d|2[0-3]):[0-5]\d$/.test(this.value))this.dispatchEvent(new Event("change",{bubbles:true}));});prefetch();}});
