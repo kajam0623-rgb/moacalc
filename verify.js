@@ -549,6 +549,36 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     if (r.length !== 7 || r.some(x => !x || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
   t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 250), "0|true");
   t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+synth+charSec+hourSec()+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
+// 신년운세 깊이 풀이(content_newyear.js → nyDeep): 원고 칸 · 월주 손계산 · 무작위 생일 3000개 · 도구 배선
+{ const NY = require("./content_newyear.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/;
+  const RELS = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];
+  t("신년 원고: 십성 10종 × (재물·일·사랑·건강) · 달 3문장 · 약속 3 · 적합 3단계 · 한눈에 4종이 모두 채워져 있다",
+    [RELS.every(k => NY.rel[k] && ["money", "work", "love", "health"].every(f => NY.rel[k][f] && NY.rel[k][f].length > 50) && NY.month[k] && NY.month[k].length === 3 && NY.month[k].every(x => x.length > 10) && NY.tip[k] && NY.tip[k].length === 3),
+     [0, 1, 2].every(k => NY.fit[k] && NY.fit[k].length > 30), ["both", "bestOnly", "worstOnly", "flat"].every(k => NY.sum[k] && NY.sum[k].length > 20), !!(NY.monthFit && NY.monthChung && NY.monthHap && NY.help && NY.note.money && NY.note.months && NY.note.help && NY.note.events)].join(","), "true,true,true,true");
+  t("신년 원고: 일 종류 5가지 × 십성 무리 5가지(25칸)에 한 해 판단이 채워져 있다", ["job", "deal", "study", "meet", "biz"].every(k => NY.ev[k] && ["비겁", "식상", "재성", "관성", "인성"].every(g => NY.ev[k][g] && NY.ev[k][g].length > 40)), true);
+  { const { note, ...body } = NY; t("신년 원고: 풀이 본문은 보살 말투(존댓말 어미 0, 근거 고지 note 만 존댓말)", JOND.test(JSON.stringify(body)) ? "혼입" : "0", "0"); }
+  // 월주 손계산표: 입춘 기준 열두 달(2026 병오년 경인월~신축월, 2027 정미년 임인월~계축월) — 병·신년은 경인, 정·임년은 임인에서 시작한다
+  const HAND = { 2026: "庚寅,辛卯,壬辰,癸巳,甲午,乙未,丙申,丁酉,戊戌,己亥,庚子,辛丑", 2027: "壬寅,癸卯,甲辰,乙巳,丙午,丁未,戊申,己酉,庚戌,辛亥,壬子,癸丑" };
+  { const p0 = sjPillars(1990, 3, 15, null, 0, false);
+    t("신년 열두 달: 월주가 손계산표와 같다(2026 庚寅~辛丑, 2027 壬寅~癸丑)", [2026, 2027].map(Y => nyDeep(p0, Y, Y + "년", NY).meta.months.map(m => m.han).join(",") === HAND[Y]).join(","), "true,true");
+    t("신년 열두 달: 달 번호가 2월~12월, 이듬해 1월 순서다", nyDeep(p0, 2026, "올해", NY).meta.months.map(m => m.y + "." + m.m).join(","), "2026.2,2026.3,2026.4,2026.5,2026.6,2026.7,2026.8,2026.9,2026.10,2026.11,2026.12,2027.1"); }
+  const RG = () => [1930 + Math.floor(Math.random() * 86), 1 + Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)];
+  const cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0 }; let minLen = 1e9, maxLen = 0, withBest = 0, withWorst = 0; const strip = x => String(x).replace(/<[^>]+>/g, "");
+  for (let i = 0; i < 3000; i++) { const b = RG(), h = i % 3 ? null : Math.floor(Math.random() * 24), YR = i % 2 ? 2027 : 2026, YW = YR === 2026 ? "올해" : "2027년";
+    const o = nyDeep(sjPillars(b[0], b[1], b[2], h, 30, true), YR, YW, NY), body = [], all = [];
+    o.secs.forEach(s => { const c = [s.h]; (s.p || []).forEach(x => c.push(x)); (s.list || []).forEach(x => c.push(x)); (s.rows || []).forEach(r => { c.push(r.h); c.push(r.sub); c.push(r.t); }); c.forEach(x => { body.push(x); all.push(x); }); if (s.n) all.push(s.n); });
+    const btxt = body.map(strip).join("\n"), atxt = all.map(strip).join("\n"), len = atxt.replace(/\s+/g, "").length; minLen = Math.min(minLen, len); maxLen = Math.max(maxLen, len);
+    if (/[{}]/.test(atxt)) cnt.token++; if (/undefined|NaN|null/.test(atxt)) cnt.undef++; if (JOND.test(btxt)) cnt.jondae++;
+    if (/자네(은|이|을|과)(?![가-힣])/.test(btxt) || /올해(은|이|을|과)(?![가-힣])/.test(btxt) || /\d년(는|가|를|와)(?![가-힣])/.test(btxt) || /(봄|여름|가을|겨울)가(?![가-힣])/.test(btxt) || /환절기이(?![가-힣])/.test(btxt)) cnt.josa++;
+    if (o.secs.length !== 9 || o.meta.events.length !== 5) cnt.secs++; const mo = o.meta.months; if (mo.length !== 12 || mo.some(m => !m.t || m.t.length < 20)) cnt.mon++;
+    if (o.meta.best.length > 3 || o.meta.worst.length > 2) cnt.pick++; if (o.meta.best.length) withBest++; if (o.meta.worst.length) withWorst++;
+    const tp = o.secs.find(s => s.k === "tip"); if (!tp || tp.list.length !== 3) cnt.tip++; }
+  t("신년 깊이 풀이: 무작위 3000명 × 2026·2027 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·열두 달·고른 달 수 이상이 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0 }));
+  t("신년 깊이 풀이: 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 1900자 이상", minLen >= 1900, true);
+  t("신년 깊이 풀이: 힘이 실리는 달을 고른 비율 " + (withBest / 30).toFixed(0) + "% · 조심할 달을 고른 비율 " + (withWorst / 30).toFixed(0) + "% (둘 다 30~95% — 네 가지 한눈에 문장이 고루 나온다)", withBest / 30 >= 30 && withBest / 30 <= 95 && withWorst / 30 >= 30 && withWorst / 30 <= 95, true);
+  { const nyb = toolBlock("newyear");
+    t("신년운세 도구가 깊이 풀이 원고(ny/deep.json)를 받아 자리(#nydeep)에 채우고 결과 칸은 접지 않는다",
+      [nyb.includes('fetch("ny/deep.json")'), nyb.includes('<div id="nydeep"></div>'), nyb.includes("nyLast={me:me,YR:YR,YW:YW};fillNy();"), !/<div class="sj-sec"><h3>/.test(nyb), bs.includes('"ny","deep.json"'), /nyDeep/.test(bs)].join(","), "true,true,true,true,true,true"); } }
 // 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
 t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳이 이를 밝힌다", bs.includes("sessionStorage.setItem(\"dnbs_hb\"") ? [(bs.match(/이 탭에 잠깐 두었다가/g)||[]).length>=3, fs.readFileSync("content_site.js","utf8").includes("임시 저장소(sessionStorage)에 잠깐 두었다가")].join(",") : "n/a", "true,true");
 { const bd = inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function shareBtn"));
@@ -610,7 +640,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjGongmang","subBal","sjChar","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

@@ -262,6 +262,48 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var st=sjStrength(p),mb=p.m.b,sea=mb>=2&&mb<=4?"봄":mb>=5&&mb<=7?"여름":mb>=8&&mb<=10?"가을":"겨울",cnt=ghTg(p),ord=["비","식","재","관","인"],best="비",i;
     for(i=1;i<5;i++)if(cnt[ord[i]]>cnt[best])best=ord[i];
     return [D.core[p.d.s],D.power[st.strong?"strong":"weak"][SJ_ES[p.d.s]],D.season[sea],D.group[best],D.love[p.d.s],D.work[p.d.s],D.rest[p.d.s]];}
+  /* 신년운세 깊이 풀이 — 원고 D(content_newyear.js → ny/deep.json). 그 해(입춘~입춘)의 열두 달을 세워 달마다 십성·일지와의 합충·용신 적합을 보고,
+     항목별(재물·일·사랑·건강)·곁에 둘 것·약속을 고른다. 해의 오행에 기대지 않고 십성 관계로만 써서 어느 해에 보아도 맞는다. 순수 함수 — verify 가 무작위 생일로 검사한다 */
+  var NY_TERM=["입춘","경칩","청명","입하","망종","소서","입추","백로","한로","입동","대설","소한"];
+  // 일 종류별로 십성이 얼마나 받쳐 주는가(-3~3). 그 달의 십성과 그 해의 십성을 같은 표로 읽는다
+  var NY_EV=[
+    ["job","이직·새 일 시작",{식신:3,상관:3,정관:2,편재:2,정재:1,정인:0,비견:0,편인:-1,겁재:-2,편관:-2}],
+    ["deal","계약·큰 결제",{정재:3,정인:3,정관:2,식신:1,편재:0,비견:0,편인:0,상관:-2,겁재:-3,편관:-2}],
+    ["study","시험·자격·공부",{정인:3,편인:3,정관:2,식신:1,정재:0,비견:0,편재:-1,상관:-1,겁재:-2,편관:-1}],
+    ["meet","만남·인연",{식신:3,정재:2,정관:2,편재:1,정인:1,비견:0,상관:0,편인:-1,겁재:-2,편관:-1},4],
+    ["biz","투자·사업 확장",{편재:3,식신:3,정재:2,정관:1,정인:0,비견:0,상관:0,편인:-1,겁재:-3,편관:-2}]],
+    NY_GRP={비견:"비겁",겁재:"비겁",식신:"식상",상관:"식상",편재:"재성",정재:"재성",편관:"관성",정관:"관성",편인:"인성",정인:"인성"};
+  function nyDeep(me,YR,YW,D){
+    var ds=me.d.s,ys=((YR-4)%10+10)%10,rel=sjTenGod(ds,ys),st=sjStrength(me),yEl=SJ_EL[st.yong],y2El=SJ_EL[st.yong2],
+      fit=SJ_EL[SJ_ES[ys]]===yEl?2:SJ_EL[SJ_ES[ys]]===y2El?1:0,M={Y:YW,E:yEl},R=D.rel[rel],months=[],i;
+    for(i=0;i<12;i++){var mm=i<11?i+2:1,yy=i<11?YR:YR+1,mp=sjPillars(yy,mm,20,12,0,false).m,tg=sjTenGod(ds,mp.s),el=SJ_EL[SJ_ES[mp.s]],
+        mf=el===yEl?2:el===y2El?1:0,ch=Math.abs(mp.b-me.d.b)===6,hp=sjYukhap(me.d.b)===mp.b||(mp.b%4===me.d.b%4&&mp.b!==me.d.b),
+        MT=D.month[tg],sc=GH_YB[tg]+(mf===2?6:mf===1?3:0)+(hp?5:0)-(ch?8:0);
+      months.push({i:i,m:mm,y:yy,tg:tg,pil:SJ_S[mp.s]+SJ_B[mp.b],han:SJ_SH[mp.s]+SJ_BH[mp.b],sc:sc,ch:ch,hp:hp,fit:mf,term:NY_TERM[i],
+        t:MT[0]+" "+(mf===2?MT[1]:mf===1?D.monthFit+" "+MT[1]:MT[2])+(ch?" "+D.monthChung:hp?" "+D.monthHap:"")});}
+    function ml(x){return (x.y>YR?"이듬해 ":"")+x.m+"월";}
+    function nm(a){return a.map(ml).join("·");}
+    function byI(a){return a.slice().sort(function(p,q){return p.i-q.i;});}
+    var srt=months.slice().sort(function(a,b){return b.sc-a.sc||a.i-b.i;}),best=byI(srt.filter(function(x){return x.sc>=92;}).slice(0,3)),worst=byI(srt.filter(function(x){return x.sc<=60;}).reverse().slice(0,2));
+    var mrows=months.map(function(x){var isB=best.indexOf(x)>=0,isW=worst.indexOf(x)>=0;
+      return {h:ml(x),v:isB?"힘이 실리는 달":isW?"조심할 달":"무난",c:isB?"g":isW?"c":"o",
+        sub:x.pil+"("+x.han+")월 · "+x.tg+(x.ch?" · 일지와 충":x.hp?" · 일지와 합":"")+" · "+x.term+"부터",t:x.t};});
+    var evRows=NY_EV.map(function(E){var k=E[0],w=E[2],ysc=w[rel]+(fit===2?1:0),
+        sm=months.map(function(x){return {x:x,s:w[x.tg]+(x.fit===2?2:x.fit===1?1:0)+(k==="meet"&&x.hp?2:0)-(x.ch?2:0)};}).sort(function(a,b){return b.s-a.s||a.x.i-b.x.i;}),
+        good=byI(sm.filter(function(o){return o.s>=(E[3]||3);}).slice(0,3).map(function(o){return o.x;})),bad=byI(sm.filter(function(o){return o.s<=-1;}).reverse().slice(0,2).map(function(o){return o.x;}));
+      return {h:E[1],v:ysc>=3?"유리":ysc<=-1?"신중":"무난",c:ysc>=3?"g":ysc<=-1?"c":"o",
+        sub:(good.length?"좋은 달 "+nm(good):"뚜렷하게 좋은 달 없음")+(bad.length?" · 피할 달 "+nm(bad):""),t:ghFill(D.ev[k][NY_GRP[rel]],M)};});
+    var sm=best.length&&worst.length?D.sum.both:best.length?D.sum.bestOnly:worst.length?D.sum.worstOnly:D.sum.flat,Yo=SJ_YONG[yEl],secs=[];
+    secs.push({k:"sum",h:"이 해 한눈에",p:[ghFill(D.fit[fit],M),ghFill(sm,{best:nm(best),worst:nm(worst)})]});
+    secs.push({k:"money",h:"재물 — 돈이 오가는 모양",p:[ghFill(R.money,M)],n:D.note.money});
+    secs.push({k:"work",h:"일과 자리",p:[ghFill(R.work,M)]});
+    secs.push({k:"love",h:"사랑과 사람",p:[ghFill(R.love,M)]});
+    secs.push({k:"health",h:"몸과 건강",p:[ghFill(R.health,M)]});
+    secs.push({k:"months",h:"달마다 흐름 — "+YR+"년 입춘부터 열두 달",rows:mrows,n:D.note.months});
+    secs.push({k:"events",h:"일마다 좋은 달 — 이직·계약·공부·인연·투자",rows:evRows,n:D.note.events});
+    secs.push({k:"help",h:"곁에 둘 것 — 나를 받쳐 주는 기운",p:[ghFill(D.help,{Y:YW,E:yEl,color:Yo.color,dir:Yo.dir,season:Yo.season,job:Yo.job,act:Yo.act})],n:D.note.help});
+    secs.push({k:"tip",h:"약속 세 가지",list:D.tip[rel].slice()});
+    return {secs:secs,meta:{rel:rel,fit:fit,yong:yEl,months:months,best:best,worst:worst,events:evRows}};}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
@@ -1228,6 +1270,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
       finish(fortuneCard(o2));});}
   function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
+  // 신년운세 깊이 풀이 한 칸을 그린다(접지 않고 펼친 채로). 달·일 종류별 줄, 약속 목록, 근거 고지까지
+  function nySecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
+    (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
+    if(s.rows)h+='<div class="gh-yrs">'+s.rows.map(function(r){return '<div class="gh-yr"><div><b>'+r.h+'</b> <span class="gh-v '+r.c+'">'+r.v+'</span></div><div class="gh-yl">'+r.sub+'</div><p class="ny-mt">'+r.t+'</p></div>';}).join("")+'</div>';
+    if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
+    if(s.n)h+='<p class="gh-note">'+s.n+'</p>';return h+'</div>';}
   // 생년월일 숫자 입력: 8자리만 치면 1995.01.01 꼴로 이어 붙이고, 틀리면 이유를 밝히며 결과로 가지 않는다
   function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}
   function bdParse(v,err){var d=v.replace(/[^0-9]/g,""),msg="";

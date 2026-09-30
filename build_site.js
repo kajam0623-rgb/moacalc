@@ -31,6 +31,7 @@ const SAJU_Q = require("./content_saju_q.js");         // 꼬리질문 — sj/q.
 const TODAY_Q = require("./content_today_q.js");       // 꼬리질문 — tf/q.json
 const GH_DEEP = require("./content_gunghap.js");       // 궁합 깊이 있는 풀이 원고 — gh/deep.json
 const SJ_CHAR = require("./content_saju_char.js");     // 사주 타고난 성격 원고 — sj/char.json
+const NY_DEEP = require("./content_newyear.js");        // 신년운세 깊이 있는 풀이 원고 — ny/deep.json
 const SAJU_SYNTH = require("./content_saju_synth.js");     // 종합 칸 — 조합 파일에 그 일간·격국 몫만 // 판정 문장 — 조합 파일에 그 일간·격국 몫만 골라 싣는다  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const LEARN = require("./content_learn.js");             // 명리학 배우기 16강(learn/*.js)
@@ -1118,7 +1119,7 @@ const ENGINE = new Function(
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
-  "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,subBal,ghDeep,ghFill,ghYear,sjChar,TXT," +
+  "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,subBal,ghDeep,ghFill,ghYear,sjChar,nyDeep,TXT," +
   "sjStrength,sjSinsal,sjDaeunStart,sjJdKST,SJ_JJG,SJ_GYEOK,SJ_CHEONEUL,SJ_MUNCHANG,SJ_YANGIN,SJ_DOHWA,SJ_YEOKMA,SJ_HWAGAE,SJ_BAEKHO,SJ_GWAEGANG," +
   "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")();
 
@@ -2943,6 +2944,8 @@ fs.mkdirSync(path.join(OUT,"tf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"tf","q.json"), JSON.stringify(TODAY_Q));
 fs.mkdirSync(path.join(OUT,"gh"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"gh","deep.json"), JSON.stringify(GH_DEEP));
+fs.mkdirSync(path.join(OUT,"ny"),{recursive:true});
+fs.writeFileSync(path.join(OUT,"ny","deep.json"), JSON.stringify(NY_DEEP));
 fs.mkdirSync(path.join(OUT,"tj"),{recursive:true});
 Object.keys(TOJEONG).forEach(k=>fs.writeFileSync(path.join(OUT,"tj",k+".json"), JSON.stringify(TOJEONG[k])));
 DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCatPage(c)));

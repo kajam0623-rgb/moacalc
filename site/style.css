@@ -458,10 +458,11 @@
   .gh-yrs{margin-top:6px;}.gh-yr{padding:10px 0;border-top:1px solid var(--line);line-height:1.7;}.gh-yl{font-size:13px;color:var(--muted);}
   .gh-v{margin-left:6px;font-size:12.5px;font-weight:800;padding:1px 8px;border-radius:99px;border:1.5px solid currentColor;}.gh-v.g{color:var(--fun-ink);}.gh-v.o{color:var(--accent-ink);}.gh-v.c{color:var(--deduct);}
   .gh-flag{font-size:12.5px;color:var(--deduct);font-weight:700;margin-left:6px;}
-  .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note,.sj-sec p.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
   .sj-persona p{margin:9px 0;line-height:1.85;word-break:keep-all;}.sj-persona p b{color:var(--accent-ink);}
   .fold-flat>.fold-sum+.fold-body{margin-top:-8px;}
+  .gh-yr .ny-mt{margin:6px 0 2px;font-size:14.5px;line-height:1.8;}
   .dial-typed~.lunar-pick{margin-bottom:2px;}.dial-typed~.dial-tog{margin-top:6px;}
   .tool .r2+.r2{margin-top:16px;}
   .tool input#nm,.tool input#y{text-align:left;font-family:inherit;font-size:15px;padding-right:2px;}
