@@ -51,5 +51,5 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
       fillSg();
       bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");
       saveScore(el,"별자리궁합","별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b],sc,grade,ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+" "+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+" 만나면 — "+grade,SGD?SGD.pair[Math.min(a,b)+"-"+Math.max(a,b)].core:E[2]);askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"smile",say:sc>=85?"두 별이 참 잘 어울리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 이야기만 자주 나누면 오래가네.":sc>=58?"서로 맞춰 가는 재미가 있는 사이야. 아래 '이렇게 하면 더 좋아지네'를 보게.":"다름이 매력인 사이일세. 아래 '이렇게 하면 더 좋아지네'가 길잡이가 되어 줄 걸세."});}
-    askWire(el,go,["두 사람의 별자리를 세운다","원소와 양태를 견준다","각도를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
+    askWire(el,go,["두 사람의 별자리를 세운다","불·흙·공기·물 원소를 견준다","하늘에서의 거리를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
     }});

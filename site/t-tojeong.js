@@ -55,4 +55,4 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
         saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.chongun,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
         askFx(el,{grade:g.grade==="흉"?"주의":g.grade==="평"?"평온":"길"});
       }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했네. 잠시 뒤 다시 눌러 주게.</p>';});}
-    askWire(el,go,["음력 생일을 찾는다","그해 달력에서 태세·월건·일진을 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}});
+    askWire(el,go,["음력 생일을 찾는다","그해 달력에서 해·달·날의 숫자를 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}});

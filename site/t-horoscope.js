@@ -37,5 +37,5 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
       fillHs();
       bindShare(el,"별자리 운세",ST_KO[mine]+" 오늘의 운세 "+score+"점 · "+grade+" — 달 "+MA[1]+" 관계. 동네보살에서 확인:");
       saveScore(el,"별자리운세",ymd3(ty,tm,td)+" 별자리 운세",ST_KO[mine],score,grade,"오늘 달과 "+MA[1]+" 관계의 날",HSD?HSD.moon[hs.md].gen:A[2]);askFx(el,{score:score,grade:grade});hsDone=true;}
-    askWire(el,go,["태양 황경으로 별자리를 잡는다","오늘 하늘의 각을 잰다","자네 별자리와 맞춰 본다"],"아직 안 물어봤네.");
+    askWire(el,go,["태어난 날 해의 자리로 별자리를 잡는다","오늘 달의 자리를 잰다","자네 별자리와 맞춰 본다"],"아직 안 물어봤네.");
     birthDial(el,"#d");}});

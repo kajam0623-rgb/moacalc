@@ -128,4 +128,4 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       bar.innerHTML='<b>'+(inv.n?escH(inv.n)+" 님":"친구")+'</b>'+(inv.n?"이":"가")+' 궁합을 보자고 보냈네. 자네 생년월일과 성별만 넣고 물어보게. 보낸 사람의 생년월일은 여기 오지 않았고, 사주 글자만 받았네.';
       ["#b","#gb","#hb"].forEach(function(q){var x=el.querySelector(q);if(x&&x.parentNode)x.parentNode.style.display="none";});
       track("invite_open",{});});
-    askWire(el,go,["두 사람의 명식을 세운다","일간끼리 견주어 본다","일지의 합충을 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}});
+    askWire(el,go,["두 사람의 사주 여덟 글자를 세운다","나를 뜻하는 글자끼리 견주어 본다","배우자 자리끼리 맞는지 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}});

@@ -58,5 +58,5 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       fillZf();
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");
       saveScore(el,"띠별운세",ymd3(ty,tm,td)+" 띠별 운세",SJ_TTI[b]+"띠 · 오늘 일진 "+SJ_SH[today.d.s]+SJ_BH[tb],score,grade,SJ_TTI[b]+"띠, 오늘 지지와 "+(rel==="평"?"큰 합·충 없음":rel),ZFD?ZFD.gen[b][rel]:Z[1]);askFx(el,{score:score,grade:grade});zfDone=true;}
-    askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
+    askWire(el,go,["자네 띠부터 잡는다","오늘 날짜의 땅 글자와 맞춰 본다","뭉치는지·맞는지·마주 서는지 짚는다"],"아직 안 물어봤네.");
     }});
