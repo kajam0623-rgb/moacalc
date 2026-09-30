@@ -602,6 +602,28 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       {k:"asp",h:"하늘에서의 거리 — "+sgAng(dist),p:[D.asp[dist]]},
       {k:"ruler",h:"수호성으로 보면",p:[ghFill(D.ruler[rFit],{ra:rA,rb:rB})],n:a===b?ST_KO[a]+"의 수호성은 "+rA+"입니다.":ST_KO[a]+"의 수호성은 "+rA+", "+ST_KO[b]+"의 수호성은 "+rB+"입니다."},
       {k:"tip",h:"이렇게 하면 더 좋아지네",p:[P.tip]}],dist:dist,rFit:rFit};}
+  /* 공망 찾기 깊이 풀이 — 원고 D(content_gongmang.js → gm/deep.json)에서 자네 순·남는 두 글자·비어 있는 자리·채워지는 해에 맞는 글을 골라 잇는 순수 함수.
+     P 사주 기둥, G = sjGongmang(일주), Y = sjGongmang(연주), year 는 채워지는 해를 세기 시작할 양력 해. 엔진 옆에 둔 이유: verify.js 가 60일주 × 시각 유무로 검사한다 */
+  function gmDeep(P,G,Y,year,D){
+    function nm(b){return SJ_B[b]+"("+SJ_BH.charAt(b)+")";}
+    var e1=nm(G.empty[0]),e2=nm(G.empty[1]),B1=D.branch[G.empty[0]],B2=D.branch[G.empty[1]],
+      slots=[["y","연지",P.y.b],["m","월지",P.m.b]].concat(P.h?[["h","시지",P.h.b]]:[]),
+      hit=slots.filter(function(x){return G.empty.indexOf(x[2])>=0;}),
+      pos=hit.length?hit.map(function(x){return '<b>'+x[1]+' '+nm(x[2])+'</b> — '+D.pos[x[0]];}):[D.none],
+      lines=[],i,y,br,st;
+    pos.push(D.filled);
+    for(i=0;i<12;i++){y=year+i;br=((y-4)%12+12)%12;st=((y-4)%10+10)%10;
+      if(G.empty.indexOf(br)>=0)lines.push('<b>'+y+'년 '+SJ_S[st]+SJ_B[br]+'년('+SJ_SH.charAt(st)+SJ_BH.charAt(br)+')</b> — '+nm(br)+' 글자가 들어오네.');}
+    var yh=[["월지",P.m.b],["일지",P.d.b]].concat(P.h?[["시지",P.h.b]]:[]).filter(function(x){return Y.empty.indexOf(x[1])>=0;}),
+      yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적네. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
+        (yh.length?'자네 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'일세.':'자네 다른 자리 중에는 거기 드는 글자가 없네.');
+    return {secs:[
+      {k:"intro",h:"공망이 뭐야?",p:[ghFill(D.intro,{sun:G.sun,start:SJ_S[0]+SJ_B[G.start],end:SJ_S[9]+SJ_B[(G.start+9)%12],ea:e1,eb:e2})]},
+      {k:"two",h:"자네 공망 두 글자 — "+e1+" · "+e2,p:[B1.gist.replace(e1,'<b>'+e1+'</b>')+' '+B1.empty,B2.gist.replace(e2,'<b>'+e2+'</b>')+' '+B2.empty]},
+      {k:"pos",h:"내 사주에서 비어 있는 자리",p:pos,n:P.h?"":D.nohour},
+      {k:"years",h:"공망이 채워지는 해",p:[D.years.head,lines.join("<br>"),D.years.tail]},
+      {k:"read",h:"공망은 이렇게 읽으면 편하네",p:D.read.slice()},
+      {k:"year",h:"연주 기준으로도 보면(참고)",p:[yearNote]}]};}
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
@@ -1375,7 +1397,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모|남편|아내|남친|여친|아들|딸|친구)$/.test(n)?n:n+" 님";}
   // 결과 글의 섹션마다 첫 "자네"를 이름으로 바꾼다(한 섹션에 한 번). 조사는 이름의 받침에 맞춘다. 종합(.sj-synth)은 글 쓸 때 이미 이름을 넣는다
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
-    [].forEach.call(root.querySelectorAll(".sj-sec"),function(sec){
+    [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
       var w=document.createTreeWalker(sec,NodeFilter.SHOW_TEXT,null,false),tn;
       while((tn=w.nextNode())){

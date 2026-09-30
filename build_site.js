@@ -35,6 +35,7 @@ const SJ_EASY = require("./content_saju_easy.js");     // 사주 쉬운 종합 �
 const HS_DEEP = require("./content_horoscope.js");     // 별자리 운세(달 기반) 원고 — hs/deep.json
 const ZF_DEEP = require("./content_zodiac_fortune.js"); // 띠별 운세 깊이 풀이 원고 — zf/deep.json
 const SG_DEEP = require("./content_stargunghap.js");     // 별자리 궁합 깊이 풀이 원고 — sg/deep.json
+const GM_DEEP = require("./content_gongmang.js");        // 공망 찾기 깊이 풀이 원고 — gm/deep.json
 const NY_DEEP = require("./content_newyear.js");        // 신년운세 깊이 있는 풀이 원고 — ny/deep.json
 const SAJU_SYNTH = require("./content_saju_synth.js");     // 종합 칸 — 조합 파일에 그 일간·격국 몫만 // 판정 문장 — 조합 파일에 그 일간·격국 몫만 골라 싣는다  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
@@ -2951,6 +2952,8 @@ fs.mkdirSync(path.join(OUT,"zf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"zf","deep.json"), JSON.stringify(ZF_DEEP));
 fs.mkdirSync(path.join(OUT,"sg"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"sg","deep.json"), JSON.stringify(SG_DEEP));
+fs.mkdirSync(path.join(OUT,"gm"),{recursive:true});
+fs.writeFileSync(path.join(OUT,"gm","deep.json"), JSON.stringify(GM_DEEP));
 fs.mkdirSync(path.join(OUT,"tf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"tf","q.json"), JSON.stringify(TODAY_Q));
 fs.mkdirSync(path.join(OUT,"gh"),{recursive:true});
