@@ -460,6 +460,7 @@
   .gh-flag{font-size:12.5px;color:var(--deduct);font-weight:700;margin-left:6px;}
   .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
+  .sj-persona p{margin:9px 0;line-height:1.85;word-break:keep-all;}.sj-persona p b{color:var(--accent-ink);}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */

@@ -256,6 +256,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     secs.push({k:"yr",h:"함께 나아가기 좋은 해 — 결혼·동거·큰 계약을 정한다면",p:yp,years:years,n:D.note.yr});
     secs.push({k:"tip",h:"마음 맞추는 약속 세 가지",list:D.tip[r1].slice(),p:[D.axis[low]]});
     return {sum:sum,secs:secs,meta:{r1:r1,title:R.t,years:years,gA:gA,gB:gB,cA:cA,cB:cB,tk:tk,ik:ik,SA:SA,SB:SB,YA:YA,YB:YB,sa:sa.strong,sb:sb.strong}};}
+  /* 사주 결과 '타고난 성격' — 일간·힘의 세기·태어난 계절·가장 두터운 십성 무리에서 네 조각을 골라 잇는 순수 함수.
+     원고 D = content_saju_char.js(→ sj/char.json). 무리 개수가 같으면 비겁·식상·재성·관성·인성 차례로 앞의 것을 고른다 */
+  function sjChar(p,D){
+    var st=sjStrength(p),mb=p.m.b,sea=mb>=2&&mb<=4?"봄":mb>=5&&mb<=7?"여름":mb>=8&&mb<=10?"가을":"겨울",cnt=ghTg(p),ord=["비","식","재","관","인"],best="비",i;
+    for(i=1;i<5;i++)if(cnt[ord[i]]>cnt[best])best=ord[i];
+    return [D.core[p.d.s],D.power[st.strong?"strong":"weak"][SJ_ES[p.d.s]],D.season[sea],D.group[best],D.love[p.d.s],D.work[p.d.s],D.rest[p.d.s]];}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};

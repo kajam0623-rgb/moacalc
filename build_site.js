@@ -30,6 +30,7 @@ const SAJU_VERDICT = require("./content_saju_verdict.js");
 const SAJU_Q = require("./content_saju_q.js");         // 꼬리질문 — sj/q.json
 const TODAY_Q = require("./content_today_q.js");       // 꼬리질문 — tf/q.json
 const GH_DEEP = require("./content_gunghap.js");       // 궁합 깊이 있는 풀이 원고 — gh/deep.json
+const SJ_CHAR = require("./content_saju_char.js");     // 사주 타고난 성격 원고 — sj/char.json
 const SAJU_SYNTH = require("./content_saju_synth.js");     // 종합 칸 — 조합 파일에 그 일간·격국 몫만 // 판정 문장 — 조합 파일에 그 일간·격국 몫만 골라 싣는다  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
 const LEARN = require("./content_learn.js");             // 명리학 배우기 16강(learn/*.js)
@@ -1117,7 +1118,7 @@ const ENGINE = new Function(
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
-  "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,subBal,ghDeep,ghFill,ghYear,TXT," +
+  "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,subBal,ghDeep,ghFill,ghYear,sjChar,TXT," +
   "sjStrength,sjSinsal,sjDaeunStart,sjJdKST,SJ_JJG,SJ_GYEOK,SJ_CHEONEUL,SJ_MUNCHANG,SJ_YANGIN,SJ_DOHWA,SJ_YEOKMA,SJ_HWAGAE,SJ_BAEKHO,SJ_GWAEGANG," +
   "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")();
 
@@ -2937,6 +2938,7 @@ fs.mkdirSync(path.join(OUT,"sj"),{recursive:true});
 Object.keys(SAJU_COMBO).forEach(il=>Object.keys(SAJU_COMBO[il]).forEach(tg=>fs.writeFileSync(path.join(OUT,"sj",il+"-"+tg+".json"), JSON.stringify(Object.assign({},SAJU_COMBO[il][tg],{v:Object.fromEntries(["money","job","love"].map(a=>[a,{head:SAJU_VERDICT[a].head[il],follow:SAJU_VERDICT[a].follow[tg]}])),
     s:{p1:SAJU_SYNTH[il].synth[tg],miss:SAJU_SYNTH[il].miss,sin:SAJU_SYNTH[il].sin,now:SAJU_SYNTH.nowfit[tg]}})))));
 fs.writeFileSync(path.join(OUT,"sj","q.json"), JSON.stringify(SAJU_Q));
+fs.writeFileSync(path.join(OUT,"sj","char.json"), JSON.stringify(SJ_CHAR));
 fs.mkdirSync(path.join(OUT,"tf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"tf","q.json"), JSON.stringify(TODAY_Q));
 fs.mkdirSync(path.join(OUT,"gh"),{recursive:true});

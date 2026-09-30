@@ -62,6 +62,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
     // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
+    // 타고난 성격 원고(sj/char.json) — 결과가 그려질 때 도착해 있으면 섹션을 넣고, 못 받았으면 그 섹션만 뺀다
+    var SJC=null;if(typeof fetch==="function")fetch("sj/char.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)SJC=j;}).catch(function(){});
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
     /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
        지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
@@ -458,6 +460,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 조합 파일의 종합 원고(s)가 있으면 그걸 쓰고, 없으면 아래 조립 문장으로
       var CS=CB&&CB.s,fitK=duOk&&seOk?"both":duOk?"du":seOk?"se":"none";
       var p1=CS&&CS.p1&&CS.p1[st.strong?"strong":"weak"];
+      var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격 — 이런 사람일세</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑에서는 /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일에서는 /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':"";
       var synth='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 자네를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가네. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 자네 길일세. '+
@@ -536,7 +539,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+EL_TITLE[SJ_EL[SJ_ES[ds]]][0]+'</div>'+
         '<p>'+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.</p></div></div>'+
-        headline+synth+hourSec()+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+secFortune+focusBlock()+glossary+
+        headline+synth+charSec+hourSec()+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+secFortune+focusBlock()+glossary+
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
         '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
@@ -624,7 +627,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:4});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:4});[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
