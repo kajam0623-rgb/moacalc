@@ -549,6 +549,8 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     if (r.length !== 7 || r.some(x => !x || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
   t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 250), "0|true");
   t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+synth+charSec+hourSec()+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
+// 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
+t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳이 이를 밝힌다", bs.includes("sessionStorage.setItem(\"dnbs_hb\"") ? [(bs.match(/이 탭에 잠깐 두었다가/g)||[]).length>=3, fs.readFileSync("content_site.js","utf8").includes("임시 저장소(sessionStorage)에 잠깐 두었다가")].join(",") : "n/a", "true,true");
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
