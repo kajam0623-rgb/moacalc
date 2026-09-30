@@ -476,7 +476,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var synthOld='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 자네를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가네. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 자네 길일세. '+
-        (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘이 얇으니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.'))+
+        (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘을 채워 가며 크는 중이니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.'))+
         '<br><br>'+[sinsal.slice(0,2).map(function(x){return (CS&&CS.sin&&CS.sin[x])||SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return (CS&&CS.miss&&CS.miss[x])||MISS[x];}).join(" ")].filter(Boolean).join(" ")+
         (sinsal.length||gZero.length?'<br><br>':'')+
         '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있네. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
@@ -557,7 +557,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec"><h3>나를 뜻하는 글자 — '+SJ_S[ds]+'('+SJ_SH[ds]+') '+SJ_EL[SJ_ES[ds]]+'</h3><p>'+ILGAN[ds]+'<br><br><a href="ilgan-'+ILGAN_EN[ds]+'.html">'+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+' 글자 더 알아보기 →</a></p></div>'+
         '<div class="sj-sec"><h3>타고난 그릇 모양 (격국) — '+gyeok+'</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀이 자네가 무엇을 담고 사는 사람인지를 말해 주네. '+
         (st.strong?'자네는 힘이 넉넉하니 이 틀을 크게 벌려 써도 버티네. 판을 키우는 쪽이 맞아.'
-                  :'자네는 힘이 얇으니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.'))+
+                  :'자네는 힘을 채워 가며 크는 편이니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
@@ -611,7 +611,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         'background:var(--surface-2);color:var(--ink);font:inherit;font-weight:700;border-radius:10px;cursor:pointer">'+
         'PDF로 저장 · 인쇄</button>'+
         '<div style="color:var(--muted);font-size:12px;margin-top:6px">인쇄 창에서 대상을 “PDF로 저장”으로 고르면 됩니다.</div></div>'+
-        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 모자라면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
+        '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 덜 찼으면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
