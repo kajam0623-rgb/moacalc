@@ -364,7 +364,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
 // ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
 {
   const tjSrc = toolBlock("tojeong");
-  const tjCalc = new Function("return " + tjSrc.slice(tjSrc.indexOf("function tjCalc"), tjSrc.indexOf("    var MON=")))();
+  const tjCalc = new Function("return " + tjSrc.slice(tjSrc.indexOf("function tjCalc"), tjSrc.indexOf("    var nowD=new Date(),Y0")))();
   const KLC = require("./vendor-lunar.js");
   const jdn = (y, m, d) => { const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3; return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045; };
   const gz = (y, m, d) => { const i = (jdn(y, m, d) + 49) % 60; return [i % 10, i % 12]; };
@@ -712,6 +712,34 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   t("공망 깊이 풀이: 60일주 근사 × 시각 유무 × 두 해 — 남은 토큰·undefined·존댓말·섹션 수·채워지는 해(항상 두 해)·어려운 낱말이 모두 0", JSON.stringify(cG), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0, years: 0, hard: 0 }));
   t("공망 깊이 풀이: 글자 수(공백·태그 제외) 최소 " + minG + " — 예전 결과 전체(약 670자)의 1.8배를 넘는 1,200자 이상", minG >= 1200, true);
   { const gb = toolBlock("gongmang"); t("공망 도구가 원고(gm/deep.json)를 받아 자리(#gmdeep)에 채우고, 빌드가 gm/deep.json 을 내보낸다", [gb.includes('fetch("gm/deep.json")'), gb.includes('<div id="gmdeep">'), gb.includes("fillGm();"), bs.includes('"gm","deep.json"')].join(","), "true,true,true,true"); } }
+// 음력 생일 칸: 열면 위 양력 날짜의 음력이 먼저 보이고, 음력 칸을 고치면 [양력으로 넣기]를 안 눌러도 넣는다. 양력을 고치면 음력이 따라온다
+{ const a = inner.indexOf("function lunarPick("), b = inner.indexOf("function shareBtn()"), lp = inner.slice(a, b);
+  t("음력 생일 칸: 열면 양력 날짜의 음력을 채우고(fromSolar), 음력 칸을 고치면 0.4초 뒤 자동으로 넣고(auto→apply), 양력을 고치면 음력이 따라온다(sync)",
+    [lp.includes("function fromSolar()"), lp.includes('lp.addEventListener("toggle",function(){if(lp.open)fromSolar();});'), lp.includes("timer=setTimeout(apply,400)"), lp.includes('lp.addEventListener("input",auto)'), lp.includes('inp.addEventListener("input",sync)'), lp.includes("function whenLib(cb)")].join(","), "true,true,true,true,true,true"); }
+// 토정비결 144괘 쉬운 말 풀이(content_tojeong.js → tjDeep): 새 칸 · 문체(보살 말투·겁주는 말 0·옛말 0) · 등급별 달 분위기 · 제목 144개 · 화면 구성
+{ const TJ = require("./content_tojeong.js"), codes = []; for (let a = 1; a <= 8; a++) for (let b2 = 1; b2 <= 6; b2++) for (let c = 1; c <= 3; c++) codes.push("" + a + b2 + c);
+  const JONDT = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/, NEGT = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세|액운|액땜/,
+    ARCHT = /섣달|동짓달|정월|귀인|혼사|횡재|송사|구설|시비|곳간|음덕|덕망|경사|재물운|복을 짓|왕성|번창|융성|형통|도모|삼가|근신|유념|임하게|처신|길복|옥구슬|꾀꼬리|오곡|비단|보금자리|사방으로|형국|연유|대저|하매/, HARDT = /격국|용신|십성|신강|신약|일간|월지|천간|(?<![가-힣])지지|비견|겁재|식신|상관(?!없|이 없|이 있)|편재|정재|편관|정관|편인|정인|인성|재성|관성|식상|비겁/;
+  const F = ["title", "sum", "image", "chongun", "money", "work", "love", "health"], MIN = { title: 8 }, MS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  const flatStr = g => F.map(f => [f, g[f]]).concat((g.tips || []).map((x, i) => ["tips." + i, x])).concat(MS.map(m => ["months." + m, (g.months || {})[m] || ""]));
+  t("토정비결 144괘가 모두 새 형식이다(제목·한눈에·옛 그림·총운·분야 4칸·실천 3·달 흐름 12글자·열두 달)",
+    codes.filter(k => { const g = TJ[k]; return !(g && F.every(f => typeof g[f] === "string" && g[f].length >= (MIN[f] || 20)) && Array.isArray(g.tips) && g.tips.length === 3 && /^[goc]{12}$/.test(g.flow || "") && MS.every(m => (g.months[m] || "").length >= 85) && ["길", "평", "흉"].includes(g.grade)); }).length, 0);
+  { const bad = { jondae: [], neg: [], arch: [], hard: [], token: [] };
+    codes.forEach(k => flatStr(TJ[k]).forEach(([f, v]) => { const vv = f === "image" ? v.replace(/'[^']*'/g, "") : v; if (JONDT.test(v)) bad.jondae.push(k + "." + f); if (NEGT.test(v)) bad.neg.push(k + "." + f); if (ARCHT.test(vv)) bad.arch.push(k + "." + f); if (HARDT.test(vv.replace(/\([^)]*\)/g, ""))) bad.hard.push(k + "." + f); if (/[{}]|undefined|NaN/.test(v)) bad.token.push(k + "." + f); }));
+    t("토정비결 풀이: 존댓말 어미·겁주는 말·옛말/시적 말·명리 용어·토큰이 모두 0" + (Object.values(bad).some(a => a.length) ? " — " + Object.entries(bad).filter(([, a]) => a.length).map(([n, a]) => n + ":" + a.slice(0, 3).join(",")).join(" ") : ""), Object.values(bad).reduce((n, a) => n + a.length, 0), 0); }
+  { const bad = codes.filter(k => { const g = TJ[k], fl = g.flow || "", gg = (fl.match(/g/g) || []).length, cc = (fl.match(/c/g) || []).length; return g.grade === "길" ? !(gg >= 5 && gg <= 9 && cc <= 3) : g.grade === "평" ? !(gg >= 3 && gg <= 6 && cc >= 2 && cc <= 5) : !(gg >= 2 && gg <= 5 && cc >= 3 && cc <= 7); });
+    t("토정비결 달 분위기: 길 g5~9·c≤3 / 평 g3~6·c2~5 / 흉 g2~5·c3~7 을 모든 괘가 지킨다" + (bad.length ? " — " + bad.slice(0, 5).join(",") : ""), bad.length, 0); }
+  t("토정비결 제목 144개가 모두 다르다", new Set(codes.map(k => TJ[k].title)).size, 144);
+  { const cnt = { secs: 0, grid: 0, tok: 0, dup: 0, month: 0 }; let minLen = 1e9, maxLen = 0;
+    codes.forEach((k, i) => { const cur = [0, 1, 7, 12][i % 4], starts = {}; for (let m = 1; m <= 12; m++) starts[m] = [(m + 1) % 12 + 1, 3 + m];
+      const S = tjDeep(TJ[k], 2026, cur, starts), html = S.map(tjSecHtml).join(""), txt = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " "), len = txt.replace(/\s/g, "").length; minLen = Math.min(minLen, len); maxLen = Math.max(maxLen, len);
+      if (S.length !== 17) cnt.secs++; const gr = S.find(s => s.k === "grid"); if (!gr || gr.grid.length !== 12 || gr.grid.some(c => !c.lab || !c.d)) cnt.grid++; if (/[{}]|undefined|NaN/.test(html)) cnt.tok++;
+      const sn = {}; txt.split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => x.length >= 14).forEach(x => { sn[x] = (sn[x] || 0) + 1; }); if (Object.values(sn).some(n => n > 1)) cnt.dup++;
+      const ms = S.filter(s => s.month); if (ms.length !== 12 || (cur && !/^이번 달 — /.test(ms[0].h)) || ms.some(s => !s.p[0] || !s.p[1])) cnt.month++; });
+    t("토정비결 화면 구성(tjDeep): 144괘 × 이번 달 4가지 — 17칸(한눈에·총운·분야별·실천·달 표·달 풀이 12)·달 표 12칸·토큰 0·같은 문장 되풀이 0·이번 달이 맨 앞", JSON.stringify(cnt), JSON.stringify({ secs: 0, grid: 0, tok: 0, dup: 0, month: 0 }));
+    t("토정비결 화면 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 예전(총운 약 450자 + 달 12×110자 ≈ 1,800자)보다 많은 1,900자 이상", minLen >= 1900, true); }
+  { const tb = toolBlock("tojeong");
+    t("토정비결 도구가 tjDeep 으로 결과를 그리고, 그날 쓴 음력 생일과 바꾸는 방법을 밝힌다", [tb.includes("tjDeep(g,Y,cur,starts).map(tjSecHtml)"), tb.includes("음력 생일이세요?"), tb.includes("g.sum"), !tb.includes("g.chongun"), bs.includes("쉬운 말로 새로 썼습니다")].join(","), "true,true,true,true,true"); } }
 // 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
 t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳이 이를 밝힌다", bs.includes("sessionStorage.setItem(\"dnbs_hb\"") ? [(bs.match(/이 탭에 잠깐 두었다가/g)||[]).length>=3, fs.readFileSync("content_site.js","utf8").includes("임시 저장소(sessionStorage)에 잠깐 두었다가")].join(",") : "n/a", "true,true");
 { const bd = inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function shareBtn"));
@@ -775,7 +803,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

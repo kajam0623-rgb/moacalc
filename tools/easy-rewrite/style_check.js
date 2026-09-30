@@ -8,6 +8,7 @@ const load = f => JSON.parse(fs.readFileSync(f, "utf8"));
 const flat = (o, p = "", acc = {}) => { if (typeof o === "string") acc[p] = o; else if (o && typeof o === "object") Object.keys(o).forEach(k => flat(o[k], p ? p + "." + k : k, acc)); return acc; };
 const JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
 const NEG = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/;
+const EX = process.env.EXTRA ? new RegExp(process.env.EXTRA) : null; // 이번 작업에서 추가로 쓰지 않기로 한 말(정규식)
 const HARD = /격국|용신|십성|신강|신약|일간|월지|천간|비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|인성|재성|관성|식상|비겁/;
 const VAGUE = /덩굴|뿌리째|울타리|김매듯|솎아|두둑|나이테|가지치기|형국|연유|대저|하매/;
 const TOKEN = process.env.TEMPLATES ? /undefined|NaN|\[object/ : /[{}]|undefined|NaN|\[object/;
@@ -26,6 +27,7 @@ Object.keys(o).forEach(k => {
   let m;
   if ((m = JOND.exec(s))) add(H, k, "존댓말 어미 '" + m[0] + "'", s.slice(Math.max(0, m.index - 20)));
   if ((m = NEG.exec(s))) add(H, k, "겁주는/깎아내리는 말 '" + m[0] + "'", s.slice(Math.max(0, m.index - 20)));
+  if (EX && (m = EX.exec(s))) add(H, k, "쓰지 않기로 한 말 '" + m[0] + "'", s.slice(Math.max(0, m.index - 20)));
   if ((m = HARD.exec(bare))) add(H, k, "어려운 명리 용어 '" + m[0] + "'(괄호 밖)", s.slice(Math.max(0, m.index - 20)));
   if ((m = TOKEN.exec(s))) add(H, k, "토큰/undefined '" + m[0] + "'");
   if ((m = VAGUE.exec(s))) { vague++; add(S, k, "뜻 짐작 어려운 말 '" + m[0] + "'"); }

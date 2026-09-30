@@ -2,16 +2,16 @@
   :root{
     --bg:#e7e6e1;--surface:#ffffff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;
     --line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;
-    --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;
+    --fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;--calm:#23705f;
     /* 한글 폴백을 명시하지 않으면 monospace가 굴림 계열로 떨어져 자간이 벌어진다.
        영문·숫자만 모노로 두고 한글은 시스템 산세리프로 받는다. */
     --mono:ui-monospace,"SF Mono","Menlo",Consolas,"Roboto Mono","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
   }
   @media (prefers-color-scheme:dark){:root{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;
     --muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;
-    --fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}}
-  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;}
-  :root[data-theme="dark"]{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;--muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;}
+    --fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;--calm:#7fd6c0;}}
+  :root[data-theme="light"]{--bg:#e7e6e1;--surface:#fff;--surface-2:#f2f1ec;--ink:#171a1f;--muted:#5f656b;--line:#dcdad2;--line-2:#bcbaad;--accent:#2a44c6;--accent-weak:#eceffb;--accent-ink:#22307c;--deduct:#bb392e;--fun:#b06a10;--fun-ink:#8a5209;--on-accent:#ffffff;--calm:#23705f;}
+  :root[data-theme="dark"]{--bg:#0e1116;--surface:#161b23;--surface-2:#1d2430;--ink:#eff2f7;--muted:#8d97a5;--line:#242c38;--line-2:#39434f;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;--calm:#7fd6c0;}
   *{margin:0;box-sizing:border-box;}
   /* 한글은 낱말 중간에서 끊지 않는다("않 / 으면" 같은 줄바꿈). 긴 숫자·주소는 넘치지 않게 끊는다 */
   body{background:var(--bg);color:var(--ink);font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;
@@ -457,7 +457,7 @@
   .gh-deep p{margin:9px 0;line-height:1.85;word-break:keep-all;}.gh-deep p b{color:var(--accent-ink);}
   .gh-role{padding:10px 0;border-top:1px solid var(--line);line-height:1.75;}.gh-role .gh-w{margin-left:6px;font-size:12.5px;font-weight:800;color:var(--accent-ink);}
   .gh-yrs{margin-top:6px;}.gh-yr{padding:10px 0;border-top:1px solid var(--line);line-height:1.7;}.gh-yl{font-size:13px;color:var(--muted);}
-  .gh-v{margin-left:6px;font-size:12.5px;font-weight:800;padding:1px 8px;border-radius:99px;border:1.5px solid currentColor;}.gh-v.g{color:var(--fun-ink);}.gh-v.o{color:var(--accent-ink);}.gh-v.c{color:var(--deduct);}
+  .gh-v{margin-left:6px;font-size:12.5px;font-weight:800;padding:1px 8px;border-radius:99px;border:1.5px solid currentColor;}.gh-v.g{color:var(--fun-ink);}.gh-v.o{color:var(--accent-ink);}.gh-v.c{color:var(--calm);}
   .gh-flag{font-size:12.5px;color:var(--deduct);font-weight:700;margin-left:6px;}
   .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note,.sj-sec p.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
   .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
@@ -521,6 +521,15 @@
   .sj-du{flex:0 0 auto;min-width:52px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:7px 4px;}
   .sj-du .a{font-size:10px;color:var(--muted);}
   .sj-du .g{font-size:16px;font-weight:800;margin-top:2px;}
+  .tj-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0 4px;}
+  .tj-c{text-align:center;border:1px solid var(--line-2);border-radius:6px;padding:7px 2px;}
+  .tj-c.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset;}
+  .tj-c .a{font-size:10.5px;color:var(--muted);line-height:1.5;}
+  .tj-c .g{font-size:13px;font-weight:800;margin:1px 0;}
+  .tj-c .g.g1{color:var(--fun-ink);}.tj-c .g.o1{color:var(--muted);}.tj-c .g.c1{color:var(--calm);}
+  .tj-l{display:block;color:var(--accent-ink);margin-bottom:1px;}.tj-sum{font-weight:700;}
+  .sj-sec h3.tj-ml{font-size:12.5px;font-weight:600;color:var(--muted);letter-spacing:0;margin:0 0 3px;text-transform:none;}
+  .sj-sec p.tj-mh{font-weight:800;font-size:16px;line-height:1.55;margin:0 0 6px;}
   /* ── 타로 ── */
   .tr-board{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;perspective:1200px;}
   .tr-slot{text-align:center;}
@@ -734,7 +743,7 @@
    [88,"합(0°)","태양이 내 별자리 위를 지나는 시기입니다. 존재감이 커지고, 내가 먼저 움직일수록 일이 풀립니다.","먼저 다가가는 쪽이 유리합니다. 표현을 아끼면 기회가 지나갑니다.","새로 시작하는 일에 힘이 실립니다. 다만 혼자 다 하려다 지칠 수 있습니다.","올해의 방향을 다시 세우기 좋은 때입니다. 하고 싶은 것을 문장으로 적어두세요.",[6,2,4,-2]],
    [72,"세미섹스타일(30°)","크게 흔들리지 않는 잔잔한 흐름입니다. 무리하지 않으면 손해도 없습니다.","익숙한 사이에서 편안함을 느낍니다. 새 인연은 서두르지 마세요.","작은 정리와 마무리에 좋은 날입니다.","오늘은 확장보다 정돈입니다. 미뤄둔 일 하나만 끝내세요.",[0,2,4,2]],
    [84,"섹스타일(60°)","기회가 손 닿는 곳에 놓입니다. 다만 스스로 손을 뻗어야 잡히는 종류입니다.","소개·모임·연락에서 좋은 흐름이 옵니다.","제안·협업·부수입에 유리합니다. 연락을 미루지 마세요.","오늘 온 연락은 흘려보내지 마세요. 답장 하나가 흐름을 바꿉니다.",[8,6,6,0]],
-   [58,"스퀘어(90°)","마찰이 있는 대신 성장이 있는 날입니다. 부딪히는 지점이 곧 내 약한 고리입니다.","말투 하나로 오해가 생기기 쉽습니다. 한 박자 늦게 답하세요.","일정이 밀리거나 예산이 어긋날 수 있습니다. 여유분을 두세요.","오늘의 짜증은 방향이 아니라 속도의 문제입니다. 잠시 멈추면 보입니다.",[-8,-6,-4,-6]],
+   [58,"스퀘어(90°)","마찰이 있는 대신 성장이 있는 날입니다. 부딪히는 지점이 곧 더 크게 자랄 자리입니다.","말투 하나로 오해가 생기기 쉽습니다. 한 박자 늦게 답하세요.","일정이 밀리거나 예산이 어긋날 수 있습니다. 여유분을 두세요.","오늘의 짜증은 방향이 아니라 속도의 문제입니다. 잠시 멈추면 보입니다.",[-8,-6,-4,-6]],
    [90,"트라인(120°)","같은 원소끼리 흐르는 순풍입니다. 애쓰지 않아도 일이 매끄럽게 이어집니다.","자연스러운 만남과 화해에 좋습니다. 오래된 인연이 다시 닿습니다.","하던 일에서 결실이 보입니다. 큰 결정을 내리기에도 무난합니다.","순풍일수록 방심하기 쉽습니다. 오늘 얻은 것을 기록해두세요.",[8,6,8,4]],
    [62,"퀸컹스(150°)","서로 결이 다른 기운이 겹칩니다. 조정과 타협이 필요한 하루입니다.","상대의 방식이 낯설게 느껴집니다. 고치려 들지 마세요.","계획과 현실의 간격이 드러납니다. 일정부터 다시 짜세요.","오늘은 정답보다 조율입니다. 한 가지는 양보하세요.",[-4,0,-4,-6]],
    [66,"오포지션(180°)","태양이 정반대에 섭니다. 관계와 균형이 하루의 주제가 됩니다.","상대를 통해 나를 봅니다. 갈등이 있다면 오늘이 풀 기회입니다.","혼자보다 둘이 낫습니다. 계약·협상은 조건을 문서로 남기세요.","맞은편에 있는 사람이 오늘의 거울입니다. 반발보다 관찰을.",[4,2,2,0]]];
@@ -844,7 +853,7 @@
    "건록":"제 힘으로 벌어 제 발로 서는, 열두 단계 가운데서도 손꼽히게 단단한 자리일세. 실속이 있고 책임감이 강해서 곁의 사람들에게 믿음을 주네.",
    "제왕":"기운이 가장 왕성한 맨 꼭대기 자리야. 앞장서는 힘이 뛰어난 만큼, 고집으로 흐르지 않게 남의 말도 한 번 들어 주면 그 힘이 더 크게 빛나네.",
    "쇠":"가장 높은 때를 지나 안정으로 접어든 자리일세. 무리하지 않고 안을 다지는 데 강해서, 오래 가는 힘을 가졌네.",
-   "병":"기운이 여리고 섬세해지는 자리야. 대신 마음결이 깊고 배려심이 커서 사람을 잘 살피니, 몸만 잘 돌보면 그 따뜻함이 오래가네.",
+   "병":"기운이 섬세하고 예민해지는 자리야. 대신 마음결이 깊고 배려심이 커서 사람을 잘 살피니, 몸만 잘 돌보면 그 따뜻함이 오래가네.",
    "사":"움직이는 것보다 생각이 깊어지는 자리일세. 연구나 기획처럼 안으로 파고드는 일에 잘 어울려서 조용한 집중력이 빛나네.",
    "묘":"거두어서 차곡차곡 챙기는 자리야. 모으고 지키는 힘이 있어서 살림을 관리하고 하나씩 쌓아 가는 데 특히 강하네.",
    "절":"한 번 멈췄다가 다시 이어지는 자리일세. 변화가 잦은 대신 새 출발의 기운도 함께 들어 있어서 다시 시작하는 힘이 크네.",
@@ -872,7 +881,7 @@
    "건록":"발밑이 단단해서 마음이 놓이는 날일세. 지금 손에 쥔 일부터 하나씩 끝내면 하루가 알차게 쌓이네.",
    "제왕":"기운이 가장 높이 오른 날이라 밀어붙이는 힘이 아주 좋네. 속도만 조금 늦추면 더 멀리 가네.",
    "쇠":"속도를 줄이고 안을 차분히 다지기 좋은 날이야. 새 일을 벌이기보다 정리하고 돌보는 일이 잘 어울리네.",
-   "병":"마음결이 여리고 섬세해지는 날일세. 몸이 보내는 신호가 잘 느껴지니 컨디션부터 먼저 챙겨 주면 하루가 편안하네.",
+   "병":"마음결이 섬세하고 예민해지는 날일세. 몸이 보내는 신호가 잘 느껴지니 컨디션부터 먼저 챙겨 주면 하루가 편안하네.",
    "사":"생각이 안으로 깊어지는 날이라 혼자 집중하는 일에서 좋은 성과가 나네. 조용한 시간을 만들어 보게.",
    "묘":"모아 둔 것을 거두고 챙기는 날일세. 새 판을 벌이기보다 가진 것을 지키고 정리하면 마음이 차분해지네.",
    "절":"흐름이 잠시 멈췄다가 새로 이어지는 날이야. 변화가 와도 놀라지 말고 새 출발의 신호로 받아들이게. 다시 시작하기 좋은 때일세.",
@@ -1322,6 +1331,26 @@
       {k:"years",h:"공망이 채워지는 해",p:[D.years.head,lines.join("<br>"),D.years.tail]},
       {k:"read",h:"공망은 이렇게 읽으면 편하네",p:D.read.slice()},
       {k:"year",h:"연주 기준으로도 보면(참고)",p:[yearNote]}]};}
+  /* 토정비결 결과 구성 — 원고 g(content_tojeong.js → tj/<괘>.json)로 한눈에·총운·분야별·실천·달 표·달별 풀이를 만든다.
+     Y 볼 해, cur 이번 달(음력, 없으면 0), starts[m] = [양력 월, 일] 그 음력 달이 시작하는 날. 순수 함수 — verify.js 가 144괘 전부로 검사한다 */
+  var TJ_FLOW={g:"좋은 달",o:"무난한 달",c:"차분히 가는 달"},TJ_SHORT={g:"좋은 달",o:"무난한 달",c:"차분한 달"};
+  function tjDeep(g,Y,cur,starts){var secs=[],cells=[],order=[],i,m;
+    secs.push({k:"sum",h:"올해 한눈에",p:['<span class="tj-sum">'+g.sum+'</span>','<b class="tj-l">옛 그림 풀이</b>'+g.image]});
+    secs.push({k:"gen",h:Y+"년 총운",p:[g.chongun]});
+    secs.push({k:"area",h:"분야별로 보면",p:['<b class="tj-l">돈</b>'+g.money,'<b class="tj-l">일</b>'+g.work,'<b class="tj-l">사람·사랑</b>'+g.love,'<b class="tj-l">몸과 마음</b>'+g.health]});
+    secs.push({k:"tips",h:"이렇게 하면 더 좋아지네",list:g.tips.slice()});
+    for(m=1;m<=12;m++){var f=g.flow.charAt(m-1),st=starts&&starts[m];cells.push({m:m,f:f,lab:TJ_SHORT[f],d:st?st[0]+"."+st[1]+"~":"",cur:m===cur});}
+    secs.push({k:"grid",h:"달마다 흐름 한눈에",grid:cells,n:"칸 아래 날짜는 그 음력 달이 시작하는 양력 날짜일세. 달마다 자세한 풀이는 아래에 있네."});
+    for(i=1;i<=12;i++)order.push(i);if(cur)order=[cur].concat(order.filter(function(x){return x!==cur;}));
+    order.forEach(function(mo){var st=starts&&starts[mo],t=g.months[mo],sp=/^(.+?[.!?])\s+([\s\S]*)$/.exec(t);
+      secs.push({k:"m"+mo,month:true,h:(mo===cur?"이번 달 — ":"")+"음력 "+mo+"월"+(st?" (양력 "+st[0]+"월 "+st[1]+"일부터)":"")+" · "+TJ_FLOW[g.flow.charAt(mo-1)],p:sp?[sp[1],sp[2]]:[t]});});
+    return secs;}
+  function tjSecHtml(s){if(s.month)return '<div class="sj-sec gh-deep fold-skip tj-m"><h3 class="tj-ml">'+s.h+'</h3><p class="tj-mh">'+s.p[0]+'</p>'+(s.p[1]?'<p>'+s.p[1]+'</p>':'')+'</div>';
+    var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
+    (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
+    if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
+    if(s.grid)h+='<div class="tj-grid">'+s.grid.map(function(c){return '<div class="tj-c'+(c.cur?' cur':'')+'"><div class="a">음력 '+c.m+'월</div><div class="g '+c.f+'1">'+c.lab+'</div><div class="a">'+(c.d||"&nbsp;")+'</div></div>';}).join("")+'</div>';
+    if(s.n)h+='<p class="gh-note">'+s.n+'</p>';return h+'</div>';}
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
@@ -1555,7 +1584,7 @@
      그 뒤부터는 쉬운 말만 쓴다. 조사(은·는·이·가…)가 붙은 꼴만 바꾸므로
      "편관격"처럼 다른 낱말에 붙은 글자는 건드리지 않는다. */
   var PLAIN_WORDS=[
-    ["십이운성","기운의 단계"],["신강","힘이 센 편"],["신약","힘이 약한 편"],
+    ["십이운성","기운의 단계"],["신강","힘이 넉넉한 편"],["신약","채워 가며 크는 편"],
     ["용신","나를 받쳐 주는 기운"],["기신","나를 눌러 힘 빼는 기운"],
     ["일간","나를 뜻하는 글자"],["일지","태어난 날 글자"],["월지","태어난 달 글자"],["연지","태어난 해 글자"],
     ["천간","하늘 글자"],["지지","날짜 글자"],["본기","속 글자"],
@@ -1901,39 +1930,57 @@
     function act(e){var t=e.target,a=get();
       if(t.dataset.del!=null){a.splice(+t.dataset.del,1);put(a);return;}
       var c=t.closest(".ppl-c");if(c){var x=a[+c.dataset.i];if(x)fill(x.b);return;}
-      if(t.closest(".ppl-add")){t.outerHTML='<input class="ppl-n" maxlength="8" placeholder="이름 (예: 엄마)" aria-label="저장할 이름"><span class="ppl-ok" role="button" tabindex="0">저장</span>';box.querySelector(".ppl-n").focus();return;}
+      if(t.closest(".ppl-add")){t.outerHTML='<input class="ppl-n" maxlength="8" placeholder="이름 (예: 민지)" aria-label="저장할 이름"><span class="ppl-ok" role="button" tabindex="0">저장</span>';box.querySelector(".ppl-n").focus();return;}
       if(t.closest(".ppl-ok")){var n=(box.querySelector(".ppl-n").value||"").trim().slice(0,8);if(!n||!inp.value){draw();return;}
         a=a.filter(function(x){return x.n!==n;});a.unshift({n:n,b:inp.value});put(a);}}
     box.addEventListener("click",act);
     box.addEventListener("keydown",function(e){if(e.key==="Enter"){if(e.target.classList.contains("ppl-n")){e.preventDefault();box.querySelector(".ppl-ok").click();}else if(e.target.getAttribute("role")==="button"){e.preventDefault();e.target.click();}}});
     inp.addEventListener("change",function(){if(!box.querySelector(".ppl-n"))draw();});
     draw();}
-  /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 음력 연·월·일(윤달)을 고르면 양력으로 바꿔
-     위 입력칸에 넣고, 다이얼은 input 이벤트로 따라온다. 계산은 늘 양력 한 가지로 한다.
+  /* 음력 생일 — 40대 이상은 음력 생일을 기억한다. 열면 위 양력 칸의 날짜를 음력으로 바꿔 연·월·일 칸에 먼저 보여 주고(고칠 자리가 보이게),
+     그 칸들을 고치면 바로(0.4초 뒤) 양력으로 바꿔 위 입력칸에 넣는다. 반대로 위 양력 칸을 고치면 음력 칸도 따라온다. 계산은 늘 양력 한 가지로 한다.
+     예전엔 열어도 1월 1일 같은 엉뚱한 값이 떠 있고 [양력으로 넣기]를 따로 눌러야 해서 "음력 생일을 고쳐도 안 바뀐다"는 말이 나왔다.
      변환(KASI 기준 vendor-lunar.js)은 펼칠 때만 받는다. */
   function lunarPick(host,inp,before,nowY){
     var lp=document.createElement("details");lp.className="lunar-pick";
     var mo="",dd="";for(var i=1;i<=12;i++)mo+='<option value="'+i+'">'+i+'월</option>';for(i=1;i<=30;i++)dd+='<option value="'+i+'">'+i+'일</option>';
     lp.innerHTML='<summary>음력 생일이세요?</summary><div class="lp-row">'+
-      '<input type="number" class="lp-y" min="1930" max="'+nowY+'" value="'+((inp.value||"1990").split("-")[0])+'" aria-label="음력 연도">'+
+      '<input type="number" class="lp-y" min="1930" max="'+nowY+'" value="'+((inp.value||"1990").split("-")[0])+'" aria-label="음력 연도" inputmode="numeric">'+
       '<select class="lp-m" aria-label="음력 월">'+mo+'</select><select class="lp-d" aria-label="음력 일">'+dd+'</select>'+
       '<label class="lp-leap"><input type="checkbox" class="lp-l"> 윤달</label>'+
-      '<span class="lp-go" role="button" tabindex="0">양력으로 넣기</span></div><p class="lp-note"></p>';
+      '<span class="lp-go" role="button" tabindex="0">양력으로 넣기</span></div><p class="lp-note" aria-live="polite"></p>';
     host.insertBefore(lp,before);
-    function load(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
-      var s=document.createElement("script");s.id="vendor-lunar";s.src="vendor-lunar.js";document.head.appendChild(s);}
-    lp.addEventListener("toggle",function(){if(lp.open)load();});
-    var note=lp.querySelector(".lp-note"),go=lp.querySelector(".lp-go");
+    var note=lp.querySelector(".lp-note"),go=lp.querySelector(".lp-go"),busy=false,timer=0;
+    // 변환 라이브러리는 열 때 한 번만 받고, 받은 뒤에 할 일을 이어서 한다
+    function whenLib(cb){var K=window.KoreanLunarCalendar;if(K){cb(K);return;}
+      var sc=document.getElementById("vendor-lunar");
+      if(!sc){sc=document.createElement("script");sc.id="vendor-lunar";sc.src="vendor-lunar.js";document.head.appendChild(sc);}
+      sc.addEventListener("load",function(){if(window.KoreanLunarCalendar)cb(window.KoreanLunarCalendar);});}
+    function q(c){return lp.querySelector(c);}
+    // 위 양력 칸 → 음력 칸: 지금 넣은 생일이 음력으로 며칠인지 보여 준다
+    function fromSolar(){var v=inp.value||"";if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return;var p=v.split("-");
+      whenLib(function(K){var cal=new K();if(!cal.setSolarDate(+p[0],+p[1],+p[2]))return;var L=cal.getLunarCalendar();
+        busy=true;q(".lp-y").value=L.year;q(".lp-m").value=L.month;q(".lp-d").value=L.day;q(".lp-l").checked=!!L.intercalation;busy=false;
+        note.textContent="지금 넣은 양력 "+(+p[0])+"년 "+(+p[1])+"월 "+(+p[2])+"일은 음력 "+L.year+"년 "+L.month+"월"+(L.intercalation?"(윤달)":"")+" "+L.day+"일일세. 음력 생일이 다르면 이 칸을 고치게. 고치면 바로 위 양력 칸이 바뀌네.";});}
+    // 음력 칸 → 위 양력 칸
     function apply(){
-      var K=window.KoreanLunarCalendar;if(!K){load();note.textContent="변환 준비 중이네. 한 번만 더 눌러 주게.";return;}
-      var y=+lp.querySelector(".lp-y").value,m=+lp.querySelector(".lp-m").value,d=+lp.querySelector(".lp-d").value,leap=lp.querySelector(".lp-l").checked;
-      var cal=new K();
-      if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없네. 윤달이 아닌지 다시 보게.";return;}
-      var s=cal.getSolarCalendar(),v=s.year+"-"+String(s.month).padStart(2,"0")+"-"+String(s.day).padStart(2,"0");
-      inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));
-      note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+s.year+"년 "+s.month+"월 "+s.day+"일일세. 이 날짜로 보네.";}
-    go.addEventListener("click",apply);
-    go.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();apply();}});}
+      whenLib(function(K){
+        var y=+q(".lp-y").value,m=+q(".lp-m").value,d=+q(".lp-d").value,leap=q(".lp-l").checked,cal=new K();
+        if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없네. 날짜나 윤달 표시를 다시 보게.";return;}
+        var sl=cal.getSolarCalendar(),v=sl.year+"-"+String(sl.month).padStart(2,"0")+"-"+String(sl.day).padStart(2,"0");
+        busy=true;inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));busy=false;
+        note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+sl.year+"년 "+sl.month+"월 "+sl.day+"일일세. 위 생년월일 칸에 이 날짜를 넣었네.";});}
+    lp.addEventListener("toggle",function(){if(lp.open)fromSolar();});
+    // 음력 칸을 고치면 잠깐 뒤 자동으로 넣는다(연도는 네 자리가 될 때까지 기다린다)
+    function auto(e){if(busy||!e.target.closest(".lp-row")||e.target===go)return;
+      if(e.target.classList.contains("lp-y")&&!/^\d{4}$/.test(e.target.value))return;
+      clearTimeout(timer);timer=setTimeout(apply,400);}
+    lp.addEventListener("input",auto);lp.addEventListener("change",auto);
+    // 위 양력 칸을 손으로 고치면(완성된 날짜일 때) 열려 있는 음력 칸도 따라온다
+    function sync(){if(lp.open&&!busy){clearTimeout(timer);timer=setTimeout(fromSolar,300);}}
+    inp.addEventListener("input",sync);inp.addEventListener("change",sync);
+    go.addEventListener("click",function(){clearTimeout(timer);apply();});
+    go.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();clearTimeout(timer);apply();}});}
 
   function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
     '<button type="button" class="save-btn">이미지로 저장</button>';}
@@ -2656,8 +2703,8 @@
     function strengthBand(r){
       return r>=0.7?"돕는 기운이 칠 할을 넘어 힘이 아주 넉넉한 편일세. 스스로 밀고 가는 힘이 강하니 그 힘을 덜어 쓸 곳(일·취미·운동)을 마련해 두면 더 좋네."
         :r>=0.5?"힘이 넉넉한 쪽이되 지나치지 않네. 스스로 서는 힘이 있으면서도 남과 어울릴 여지가 남아 균형 잡힌 짜임일세."
-        :r>=0.3?"힘이 조금 여린 쪽이지만 크게 기울지는 않았네. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이야."
-        :"돕는 기운이 삼 할에 못 미쳐 힘이 여린 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
+        :r>=0.3?"채워 가며 크는 쪽이지만 크게 기울지는 않았네. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이야."
+        :"돕는 기운이 삼 할 아래라 채워 가며 크는 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
     el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
@@ -2966,7 +3013,7 @@
       // 용신 활용법이 목록만 있었다. 왜 이 기운인지와 어떻게 쓰는지를 붙인다
       var yongWhy=(st.strong
         ?'자네는 힘이 넉넉한 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 그 힘을 밖으로 잘 풀어 주는 기운일세.'
-        :'자네는 힘이 여린 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 자네에게 힘을 보태 주는 기운일세.')+
+        :'자네는 채워 가며 크는 쪽이라, 용신 '+yEl+josa(yEl,"는/은")+' 자네에게 힘을 보태 주는 기운일세.')+
         ' 타고난 걸 억지로 바꾸라는 말이 아니야. 이 기운이 도는 자리에 몸을 두면 더 편하다는 말일세.';
 
       /* 제목과 맺음말.
@@ -3107,7 +3154,7 @@
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
-        (st.strong?"넉넉한 편":"여린 편")+' · 필요한 기운 '+yEl+'</div></div>';
+        (st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+yEl+'</div></div>';
       // 한눈에 보기 — 결과 맨 위에서 용어 없이 세 줄로 요약한다
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+'일세. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.<br>'+
@@ -3116,7 +3163,7 @@
         (p.h?'<b>태어난 시각 자리</b> — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+'), 말년과 자녀 복을 보여 주는 자리일세.'
             :'<b>태어난 시각</b> — 모르는 채로 봤네. 시각을 넣으면 말년·자녀 풀이와 오행이 더 또렷해지네.')+'</p></div>';
       var glossary='<div class="sj-sec sj-gloss"><h3>아래에 나오는 낱말 풀이</h3><p>아래에는 명리 용어가 나옵니다. 뜻은 이렇습니다.<br>'+
-        '<b>일간</b> 나를 뜻하는 글자 · <b>신강·신약</b> 타고난 힘이 센 편·약한 편 · <b>용신</b> 나에게 필요한 기운 · <b>대운</b> 10년 단위 흐름 · <b>세운</b> 그해의 흐름<br>'+
+        '<b>일간</b> 나를 뜻하는 글자 · <b>신강·신약</b> 타고난 힘이 넉넉한 편·채워 가며 크는 편 · <b>용신</b> 나에게 필요한 기운 · <b>대운</b> 10년 단위 흐름 · <b>세운</b> 그해의 흐름<br>'+
         '<b>비겁</b> 경쟁·자립 · <b>식상</b> 재주·표현 · <b>재성</b> 돈 · <b>관성</b> 일·책임 · <b>인성</b> 배움·도움 · <b>격국</b> 타고난 그릇의 모양</p></div>';
       var closing='<div class="sj-sec"><h3>맺는 말</h3><p>'+
         (st.strong
@@ -3125,7 +3172,7 @@
         '<br><br>'+
         (st.strong
           ?'덜 채워진 '+mn+' 기운을 곁에 두면 균형이 잡히고, 넘치는 힘은 밖으로 쓸 길을 열어 두면 짐이 아니라 든든한 연장이 되네.'
-          :'혼자 다 지려 하지 말게. '+yEl+' 기운을 곁에 두면 자네 힘이 두 배로 서네. 기대는 건 약한 게 아니라 지혜일세.')+
+          :'혼자 다 지려 하지 말게. '+yEl+' 기운을 곁에 두면 자네 힘이 두 배로 서네. 기대는 것도 자네를 키우는 지혜일세.')+
         '<br><br>여기 적힌 건 타고난 결일세. 결을 알면 거스르지 않고 편하게 탈 수 있네. 오늘 하루도 잘 살아내게.</p></div>';
       /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
       var TQ=null;
@@ -3184,12 +3231,12 @@
           :'<div class="sj-sec"><h3>눈에 띄는 기운 (신살)</h3><p>따로 튀는 기운이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
         '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 위 여덟 글자 표의 아래 글자마다 적어 두었습니다.</span></p></div>'+
         gungSec()+
-        '<div class="sj-sec"><h3>타고난 힘의 세기</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 힘이 <b>'+(st.strong?"넉넉한 편":"여린 편")+'</b>일세. '+
-        (st.strong?"힘이 넉넉하니 그걸 <b>밖으로 쓸 길</b>을 열어 두면 좋네.":"힘이 여리니 <b>자네를 받쳐 줄</b> 기운을 곁에 두면 좋네.")+
+        '<div class="sj-sec"><h3>타고난 힘의 세기</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 <b>'+(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편")+'</b>일세. '+
+        (st.strong?"힘이 넉넉하니 그걸 <b>밖으로 쓸 길</b>을 열어 두면 좋네.":"곁에서 <b>받쳐 줄</b> 기운을 채울수록 더 크게 피니 그 기운을 곁에 두면 좋네.")+
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.<br><br>'+strengthBand(st.ratio)+'</p></div>'+
         '<div class="sj-sec"><h3>나를 받쳐 주는 기운 (용신) — '+yEl+'</h3><p>'+yongWhy+'<br><br>'+
         '옷이나 물건은 <b>'+Y.color+'</b> 쪽으로, 이사나 사무실은 <b>'+Y.dir+'</b> 방향으로 잡게. 큰일은 '+Y.season+'에 벌이면 결이 맞고, 지칠 땐 '+Y.act+'으로 기운을 돌리게.</p></div>'+
-        '<div class="sj-sec"><h3>다섯 기운의 균형 (오행)</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')'+josa(mn,"가/이")+' 상대적으로 약하네. 강한 기운은 자네의 재능이고, 지나칠 때만 조금 조절해 주면 되네. 덜 채워진 '+mn+' 기운을 일부러 곁에 두면 균형이 잡히네.'+
+        '<div class="sj-sec"><h3>다섯 기운의 균형 (오행)</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')'+josa(mn,"가/이")+' 상대적으로 적은 편이네. 강한 기운은 자네의 재능이고, 지나칠 때만 조금 조절해 주면 되네. 덜 채워진 '+mn+' 기운을 일부러 곁에 두면 균형이 잡히네.'+
         '<br><br>여덟 글자를 오행으로 나누면 '+SJ_EL.map(function(e,i){return e+' '+cnt[i];}).join(" · ")+'일세. '+EL_HI[mx]+
         '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?mn+' 기운은 한 자리도 들지 않았네. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
         '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>'+gTxt+'<br><br>'+
@@ -3245,7 +3292,7 @@
         headline:headTxt.replace(/<br>/g,"\n"),
         body:ilP[0]+" "+ilP[1]+" "+(st.strong
           ?"자네는 힘이 넉넉한 사람일세. 여태 남한테 기대지 않고 제 힘으로 밀고 온 값이 그 안에 있어."
-          :"자네는 섬세하고 여린 힘을 가진 사람일세. 그래서 여태 남보다 몇 배로 애써 왔고, 그 노력이 자네의 저력이야."),
+          :"자네는 채워 가며 크는 섬세한 사람일세. 그래서 여태 남보다 몇 배로 애써 왔고, 그 노력이 자네의 저력이야."),
         pillars:[["시주",p.h?SJ_SH[p.h.s]:"?",p.h?SJ_BH[p.h.b]:"?",p.h?elHexS(p.h.s):"#4a5260",p.h?elHexB(p.h.b):"#4a5260"],
                  ["일주(나)",SJ_SH[p.d.s],SJ_BH[p.d.b],elHexS(p.d.s),elHexB(p.d.b)],
                  ["월주",SJ_SH[p.m.s],SJ_BH[p.m.b],elHexS(p.m.s),elHexB(p.m.b)],
@@ -3929,7 +3976,7 @@
       '<div class="sj-sec"><h3>재물운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[1]+'점</span></h3><p>'+T[2]+'</p></div>'+
       '<div class="sj-sec"><h3>직장·학업운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[2]+'점</span></h3><p>'+T[7]+'</p></div>'+
       '<div class="sj-sec"><h3>건강운 <span style="font-weight:600;color:var(--muted);font-size:11.5px">'+sub[3]+'점</span></h3><p>'+T[8]+'</p></div>'+
-      '<div class="sj-sec"><h3>나를 받쳐 주는 기운으로 보는 오늘</h3><p>'+(yongClash?conceptArt(ART_GEUK[st.yong],SJ_EL[todayEl]+"극"+SJ_EL[st.yong]):(yongHit?conceptArt(ART_SAENG[st.yong],SJ_EL[st.yong]+josa(SJ_EL[st.yong],"를/을")+" 낳는 상생"):""))+'자네 사주는 '+(st.strong?"힘이 넉넉한 편일세. 그럴 땐 그 힘을 밖으로 풀어 주는 기운을 곁에 두면 좋은데":"힘이 여린 편일세. 그럴 땐 힘을 보태 주는 기운을 곁에 두면 좋은데")+', 자네한텐 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')'+josa(SJ_EL[st.yong],"가/이")+' 그 기운일세.<br><br>'+yongLine+'<br><br>이 기운은 '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻네. 오늘 하루 중에 이런 결의 일에 시간을 조금 쓰면 자네 하루가 든든해지네.<br><br>방향은 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 자네를 돕네. 일로 치면 '+SJ_YONG[SJ_EL[st.yong]].job+'이 자네와 결이 맞아.</p></div>'+
+      '<div class="sj-sec"><h3>나를 받쳐 주는 기운으로 보는 오늘</h3><p>'+(yongClash?conceptArt(ART_GEUK[st.yong],SJ_EL[todayEl]+"극"+SJ_EL[st.yong]):(yongHit?conceptArt(ART_SAENG[st.yong],SJ_EL[st.yong]+josa(SJ_EL[st.yong],"를/을")+" 낳는 상생"):""))+'자네 사주는 '+(st.strong?"힘이 넉넉한 편일세. 그럴 땐 그 힘을 밖으로 풀어 주는 기운을 곁에 두면 좋은데":"채워 가며 크는 편일세. 그럴 땐 힘을 보태 주는 기운을 곁에 두면 좋은데")+', 자네한텐 '+SJ_EL[st.yong]+'('+EL_HAN.charAt(st.yong)+')'+josa(SJ_EL[st.yong],"가/이")+' 그 기운일세.<br><br>'+yongLine+'<br><br>이 기운은 '+SJ_YONG[SJ_EL[st.yong]].act+'에서 힘을 얻네. 오늘 하루 중에 이런 결의 일에 시간을 조금 쓰면 자네 하루가 든든해지네.<br><br>방향은 '+SJ_YONG[SJ_EL[st.yong]].dir+', 계절로는 '+SJ_YONG[SJ_EL[st.yong]].season+'의 기운이 자네를 돕네. 일로 치면 '+SJ_YONG[SJ_EL[st.yong]].job+'이 자네와 결이 맞아.</p></div>'+
       '<div class="sj-sec"><h3>내 사주가 오늘 쓰는 힘</h3><p>'+sinLine+'</p></div>'+
       '<div class="sj-sec"><h3>오늘 기운의 단계 — '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+'오늘 자네 기운은 열두 단계 가운데 <b>'+un+'</b> 자리에 섰네. 하루 동안 몸으로 느끼는 결이 여기서 나오네.<br><br>오늘 날짜의 글자 '+SJ_B[tB]+'('+SJ_BH[tB]+')가 자네를 뜻하는 글자 '+SJ_S[me.d.s]+'에게 그 자리를 주는 걸세.<br><br>'+SJ_UN_DESC[un]+'<br><br>십이운성이란 게 장생에서 시작해 제왕에서 정점 찍고 절·태·양으로 돌아가는 열두 계단이야. '+un+josa(un,"는/은")+' 그중 '+(SJ_UN.indexOf(un)+1)+'번째 자리, '+(SJ_UN.indexOf(un)<=4?"아직 기운이 차오르는 오르막":SJ_UN.indexOf(un)<=8?"정점을 지나 힘을 갈무리하는 자리":"비우고 다시 채비하는 자리")+'일세.</p></div>'+
       '<div class="sj-sec"><h3>이달의 흐름 — '+SJ_S[today.m.s]+SJ_B[mB]+'월 · '+mRel+'</h3><p>이번 달 월간 '+SJ_S[today.m.s]+'('+SJ_SH[today.m.s]+')은 자네에게 '+mRel+'일세. '+mRel+josa(mRel,"를/을")+' 하루로 줄이면 이런 결이 되네.<br><br>'+TXT[mRel][1]+'<br><br>그게 이 달 내내 밑에 깔린다고 보면 되네.'+mNote+'<br><br>절기가 바뀌면 월주도 같이 바뀌네. 달의 흐름은 다음 절입일에 다시 보러 오게.</p></div>'+
@@ -3940,7 +3987,7 @@
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>'+bosalImg("sleepy","bs-side","달 위에서 조는 아기보살")+'내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
       '<div class="tail-wrap fold-skip" id="tailbox"></div>'+
       shareBtn()+
-      '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 센 편이면 덜어내는 쪽, 약한 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
+      '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 넉넉한 편이면 덜어내는 쪽, 채워 가며 크는 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
       bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
       diaryAdd({t:"오늘의 운세",s:score,g:grade,h:TF_LINE[rel]});
@@ -3997,7 +4044,7 @@
   {id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합",desc:"12별자리 커플 궁합",render:function(el){
     // 원소 관계 [점수, 이름, 해설]
     var ELREL={
-    same:[86,"같은 원소","서로를 설명할 필요가 없는 사이일세. 같은 말로 이야기하고 같은 것에 웃지. 다만 약한 데도 똑같이 겹치니, 둘 다 미뤄 두던 일은 이번에 함께 해 보게."],
+    same:[86,"같은 원소","서로를 설명할 필요가 없는 사이일세. 같은 말로 이야기하고 같은 것에 웃지. 다만 서툰 데도 똑같이 겹치니, 둘 다 미뤄 두던 일은 이번에 함께 해 보게."],
     friend:[82,"서로 돕는 원소","불에 바람이 붙듯, 흙에 물이 스미듯 서로를 키워 주는 사이일세. 움직이는 방식은 달라도 가는 방향이 맞아서 함께 있을 때 각자보다 커지네."],
     tense:[58,"결이 다른 원소","물과 불처럼 타고난 바탕이 다른 사이일세. 처음엔 그 다름이 신선하고, 지내다 보면 속도와 온도를 맞춰 가는 재미가 생기네. 서로를 고치려 하지 말고 알아 가 보게."]};
     function elRel(a,b){var ea=a%4,eb=b%4;
@@ -4341,10 +4388,9 @@
       return { code: "" + up + mid + low, age: age, ys: ys, yb: yb, taese: taese, days: days, ms: ms, mb: mb, wolgeon: wolgeon,
         ds: g[0], db: g[1], iljin: iljin, clamp: d !== ld, solar: s };
     }
-    var MON=["정월","이월","삼월","사월","오월","유월","칠월","팔월","구월","시월","동짓달","섣달"];
     var nowD=new Date(),Y0=nowD.getFullYear(),YS=[Y0,Y0+1],defY=nowD.getMonth()>=9?Y0+1:Y0;
     el.innerHTML='<label>어느 해</label><select id="yr">'+YS.map(function(y){var i=((y-4)%10+10)%10,j=((y-4)%12+12)%12;return '<option value="'+y+'"'+(y===defY?" selected":"")+'>'+y+' '+SJ_S[i]+SJ_B[j]+'년</option>';}).join("")+'</select>'+
-    '<label for="d" style="margin-top:12px">생년월일 (양력 · 음력이면 아래에서 바꿔 넣기)</label><input type="date" id="d" value="1990-03-15">'+
+    '<label for="d" style="margin-top:12px">생년월일 (양력) — 음력 생일이면 아래 "음력 생일이세요?"를 눌러 고르게</label><input type="date" id="d" value="1990-03-15">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function lib(){if(window.KoreanLunarCalendar||document.getElementById("vendor-lunar"))return;
@@ -4362,26 +4408,27 @@
       cal.setSolarDate(+dv[0],+dv[1],+dv[2]);var L=cal.getLunarCalendar();
       var r=tjCalc(L.year,L.month,L.day,Y,K,gz);
       var tn=new K();tn.setSolarDate(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate());var TL=tn.getLunarCalendar(),cur=TL.year===Y?TL.month:0;
+      var starts={};for(var mm=1;mm<=12;mm++){var kc=new K();if(kc.setLunarDate(Y,mm,1,false)){var sc=kc.getSolarCalendar();starts[mm]=[sc.month,sc.day];}}
       out.innerHTML='<p class="note">괘를 펼치는 중이네…</p>';
       data(r.code).then(function(g){
-        var yg=SJ_S[r.ys]+SJ_B[r.yb],mg=SJ_S[r.ms]+SJ_B[r.mb],dg=SJ_S[r.ds]+SJ_B[r.db];
-        var order=[];for(var i=1;i<=12;i++)order.push(i);if(cur)order=[cur].concat(order.filter(function(x){return x!==cur;}));
+        var yg=SJ_S[r.ys]+SJ_B[r.yb],mg=SJ_S[r.ms]+SJ_B[r.mb],dg=SJ_S[r.ds]+SJ_B[r.db],lunarTxt='음력 '+L.year+'년 '+L.month+'월'+(L.intercalation?'(윤달)':'')+' '+L.day+'일';
         out.innerHTML=
-        '<div class="tf-hl">'+Y+'년 자네 괘는 '+r.code+', '+g.title+'</div>'+
-        '<div class="out" style="margin-top:16px"><div class="k">'+Y+' '+yg+'년 토정비결 · 음력 '+L.year+'년 '+L.month+'월'+(L.intercalation?'(윤)':'')+' '+L.day+'일생</div>'+
+        '<div class="tf-hl">'+Y+'년 자네 괘는 '+r.code+'괘 — '+g.title+'</div>'+
+        '<div class="out" style="margin-top:16px"><div class="k">'+Y+' '+yg+'년 토정비결 · '+lunarTxt.replace("(윤달)","(윤)")+'생</div>'+
         '<div class="v">'+r.code+'<small>괘</small></div><div class="s">'+g.title+'</div></div>'+
-        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔네. 그래도 들뜨지 말고 달마다 짚은 대로 가게.":g.grade==="흉"?"차분히 다져 갈 대목이 있는 괘일세. 걱정할 것 없네. 미리 알고 준비하면 오히려 든든하지.":"좋고 궂은 게 섞인 괘야. 달마다 흐름을 보고 고삐를 쥐게.")+
-        '<div class="sj-sec"><h3>'+Y+'년 총운</h3><p>'+g.chongun+'</p></div>'+
-        order.map(function(m){return '<div class="sj-sec"><h3>'+(m===cur?'이번 달 — ':'')+'음력 '+MON[m-1]+'</h3><p>'+g.months[m]+'</p></div>';}).join("")+
-        '<div class="sj-sec"><h3>괘를 세운 근거</h3><p>상괘 '+r.code[0]+' = (세는 나이 '+r.age+' + 태세수 '+r.taese+' · '+yg+'년) ÷ 8의 나머지<br>'+
-        '중괘 '+r.code[1]+' = ('+Y+'년 음력 '+L.month+'월 날수 '+r.days+' + 월건수 '+r.wolgeon+' · '+mg+'월) ÷ 6의 나머지<br>'+
-        '하괘 '+r.code[2]+' = (음력 생일 '+Math.min(L.day,r.days)+' + 일진수 '+r.iljin+' · '+dg+'일) ÷ 3의 나머지<br>나머지가 0이면 8·6·3을 씁니다.'+
+        '<p class="gh-note" style="margin:8px 0 0">이 괘는 '+lunarTxt+'(양력 '+(+dv[0])+'년 '+(+dv[1])+'월 '+(+dv[2])+'일)생으로 뽑았네. 음력 생일이 다르면 위 "음력 생일이세요?"에서 고친 뒤 다시 물어보게.</p>'+
+        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔네. 그래도 들뜨지 말고 달마다 짚은 대로 가게.":g.grade==="흉"?"차분히 다져 갈 대목이 있는 괘일세. 걱정할 것 없네. 미리 알고 준비하면 오히려 든든하지.":"무난하게 흘러가는 괘일세. 좋은 달엔 힘을 싣고 차분한 달엔 쉬어 가게.")+
+        tjDeep(g,Y,cur,starts).map(tjSecHtml).join("")+
+        '<div class="sj-sec"><h3>괘를 어떻게 세웠나</h3><p>토정비결은 나이와 태어난 음력 달·날에 그해·그달·그날의 정해진 숫자를 더해 세 자리 괘를 만듭니다. 각 자리는 8, 6, 3으로 나눈 나머지예요.<br><br>'+
+        '첫째 자리 '+r.code[0]+' = (세는 나이 '+r.age+' + 그해 숫자 '+r.taese+' · '+yg+'년) ÷ 8의 나머지<br>'+
+        '둘째 자리 '+r.code[1]+' = ('+Y+'년 음력 '+L.month+'월의 날수 '+r.days+' + 그달 숫자 '+r.wolgeon+' · '+mg+'월) ÷ 6의 나머지<br>'+
+        '셋째 자리 '+r.code[2]+' = (음력 생일 '+Math.min(L.day,r.days)+' + 그날 숫자 '+r.iljin+' · '+dg+'일) ÷ 3의 나머지<br>나머지가 0이면 8·6·3을 씁니다.'+
         (r.clamp?'<br>'+Y+'년 음력 '+L.month+'월은 29일까지라 30일생은 29일로 당겨 셉니다(구현 관례).':'')+
         (L.intercalation?'<br>윤달생은 평달로 봅니다(통례).':'')+'</p></div>'+
         shareBtn()+
-        '<p class="note">토정비결은 조선 후기부터 전해 오는 한 해 신수 풀이입니다. 괘를 세우는 방법은 전통 작괘법(세는 나이·태세수, 생월 날수·월건수, 생일·일진수)을 그대로 따르고, 음력은 한국천문연구원 기준으로 계산합니다. 144괘의 풀이 문장은 전통 괘의 길흉과 상징을 바탕으로 동네보살이 새로 썼습니다. 참고용.</p>';
+        '<p class="note">토정비결은 조선 후기부터 전해 오는 한 해 신수 풀이입니다. 괘를 세우는 방법은 전통 작괘법을 그대로 따르고, 음력은 한국천문연구원 기준으로 계산합니다. 144괘의 풀이는 전통 괘의 방향과 상징을 바탕으로 동네보살이 쉬운 말로 새로 썼습니다. 참고용.</p>';
         bindShare(el,Y+" 토정비결",Y+"년 내 토정비결은 "+r.code+"괘 — "+g.title+". 동네보살에서 확인:");
-        saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.chongun,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
+        saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.sum,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
         askFx(el,{grade:g.grade==="흉"?"주의":g.grade==="평"?"평온":"길"});
       }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했네. 잠시 뒤 다시 눌러 주게.</p>';});}
     askWire(el,go,["음력 생일을 찾는다","그해 달력에서 해·달·날의 숫자를 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}},
