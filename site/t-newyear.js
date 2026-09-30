@@ -30,10 +30,12 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
       var me=sjPillars(+dv[0],+dv[1],+dv[2],null,0,false);
       var rel=sjTenGod(me.d.s,YS),T=TXT[rel];
       var yb=me.y.b,db=me.d.b,notes=[];
-      function relB(b,label){
-        if(b%4===YB%4&&b!==YB)notes.push(label+"가 그 해 글자("+TSE+")와 삼합일세. 귀인과 협력의 흐름이 한 해 내내 힘을 보태네.");
-        else if(sjYukhap(b)===YB)notes.push(label+"가 그 해 글자와 육합일세. 사람 사이가 유난히 부드러운 해야.");
-        else if(Math.abs(b-YB)===6)notes.push(label+"가 그 해 글자와 충일세. 움직임이 생기는 해라 이사든 이직이든 자네가 먼저 계획 안으로 끌어들이면 든든하네.");}
+      var seenRel={};
+      function relB(b,label){var k=b%4===YB%4&&b!==YB?"삼합":sjYukhap(b)===YB?"육합":Math.abs(b-YB)===6?"충":"";if(!k)return;
+        if(seenRel[k]){notes.push(label+"도 그 해 글자와 "+k+"일세. 앞에서 말한 흐름이 한 겹 더 힘을 얻네.");return;}seenRel[k]=1;
+        if(k==="삼합")notes.push(label+"가 그 해 글자("+TSE+")와 삼합일세. 귀인과 협력의 흐름이 한 해 내내 힘을 보태네.");
+        else if(k==="육합")notes.push(label+"가 그 해 글자와 육합일세. 사람 사이가 유난히 부드러운 해야.");
+        else notes.push(label+"가 그 해 글자와 충일세. 움직임이 생기는 해라 이사든 이직이든 자네가 먼저 계획 안으로 끌어들이면 든든하네.");}
       relB(yb,"내 띠(연지)");relB(db,"내 일지");
       var score={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[rel];
       notes.forEach(function(n){if(n.indexOf("충")>=0)score-=6;else score+=5;});

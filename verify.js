@@ -520,15 +520,16 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   t("궁합 원고: 십성 관계 11종·오행 짝 15종·계절 짝 10종·역할 5종의 칸이 모두 채워져 있다", [relOk, pairKeys.every(k => GD.pairEl[k] && GD.pairEl[k].img && GD.pairEl[k].body), seasKeys.every(k => GD.seasonPair[k]) && SEAS.every(k => GD.season[k]), ["재", "관", "식", "인", "비"].every(g => ["t", "lead", "both", "even", "none"].every(f => GD.role[g][f])), GD.hap.length === 5, ["삼합", "육합", "충", "같음", "무난"].every(k => GD.home.tti[k] && GD.home.ilji[k])].join(","), "true,true,true,true,true,true");
   { const { note, ...body } = GD; t("궁합 원고: 풀이 본문은 보살 말투(존댓말 어미 0, 근거 고지 note 만 존댓말)", JOND.test(JSON.stringify(body)) ? "혼입" : "0", "0"); }
   const RG = () => [1930 + Math.floor(Math.random() * 86), 1 + Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)], GRD = ["천생연분", "좋은 인연", "노력형 인연", "신중한 인연"];
-  const cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0 }; let minLen = 1e9; const strip = x => String(x).replace(/<[^>]+>/g, "");
+  const dupG = {}, cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, dup: 0 }; let minLen = 1e9; const strip = x => String(x).replace(/<[^>]+>/g, "");
   for (let i = 0; i < 3000; i++) { const a = RG(), b = RG(), ha = i % 3 ? null : Math.floor(Math.random() * 24), hb = i % 3 ? null : Math.floor(Math.random() * 24);
     const A = sjPillars(a[0], a[1], a[2], ha, 30, true), B = sjPillars(b[0], b[1], b[2], hb, 30, true), nb = i % 4 === 0 ? "김동성 님" : "상대";
     const o = ghDeep(A, B, { nb, grade: GRD[i % 4], axes: [["끌림", 70 + i % 20], ["안정", 65 + i % 25], ["소통", 72 + i % 15], ["생활", 60 + i % 30]], now: 2026 }, GD);
     const parts = [o.sum]; o.secs.forEach(s => { parts.push(s.h); (s.p || []).forEach(x => parts.push(x)); (s.roles || []).forEach(r => parts.push(r.k + " " + r.w + " " + r.t)); (s.years || []).forEach(y => parts.push(y.la + " " + y.lb + " " + y.j + " " + y.flag)); (s.list || []).forEach(x => parts.push(x)); });
     const txt = parts.map(strip).join("\n"); minLen = Math.min(minLen, txt.replace(/\s+/g, "").length);
     if (/[{}]/.test(txt)) cnt.token++; if (/undefined|NaN|null/.test(txt)) cnt.undef++; if (JOND.test(txt)) cnt.jondae++;
-    if (/자네(은|이|을|과)(?![가-힣])/.test(txt) || /님(가|는|를|와)(?![가-힣])/.test(txt)) cnt.josa++; if (o.secs.length !== 11) cnt.secs++; }
-  t("궁합 깊은 풀이: 무작위 3000쌍 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수 이상이 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0 }));
+    if (/자네(은|이|을|과)(?![가-힣])/.test(txt) || /님(가|는|를|와)(?![가-힣])/.test(txt)) cnt.josa++; if (o.secs.length !== 11) cnt.secs++;
+    { const sn = {}; txt.split(/(?<=[.!?])s+/).map(x => x.trim()).filter(x => x.length >= 14).forEach(x => { sn[x] = (sn[x] || 0) + 1; }); if (Object.values(sn).some(n => n > 1)) { cnt.dup++; Object.keys(sn).forEach(x => { if (sn[x] > 1) dupG[x.slice(0, 44)] = 1; }); } } }
+  t("궁합 깊은 풀이: 무작위 3000쌍 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·같은 문장 되풀이가 모두 0" + (cnt.dup ? " — 예: " + Object.keys(dupG).slice(0, 4).join(" | ") : ""), JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, dup: 0 }));
   t("궁합 깊은 풀이: 어느 쌍이든 글자 수(공백 제외)가 1700자 이상 (최소 " + minLen + ")", minLen >= 1700, true);
   // 해별 점수는 신년운세 도구와 같은 식이다(십성 기본점수 표가 같고 삼합·육합 +5 / 충 -6)
   { const nyb = toolBlock("newyear"), m1 = /var score=\{([^}]*)\}\[rel\]/.exec(nyb), m2 = /var GH_YB=\{([^}]*)\}/.exec(inner);
@@ -563,7 +564,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     t("신년 열두 달: 월주가 손계산표와 같다(2026 庚寅~辛丑, 2027 壬寅~癸丑)", [2026, 2027].map(Y => nyDeep(p0, Y, Y + "년", NY).meta.months.map(m => m.han).join(",") === HAND[Y]).join(","), "true,true");
     t("신년 열두 달: 달 번호가 2월~12월, 이듬해 1월 순서다", nyDeep(p0, 2026, "올해", NY).meta.months.map(m => m.y + "." + m.m).join(","), "2026.2,2026.3,2026.4,2026.5,2026.6,2026.7,2026.8,2026.9,2026.10,2026.11,2026.12,2027.1"); }
   const RG = () => [1930 + Math.floor(Math.random() * 86), 1 + Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)];
-  const cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0 }; let minLen = 1e9, maxLen = 0, withBest = 0, withWorst = 0; const strip = x => String(x).replace(/<[^>]+>/g, "");
+  const dupEx = {}, cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0, dup: 0 }; let minLen = 1e9, maxLen = 0, withBest = 0, withWorst = 0; const strip = x => String(x).replace(/<[^>]+>/g, "");
   for (let i = 0; i < 3000; i++) { const b = RG(), h = i % 3 ? null : Math.floor(Math.random() * 24), YR = i % 2 ? 2027 : 2026, YW = YR === 2026 ? "올해" : "2027년";
     const o = nyDeep(sjPillars(b[0], b[1], b[2], h, 30, true), YR, YW, NY), body = [], all = [];
     o.secs.forEach(s => { const c = [s.h]; (s.p || []).forEach(x => c.push(x)); (s.list || []).forEach(x => c.push(x)); (s.rows || []).forEach(r => { c.push(r.h); c.push(r.sub); c.push(r.t); }); c.forEach(x => { body.push(x); all.push(x); }); if (s.n) all.push(s.n); });
@@ -572,8 +573,9 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     if (/자네(은|이|을|과)(?![가-힣])/.test(btxt) || /올해(은|이|을|과)(?![가-힣])/.test(btxt) || /\d년(는|가|를|와)(?![가-힣])/.test(btxt) || /(봄|여름|가을|겨울)가(?![가-힣])/.test(btxt) || /환절기이(?![가-힣])/.test(btxt)) cnt.josa++;
     if (o.secs.length !== 9 || o.meta.events.length !== 5) cnt.secs++; const mo = o.meta.months; if (mo.length !== 12 || mo.some(m => !m.t || m.t.length < 20)) cnt.mon++;
     if (o.meta.best.length > 3 || o.meta.worst.length > 2) cnt.pick++; if (o.meta.best.length) withBest++; if (o.meta.worst.length) withWorst++;
-    const tp = o.secs.find(s => s.k === "tip"); if (!tp || tp.list.length !== 3) cnt.tip++; }
-  t("신년 깊이 풀이: 무작위 3000명 × 2026·2027 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·열두 달·고른 달 수 이상이 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0 }));
+    const tp = o.secs.find(s => s.k === "tip"); if (!tp || tp.list.length !== 3) cnt.tip++;
+    { const sn = {}; body.map(strip).join(" ").split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => x.length >= 14).forEach(x => { sn[x] = (sn[x] || 0) + 1; }); if (Object.values(sn).some(n => n > 1)) { cnt.dup++; Object.keys(sn).forEach(x => { if (sn[x] > 1) dupEx[x.slice(0, 44)] = 1; }); } } }
+  t("신년 깊이 풀이: 무작위 3000명 × 2026·2027 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·열두 달·고른 달 수·같은 문장 되풀이가 모두 0" + (cnt.dup ? " — 예: " + Object.keys(dupEx).slice(0, 4).join(" | ") : ""), JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0, dup: 0 }));
   t("신년 깊이 풀이: 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 1900자 이상", minLen >= 1900, true);
   t("신년 깊이 풀이: 힘이 실리는 달을 고른 비율 " + (withBest / 30).toFixed(0) + "% · 차분히 가는 달을 고른 비율 " + (withWorst / 30).toFixed(0) + "% (둘 다 30~95% — 네 가지 한눈에 문장이 고루 나온다)", withBest / 30 >= 30 && withBest / 30 <= 95 && withWorst / 30 >= 30 && withWorst / 30 <= 95, true);
   { const nyb = toolBlock("newyear");
@@ -661,12 +663,13 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
 { const ZD = require("./content_zodiac_fortune.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGZ = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/, RL = ["삼합", "육합", "복음", "평", "해", "형", "충"], TGN = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];
   const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
   t("띠 원고: 총운 12띠×7관계 · 재물·애정·몸·조언 각 7관계 · 하늘 글자 10 · 한 해 7관계가 모두 채워져 있다",
-    [Object.keys(ZD.gen).length === 12 && Object.values(ZD.gen).every(g => RL.every(r => g[r] && g[r].length > 80)), ["money", "love", "body", "tip"].every(k => RL.every(r => ZD[k][r] && ZD[k][r].length > 50)), TGN.every(k => ZD.tg[k] && ZD.tg[k].length > 30), RL.every(r => ZD.year[r] && /\{Y\}/.test(ZD.year[r]) && /\{A\}/.test(ZD.year[r]))].join(","), "true,true,true,true");
+    [Object.keys(ZD.gen).length === 12 && Object.values(ZD.gen).every(g => RL.every(r => g[r] && g[r].length > 80)), ["money", "love", "body", "tip"].every(k => RL.every(r => ZD[k][r] && ZD[k][r].length > 50)), TGN.every(k => ZD.tg[k] && ZD.tg[k].length > 30), RL.every(r => ZD.year[r] && /\{Y\}/.test(ZD.year[r]) && /\{A\}/.test(ZD.year[r])) && RL.every(r => ZD.yearAgain[r] && /\{P\}/.test(ZD.yearAgain[r]))].join(","), "true,true,true,true");
   { const { note, ...body } = ZD, all = strs(body).join("\n"); t("띠 원고: 보살 말투 · 겁주는 말 0 (근거 note 만 존댓말)", (JOND.test(all) ? "존댓말 " : "") + (NEGZ.test(all) ? "겁주는말" : "") || "0", "0"); }
-  const cZ = { token: 0, undef: 0, jondae: 0, secs: 0, rels: new Set() }; let minZ = 1e9;
+  const cZ = { token: 0, undef: 0, jondae: 0, secs: 0, dup: 0, rels: new Set() }; let minZ = 1e9;
   for (let b = 0; b < 12; b++) for (let d = 0; d < 60; d++) { const today = sjPillars(2026, 1, 1 + d, null, 0, false), o = zfDeep(b, today, ZD, ""), ys = zfYear(b, ZD), parts = []; o.secs.concat(ys).forEach(s => { parts.push(s.h); (s.p || []).forEach(x => parts.push(x)); }); const txt = parts.join("\n"); cZ.rels.add(o.rel); minZ = Math.min(minZ, txt.replace(/\s+/g, "").length);
-    if (/[{}]/.test(txt)) cZ.token++; if (/undefined|NaN|null/.test(txt)) cZ.undef++; if (JOND.test(txt)) cZ.jondae++; if (o.secs.length !== 5 || ys.length !== 2) cZ.secs++; }
-  t("띠 깊이 풀이: 12띠 × 일진 60개 — 남은 토큰·undefined·존댓말·섹션 수 이상이 모두 0 (본 관계 " + cZ.rels.size + "종)", JSON.stringify({ token: cZ.token, undef: cZ.undef, jondae: cZ.jondae, secs: cZ.secs }), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0 }));
+    if (/[{}]/.test(txt)) cZ.token++; if (/undefined|NaN|null/.test(txt)) cZ.undef++; if (JOND.test(txt)) cZ.jondae++; if (o.secs.length !== 5 || ys.length !== 2) cZ.secs++;
+    { const sn = {}; txt.split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => x.length >= 14).forEach(x => { sn[x] = (sn[x] || 0) + 1; }); if (Object.values(sn).some(n => n > 1)) cZ.dup++; } }
+  t("띠 깊이 풀이: 12띠 × 일진 60개 — 남은 토큰·undefined·존댓말·섹션 수·같은 문장 되풀이가 모두 0 (본 관계 " + cZ.rels.size + "종)", JSON.stringify({ token: cZ.token, undef: cZ.undef, jondae: cZ.jondae, secs: cZ.secs, dup: cZ.dup }), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0, dup: 0 }));
   t("띠 깊이 풀이: 글자 수(공백 제외) 최소 " + minZ + " — 예전 같은 일곱 칸(약 400자)의 1.5배를 넘는 650자 이상", minZ >= 650, true);
   { const zb = toolBlock("zodiacfortune"); t("띠별 운세 도구가 원고(zf/deep.json)를 받아 자리(#zfdeep·#zfyear)에 채운다", [zb.includes('fetch("zf/deep.json")'), zb.includes('<div id="zfdeep">'), zb.includes('<div id="zfyear">'), zb.includes("fillZf();"), bs.includes('"zf","deep.json"')].join(","), "true,true,true,true,true"); } }
 // 별자리 궁합 깊이 풀이(content_stargunghap.js → sgDeep): 별자리 쌍 78 · 원소 10 · 각도 7 · 수호성 3 · 문체 · 12×12 모든 조합 · 도구 배선

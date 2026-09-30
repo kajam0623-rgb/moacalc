@@ -223,6 +223,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     [p.y.b,p.d.b].forEach(function(b){if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;});
     return {rel:rel,score:Math.max(40,Math.min(97,sc))};}
   // c: {nb:상대 이름(이미 이스케이프), grade:등급, axes:[[축이름,점수]×4], now:기준 연도}
+  // 한 결과 안에서 같은 문장이 두 번 나오지 않게 — 뒤에 나온 같은 문장(14자 이상)을 뺀다. 정규식 뒷보기(lookbehind)는 옛 사파리에서 스크립트 전체를 깨뜨려 쓰지 않는다
+  function noRepeat(secs){var seen={};function keep(s){var k=s.replace(/<[^>]+>/g,"").trim();if(k.length<14)return true;if(seen[k])return false;seen[k]=1;return true;}
+    function dd(p){return (String(p).match(/[^.!?]+[.!?]*\s*/g)||[String(p)]).filter(keep).join("").trim();}
+    secs.forEach(function(s){if(s.p)s.p=s.p.map(dd).filter(function(x){return x;});if(s.roles)s.roles.forEach(function(r){r.t=dd(r.t)||r.t;});});return secs;}
   function ghDeep(A,B,c,D){
     if(!(A.h&&B.h)){A={y:A.y,m:A.m,d:A.d,h:null};B={y:B.y,m:B.m,d:B.d,h:null};} // 시각은 두 사람 다 알 때만 쓴다(점수와 같은 규칙)
     var nb=c.nb||"상대",ea=SJ_ES[A.d.s],eb=SJ_ES[B.d.s],hap=Math.abs(A.d.s-B.d.s)===5,r1=hap?"합":sjTenGod(A.d.s,B.d.s),R=D.rel[r1],M={B:nb},secs=[],i;
@@ -266,11 +270,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     secs.push({k:"work",h:"함께하면 잘 풀리는 일의 결",p:[ghFill(D.work.a,{P:"자네",E:SJ_EL[YA],J:SJ_YONG[SJ_EL[YA]].job}),ghFill(D.work.a,{P:nb,E:SJ_EL[YB],J:SJ_YONG[SJ_EL[YB]].job}),YA===YB?D.work.same:((YA+1)%5===YB||(YB+1)%5===YA)?D.work.chain:D.work.other],n:D.note.work});
     var years=[],y0=c.now,best,worst,Y;
     for(Y=y0;Y<y0+6;Y++){var ya=ghYear(A,Y),yb=ghYear(B,Y),av=Math.round((ya.score+yb.score)/2),flag=Math.min(ya.score,yb.score)<=62?(ya.score<yb.score?D.yr.a:D.yr.b):"";
-      years.push({y:Y,la:D.yt[ya.rel],lb:D.yt[yb.rel],a:ya.score,b:yb.score,s:av,v:av>=80?"좋은 해":av>=70?"무난":"조심",j:av>=80?D.yr.good:av>=70?D.yr.ok:D.yr.care,flag:flag});}
+      years.push({y:Y,la:D.yt[ya.rel],lb:D.yt[yb.rel],a:ya.score,b:yb.score,s:av,v:av>=80?"좋은 해":av>=70?"무난":"차분히",j:av>=80?D.yr.good:av>=70?D.yr.ok:D.yr.care,flag:flag});}
     best=years[0];worst=years[0];years.forEach(function(r){if(r.s>best.s)best=r;if(r.s<worst.s)worst=r;});
     var yp=best.s-worst.s<=6?[D.yr.flat]:[ghFill(D.yr.best,{Y:best.y})].concat(worst.s<70?[ghFill(D.yr.worst,{Y:worst.y})]:[]);
     secs.push({k:"yr",h:"함께 나아가기 좋은 해 — 결혼·동거·큰 계약을 정한다면",p:yp,years:years,n:D.note.yr});
     secs.push({k:"tip",h:"마음 맞추는 약속 세 가지",list:D.tip[r1].slice(),p:[D.axis[low]]});
+    noRepeat(secs);
     return {sum:sum,secs:secs,meta:{r1:r1,title:R.t,years:years,gA:gA,gB:gB,cA:cA,cB:cB,tk:tk,ik:ik,SA:SA,SB:SB,YA:YA,YB:YB,sa:sa.strong,sb:sb.strong}};}
   /* 사주 결과 '타고난 성격' — 일간·힘의 세기·태어난 계절·가장 두터운 십성 무리에서 네 조각을 골라 잇는 순수 함수.
      원고 D = content_saju_char.js(→ sj/char.json). 무리 개수가 같으면 비겁·식상·재성·관성·인성 차례로 앞의 것을 고른다 */
@@ -292,11 +297,17 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function nyDeep(me,YR,YW,D){
     var ds=me.d.s,ys=((YR-4)%10+10)%10,rel=sjTenGod(ds,ys),st=sjStrength(me),yEl=SJ_EL[st.yong],y2El=SJ_EL[st.yong2],
       fit=SJ_EL[SJ_ES[ys]]===yEl?2:SJ_EL[SJ_ES[ys]]===y2El?1:0,M={Y:YW,E:yEl},R=D.rel[rel],months=[],i;
+    var seenTg={},usedMid={},nFit=0,nCh=0,nHp=0,nSm=0;
     for(i=0;i<12;i++){var mm=i<11?i+2:1,yy=i<11?YR:YR+1,mp=sjPillars(yy,mm,20,12,0,false).m,tg=sjTenGod(ds,mp.s),el=SJ_EL[SJ_ES[mp.s]],
         mf=el===yEl?2:el===y2El?1:0,ch=Math.abs(mp.b-me.d.b)===6,hp=sjYukhap(me.d.b)===mp.b||(mp.b%4===me.d.b%4&&mp.b!==me.d.b),
-        MT=D.month[tg],sc=GH_YB[tg]+(mf===2?6:mf===1?3:0)+(hp?5:0)-(ch?8:0);
-      months.push({i:i,m:mm,y:yy,tg:tg,pil:SJ_S[mp.s]+SJ_B[mp.b],han:SJ_SH[mp.s]+SJ_BH[mp.b],sc:sc,ch:ch,hp:hp,fit:mf,term:NY_TERM[i],
-        t:MT[0]+" "+(mf===2?MT[1]:mf===1?D.monthFit+" "+MT[1]:MT[2])+(ch?" "+D.monthChung:hp?" "+D.monthHap:"")});}
+        MT=D.month[tg],sc=GH_YB[tg]+(mf===2?6:mf===1?3:0)+(hp?5:0)-(ch?8:0),mid=mf===0?MT[2]:MT[1],
+        fitN=mf===1?(nFit++?(D.monthMore.fit[nFit-2]||""):D.monthFit):"",noteN=ch?(nCh++?(D.monthMore.chung[nCh-2]||""):D.monthChung):hp?(nHp++?(D.monthMore.hap[nHp-2]||""):D.monthHap):"",
+        prev=seenTg[tg],head=prev?"":MT[0];
+      // 앞에서 이미 한 말은 되풀이하지 않는다: 같은 결의 달이면 그 달을 가리키고, 같은 문장이면 짧게 잇는다
+      if(usedMid[mid])mid=D.monthSame[Math.min(nSm++,D.monthSame.length-1)];usedMid[mid]=1;
+      var mo={i:i,m:mm,y:yy,tg:tg,pil:SJ_S[mp.s]+SJ_B[mp.b],han:SJ_SH[mp.s]+SJ_BH[mp.b],sc:sc,ch:ch,hp:hp,fit:mf,term:NY_TERM[i]};
+      mo.t=(prev?ghFill(D.monthAgain,{prev:ml(prev)}):head)+" "+(fitN?fitN+" ":"")+mid+(noteN?" "+noteN:"");
+      if(!prev)seenTg[tg]=mo;months.push(mo);}
     function ml(x){return (x.y>YR?"이듬해 ":"")+x.m+"월";}
     function nm(a){return a.map(ml).join("·");}
     function byI(a){return a.slice().sort(function(p,q){return p.i-q.i;});}
@@ -557,8 +568,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       {k:"love",h:"애정운",p:[D.love[rel]]},
       {k:"body",h:"몸과 마음",p:[D.body[rel]]},
       {k:"tip",h:"조언",p:[D.tip[rel]]}]};}
-  function zfYear(b,D){function y(Yb,YW,A){return {k:"year",h:YW+" 한 해",p:[ghFill(D.year[zfRel(b,Yb)],{Y:YW,A:A})]};}
-    return [y(7,"2027 정미년","미(未)"),y(6,"2026 병오년","오(午)")];}
+  function zfYear(b,D){function y(Yb,YW,A,P){var r=zfRel(b,Yb);return {k:"year",h:YW+" 한 해",p:[P&&D.yearAgain?ghFill(D.yearAgain[r],{Y:YW,A:A,P:P}):ghFill(D.year[r],{Y:YW,A:A})]};}
+    return [y(7,"2027 정미년","미(未)"),y(6,"2026 병오년","오(午)",zfRel(b,7)===zfRel(b,6)?"2027 정미년":"")];}
   /* 별자리 오늘 점수 — 하루의 결은 오늘 달이 내 별자리와 이루는 각도(ST_MASP)와 이달의 배경인 태양의 각도(ST_ASP)를 반씩 섞고,
      요일 지배성이 내 수호성(+7)·같은 원소 지배성(+3)·그 밖(−3)을 더한다. 별자리 운세와 홈 "오늘의 별자리 순위"가 같이 쓴다.
      rk: 2 수호성의 요일, 1 결이 맞는 요일, 0 결이 다른 요일 / md: 달과의 각 0~6 / dist: 태양과의 각 0~6 */

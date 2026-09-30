@@ -90,6 +90,14 @@ const month = {
 const monthFit = "보조로 쓰는 기운이 붙어 한결 수월하네.";
 const monthChung = "태어난 날 글자와 마주 서는 달이라 이동과 사람 사이, 몸 관리를 한 번 더 살피면 든든하네.";
 const monthHap = "태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀리네.";
+// 같은 결의 달이 다시 나오면 되풀이하지 않고 짧게: {prev} 앞서 나온 달
+const monthAgain = "{prev}과 같은 결의 달이야.";
+const monthSame = ["그때 정한 대로 이어 가면 되네.", "그때 세운 방향을 그대로 이어 가면 되네."];
+const monthMore = {
+  fit: ["이 달도 보조 기운이 붙어 수월하네.", "여기서도 보조 기운이 힘을 보태 주네."],
+  chung: ["이 달도 태어난 날 글자와 마주 서니 몸과 이동을 한 번 더 살펴 두면 든든하네.", "여기서도 마주 서는 달이니 사람 사이와 건강을 차분히 챙기게."],
+  hap: ["이 달도 태어난 날 글자와 붙어 인연이 순하게 이어지네.", "여기서도 사람 일이 순하게 풀리는 달일세."]
+};
 
 // 한눈에 — 좋은 달·조심할 달 문장. {best} {worst} 는 "2월·3월" 꼴
 const sum = {
@@ -163,4 +171,4 @@ const note = {
   help: "나를 받쳐 주는 기운은 힘이 센 정도에 따라 정한 균형 기운(신강이면 덜어 주는 기운, 신약이면 돕는 기운)이며 색·방향·일은 전통 분류에 따른 참고용입니다."
 };
 
-module.exports = { rel, fit, month, monthFit, monthChung, monthHap, sum, help, tip, ev, note };
+module.exports = { rel, fit, month, monthFit, monthChung, monthHap, monthAgain, monthSame, monthMore, sum, help, tip, ev, note };
