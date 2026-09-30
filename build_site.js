@@ -1605,7 +1605,7 @@ function sipseongPage(s){
     crumb:`${s.ko}`,
     learn: learnMore(`${s.ko}${josa(s.ko,"은/는")} ${s.group}에 속하는 십성입니다. 열 가지 십성을 한 표로 찾는 법은 6강, 십성이 일간의 힘을 재는 데 쓰이는 방식은 7강, 사주의 틀(격국)을 정하는 방식은 9강에서 배웁니다.`, [6, 7, 9]),
     title:`${s.ko} — 뜻·성격·직업·재물 풀이 | 동네보살`,
-    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 약점. 연애·직업·재물에서 어떻게 나타나는지.`,
+    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 챙길 점. 연애·직업·재물에서 어떻게 나타나는지.`,
     url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${s.han} ${s.ko} — ${s.keyword}`,
     sub:`${s.group} · ${s.rule} · 짝이 되는 십성 ${s.pair}`,
@@ -1624,7 +1624,7 @@ function sipseongPage(s){
       `<section class="guide"><h2>${s.ko}의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(s.y2026)}</div></section>`,
     faq:[
       [`${s.ko}${josa(s.ko,"은/는")} 어떻게 판정하나요?`,`${s.rule}입니다. 내 일간을 기준으로 사주의 다른 글자를 하나씩 대조해 정합니다. 사주팔자 만세력에 생년월일을 넣으면 여덟 글자마다 십성이 표시됩니다.`],
-      [`${s.ko}${josa(s.ko,"이/가")} 많으면 나쁜가요?`,`십성 자체에 좋고 나쁨은 없습니다. 같은 ${s.ko}${josa(s.ko,"이/가")}라도 사주 전체의 균형에 따라 강점(${s.strong})으로 나타나기도 하고 약점(${s.weak})으로 나타나기도 합니다. 신강·신약과 용신을 함께 봐야 판단이 됩니다.`],
+      [`${s.ko}${josa(s.ko,"이/가")} 많으면 나쁜가요?`,`십성 자체에 좋고 나쁨은 없습니다. 같은 ${s.ko}${josa(s.ko,"이/가")}라도 사주 전체의 균형에 따라 강점(${s.strong})으로 나타나기도 하고 챙길 점(${s.weak})으로 나타나기도 합니다. 신강·신약과 용신을 함께 봐야 판단이 됩니다.`],
       [`${s.ko}${josa(s.ko,"과/와")} ${s.pair}${josa(s.pair,"은/는")} 뭐가 다른가요?`,`둘 다 ${s.group}에 속하지만 음양이 다릅니다. 같은 계열이라도 ${s.ko}${josa(s.ko,"은/는")} ${s.keyword}로 나타나고, ${s.pair}${josa(s.pair,"은/는")} 결이 다르게 작용합니다. 두 글자가 함께 있으면 성격이 겹쳐 보이므로 어느 쪽이 더 강한지를 봅니다.`]],
     sibTitle:"다른 십성도 보기", sibs:sipseongChips(s.en),
     related:["saju","todayfortune","newyear","gunghap"]});
