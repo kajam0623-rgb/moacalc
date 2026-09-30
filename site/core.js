@@ -191,6 +191,71 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
     while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
     return out;}
+  /* 궁합 깊이 있는 풀이 — 원고 D(content_gunghap.js → gh/deep.json)에서 두 사람의 명식에 맞는 문장을 골라 잇는 순수 함수.
+     엔진에 둔 이유: verify.js 가 무작위 쌍으로 검사한다. 이름 토큰은 {B:이/가} 꼴(받침 있으면 앞, 없으면 뒤)로 조사를 맞춘다 */
+  function ghJ(w,pair){var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28!==0)?p[0]:p[1];}
+  function ghFill(s,map){return String(s).replace(/\{([A-Za-z]+)(?::([^}]+))?\}/g,function(m,k,j){var v=map[k];if(v==null)return m;return j?v+ghJ(v,j):v;});}
+  var GH_GRP={비견:"비",겁재:"비",식신:"식",상관:"식",편재:"재",정재:"재",편관:"관",정관:"관",편인:"인",정인:"인"};
+  function ghTg(p){var ds=p.d.s,c={재:0,관:0,식:0,인:0,비:0}; // 일간을 뺀 천간과 지지 본기의 십성 무리별 개수
+    [p.y.s,p.m.s].concat(p.h?[p.h.s]:[]).forEach(function(s){c[GH_GRP[sjTenGod(ds,s)]]++;});
+    [p.y.b,p.m.b,p.d.b].concat(p.h?[p.h.b]:[]).forEach(function(b){c[GH_GRP[sjTenGod(ds,SJ_BMAIN[b])]]++;});
+    return c;}
+  function ghEl(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].concat(p.h?[p.h]:[]).forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
+  var GH_YB={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84};
+  // 그해 점수 — 신년운세 도구와 같은 식: 십성 기본점수 + 띠·일지와 태세의 삼합·육합 +5 / 충 -6, 40~97
+  function ghYear(p,Y){var ys=((Y-4)%10+10)%10,yb=((Y-4)%12+12)%12,rel=sjTenGod(p.d.s,ys),sc=GH_YB[rel];
+    [p.y.b,p.d.b].forEach(function(b){if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;});
+    return {rel:rel,score:Math.max(40,Math.min(97,sc))};}
+  // c: {nb:상대 이름(이미 이스케이프), grade:등급, axes:[[축이름,점수]×4], now:기준 연도}
+  function ghDeep(A,B,c,D){
+    if(!(A.h&&B.h)){A={y:A.y,m:A.m,d:A.d,h:null};B={y:B.y,m:B.m,d:B.d,h:null};} // 시각은 두 사람 다 알 때만 쓴다(점수와 같은 규칙)
+    var nb=c.nb||"상대",ea=SJ_ES[A.d.s],eb=SJ_ES[B.d.s],hap=Math.abs(A.d.s-B.d.s)===5,r1=hap?"합":sjTenGod(A.d.s,B.d.s),R=D.rel[r1],M={B:nb},secs=[],i;
+    var axes=c.axes.slice().sort(function(x,y){return y[1]-x[1];}),low=axes[axes.length-1][0];
+    var sum=ghFill(D.sum[c.grade],{top:axes[0][0],low:low,t:R.t});
+    var pic=['<b>자네</b> '+SJ_ILGAN_ID[A.d.s],'<b>'+nb+'</b> '+SJ_ILGAN_ID[B.d.s]];
+    if(hap)pic.push(D.hap[Math.min(A.d.s,B.d.s)]);
+    else{var lo=ea<=eb,pe=D.pairEl[lo?SJ_EL[ea]+SJ_EL[eb]:SJ_EL[eb]+SJ_EL[ea]];
+      pic.push('두 글자를 한 장의 그림으로 그리면 「'+pe.img+'」일세. '+ghFill(pe.body,{X:lo?"자네":nb,Y:lo?nb:"자네"}));}
+    secs.push({k:"pic",h:"두 사람을 한 장의 그림으로",p:pic,n:D.note.pic});
+    secs.push({k:"bond",h:"서로에게 어떻게 보이나 — "+R.t,p:['<b>끌리는 이유</b> '+ghFill(R.pull,M),'<b>부딪히는 지점</b> '+ghFill(R.clash,M),'<b>풀어 가는 법</b> '+ghFill(R.fix,M),ghFill(R.you,M)]});
+    var Mo=D.mode[r1];
+    secs.push({k:"mode",h:"연애일 때, 결혼일 때, 함께 일할 때",p:['<b>연애</b> '+Mo.love,'<b>결혼</b> '+Mo.marry,'<b>함께 일하기</b> '+Mo.work]});
+    var cA=ghEl(A),cB=ghEl(B),el=[];
+    function elLine(cx,co,pn,qn){var mx=0,z=[],out=[],k;for(k=0;k<5;k++){if(cx[k]>cx[mx])mx=k;if(cx[k]===0)z.push(k);}
+      if(cx[mx]>=3)out.push(ghFill(D.elx.many[SJ_EL[mx]],{P:pn}));
+      if(z.length){var zi=z[0];for(k=0;k<z.length;k++)if(co[z[k]]>=2){zi=z[k];break;}
+        out.push(ghFill(D.elx.none[SJ_EL[zi]],{P:pn}));if(co[zi]>=2)out.push(ghFill(D.elx.fill,{P:pn,Q:qn,E:SJ_EL[zi]}));}
+      return out;}
+    el=elLine(cA,cB,"자네",nb).concat(elLine(cB,cA,nb,"자네"));
+    var dl=0;for(i=0;i<5;i++)dl+=Math.abs(cA[i]-cB[i]);
+    if(!el.length)el.push(dl<=3?D.elx.same:ghFill(D.elx.flat,M));
+    secs.push({k:"el",h:"오행이 서로에게 하는 일",p:el,n:D.note.el});
+    function seas(b){return b>=2&&b<=4?"봄":b>=5&&b<=7?"여름":b>=8&&b<=10?"가을":"겨울";}
+    var SA=seas(A.m.b),SB=seas(B.m.b),SO=["봄","여름","가을","겨울"],pk=SO.indexOf(SA)<=SO.indexOf(SB)?SA+SB:SB+SA;
+    secs.push({k:"season",h:"태어난 계절이 서로에게 하는 일",p:[ghFill(D.season[SA],{P:"자네"}),ghFill(D.season[SB],{P:nb}),D.seasonPair[pk]],n:D.note.season});
+    function rk(a,b){return a===b?"같음":(a%4===b%4)?"삼합":(a+b===13||(a===0&&b===1)||(a===1&&b===0))?"육합":Math.abs(a-b)===6?"충":"무난";}
+    var tk=rk(A.y.b,B.y.b),ik=rk(A.d.b,B.d.b),tm={ta:SJ_TTI[A.y.b]+"띠",tb:SJ_TTI[B.y.b]+"띠"};
+    secs.push({k:"home",h:"겉의 호흡(띠)과 속의 호흡(배우자 자리)",p:['<b>사람들 앞에서</b> '+ghFill(D.home.tti[tk],tm),'<b>집 안에서</b> '+D.home.ilji[ik]],n:D.note.home});
+    var sa=sjStrength(A),sb=sjStrength(B);
+    secs.push({k:"str",h:"힘의 균형 — 누가 앞서고 누가 받치나",p:[ghFill(D.str[(sa.strong?"강":"약")+(sb.strong?"강":"약")],M)],n:D.note.str+" (자네 "+Math.round(sa.ratio*100)+"%, "+nb+" "+Math.round(sb.ratio*100)+"%)"});
+    var gA=ghTg(A),gB=ghTg(B),roles=[];
+    ["재","관","식","인","비"].forEach(function(g){var a=gA[g],b=gB[g],d=D.role[g],who,txt;
+      if(a>=3&&b>=3){who="둘 다";txt=d.both;}
+      else if(Math.abs(a-b)>=2){var pa=a>b;who=pa?"자네":nb;txt=ghFill(d.lead,{P:who});}
+      else if(a<=1&&b<=1){who="둘 다 얇음";txt=d.none;}
+      else{who="비슷";txt=d.even;}
+      roles.push({k:d.t,w:who,t:txt});});
+    secs.push({k:"role",h:"역할 나누기 — 누가 무엇을 맡으면 편한가",roles:roles,n:D.note.role});
+    var YA=sa.yong,YB=sb.yong;
+    secs.push({k:"work",h:"함께하면 잘 풀리는 일의 결",p:[ghFill(D.work.a,{P:"자네",E:SJ_EL[YA],J:SJ_YONG[SJ_EL[YA]].job}),ghFill(D.work.a,{P:nb,E:SJ_EL[YB],J:SJ_YONG[SJ_EL[YB]].job}),YA===YB?D.work.same:((YA+1)%5===YB||(YB+1)%5===YA)?D.work.chain:D.work.other],n:D.note.work});
+    var years=[],y0=c.now,best,worst,Y;
+    for(Y=y0;Y<y0+6;Y++){var ya=ghYear(A,Y),yb=ghYear(B,Y),av=Math.round((ya.score+yb.score)/2),flag=Math.min(ya.score,yb.score)<=62?(ya.score<yb.score?D.yr.a:D.yr.b):"";
+      years.push({y:Y,la:D.yt[ya.rel],lb:D.yt[yb.rel],a:ya.score,b:yb.score,s:av,v:av>=80?"좋은 해":av>=70?"무난":"조심",j:av>=80?D.yr.good:av>=70?D.yr.ok:D.yr.care,flag:flag});}
+    best=years[0];worst=years[0];years.forEach(function(r){if(r.s>best.s)best=r;if(r.s<worst.s)worst=r;});
+    var yp=best.s-worst.s<=6?[D.yr.flat]:[ghFill(D.yr.best,{Y:best.y})].concat(worst.s<70?[ghFill(D.yr.worst,{Y:worst.y})]:[]);
+    secs.push({k:"yr",h:"함께 나아가기 좋은 해 — 결혼·동거·큰 계약을 정한다면",p:yp,years:years,n:D.note.yr});
+    secs.push({k:"tip",h:"마음 맞추는 약속 세 가지",list:D.tip[r1].slice(),p:[D.axis[low]]});
+    return {sum:sum,secs:secs,meta:{r1:r1,title:R.t,years:years,gA:gA,gB:gB,cA:cA,cB:cB,tk:tk,ik:ik,SA:SA,SB:SB,YA:YA,YB:YB,sa:sa.strong,sb:sb.strong}};}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};

@@ -382,7 +382,7 @@
   .sj-ko{font-size:11px;color:var(--muted);margin-top:2px;padding-bottom:8px;}
   .sj-cell+.sj-cell{border-top:1px dotted var(--line-2);}
   .sj-tg{font-size:10px;color:var(--fun-ink);padding-bottom:7px;margin-top:-4px;}
-  .el-목{color:#3d9960;} .el-화{color:#d05548;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#3f7ec2;}
+  .el-목{color:#46a76b;} .el-화{color:#e8695c;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#5a9ae0;}
   /* 밝은 배경에서는 글자 대비 4.5:1 을 넘도록 한 단계 진하게(어두운 모드는 위 색 그대로) */
   :root:not([data-theme="dark"]) .el-목{color:#2b7a48;} :root:not([data-theme="dark"]) .el-화{color:#b8402f;} :root:not([data-theme="dark"]) .el-토{color:#8f6415;} :root:not([data-theme="dark"]) .el-금{color:#626771;} :root:not([data-theme="dark"]) .el-수{color:#2f6aa8;}
   :root[data-theme="dark"] .el-금{color:#aab1bb;}
@@ -454,6 +454,13 @@
   .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .tf-err{color:var(--deduct);font-size:13px;font-weight:700;margin:6px 2px 0;}.tf-err:empty{display:none;}
+  .gh-deep p{margin:9px 0;line-height:1.85;word-break:keep-all;}.gh-deep p b{color:var(--accent-ink);}
+  .gh-role{padding:10px 0;border-top:1px solid var(--line);line-height:1.75;}.gh-role .gh-w{margin-left:6px;font-size:12.5px;font-weight:800;color:var(--accent-ink);}
+  .gh-yrs{margin-top:6px;}.gh-yr{padding:10px 0;border-top:1px solid var(--line);line-height:1.7;}.gh-yl{font-size:13px;color:var(--muted);}
+  .gh-v{margin-left:6px;font-size:12.5px;font-weight:800;padding:1px 8px;border-radius:99px;border:1.5px solid currentColor;}.gh-v.g{color:var(--fun-ink);}.gh-v.o{color:var(--accent-ink);}.gh-v.c{color:var(--deduct);}
+  .gh-flag{font-size:12.5px;color:var(--deduct);font-weight:700;margin-left:6px;}
+  .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */
@@ -863,6 +870,71 @@
     ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
     while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
     return out;}
+  /* 궁합 깊이 있는 풀이 — 원고 D(content_gunghap.js → gh/deep.json)에서 두 사람의 명식에 맞는 문장을 골라 잇는 순수 함수.
+     엔진에 둔 이유: verify.js 가 무작위 쌍으로 검사한다. 이름 토큰은 {B:이/가} 꼴(받침 있으면 앞, 없으면 뒤)로 조사를 맞춘다 */
+  function ghJ(w,pair){var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28!==0)?p[0]:p[1];}
+  function ghFill(s,map){return String(s).replace(/\{([A-Za-z]+)(?::([^}]+))?\}/g,function(m,k,j){var v=map[k];if(v==null)return m;return j?v+ghJ(v,j):v;});}
+  var GH_GRP={비견:"비",겁재:"비",식신:"식",상관:"식",편재:"재",정재:"재",편관:"관",정관:"관",편인:"인",정인:"인"};
+  function ghTg(p){var ds=p.d.s,c={재:0,관:0,식:0,인:0,비:0}; // 일간을 뺀 천간과 지지 본기의 십성 무리별 개수
+    [p.y.s,p.m.s].concat(p.h?[p.h.s]:[]).forEach(function(s){c[GH_GRP[sjTenGod(ds,s)]]++;});
+    [p.y.b,p.m.b,p.d.b].concat(p.h?[p.h.b]:[]).forEach(function(b){c[GH_GRP[sjTenGod(ds,SJ_BMAIN[b])]]++;});
+    return c;}
+  function ghEl(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].concat(p.h?[p.h]:[]).forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
+  var GH_YB={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84};
+  // 그해 점수 — 신년운세 도구와 같은 식: 십성 기본점수 + 띠·일지와 태세의 삼합·육합 +5 / 충 -6, 40~97
+  function ghYear(p,Y){var ys=((Y-4)%10+10)%10,yb=((Y-4)%12+12)%12,rel=sjTenGod(p.d.s,ys),sc=GH_YB[rel];
+    [p.y.b,p.d.b].forEach(function(b){if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;});
+    return {rel:rel,score:Math.max(40,Math.min(97,sc))};}
+  // c: {nb:상대 이름(이미 이스케이프), grade:등급, axes:[[축이름,점수]×4], now:기준 연도}
+  function ghDeep(A,B,c,D){
+    if(!(A.h&&B.h)){A={y:A.y,m:A.m,d:A.d,h:null};B={y:B.y,m:B.m,d:B.d,h:null};} // 시각은 두 사람 다 알 때만 쓴다(점수와 같은 규칙)
+    var nb=c.nb||"상대",ea=SJ_ES[A.d.s],eb=SJ_ES[B.d.s],hap=Math.abs(A.d.s-B.d.s)===5,r1=hap?"합":sjTenGod(A.d.s,B.d.s),R=D.rel[r1],M={B:nb},secs=[],i;
+    var axes=c.axes.slice().sort(function(x,y){return y[1]-x[1];}),low=axes[axes.length-1][0];
+    var sum=ghFill(D.sum[c.grade],{top:axes[0][0],low:low,t:R.t});
+    var pic=['<b>자네</b> '+SJ_ILGAN_ID[A.d.s],'<b>'+nb+'</b> '+SJ_ILGAN_ID[B.d.s]];
+    if(hap)pic.push(D.hap[Math.min(A.d.s,B.d.s)]);
+    else{var lo=ea<=eb,pe=D.pairEl[lo?SJ_EL[ea]+SJ_EL[eb]:SJ_EL[eb]+SJ_EL[ea]];
+      pic.push('두 글자를 한 장의 그림으로 그리면 「'+pe.img+'」일세. '+ghFill(pe.body,{X:lo?"자네":nb,Y:lo?nb:"자네"}));}
+    secs.push({k:"pic",h:"두 사람을 한 장의 그림으로",p:pic,n:D.note.pic});
+    secs.push({k:"bond",h:"서로에게 어떻게 보이나 — "+R.t,p:['<b>끌리는 이유</b> '+ghFill(R.pull,M),'<b>부딪히는 지점</b> '+ghFill(R.clash,M),'<b>풀어 가는 법</b> '+ghFill(R.fix,M),ghFill(R.you,M)]});
+    var Mo=D.mode[r1];
+    secs.push({k:"mode",h:"연애일 때, 결혼일 때, 함께 일할 때",p:['<b>연애</b> '+Mo.love,'<b>결혼</b> '+Mo.marry,'<b>함께 일하기</b> '+Mo.work]});
+    var cA=ghEl(A),cB=ghEl(B),el=[];
+    function elLine(cx,co,pn,qn){var mx=0,z=[],out=[],k;for(k=0;k<5;k++){if(cx[k]>cx[mx])mx=k;if(cx[k]===0)z.push(k);}
+      if(cx[mx]>=3)out.push(ghFill(D.elx.many[SJ_EL[mx]],{P:pn}));
+      if(z.length){var zi=z[0];for(k=0;k<z.length;k++)if(co[z[k]]>=2){zi=z[k];break;}
+        out.push(ghFill(D.elx.none[SJ_EL[zi]],{P:pn}));if(co[zi]>=2)out.push(ghFill(D.elx.fill,{P:pn,Q:qn,E:SJ_EL[zi]}));}
+      return out;}
+    el=elLine(cA,cB,"자네",nb).concat(elLine(cB,cA,nb,"자네"));
+    var dl=0;for(i=0;i<5;i++)dl+=Math.abs(cA[i]-cB[i]);
+    if(!el.length)el.push(dl<=3?D.elx.same:ghFill(D.elx.flat,M));
+    secs.push({k:"el",h:"오행이 서로에게 하는 일",p:el,n:D.note.el});
+    function seas(b){return b>=2&&b<=4?"봄":b>=5&&b<=7?"여름":b>=8&&b<=10?"가을":"겨울";}
+    var SA=seas(A.m.b),SB=seas(B.m.b),SO=["봄","여름","가을","겨울"],pk=SO.indexOf(SA)<=SO.indexOf(SB)?SA+SB:SB+SA;
+    secs.push({k:"season",h:"태어난 계절이 서로에게 하는 일",p:[ghFill(D.season[SA],{P:"자네"}),ghFill(D.season[SB],{P:nb}),D.seasonPair[pk]],n:D.note.season});
+    function rk(a,b){return a===b?"같음":(a%4===b%4)?"삼합":(a+b===13||(a===0&&b===1)||(a===1&&b===0))?"육합":Math.abs(a-b)===6?"충":"무난";}
+    var tk=rk(A.y.b,B.y.b),ik=rk(A.d.b,B.d.b),tm={ta:SJ_TTI[A.y.b]+"띠",tb:SJ_TTI[B.y.b]+"띠"};
+    secs.push({k:"home",h:"겉의 호흡(띠)과 속의 호흡(배우자 자리)",p:['<b>사람들 앞에서</b> '+ghFill(D.home.tti[tk],tm),'<b>집 안에서</b> '+D.home.ilji[ik]],n:D.note.home});
+    var sa=sjStrength(A),sb=sjStrength(B);
+    secs.push({k:"str",h:"힘의 균형 — 누가 앞서고 누가 받치나",p:[ghFill(D.str[(sa.strong?"강":"약")+(sb.strong?"강":"약")],M)],n:D.note.str+" (자네 "+Math.round(sa.ratio*100)+"%, "+nb+" "+Math.round(sb.ratio*100)+"%)"});
+    var gA=ghTg(A),gB=ghTg(B),roles=[];
+    ["재","관","식","인","비"].forEach(function(g){var a=gA[g],b=gB[g],d=D.role[g],who,txt;
+      if(a>=3&&b>=3){who="둘 다";txt=d.both;}
+      else if(Math.abs(a-b)>=2){var pa=a>b;who=pa?"자네":nb;txt=ghFill(d.lead,{P:who});}
+      else if(a<=1&&b<=1){who="둘 다 얇음";txt=d.none;}
+      else{who="비슷";txt=d.even;}
+      roles.push({k:d.t,w:who,t:txt});});
+    secs.push({k:"role",h:"역할 나누기 — 누가 무엇을 맡으면 편한가",roles:roles,n:D.note.role});
+    var YA=sa.yong,YB=sb.yong;
+    secs.push({k:"work",h:"함께하면 잘 풀리는 일의 결",p:[ghFill(D.work.a,{P:"자네",E:SJ_EL[YA],J:SJ_YONG[SJ_EL[YA]].job}),ghFill(D.work.a,{P:nb,E:SJ_EL[YB],J:SJ_YONG[SJ_EL[YB]].job}),YA===YB?D.work.same:((YA+1)%5===YB||(YB+1)%5===YA)?D.work.chain:D.work.other],n:D.note.work});
+    var years=[],y0=c.now,best,worst,Y;
+    for(Y=y0;Y<y0+6;Y++){var ya=ghYear(A,Y),yb=ghYear(B,Y),av=Math.round((ya.score+yb.score)/2),flag=Math.min(ya.score,yb.score)<=62?(ya.score<yb.score?D.yr.a:D.yr.b):"";
+      years.push({y:Y,la:D.yt[ya.rel],lb:D.yt[yb.rel],a:ya.score,b:yb.score,s:av,v:av>=80?"좋은 해":av>=70?"무난":"조심",j:av>=80?D.yr.good:av>=70?D.yr.ok:D.yr.care,flag:flag});}
+    best=years[0];worst=years[0];years.forEach(function(r){if(r.s>best.s)best=r;if(r.s<worst.s)worst=r;});
+    var yp=best.s-worst.s<=6?[D.yr.flat]:[ghFill(D.yr.best,{Y:best.y})].concat(worst.s<70?[ghFill(D.yr.worst,{Y:worst.y})]:[]);
+    secs.push({k:"yr",h:"함께 나아가기 좋은 해 — 결혼·동거·큰 계약을 정한다면",p:yp,years:years,n:D.note.yr});
+    secs.push({k:"tip",h:"마음 맞추는 약속 세 가지",list:D.tip[r1].slice(),p:[D.axis[low]]});
+    return {sum:sum,secs:secs,meta:{r1:r1,title:R.t,years:years,gA:gA,gB:gB,cA:cA,cB:cB,tk:tk,ik:ik,SA:SA,SB:SB,YA:YA,YB:YB,sa:sa.strong,sb:sb.strong}};}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
@@ -2945,7 +3017,7 @@
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:4});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
@@ -3797,7 +3869,7 @@
       return '<div class="sj-char"><img width="520" height="520" src="img/char/el-'+en+'-'+g+'.webp" alt="'+who+' — '+SJ_S[P.d.s]+e+' 일간 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+who+' · '+(g==="m"?"남":"여")+'</div><div class="n">'+SJ_S[P.d.s]+e+' 일간</div><p>'+SJ_TTI[P.y.b]+'띠 · '+SJ_S[P.d.s]+SJ_B[P.d.b]+'일주</p></div></div>';}
     function pts(a,b){ // [점수증감, 설명] 목록
-      var out=[],sc=60,f={hap:false,r1:null,tti:"",ilji:"",fill:0}; // f: 네 축 계산에 쓰는 판정값
+      var out=[],sc=66,f={hap:false,r1:null,tti:"",ilji:"",fill:0}; // f: 네 축 계산에 쓰는 판정값. 기준선 66(2026-09-30: 60이던 때는 합이 없는 평범한 조합 43%가 노력형 인연으로 몰렸다. 중앙값 70→76)
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
       if(Math.abs(a.d.s-b.d.s)===5){sc+=18;f.hap=true;out.push(["기운이 딱 맞물림","두 사람을 뜻하는 글자("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")가 서로 짝을 이루는 사이입니다. 사주에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
       else{
@@ -3833,6 +3905,18 @@
         else if(Math.abs(ha-hb)===6){sc-=4;f.hour="충";out.push(["늘그막의 조율","태어난 시각 자리끼리 부딪히는 짝 — 자녀 문제나 노후 계획에서 생각이 갈리기 쉬우니 일찍 이야기해 두세요."]);}}
       return [Math.max(35,Math.min(99,Math.round(sc))),out,f];
     }
+    // 깊이 있는 풀이 원고(gh/deep.json)는 결과가 그려진 뒤에 도착해도 자리(#ghdeep)에 채운다
+    var GHD=null,ghLast=null;
+    function ghSecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
+      (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
+      if(s.roles)h+=s.roles.map(function(r){return '<div class="gh-role"><div><b>'+r.k+'</b> <span class="gh-w">'+r.w+'</span></div><div>'+r.t+'</div></div>';}).join("");
+      if(s.years)h+='<div class="gh-yrs">'+s.years.map(function(r){return '<div class="gh-yr"><div><b>'+r.y+'년</b> <span class="gh-v '+(r.v==="좋은 해"?"g":r.v==="무난"?"o":"c")+'">'+r.v+'</span>'+(r.flag?' <span class="gh-flag">'+r.flag+'</span>':"")+'</div><div class="gh-yl">자네 '+r.la+' · 상대 '+r.lb+'</div></div>';}).join("")+'</div>';
+      if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
+      if(s.n)h+='<p class="gh-note">'+s.n+'</p>';
+      return h+'</div>';}
+    function fillDeep(){var h=el.querySelector("#ghdeep");if(!h||!GHD||!ghLast)return;var o=ghDeep(ghLast.A,ghLast.B,ghLast.c,GHD);
+      h.innerHTML='<div class="sj-sec gh-deep fold-skip"><h3>종합</h3><p>'+o.sum+'</p></div>'+o.secs.map(ghSecHtml).join("");}
+    if(typeof fetch==="function")fetch("gh/deep.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){GHD=j;fillDeep();}}).catch(function(){});
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||(!inv&&bv.length<3))return;
@@ -3876,16 +3960,18 @@
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
       '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,inv&&inv.n?escH(inv.n):"상대")+'</div>'+
+      '<div id="ghdeep"></div>'+
+      '<h3 class="gh-basis">계산 근거 — 글자별로 본 궁합</h3>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>'+(A.h&&B.h?"여덟 글자(연·월·일·시주)":"여섯 글자(연·월·일주)")+'에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
-      '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
       '<div class="gh-mkinv">'+bosalImg("phone","bs-side","휴대폰을 든 아기보살")+'<h3>'+(inv?"나도 다른 사람에게 보내기":"이 궁합, 상대에게 보내기")+'</h3><p>내 사주 글자만 담은 링크를 보내면 받은 사람은 자기 생일만 넣고 우리 둘의 궁합을 봅니다. 생년월일은 서버로 가지 않고, 링크는 7일 뒤 지워집니다.</p>'+
       '<div class="ai-row"><input class="gh-nick" maxlength="10" placeholder="내 이름 (선택)" aria-label="보내는 사람 이름"><span class="gh-mk" role="button" tabindex="0">초대 링크 만들기</span></div><p class="gh-link" aria-live="polite"></p></div>'+
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
+      ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
       saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}

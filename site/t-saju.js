@@ -624,7 +624,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:1});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:4});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");

@@ -511,6 +511,35 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   // 옵션 값(0,2,…,22,23) → birthIn 이 쓰는 가운데 시각(값:30분)이 그 시진에 든다: 값 v → 시진 index = v==23 ? 0 : v/2
   let badMid = 0; for (const v of [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 23]) { const idx = v === 23 ? 0 : v / 2; if (sjPillars(1990, 3, 15, v, 30, true).h.b !== idx || sjPillars(1990, 3, 15, v, 30, false).h.b !== idx) badMid++; }
   t("시진 목록: 고른 값의 가운데 시각(값:30)이 보정 적용·미적용 모두 그 시진이다", badMid, 0); }
+// 사주 궁합 깊은 풀이(content_gunghap.js → ghDeep) + 점수 기준선
+{ const GD = require("./content_gunghap.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/;
+  const RELS = ["합", "비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"], ELS = ["목", "화", "토", "금", "수"];
+  const relOk = RELS.every(k => GD.rel[k] && ["t", "pull", "clash", "fix", "you"].every(f => GD.rel[k][f] && GD.rel[k][f].length > 10) && GD.tip[k] && GD.tip[k].length === 3 && GD.mode[k] && GD.mode[k].love && GD.mode[k].marry && GD.mode[k].work);
+  const pairKeys = []; for (let i = 0; i < 5; i++) for (let j = i; j < 5; j++) pairKeys.push(ELS[i] + ELS[j]);
+  const SEAS = ["봄", "여름", "가을", "겨울"], seasKeys = []; for (let i = 0; i < 4; i++) for (let j = i; j < 4; j++) seasKeys.push(SEAS[i] + SEAS[j]);
+  t("궁합 원고: 십성 관계 11종·오행 짝 15종·계절 짝 10종·역할 5종의 칸이 모두 채워져 있다", [relOk, pairKeys.every(k => GD.pairEl[k] && GD.pairEl[k].img && GD.pairEl[k].body), seasKeys.every(k => GD.seasonPair[k]) && SEAS.every(k => GD.season[k]), ["재", "관", "식", "인", "비"].every(g => ["t", "lead", "both", "even", "none"].every(f => GD.role[g][f])), GD.hap.length === 5, ["삼합", "육합", "충", "같음", "무난"].every(k => GD.home.tti[k] && GD.home.ilji[k])].join(","), "true,true,true,true,true,true");
+  { const { note, ...body } = GD; t("궁합 원고: 풀이 본문은 보살 말투(존댓말 어미 0, 근거 고지 note 만 존댓말)", JOND.test(JSON.stringify(body)) ? "혼입" : "0", "0"); }
+  const RG = () => [1930 + Math.floor(Math.random() * 86), 1 + Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)], GRD = ["천생연분", "좋은 인연", "노력형 인연", "신중한 인연"];
+  const cnt = { token: 0, undef: 0, jondae: 0, josa: 0, secs: 0 }; let minLen = 1e9; const strip = x => String(x).replace(/<[^>]+>/g, "");
+  for (let i = 0; i < 3000; i++) { const a = RG(), b = RG(), ha = i % 3 ? null : Math.floor(Math.random() * 24), hb = i % 3 ? null : Math.floor(Math.random() * 24);
+    const A = sjPillars(a[0], a[1], a[2], ha, 30, true), B = sjPillars(b[0], b[1], b[2], hb, 30, true), nb = i % 4 === 0 ? "김동성 님" : "상대";
+    const o = ghDeep(A, B, { nb, grade: GRD[i % 4], axes: [["끌림", 70 + i % 20], ["안정", 65 + i % 25], ["소통", 72 + i % 15], ["생활", 60 + i % 30]], now: 2026 }, GD);
+    const parts = [o.sum]; o.secs.forEach(s => { parts.push(s.h); (s.p || []).forEach(x => parts.push(x)); (s.roles || []).forEach(r => parts.push(r.k + " " + r.w + " " + r.t)); (s.years || []).forEach(y => parts.push(y.la + " " + y.lb + " " + y.j + " " + y.flag)); (s.list || []).forEach(x => parts.push(x)); });
+    const txt = parts.map(strip).join("\n"); minLen = Math.min(minLen, txt.replace(/\s+/g, "").length);
+    if (/[{}]/.test(txt)) cnt.token++; if (/undefined|NaN|null/.test(txt)) cnt.undef++; if (JOND.test(txt)) cnt.jondae++;
+    if (/자네(은|이|을|과)(?![가-힣])/.test(txt) || /님(가|는|를|와)(?![가-힣])/.test(txt)) cnt.josa++; if (o.secs.length !== 11) cnt.secs++; }
+  t("궁합 깊은 풀이: 무작위 3000쌍 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수 이상이 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0 }));
+  t("궁합 깊은 풀이: 어느 쌍이든 글자 수(공백 제외)가 1700자 이상 (최소 " + minLen + ")", minLen >= 1700, true);
+  // 해별 점수는 신년운세 도구와 같은 식이다(십성 기본점수 표가 같고 삼합·육합 +5 / 충 -6)
+  { const nyb = toolBlock("newyear"), m1 = /var score=\{([^}]*)\}\[rel\]/.exec(nyb), m2 = /var GH_YB=\{([^}]*)\}/.exec(inner);
+    t("궁합 해별 점수표(GH_YB)가 신년운세 점수표와 같다", m1 && m2 && m1[1] === m2[1], true);
+    t("궁합 해별 점수는 신년운세와 같은 합충 가감(삼합·육합 +5, 충 -6)", inner.includes("if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;") && nyb.includes("if(n.indexOf(\"충\")>=0)score-=6;else score+=5;"), true); }
+  // 점수 기준선: 합이 하나도 없는 평범한 조합이 노력형 인연에 몰리지 않는다(무작위 3000쌍: 중앙값 74~82, 노력형 35% 이하, 신중 10% 이하)
+  { const gb = toolBlock("gunghap"), ps = gb.slice(gb.indexOf("function pts(a,b){"), gb.indexOf("function go(){")), pts = new Function("sjTenGod", "sjYukhap", "SJ_S", "SJ_B", "SJ_ES", "SJ_EB", "SJ_TTI", ps + "\nreturn pts;")(sjTenGod, sjYukhap, SJ_S, SJ_B, SJ_ES, SJ_EB, SJ_TTI);
+    const sc = []; for (let i = 0; i < 3000; i++) { const a = RG(), b = RG(); sc.push(pts(sjPillars(a[0], a[1], a[2], null, 30, true), sjPillars(b[0], b[1], b[2], null, 30, true))[0]); }
+    sc.sort((x, y) => x - y); const med = sc[1500], pEf = sc.filter(v => v >= 58 && v < 72).length / 30, pCa = sc.filter(v => v < 58).length / 30, pTop = sc.filter(v => v >= 85).length / 30;
+    t("궁합 점수 분포(무작위 3000쌍): 중앙값 72~80 · 노력형 35% 이하 · 신중 10% 이하 · 천생연분 10~30% (" + med + " · " + pEf.toFixed(0) + "% · " + pCa.toFixed(0) + "% · " + pTop.toFixed(0) + "%)", med >= 72 && med <= 80 && pEf <= 35 && pCa <= 10 && pTop >= 10 && pTop <= 30, true); }
+}
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
@@ -562,7 +591,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjGongmang","subBal","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjGongmang","subBal","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

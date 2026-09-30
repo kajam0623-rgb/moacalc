@@ -381,7 +381,7 @@
   .sj-ko{font-size:11px;color:var(--muted);margin-top:2px;padding-bottom:8px;}
   .sj-cell+.sj-cell{border-top:1px dotted var(--line-2);}
   .sj-tg{font-size:10px;color:var(--fun-ink);padding-bottom:7px;margin-top:-4px;}
-  .el-목{color:#3d9960;} .el-화{color:#d05548;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#3f7ec2;}
+  .el-목{color:#46a76b;} .el-화{color:#e8695c;} .el-토{color:#b8862d;} .el-금{color:#8a8f98;} .el-수{color:#5a9ae0;}
   /* 밝은 배경에서는 글자 대비 4.5:1 을 넘도록 한 단계 진하게(어두운 모드는 위 색 그대로) */
   :root:not([data-theme="dark"]) .el-목{color:#2b7a48;} :root:not([data-theme="dark"]) .el-화{color:#b8402f;} :root:not([data-theme="dark"]) .el-토{color:#8f6415;} :root:not([data-theme="dark"]) .el-금{color:#626771;} :root:not([data-theme="dark"]) .el-수{color:#2f6aa8;}
   :root[data-theme="dark"] .el-금{color:#aab1bb;}
@@ -453,6 +453,13 @@
   .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
   .tf-err{color:var(--deduct);font-size:13px;font-weight:700;margin:6px 2px 0;}.tf-err:empty{display:none;}
+  .gh-deep p{margin:9px 0;line-height:1.85;word-break:keep-all;}.gh-deep p b{color:var(--accent-ink);}
+  .gh-role{padding:10px 0;border-top:1px solid var(--line);line-height:1.75;}.gh-role .gh-w{margin-left:6px;font-size:12.5px;font-weight:800;color:var(--accent-ink);}
+  .gh-yrs{margin-top:6px;}.gh-yr{padding:10px 0;border-top:1px solid var(--line);line-height:1.7;}.gh-yl{font-size:13px;color:var(--muted);}
+  .gh-v{margin-left:6px;font-size:12.5px;font-weight:800;padding:1px 8px;border-radius:99px;border:1.5px solid currentColor;}.gh-v.g{color:var(--fun-ink);}.gh-v.o{color:var(--accent-ink);}.gh-v.c{color:var(--deduct);}
+  .gh-flag{font-size:12.5px;color:var(--deduct);font-weight:700;margin-left:6px;}
+  .gh-tips{margin:8px 0 0;padding-left:20px;line-height:1.85;}.gh-note{font-size:12.5px;color:var(--muted);line-height:1.7;}
+  .gh-basis{font-size:13px;font-weight:700;color:var(--muted);margin:28px 2px 4px;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */

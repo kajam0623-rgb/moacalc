@@ -13,7 +13,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       return '<div class="sj-char"><img width="520" height="520" src="img/char/el-'+en+'-'+g+'.webp" alt="'+who+' — '+SJ_S[P.d.s]+e+' 일간 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+who+' · '+(g==="m"?"남":"여")+'</div><div class="n">'+SJ_S[P.d.s]+e+' 일간</div><p>'+SJ_TTI[P.y.b]+'띠 · '+SJ_S[P.d.s]+SJ_B[P.d.b]+'일주</p></div></div>';}
     function pts(a,b){ // [점수증감, 설명] 목록
-      var out=[],sc=60,f={hap:false,r1:null,tti:"",ilji:"",fill:0}; // f: 네 축 계산에 쓰는 판정값
+      var out=[],sc=66,f={hap:false,r1:null,tti:"",ilji:"",fill:0}; // f: 네 축 계산에 쓰는 판정값. 기준선 66(2026-09-30: 60이던 때는 합이 없는 평범한 조합 43%가 노력형 인연으로 몰렸다. 중앙값 70→76)
       // 1. 일간 천간합 (갑기·을경·병신·정임·무계)
       if(Math.abs(a.d.s-b.d.s)===5){sc+=18;f.hap=true;out.push(["기운이 딱 맞물림","두 사람을 뜻하는 글자("+SJ_S[a.d.s]+"·"+SJ_S[b.d.s]+")가 서로 짝을 이루는 사이입니다. 사주에서 가장 강한 끌림으로 봅니다. 서로에게 자연스럽게 스며드는 관계."]);}
       else{
@@ -49,6 +49,18 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
         else if(Math.abs(ha-hb)===6){sc-=4;f.hour="충";out.push(["늘그막의 조율","태어난 시각 자리끼리 부딪히는 짝 — 자녀 문제나 노후 계획에서 생각이 갈리기 쉬우니 일찍 이야기해 두세요."]);}}
       return [Math.max(35,Math.min(99,Math.round(sc))),out,f];
     }
+    // 깊이 있는 풀이 원고(gh/deep.json)는 결과가 그려진 뒤에 도착해도 자리(#ghdeep)에 채운다
+    var GHD=null,ghLast=null;
+    function ghSecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
+      (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
+      if(s.roles)h+=s.roles.map(function(r){return '<div class="gh-role"><div><b>'+r.k+'</b> <span class="gh-w">'+r.w+'</span></div><div>'+r.t+'</div></div>';}).join("");
+      if(s.years)h+='<div class="gh-yrs">'+s.years.map(function(r){return '<div class="gh-yr"><div><b>'+r.y+'년</b> <span class="gh-v '+(r.v==="좋은 해"?"g":r.v==="무난"?"o":"c")+'">'+r.v+'</span>'+(r.flag?' <span class="gh-flag">'+r.flag+'</span>':"")+'</div><div class="gh-yl">자네 '+r.la+' · 상대 '+r.lb+'</div></div>';}).join("")+'</div>';
+      if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
+      if(s.n)h+='<p class="gh-note">'+s.n+'</p>';
+      return h+'</div>';}
+    function fillDeep(){var h=el.querySelector("#ghdeep");if(!h||!GHD||!ghLast)return;var o=ghDeep(ghLast.A,ghLast.B,ghLast.c,GHD);
+      h.innerHTML='<div class="sj-sec gh-deep fold-skip"><h3>종합</h3><p>'+o.sum+'</p></div>'+o.secs.map(ghSecHtml).join("");}
+    if(typeof fetch==="function")fetch("gh/deep.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){GHD=j;fillDeep();}}).catch(function(){});
     function go(){
       var av=el.querySelector("#a").value.split("-"),bv=el.querySelector("#b").value.split("-");
       if(av.length<3||(!inv&&bv.length<3))return;
@@ -92,16 +104,18 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
       '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,inv&&inv.n?escH(inv.n):"상대")+'</div>'+
+      '<div id="ghdeep"></div>'+
+      '<h3 class="gh-basis">계산 근거 — 글자별로 본 궁합</h3>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
       '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>'+(A.h&&B.h?"여덟 글자(연·월·일·시주)":"여섯 글자(연·월·일주)")+'에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 약점도 함께 겹칩니다.</p></div>'+
-      '<div class="sj-sec"><h3>이 조합에게</h3><p>'+advice+'</p></div>'+
       '<div class="gh-mkinv">'+bosalImg("phone","bs-side","휴대폰을 든 아기보살")+'<h3>'+(inv?"나도 다른 사람에게 보내기":"이 궁합, 상대에게 보내기")+'</h3><p>내 사주 글자만 담은 링크를 보내면 받은 사람은 자기 생일만 넣고 우리 둘의 궁합을 봅니다. 생년월일은 서버로 가지 않고, 링크는 7일 뒤 지워집니다.</p>'+
       '<div class="ai-row"><input class="gh-nick" maxlength="10" placeholder="내 이름 (선택)" aria-label="보내는 사람 이름"><span class="gh-mk" role="button" tabindex="0">초대 링크 만들기</span></div><p class="gh-link" aria-live="polite"></p></div>'+
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 모자란 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
+      ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
       saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});}
