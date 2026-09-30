@@ -24,7 +24,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       var zf=zfScore(b,today),rel=zf.rel,Z=ZR[rel],tg=zf.tg,score=zf.score;
       var TG=ZF_TGW[tg];
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
-      var sub=Z[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,Z[5]);
       var luckEl=(SJ_EB[b]+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tb);
       var un=sjUnseong(SJ_BMAIN[b],tb); // 오늘 지지가 내 띠 본기 천간에 갖는 십이운성
       var y26=(b===6)?"2026 병오년은 태세와 같은 말띠 해일세. 존재감이 커지는 대신 과열도 쉬우니, 올해는 속도 조절이 관건이야."

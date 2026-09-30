@@ -68,8 +68,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       var stable=62+(f.tti==="삼합"?22:f.tti==="육합"?18:f.tti==="충"?-16:0);
       var talk=60+(f.hap?16:((TK[f.r1]||0)+(TK[f.r2]||0))/2);
       var life=62+(f.ilji==="삼합"?20:f.ilji==="육합"?18:f.ilji==="충"?-16:0)+(f.fill>=2?8:f.fill===1?4:0);
-      var subs=[["끌림",attract],["안정",stable],["소통",talk],["생활",life]].map(function(x){
-        return [x[0],Math.max(30,Math.min(99,Math.round(x[1])))];});
+      var sv=subBal(sc,[attract,stable,talk,life]),subs=[["끌림",sv[0]],["안정",sv[1]],["소통",sv[2]],["생활",sv[3]]];
       function gbar(n,v){return rateBar(n,v);}
       var advice=sc>=85
         ? "합이 여러 겹으로 걸린 조합입니다. 서로 애쓰지 않아도 흐름이 맞는 편이라, 오히려 당연하게 여기다 소홀해지는 게 유일한 위험입니다. 잘 맞는 이유를 가끔 말로 확인해 주세요."

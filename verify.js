@@ -494,6 +494,23 @@ t("공망: 일주 60쪽이 한눈에 표에 공망 행을 갖고 공망 찾기 �
   t("육십갑자 표: 60줄의 간지·띠·오행·순·공망·연도가 엔진 계산과 같다 (어긋난 것: " + badGp.slice(0, 4).join(",") + ")", badGp.length + "|" + rows.length, "0|60");
   t("육십갑자 표: 1984=갑자, 2026=병오(43번째), 2027=정미", [rows[0][2].includes("1984"), rows[42][0].startsWith("43. 병오") && rows[42][2].includes("2026"), rows[43][0].startsWith("44. 정미") && rows[43][2].includes("2027")].join(","), "true,true,true");
   t("육십갑자 표: 일주 60쪽으로 가는 링크가 60개", (GP.sections[2][1].match(/href=\"ilju-[a-z]+\.html\"/g) || []).length, 60); }
+// 종합 점수와 네 항목 점수의 평균이 같다(사용자 지적: 86점인데 90·96·90·88 평균은 91)
+{ let badSb = 0, nSb = 0; const OFF = [[4, 10, 4, 2], [6, -4, 2, 0], [-6, -2, -3, -8], [8, 8, -2, 4], [0, 0, 0, 0], [12, 12, 12, -20]];
+  for (let sc = 35; sc <= 99; sc++) for (const o of OFF) { nSb++; const r = subBal(sc, o); if (r.reduce((a, b) => a + b, 0) !== sc * 4 || r.some(x => x < 30 || x > 99)) badSb++; }
+  t("항목 점수 평균 = 종합 점수 (subBal: 점수 35~99 × 편차 6종 " + nSb + "건)", badSb, 0);
+  t("여섯 도구가 subBal 로 항목 점수를 만든다", ["subBal(score,T[5])", "subBal(score,A[6])", "subBal(score,Z[5])", "subBal(score,E[0])", "subBal(sc,[attract,stable,talk,life])", "subBal(sc,[(dist===0"].map(x => src.includes(x)).join(","), "true,true,true,true,true,true");
+  t("옛 방식(종합 점수에 고정 가산값)이 남아 있지 않다", (src.match(/Math\.max\(30,Math\.min\(99,score\+/g) || []).length, 0); }
+// 오늘의 운세 생년월일은 달력·다이얼이 아니라 숫자 입력(홈·도구), 홈 생일은 자세히·사주로 넘어간다
+t("오늘의 운세 입력: 홈과 도구가 숫자 입력칸이고 달력(type=date)·다이얼이 아니다", [bs.includes('id="hb" inputmode="numeric"'), !bs.includes('type="date" id="hb"'), src.includes('id="d" inputmode="numeric" maxlength="10" placeholder="예) 19900315"'), !src.slice(src.indexOf('id:"todayfortune"'), src.indexOf('id:"horoscope"')).includes('birthDial(el,"#d")')].join(","), "true,true,true,true");
+t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 번 읽으면 지움)", [bs.includes('sessionStorage.setItem("dnbs_hb"'), bs.includes('sessionStorage.removeItem("dnbs_hb")'), bs.includes('id==="todayfortune"||id==="saju"'), bs.includes("Date.now()-hh.t<6e5")].join(","), "true,true,true,true");
+// 시진 목록: 라벨 범위(30분 보정 반영) 열두 개가 하루 1440분을 빠짐없이 덮고, 각 분의 시주 지지가 엔진과 같다
+{ const rows = [...src.matchAll(/\["(.)시","(\d\d):(\d\d)~(\d\d):(\d\d)"\]/g)]; let bad = 0, n = 0; const seen = new Set();
+  rows.forEach((m, i) => { const a = (+m[2]) * 60 + (+m[3]), z = (+m[4]) * 60 + (+m[5]);
+    for (let t = a, k = 0; k < 1440; t = (t + 1) % 1440, k++) { n++; seen.add(t); const p = sjPillars(1990, 3, 15, Math.floor(t / 60), t % 60, true); if (p.h.b !== i) bad++; if (t === z) break; } });
+  t("시진 목록: 12개 범위가 하루 1440분을 겹침 없이 덮고 엔진 시주 지지와 같다", bad + "|" + n + "|" + seen.size + "|" + rows.length, "0|1440|1440|12");
+  // 옵션 값(0,2,…,22,23) → birthIn 이 쓰는 가운데 시각(값:30분)이 그 시진에 든다: 값 v → 시진 index = v==23 ? 0 : v/2
+  let badMid = 0; for (const v of [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 23]) { const idx = v === 23 ? 0 : v / 2; if (sjPillars(1990, 3, 15, v, 30, true).h.b !== idx || sjPillars(1990, 3, 15, v, 30, false).h.b !== idx) badMid++; }
+  t("시진 목록: 고른 값의 가운데 시각(값:30)이 보정 적용·미적용 모두 그 시진이다", badMid, 0); }
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
 t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
@@ -545,7 +562,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjGongmang","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjGongmang","subBal","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

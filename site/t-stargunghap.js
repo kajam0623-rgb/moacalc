@@ -25,9 +25,8 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
       var sc=Math.round(E[0]*0.4+A[0]*0.4+(60+rFit*16)*0.2);
       sc=Math.max(35,Math.min(99,sc));
       var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
-      var subs=[["끌림",sc+(dist===0||dist===4?6:dist===3?-4:2)],["대화",sc+(er==="same"?6:er==="friend"?4:-6)],
-        ["일상",sc+(er==="tense"?-6:4)],["롱런",sc+(rFit===2?8:rFit===1?4:-2)]].map(function(x){
-        return [x[0],Math.max(30,Math.min(99,x[1]))];});
+      var sv=subBal(sc,[(dist===0||dist===4?6:dist===3?-4:2),(er==="same"?6:er==="friend"?4:-6),(er==="tense"?-6:4),(rFit===2?8:rFit===1?4:-2)]),
+        subs=[["끌림",sv[0]],["대화",sv[1]],["일상",sv[2]],["롱런",sv[3]]];
       var rNote=rFit===2?"두 사람의 수호성("+rA+"·"+rB+")이 서로의 원소와 결이 맞아, 오래 갈수록 편해지는 조합입니다."
         :rFit===1?"한쪽 수호성은 상대 원소와 결이 맞고 한쪽은 다릅니다. 맞춰주는 쪽이 지치지 않게 표현을 아끼지 마세요."
         :"수호성("+rA+"·"+rB+")의 결이 서로 달라, 연애 초반보다 시간이 지나며 이해가 쌓이는 형태입니다.";

@@ -209,7 +209,7 @@
   .tool input,.tool select,.tool textarea{width:100%;border-radius:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;font-weight:600;text-align:right;font-family:var(--mono);}
   .tool input{border:0;border-bottom:1.5px solid var(--line-2);padding:10px 22px 10px 2px;}
   .tool input:focus{outline:none;border-bottom:2px solid var(--accent);}
-  .tool input[type=date],.tool input[type=time]{text-align:left;font-family:inherit;font-weight:600;font-size:15px;padding-right:2px;}
+  .tool input[type=date],.tool input[type=time],.tool input[inputmode=numeric]{text-align:left;font-family:inherit;font-weight:600;font-size:15px;padding-right:2px;}
   .tool input[type=checkbox]{width:auto;border:0;padding:0;margin:0 6px 0 0;vertical-align:middle;accent-color:var(--accent);}
   .tool select{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:11px 12px;text-align:left;font-family:inherit;font-weight:600;font-size:15px;appearance:none;}
   .tool textarea{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:12px;text-align:left;font-family:inherit;font-weight:500;font-size:15px;min-height:140px;resize:vertical;}
@@ -452,6 +452,7 @@
   .sj-hour{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px;background:var(--surface);}
   .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
+  .tf-err{color:var(--deduct);font-size:13px;font-weight:700;margin:6px 2px 0;}.tf-err:empty{display:none;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */
@@ -498,7 +499,7 @@
     label,.tool label{font-size:12.5px;}
     /* iOS는 16px 미만 입력창에 포커스하면 화면을 확대한다 */
     input,select,textarea,.sbar .search,
-    .tool input[type=date],.tool input[type=time],.tool select{font-size:16px;}
+    .tool input[type=date],.tool input[type=time],.tool input[inputmode=numeric],.tool select{font-size:16px;}
   }
   .sj-daeun{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
   .sj-du{flex:0 0 auto;min-width:52px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:7px 4px;}
@@ -663,14 +664,16 @@
   }
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
 .hero2{position:relative;}
-.hero-bosal{position:absolute;top:0;right:-4px;width:108px;height:auto;filter:drop-shadow(0 8px 18px rgba(0,0,0,.4));animation:bosalBob 3.2s ease-in-out infinite;}
-.hero2 .hero-h{padding-right:100px;}
-@media (min-width:760px){.hero-bosal{width:210px;top:-6px;right:0;}.hero2 .hero-h,.hero2 .hero-sub{padding-right:230px;}}
+/* 캐릭터는 로고 줄(브랜드·다크 모드 버튼) 바로 아래 제목 옆에 앉힌다. 맨 위(top:0)에 걸어 두면 폰 폭에서 다크 모드 버튼과 겹쳤다.
+   제목 글은 h1 안의 빈 float(.hh-sp)이 캐릭터 자리를 비켜 가므로, 캐릭터 아래 줄은 전체 폭을 쓴다(히어로가 flex 라 캐릭터 자체를 float 하면 소용없다) */
+.hero-bosal{position:absolute;top:44px;right:-4px;width:108px;height:auto;filter:drop-shadow(0 8px 18px rgba(0,0,0,.4));animation:bosalBob 3.2s ease-in-out infinite;}
+.hh-sp{float:right;width:116px;height:112px;}
+@media (min-width:760px){.hh-sp{display:none;}.hero-bosal{width:210px;top:-6px;right:0;}.hero2 .hero-h,.hero2 .hero-sub{padding-right:230px;}}
 @keyframes bosalBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 @media (prefers-reduced-motion:reduce){.hero-bosal{animation:none}}
 .today{clear:both;}
 /* 오늘 카드가 뜨면 캐릭터는 카드 안 하나만 둔다. 위쪽 큰 캐릭터(210px)와 카드 모서리 캐릭터(70px)가 크기가 따로 놀았다 */
-.hero2:has(.today-card) .hero-bosal{display:none;}
+.hero2:has(.today-card) .hero-bosal,.hero2:has(.today-card) .hh-sp{display:none;}
 .hero2:has(.today-card) .hero-h,.hero2:has(.today-card) .hero-sub{padding-right:0;}
 .today-card{position:relative;}.tc-bosal{position:absolute;right:12px;top:12px;height:96px;width:auto;filter:drop-shadow(0 4px 10px rgba(0,0,0,.3));}
 .today-card .k,.today-card .v,.today-card .l{margin-right:78px;}
@@ -708,9 +711,10 @@
 .today-row{display:flex;gap:8px;}.today-row input{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);}
 .today-row button,.today-btns .p{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;background:#E6B25A;color:#1b1406;cursor:pointer;white-space:nowrap;text-decoration:none;}
 .today-note{font-size:12.5px;color:var(--muted);margin:8px 2px 0;}
+.today-err{font-size:13px;font-weight:700;color:var(--deduct);margin:8px 2px 0;}.today-err:empty{display:none;}
 .today-card{border:1.5px solid #E6B25A;border-radius:16px;padding:16px;background:var(--surface);}
 .today-card .k{font-size:13px;font-weight:700;color:var(--muted);}.today-card .v{font-size:40px;font-weight:900;line-height:1.15;}
-.today-card .v small{font-size:16px;color:var(--muted);margin-left:4px;}.today-card .l{font-size:16px;font-weight:700;margin:6px 0 4px;}
+.today-card .v small{font-size:16px;color:var(--muted);margin-left:4px;}.today-card .l{font-size:16px;font-weight:700;margin-top:6px;margin-bottom:4px;}
 .today-card .w{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.6;}
 .today-btns{display:flex;flex-wrap:wrap;gap:8px;}.today-btns a{border:1.5px solid var(--line-2);border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--ink);}
 .today-btns .p{border-color:#E6B25A;}

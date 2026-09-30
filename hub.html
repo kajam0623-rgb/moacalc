@@ -210,7 +210,7 @@
   .tool input,.tool select,.tool textarea{width:100%;border-radius:0;background:transparent;color:var(--ink);font:inherit;font-size:17px;font-weight:600;text-align:right;font-family:var(--mono);}
   .tool input{border:0;border-bottom:1.5px solid var(--line-2);padding:10px 22px 10px 2px;}
   .tool input:focus{outline:none;border-bottom:2px solid var(--accent);}
-  .tool input[type=date],.tool input[type=time]{text-align:left;font-family:inherit;font-weight:600;font-size:15px;padding-right:2px;}
+  .tool input[type=date],.tool input[type=time],.tool input[inputmode=numeric]{text-align:left;font-family:inherit;font-weight:600;font-size:15px;padding-right:2px;}
   .tool input[type=checkbox]{width:auto;border:0;padding:0;margin:0 6px 0 0;vertical-align:middle;accent-color:var(--accent);}
   .tool select{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:11px 12px;text-align:left;font-family:inherit;font-weight:600;font-size:15px;appearance:none;}
   .tool textarea{border:1px solid var(--line);border-radius:3px;background:var(--surface-2);padding:12px;text-align:left;font-family:inherit;font-weight:500;font-size:15px;min-height:140px;resize:vertical;}
@@ -453,6 +453,7 @@
   .sj-hour{border:1px solid var(--line-2);border-radius:14px;padding:14px 16px;background:var(--surface);}
   .sj-cnt{font-size:13px;color:var(--muted);font-weight:700;}
   .tf-hl{margin-top:6px;font-size:20px;font-weight:800;line-height:1.4;color:var(--ink);word-break:keep-all;}
+  .tf-err{color:var(--deduct);font-size:13px;font-weight:700;margin:6px 2px 0;}.tf-err:empty{display:none;}
   .sj-sec h3{font-size:13px;letter-spacing:.06em;color:var(--fun-ink);margin-bottom:8px;font-weight:800;}
   .sj-sec p{font-size:13.5px;line-height:1.8;color:var(--ink);}
   /* 접이식 풀이 — 분류 + 핵심 한 문장이 보이고, 누르면 본문이 펼쳐진다 */
@@ -499,7 +500,7 @@
     label,.tool label{font-size:12.5px;}
     /* iOS는 16px 미만 입력창에 포커스하면 화면을 확대한다 */
     input,select,textarea,.sbar .search,
-    .tool input[type=date],.tool input[type=time],.tool select{font-size:16px;}
+    .tool input[type=date],.tool input[type=time],.tool input[inputmode=numeric],.tool select{font-size:16px;}
   }
   .sj-daeun{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;}
   .sj-du{flex:0 0 auto;min-width:52px;text-align:center;border:1px solid var(--line-2);border-radius:4px;padding:7px 4px;}
@@ -854,6 +855,14 @@
   // 공망(空亡): 일주가 속한 순(旬)에서 짝을 얻지 못한 두 지지. start=순의 첫 지지(갑과 짝인 지지)
   var SJ_SUN={0:"갑자순",10:"갑술순",8:"갑신순",6:"갑오순",4:"갑진순",2:"갑인순"};
   function sjGongmang(s,b){var st=(b-s+12)%12;return {sun:SJ_SUN[st],start:st,empty:[(st+10)%12,(st+11)%12]};}
+  // 종합 점수와 네 항목 점수의 평균이 어긋나 보이지 않게: 항목 사이 벌어진 폭은 두고 평균만 종합 점수에 맞춘다(각 30~99 안에서)
+  function subBal(score,vals){var n=vals.length,m=vals.reduce(function(a,b){return a+b;},0)/n,
+    raw=vals.map(function(v){return score+v-m;}),
+    out=raw.map(function(v){return Math.max(30,Math.min(99,Math.round(v)));}),
+    diff=score*n-out.reduce(function(a,b){return a+b;},0),k=0,
+    ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
+    while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
+    return out;}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
@@ -1800,6 +1809,17 @@
         bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
       finish(fortuneCard(o2));});}
   function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
+  // 생년월일 숫자 입력: 8자리만 치면 1995.01.01 꼴로 이어 붙이고, 틀리면 이유를 밝히며 결과로 가지 않는다
+  function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}
+  function bdParse(v,err){var d=v.replace(/[^0-9]/g,""),msg="";
+    if(d.length!==8)msg="생년월일 8자리를 숫자로 입력해 주세요. 예) 19900315";
+    else{var y=+d.slice(0,4),m=+d.slice(4,6),dd=+d.slice(6,8),t=new Date(y,m-1,dd);if(y<1900||t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==dd||t>new Date())msg="없는 날짜예요. 다시 확인해 주세요.";}
+    if(msg){if(err)err.textContent=msg;return "";}if(err)err.textContent="";return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8);}
+  function bdBind(el,sel,errSel){var inp=el.querySelector(sel),err=el.querySelector(errSel),btn=el.querySelector("#go");if(!inp)return;
+    inp.addEventListener("input",function(){if(this.selectionStart===this.value.length){var f=bdFmt(this.value);if(f!==this.value)this.value=f;}if(err)err.textContent="";});
+    inp.addEventListener("focus",function(){var e=this;setTimeout(function(){e.select();},0);});
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&btn){e.preventDefault();btn.click();}});
+    if(btn)btn.addEventListener("click",function(e){if(!bdParse(inp.value,err)){e.stopImmediatePropagation();inp.focus();}});}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
@@ -3522,12 +3542,12 @@
      "혼자 있고 싶어지는 날이야. 상대는 그걸 거리 두기로 오해하네. 말없이 사라지지 말고 한마디만 남기고 들어가게.","자료를 파고들거나 구조를 다시 짜는 데는 오늘만 한 날이 없어. 반대로 즉답이 필요한 회의나 협상은 오늘 잡지 말게.","머리는 바쁜데 몸은 처지는 날일세. 눕고 나서 생각이 꼬리를 물지 않게 화면을 일찍 끄게.",TF_LINE["편인"]],
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.",TF_LINE["정인"]]};
-    el.innerHTML='<label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    el.innerHTML='<label for="d">생년월일 (양력)</label><input type="text" id="d" inputmode="numeric" maxlength="10" placeholder="예) 19900315" aria-describedby="derr"><p class="tf-err" id="derr" role="alert"></p>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
     function go(){
-      var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
+      var dv=bdParse(el.querySelector("#d").value).split("-");if(dv.length<3)return;
       track("fortune_view",{tool:"todayfortune"});
       // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
@@ -3537,7 +3557,7 @@
       else if(bonusArt==="충"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
       else if(bonusArt==="육합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
       var st=tf.st,todayEl=tf.todayEl,EL_HAN="木火土金水",yongHit=tf.yongHit,yongClash=tf.yongClash;
-      var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,T[5]);
       // 네 항목 중 최저·최고를 짚어 조언에 붙인다 — 같은 십성이라도 하루의 무게중심이 보이게
       var SUB_LBL=["애정","재물","직장","건강"],loI=sub.indexOf(Math.min.apply(null,sub)),hiI=sub.indexOf(Math.max.apply(null,sub));
       // 행운 정보: 억부용신 오행이 오늘의 보완 기운, 시간은 오늘 일지의 육합 시간대
@@ -3605,7 +3625,8 @@
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
       askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
-    askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
+    bdBind(el,"#d","#derr");
+    askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");}},
 
   {id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",desc:"12별자리 오늘·이번주",render:function(el){
     el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1995-08-15"></div>'+
@@ -3628,7 +3649,7 @@
       else if(hs.rk===1){rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
       else{rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
-      var sub=A[6].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,A[6]);
       var week="";
       for(var i=0;i<7;i++){var dt=new Date(ty,tm-1,td+i),r=WD_RULER[dt.getDay()],
         g=(r===ruler)?"대길":(fri.indexOf(r)>=0?"길":"평");
@@ -3681,9 +3702,8 @@
       var sc=Math.round(E[0]*0.4+A[0]*0.4+(60+rFit*16)*0.2);
       sc=Math.max(35,Math.min(99,sc));
       var grade=sc>=85?"천생연분":sc>=72?"좋은 인연":sc>=58?"노력형 인연":"신중한 인연";
-      var subs=[["끌림",sc+(dist===0||dist===4?6:dist===3?-4:2)],["대화",sc+(er==="same"?6:er==="friend"?4:-6)],
-        ["일상",sc+(er==="tense"?-6:4)],["롱런",sc+(rFit===2?8:rFit===1?4:-2)]].map(function(x){
-        return [x[0],Math.max(30,Math.min(99,x[1]))];});
+      var sv=subBal(sc,[(dist===0||dist===4?6:dist===3?-4:2),(er==="same"?6:er==="friend"?4:-6),(er==="tense"?-6:4),(rFit===2?8:rFit===1?4:-2)]),
+        subs=[["끌림",sv[0]],["대화",sv[1]],["일상",sv[2]],["롱런",sv[3]]];
       var rNote=rFit===2?"두 사람의 수호성("+rA+"·"+rB+")이 서로의 원소와 결이 맞아, 오래 갈수록 편해지는 조합입니다."
         :rFit===1?"한쪽 수호성은 상대 원소와 결이 맞고 한쪽은 다릅니다. 맞춰주는 쪽이 지치지 않게 표현을 아끼지 마세요."
         :"수호성("+rA+"·"+rB+")의 결이 서로 달라, 연애 초반보다 시간이 지나며 이해가 쌓이는 형태입니다.";
@@ -3731,7 +3751,7 @@
       var zf=zfScore(b,today),rel=zf.rel,Z=ZR[rel],tg=zf.tg,score=zf.score;
       var TG=ZF_TGW[tg];
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
-      var sub=Z[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,Z[5]);
       var luckEl=(SJ_EB[b]+4)%5,L=SJ_LUCK[luckEl],hb=sjYukhap(tb);
       var un=sjUnseong(SJ_BMAIN[b],tb); // 오늘 지지가 내 띠 본기 천간에 갖는 십이운성
       var y26=(b===6)?"2026 병오년은 태세와 같은 말띠 해일세. 존재감이 커지는 대신 과열도 쉬우니, 올해는 속도 조절이 관건이야."
@@ -3832,8 +3852,7 @@
       var stable=62+(f.tti==="삼합"?22:f.tti==="육합"?18:f.tti==="충"?-16:0);
       var talk=60+(f.hap?16:((TK[f.r1]||0)+(TK[f.r2]||0))/2);
       var life=62+(f.ilji==="삼합"?20:f.ilji==="육합"?18:f.ilji==="충"?-16:0)+(f.fill>=2?8:f.fill===1?4:0);
-      var subs=[["끌림",attract],["안정",stable],["소통",talk],["생활",life]].map(function(x){
-        return [x[0],Math.max(30,Math.min(99,Math.round(x[1])))];});
+      var sv=subBal(sc,[attract,stable,talk,life]),subs=[["끌림",sv[0]],["안정",sv[1]],["소통",sv[2]],["생활",sv[3]]];
       function gbar(n,v){return rateBar(n,v);}
       var advice=sc>=85
         ? "합이 여러 겹으로 걸린 조합입니다. 서로 애쓰지 않아도 흐름이 맞는 편이라, 오히려 당연하게 여기다 소홀해지는 게 유일한 위험입니다. 잘 맞는 이유를 가끔 말로 확인해 주세요."
@@ -3929,8 +3948,7 @@
       "정관":[[2,12,4,0],"상반기는 공식적인 일에 유리하네. 시험이든 승진이든 자격이든 이 구간에 놓게.","하반기엔 평판이 자산이 되네. 원칙대로 처리한 일이 자네 이름을 만들어.","편법. 올해만큼은 절차 건너뛴 값이 크게 돌아오네."],
       "편인":[[-2,0,-6,4],"상반기는 안으로 파고드는 때일세. 공부든 자격이든 기획이든 여기 시간을 쓰게.","하반기에 그 준비가 형태를 갖추네. 결정은 이 구간에 내리는 게 낫겠어.","결정 미루기. 생각이 깊어지는 해라 실행할 때를 놓치기 쉽네."],
       "정인":[[0,8,2,6],"상반기에 귀인과 문서가 움직이네. 합격·승인·계약 소식이 오기 쉬운 구간일세.","하반기엔 배운 게 쓰이기 시작하네. 사람을 통해 다음 기회가 와.","혼자 해결하려는 버릇. 손 내밀면 열리는 해인데 자네가 그걸 안 하네."]};
-      var E=EXT[rel],sub=[["재물",E[0][0]],["직장",E[0][1]],["애정",E[0][2]],["건강",E[0][3]]].map(function(x){
-        return [x[0],Math.max(30,Math.min(99,score+x[1]))];});
+      var E=EXT[rel],sb=subBal(score,E[0]),sub=[["재물",sb[0]],["직장",sb[1]],["애정",sb[2]],["건강",sb[3]]];
       function ybar(n,v){return rateBar(n,v);}
       var un=sjUnseong(me.d.s,YB); // 태세 지지가 내 일간에 갖는 십이운성
       el.querySelector("#out").innerHTML=

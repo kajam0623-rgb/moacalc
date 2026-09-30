@@ -19,7 +19,7 @@ TOOLS.push({id:"horoscope",cat:"재미·운세",icon:"",name:"별자리 운세",
       else if(hs.rk===1){rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 맞습니다. 무난하게 밀고 갈 수 있습니다.";}
       else{rnote="오늘을 다스리는 "+wdr+"은 "+ele+" 원소와 결이 다릅니다. 속도를 조금 늦추면 마찰이 줄어듭니다.";}
       var grade=score>=85?"대길":score>=75?"길":score>=60?"평온":"주의";
-      var sub=A[6].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,A[6]);
       var week="";
       for(var i=0;i<7;i++){var dt=new Date(ty,tm-1,td+i),r=WD_RULER[dt.getDay()],
         g=(r===ruler)?"대길":(fri.indexOf(r)>=0?"길":"평");

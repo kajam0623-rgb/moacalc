@@ -22,12 +22,12 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
      "혼자 있고 싶어지는 날이야. 상대는 그걸 거리 두기로 오해하네. 말없이 사라지지 말고 한마디만 남기고 들어가게.","자료를 파고들거나 구조를 다시 짜는 데는 오늘만 한 날이 없어. 반대로 즉답이 필요한 회의나 협상은 오늘 잡지 말게.","머리는 바쁜데 몸은 처지는 날일세. 눕고 나서 생각이 꼬리를 물지 않게 화면을 일찍 끄게.",TF_LINE["편인"]],
     "정인":[84,"귀인과 배움의 날일세. 어른이든 스승이든 문서든, 위에서 내려오는 도움이 있네.","합격·승인·소식운이 좋아. 배운 만큼 그대로 쌓이는 날이야.","도움을 받거든 고맙다고 말로 하게. 그러면 운이 두 배가 되네.","혼자 끙끙 앓기. 오늘은 손 내밀면 대부분 열리네.",[2,0,6,6],
      "보살핌을 주고받는 날이야. 상대 힘든 이야기를 들어주는 것만으로 사이가 깊어지네. 윗사람 소개로 인연이 닿기도 해.","배움과 문서에 볕이 드는 날일세. 합격·승인·자격 같은 소식이 오기 쉽고, 막힌 일은 경험 많은 사람한테 물으면 바로 풀려.","회복이 잘 되는 날이야. 미뤄둔 검진이나 치료를 시작하기에도 좋네.",TF_LINE["정인"]]};
-    el.innerHTML='<label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15">'+
+    el.innerHTML='<label for="d">생년월일 (양력)</label><input type="text" id="d" inputmode="numeric" maxlength="10" placeholder="예) 19900315" aria-describedby="derr"><p class="tf-err" id="derr" role="alert"></p>'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
     function go(){
-      var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
+      var dv=bdParse(el.querySelector("#d").value).split("-");if(dv.length<3)return;
       track("fortune_view",{tool:"todayfortune"});
       // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
@@ -37,7 +37,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       else if(bonusArt==="충"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 충(沖)이야. 세워둔 계획이 흔들릴 수 있으니 변수 하나는 미리 자리를 비워두게.";hlSuf=" 변수 하나는 예약해 둘 것.";}
       else if(bonusArt==="육합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 육합일세. 사람 사이가 부드럽게 풀리는 날이야.";hlSuf=" 관계가 부드럽게 풀린다.";}
       var st=tf.st,todayEl=tf.todayEl,EL_HAN="木火土金水",yongHit=tf.yongHit,yongClash=tf.yongClash;
-      var sub=T[5].map(function(v){return Math.max(30,Math.min(99,score+v));});
+      var sub=subBal(score,T[5]);
       // 네 항목 중 최저·최고를 짚어 조언에 붙인다 — 같은 십성이라도 하루의 무게중심이 보이게
       var SUB_LBL=["애정","재물","직장","건강"],loI=sub.indexOf(Math.min.apply(null,sub)),hiI=sub.indexOf(Math.max.apply(null,sub));
       // 행운 정보: 억부용신 오행이 오늘의 보완 기운, 시간은 오늘 일지의 육합 시간대
@@ -105,4 +105,5 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
       askFx(el,{score:score,grade:grade,streak:true,bujeok:true});}
-    askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");birthDial(el,"#d");}});
+    bdBind(el,"#d","#derr");
+    askWire(el,go,["오늘 일진부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");}});

@@ -183,6 +183,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 공망(空亡): 일주가 속한 순(旬)에서 짝을 얻지 못한 두 지지. start=순의 첫 지지(갑과 짝인 지지)
   var SJ_SUN={0:"갑자순",10:"갑술순",8:"갑신순",6:"갑오순",4:"갑진순",2:"갑인순"};
   function sjGongmang(s,b){var st=(b-s+12)%12;return {sun:SJ_SUN[st],start:st,empty:[(st+10)%12,(st+11)%12]};}
+  // 종합 점수와 네 항목 점수의 평균이 어긋나 보이지 않게: 항목 사이 벌어진 폭은 두고 평균만 종합 점수에 맞춘다(각 30~99 안에서)
+  function subBal(score,vals){var n=vals.length,m=vals.reduce(function(a,b){return a+b;},0)/n,
+    raw=vals.map(function(v){return score+v-m;}),
+    out=raw.map(function(v){return Math.max(30,Math.min(99,Math.round(v)));}),
+    diff=score*n-out.reduce(function(a,b){return a+b;},0),k=0,
+    ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
+    while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
+    return out;}
   var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
@@ -1129,6 +1137,17 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
       finish(fortuneCard(o2));});}
   function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
+  // 생년월일 숫자 입력: 8자리만 치면 1995.01.01 꼴로 이어 붙이고, 틀리면 이유를 밝히며 결과로 가지 않는다
+  function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}
+  function bdParse(v,err){var d=v.replace(/[^0-9]/g,""),msg="";
+    if(d.length!==8)msg="생년월일 8자리를 숫자로 입력해 주세요. 예) 19900315";
+    else{var y=+d.slice(0,4),m=+d.slice(4,6),dd=+d.slice(6,8),t=new Date(y,m-1,dd);if(y<1900||t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==dd||t>new Date())msg="없는 날짜예요. 다시 확인해 주세요.";}
+    if(msg){if(err)err.textContent=msg;return "";}if(err)err.textContent="";return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8);}
+  function bdBind(el,sel,errSel){var inp=el.querySelector(sel),err=el.querySelector(errSel),btn=el.querySelector("#go");if(!inp)return;
+    inp.addEventListener("input",function(){if(this.selectionStart===this.value.length){var f=bdFmt(this.value);if(f!==this.value)this.value=f;}if(err)err.textContent="";});
+    inp.addEventListener("focus",function(){var e=this;setTimeout(function(){e.select();},0);});
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&btn){e.preventDefault();btn.click();}});
+    if(btn)btn.addEventListener("click",function(e){if(!bdParse(inp.value,err)){e.stopImmediatePropagation();inp.focus();}});}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
@@ -1150,4 +1169,4 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // ---------- TOOLS ----------
   
 var TOOLS=[];
-window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"){var g=el.querySelector("#go");if(g)setTimeout(function(){g.click();},250);}var lv=function(){[].forEach.call(el.querySelectorAll("h3:not([aria-level])"),function(h){h.setAttribute("aria-level","2");});};lv();if(window.MutationObserver)new MutationObserver(lv).observe(el,{childList:true,subtree:true});var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};
+window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"&&(id==="todayfortune"||id==="saju")){try{var hh=JSON.parse(sessionStorage.getItem("dnbs_hb")||"null"),bi=el.querySelector("#d");sessionStorage.removeItem("dnbs_hb");if(hh&&hh.v&&Date.now()-hh.t<6e5&&bi){bi.value=bi.type==="date"?hh.v:hh.v.replace(/-/g,".");bi.dispatchEvent(new Event("change",{bubbles:true}));}}catch(e){}}if(location.hash==="#go"){var g=el.querySelector("#go"),ni=el.querySelector("#d");if(g&&!(ni&&ni.inputMode==="numeric"&&!ni.value))setTimeout(function(){g.click();},250);}var lv=function(){[].forEach.call(el.querySelectorAll("h3:not([aria-level])"),function(h){h.setAttribute("aria-level","2");});};lv();if(window.MutationObserver)new MutationObserver(lv).observe(el,{childList:true,subtree:true});var Q="input,select,textarea";[].forEach.call(el.querySelectorAll("label:not([for])"),function(l){if(l.querySelector(Q))return;var c=null;for(var n=l.nextElementSibling;n&&!c&&n.tagName!=="LABEL";n=n.nextElementSibling)c=n.matches(Q)?n:n.querySelector(Q);if(c&&c.id)l.htmlFor=c.id;});};
