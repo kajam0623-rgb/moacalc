@@ -243,6 +243,8 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
     var RM=!!(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches);
     var deck,picks,opened,dk,stage="chat",run=0,topic,ques,birth=null;
     function later(ms,fn){var id=run;window.setTimeout(function(){if(id===run)fn.call(null);},RM?0:ms);}
+    // 움직임 줄이기 설정과 상관없이 지키는 기다림(섞는 중·패를 읽는 중). 결과가 곧장 나오면 봐 준다는 감각이 없다
+    function wait(ms,fn){var id=run;window.setTimeout(function(){if(id===run)fn.call(null);},ms);}
     function say(t){return '<div class="bs-say"><img src="img/mascot.webp" alt="" width="44" height="45" onerror="this.remove()"><p>'+t+'</p></div>';}
     // button 을 쓰면 .tool button 의 !important 배경에 먹힌다. span 으로 피한다
     function opts(list){return '<div class="bs-opts">'+list.map(function(o,i){return '<span class="bs-opt" role="button" tabindex="0" data-i="'+i+'">'+o+'</span>';}).join("")+'</div>';}
@@ -342,7 +344,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       var idx=[];for(var i=0;i<M.length;i++)idx.push(i);
       for(i=idx.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),tmp=idx[i];idx[i]=idx[j];idx[j]=tmp;}
       deck=idx.slice(0,22).map(function(n){return {i:n,rev:Math.random()<0.4};});
-      if(RM){spread();return;}
+      if(RM){wait(1800,spread);return;}
       var g=geo(),cx=(g.W-g.cw)/2,round=0;
       tb.classList.add("busy");
       // 1) 두 더미로 갈라 번갈아 떨어뜨리는 리플 셔플 두 번
@@ -449,17 +451,15 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       var N=picks.length;
       var steps=picks.map(function(pk,j){return "'"+ques.sp[j][1]+"' 자리의 "+M[pk.i][1]+" 살피는 중";})
         .concat([N===1?"패가 건네는 말 고르는 중":"패와 패 사이의 흐름 잇는 중"]).concat(birth?["사주 여섯 글자와 맞대 보는 중"]:[]).concat(["보살의 한마디 고르는 중"]);
-      if(RM){render();return;}
-      var total=Math.max(3600,steps.length*750),per=total/steps.length,n=0;
+      var total=Math.max(5200,steps.length*900),per=total/steps.length,n=0;
       rd.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
         '<img src="img/mascot-serious.webp" alt="패를 진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
         '<p class="tr-seer-t">보살이 패를 들여다보는 중일세</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
-      try{rd.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
+      try{rd.scrollIntoView({behavior:RM?"auto":"smooth",block:"center"});}catch(e){}
       var sEl=rd.querySelector(".tr-seer-s"),bar=rd.querySelector(".tr-seer-bar i"),img=rd.querySelector(".tr-seer img");
-      bar.style.transition="width "+total+"ms linear";
-      later(40,function(){bar.style.width="100%";});
+      if(RM)bar.style.transition="none";else{bar.style.transition="width "+total+"ms linear";wait(40,function(){bar.style.width="100%";});}
       (function next(){
-        if(n<steps.length){sEl.textContent=steps[n++];if(img){var c=mid(img);burst(c.x,c.y-20,8,1.8);}later(per,next);}
+        if(n<steps.length){sEl.textContent=steps[n++];if(RM)bar.style.width=Math.round(100*n/steps.length)+"%";else if(img){var c=mid(img);burst(c.x,c.y-20,8,1.8);}wait(per,next);}
         else render();})();}
     // 결과 공유 이미지 1080×1350 — 뽑은 카드 그림, 보살의 한마디, 출처 주소를 한 장에 담는다
     function drawShare(cb){

@@ -31,6 +31,7 @@ const SAJU_Q = require("./content_saju_q.js");         // 꼬리질문 — sj/q.
 const TODAY_Q = require("./content_today_q.js");       // 꼬리질문 — tf/q.json
 const GH_DEEP = require("./content_gunghap.js");       // 궁합 깊이 있는 풀이 원고 — gh/deep.json
 const SJ_CHAR = require("./content_saju_char.js");     // 사주 타고난 성격 원고 — sj/char.json
+const SJ_EASY = require("./content_saju_easy.js");     // 사주 쉬운 종합 원고 — sj/easy.json
 const NY_DEEP = require("./content_newyear.js");        // 신년운세 깊이 있는 풀이 원고 — ny/deep.json
 const SAJU_SYNTH = require("./content_saju_synth.js");     // 종합 칸 — 조합 파일에 그 일간·격국 몫만 // 판정 문장 — 조합 파일에 그 일간·격국 몫만 골라 싣는다  // 사주 일간×격국 조합 원고 → sj/<일간>-<십성>.json      // 토정비결 144괘 풀이 → tj/<괘>.json          // 꿈해몽 12분류       // 타로 78장(메이저 22 · 마이너 56) — 카드 뜻
 const CONCEPT_PAGES = require("./content_concept.js"); // 명리 개념 해설 6종 — 엔티티 페이지가 올려다볼 문서층
@@ -2940,6 +2941,7 @@ Object.keys(SAJU_COMBO).forEach(il=>Object.keys(SAJU_COMBO[il]).forEach(tg=>fs.w
     s:{p1:SAJU_SYNTH[il].synth[tg],miss:SAJU_SYNTH[il].miss,sin:SAJU_SYNTH[il].sin,now:SAJU_SYNTH.nowfit[tg]}})))));
 fs.writeFileSync(path.join(OUT,"sj","q.json"), JSON.stringify(SAJU_Q));
 fs.writeFileSync(path.join(OUT,"sj","char.json"), JSON.stringify(SJ_CHAR));
+fs.writeFileSync(path.join(OUT,"sj","easy.json"), JSON.stringify(SJ_EASY));
 fs.mkdirSync(path.join(OUT,"tf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"tf","q.json"), JSON.stringify(TODAY_Q));
 fs.mkdirSync(path.join(OUT,"gh"),{recursive:true});

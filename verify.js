@@ -164,7 +164,7 @@ t("타로 건강 고민은 병원 안내를 먼저 한다", /병원/.test(tarotD
 t("타로 카드 설명 78장 × 정역 (250자 이상)", TREAD.every(c => c.desc && ["up","rev"].every(k => typeof c.desc[k] === "string" && c.desc[k].replace(/\s/g, "").length >= 250)), true);
 t("타로 핵심어는 카드 뜻 페이지 keyword와 같음", tarotData.KW.join("|"), require("./content_tarot.js").map(c => c.keyword).join("|"));
 t("타로 종합 원소 문장 5 · 여정 구간 3", tarotData.EL_LINE.length === 5 && tarotData.STAGE.length === 3, true);
-t("타로 결과는 진지한 보살 로딩(최소 3.6초) 뒤에 차례로 띄운다", tarotSrc.includes("mascot-serious.webp") && /Math\.max\(3600,/.test(tarotSrc) && tarotSrc.includes("tr-in"), true);
+t("타로 결과는 진지한 보살 로딩(최소 5.2초) 뒤에 차례로 띄운다 — 움직임 줄이기를 켠 기기에서도 로딩을 건너뛰지 않는다", tarotSrc.includes("mascot-serious.webp") && /Math\.max\(5200,/.test(tarotSrc) && tarotSrc.includes("tr-in") && !/if\(RM\)\{render\(\);return;\}/.test(tarotSrc) && /if\(RM\)\{wait\(1800,spread\);return;\}/.test(tarotSrc), true);
 t("타로 진지한 보살 이미지 파일 존재", fs.existsSync("img/mascot-serious.webp"), true);
 t("타로 게임 연출: 문질러 섞기·입자·날아가 꽂히기", tarotSrc.includes("bindRub()") && tarotSrc.includes("function burst(") && tarotSrc.includes("tr-fly"), true);
 t("타로 첫 화면 고민 8칸 (두 줄 격자에 빈칸 없음)", tarotData.TOPICS.length, 8);
@@ -579,6 +579,37 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   { const nyb = toolBlock("newyear");
     t("신년운세 도구가 깊이 풀이 원고(ny/deep.json)를 받아 자리(#nydeep)에 채우고 결과 칸은 접지 않는다",
       [nyb.includes('fetch("ny/deep.json")'), nyb.includes('<div id="nydeep"></div>'), nyb.includes("nyLast={me:me,YR:YR,YW:YW};fillNy();"), !/<div class="sj-sec"><h3>/.test(nyb), bs.includes('"ny","deep.json"'), /nyDeep/.test(bs)].join(","), "true,true,true,true,true,true"); } }
+// 사주 쉬운 종합(content_saju_easy.js → sjEasy): 원고 칸 · 문체(보살 말투·긍정·쉬운 말) · 무작위 명식 3000개 · 이름 부르기 · 도구 배선
+{ const SE = require("./content_saju_easy.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/,
+    NEG = /위험|흉|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길|불운/, HARD = /격국|용신|신강|신약|십성|비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|일간|월지|지지/;
+  const TG = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"], SINK = ["천을귀인", "문창귀인", "도화살", "역마살", "화개살", "양인살", "백호대살", "괴강살"], GRPK = ["재성", "관성", "인성", "식상", "비겁"];
+  t("쉬운 종합 원고: 일간 10 · 힘 2 · 짜임 10(좋은 방식·챙길 것) · 별 8 · 비어 있는 기운 5 · 큰 흐름 10 · 올해 10 · 받침 4 · 맺음 2가 모두 채워져 있다",
+    [SE.il.length === 10 && SE.il.every(x => x.length > 20), SE.str.strong && SE.str.weak && SE.strat.strong && SE.strat.weak && SE.close.strong && SE.close.weak, TG.every(k => SE.gy[k] && SE.good[k] && SE.care[k] && SE.du[k] && SE.du[k].length === 2 && SE.se[k] && SE.se[k].length === 2),
+     SINK.every(k => SE.sin[k] && SE.sin[k].length === 2), GRPK.every(k => SE.miss[k]), ["both", "du", "se", "none"].every(k => SE.fit[k]), !!SE.note].map(Boolean).join(",") + "|" + [SE.str3.length === 10 && SE.people.length === 10 && SE.habit.length === 10 && SE.habit.every(x => x.length > 30) && SE.str3.every(x => x.length > 15) && SE.people.every(x => x.length > 30), TG.every(k => SE.work[k] && SE.money[k] && SE.seTip[k]), /\{E\}/.test(SE.body)].join(","), "true,true,true,true,true,true,true|true,true,true");
+  { const { note, ...body } = SE, strs = []; (function w(o) { if (typeof o === "string") strs.push(o); else if (o && typeof o === "object") Object.values(o).forEach(w); })(body); const all = strs.join("\n");
+    t("쉬운 종합 원고: 보살 말투(존댓말 어미 0, 근거 고지 note 만 존댓말)", JOND.test(all) ? "혼입" : "0", "0");
+    t("쉬운 종합 원고: 긍정 베이스 — 겁주는 말(위험·흉·불행·사고·실패·나쁜 …)이 0", (all.match(NEG) || []).join(",") || "0", "0");
+    t("쉬운 종합 원고: 어려운 명리 용어(격국·용신·신강·신약·십성 이름·일간·월지)가 본문에 0 — 별 이름은 괄호 안에만", (all.replace(/\([^)]*\)/g, "").match(HARD) || []).join(",") || "0", "0"); }
+  const G5 = { 비견: "비겁", 겁재: "비겁", 식신: "식상", 상관: "식상", 편재: "재성", 정재: "재성", 편관: "관성", 정관: "관성", 편인: "인성", 정인: "인성" };
+  const cnt = { token: 0, undef: 0, jondae: 0, josa: 0, paras: 0, neg: 0 }; let minL = 1e9, maxL = 0, sumL = 0; const NMS = ["", "민지 님", "엄마", "김동성 님", "하늘 님"];
+  for (let i = 0; i < 3000; i++) { const y = 1930 + Math.floor(Math.random() * 86), m = 1 + Math.floor(Math.random() * 12), d = 1 + Math.floor(Math.random() * 28), h = i % 3 ? null : Math.floor(Math.random() * 24), p = sjPillars(y, m, d, h, 30, true), ds = p.d.s, st = sjStrength(p);
+    const G = { 비겁: 0, 식상: 0, 재성: 0, 관성: 0, 인성: 0 }; [p.y, p.m, p.d].concat(p.h ? [p.h] : []).forEach((c, ci) => { if (ci !== 2) G[G5[sjTenGod(ds, c.s)]]++; G[G5[sjTenGod(ds, SJ_BMAIN[c.b])]]++; });
+    const nm = NMS[i % NMS.length], f = { ds, strong: st.strong, yong: SJ_EL[st.yong], wolTg: sjTenGod(ds, SJ_BMAIN[p.m.b]), sin: sjSinsal(p), miss: Object.keys(G).filter(k => G[k] === 0), duTg: TG[i % 10], seTg: TG[(i * 7 + 3) % 10], duOk: !!(i & 1), seOk: !!(i & 2), nm };
+    const ps = sjEasy(f, SE), txt = ps.map(x => x.replace(/<[^>]+>/g, "")).join("\n"), len = txt.replace(/\s+/g, "").length; minL = Math.min(minL, len); maxL = Math.max(maxL, len); sumL += len;
+    if (/[{}]/.test(txt)) cnt.token++; if (/undefined|NaN|null/.test(txt)) cnt.undef++; if (JOND.test(txt)) cnt.jondae++; if (NEG.test(txt)) cnt.neg++;
+    if (ps.length < 8 || ps.length > 12) cnt.paras++;
+    const first = ps[0].replace(/<[^>]+>/g, ""); if (nm ? !first.startsWith("쉽게 말하면 — " + nm + josa(nm, "는/은") + " ") : !first.startsWith("쉽게 말하면 — 자네는 ")) cnt.josa++; }
+  t("쉬운 종합: 무작위 3000명(이름 없음·민지 님·엄마 …) — 남은 토큰·undefined·존댓말 혼입·겁주는 말·문단 수·이름 조사 오류가 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, paras: 0, neg: 0 }));
+  // 글자 수의 최솟값은 무작위가 아니라 계산으로 잡는다(항목마다 문장이 이어 붙는 합이라 차원별 최솟값의 합이 곧 전체 최솟값 — 무작위 표본은 그보다 작을 수 없다)
+  { const EL5 = ["목", "화", "토", "금", "수"], base = { ds: 0, strong: true, yong: "목", wolTg: "비견", sin: [], miss: [], duTg: "비견", seTg: "비견", duOk: false, seOk: false, nm: "" }, L = f => sjEasy(f, SE).map(x => x.replace(/<[^>]+>/g, "")).join("\n").replace(/\s+/g, "").length, L0 = L(base);
+    let exact = L0; [["ds", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], ["strong", [true, false]], ["yong", EL5], ["wolTg", TG], ["duTg", TG], ["seTg", TG]].forEach(([k, vs]) => { exact += Math.min(...vs.map(v => L({ ...base, [k]: v }))) - L0; });
+    exact += Math.min(...[[false, false], [true, false], [false, true], [true, true]].map(v => L({ ...base, duOk: v[0], seOk: v[1] }))) - L0;
+    t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 예전 종합(공백 빼고 약 450자)의 1.5배를 넘는 700자 이상, 평균 950자 이상", exact >= 700 && minL >= exact && sumL / 3000 >= 950, true); }
+  // 이름 부르기: 엄마·아빠는 님을 더 붙이지 않고 이름에는 님을 붙이며, 결과 글의 섹션마다 첫 '자네'를 바꾼다(조사는 받침대로)
+  t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon("")].join("|"), "민지 님|민지 님|엄마|이수현씨||");
+  { const sj = toolBlock("saju");
+    t("사주 도구: 쉬운 종합 원고(sj/easy.json)를 받아 종합을 쓰고, 못 받으면 예전 문장으로 대신하며, 결과의 섹션마다 이름을 부른다",
+      [sj.includes('fetch("sj/easy.json")'), sj.includes("synthOld"), sj.includes("sjEasy({ds:ds"), sj.includes("nmSwap(outEl,nmHon(nm))"), sj.includes("쉽게 말하면</b> — 태어난 시각은"), bs.includes('"sj","easy.json"')].join(","), "true,true,true,true,true,true"); } }
 // 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
 t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳이 이를 밝힌다", bs.includes("sessionStorage.setItem(\"dnbs_hb\"") ? [(bs.match(/이 탭에 잠깐 두었다가/g)||[]).length>=3, fs.readFileSync("content_site.js","utf8").includes("임시 저장소(sessionStorage)에 잠깐 두었다가")].join(",") : "n/a", "true,true");
 { const bd = inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function shareBtn"));
@@ -586,7 +617,9 @@ t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳
     [bd.includes('inp.type="text";inp.inputMode="numeric"'), bd.includes('className="dial-box"'), bd.includes("돌려서 고르기"),
      bd.includes('if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(inp.value||""))return;'), bd.includes('function bdOk(v){var m=/^(\\d{4})-(\\d{2})-(\\d{2})$/.exec(v||"")'),
      bd.includes('t.closest("#go")') && bd.includes("e.stopImmediatePropagation()")].join(","), "true,true,true,true,true,true");
-  t("사주 정확한 시각은 숫자 4자리(HH:MM 으로 이어 붙이고 올바른 시각만 계산에 쓴다)", [src.includes('<input type="text" id="tm" inputmode="numeric"'), src.includes('/^([01]\\d|2[0-3]):[0-5]\\d$/.test(v)?v:""')].join(","), "true,true");
+  t("사주 정확한 시각 칸은 clockParse 로 읽고(못 읽으면 이유를 밝히고 결과로 가지 않는다) 시각 없는 결과에도 안내 카드가 나온다", [src.includes('<input type="text" id="tm" inputmode="numeric"'), src.includes('clockParse(el.querySelector("#tm").value)'), src.includes('id="tmerr"'), src.includes('태어난 시각을 넣으면 더해지는 것')].join(","), "true,true,true,true");
+  { const CK = [["", true, ""], ["1430", true, "14:30"], ["0930", true, "09:30"], ["930", true, "09:30"], ["9:30", true, "09:30"], ["230", true, "02:30"], ["14", true, "14:00"], ["9시", true, "09:00"], ["9시 30분", true, "09:30"], ["오후 2시 30분", true, "14:30"], ["오전 9시", true, "09:00"], ["새벽 2시 5분", true, "02:05"], ["밤 12시", true, "00:00"], ["밤 11시 40분", true, "23:40"], ["낮 12시 30분", true, "12:30"], ["오전 12시", true, "00:00"], ["오후 12시", true, "12:00"], ["PM 3:20", true, "15:20"], ["0000", true, "00:00"], ["2359", true, "23:59"], ["2530", false, ""], ["24:00", false, ""], ["9:75", false, ""], ["abc", false, ""], ["12345", false, ""]];
+    t("시각 읽기(clockParse): 0930·930·9:30·9시 30분·오후 2시 30분 같은 꼴을 읽고 못 읽는 것은 이유를 돌려준다", CK.map(c => { const r = clockParse(c[0]); return r.ok === c[1] && r.v === c[2] && (r.ok || r.err.length > 10); }).every(Boolean), true); }
   const fa = src.slice(src.indexOf("function foldAll"), src.indexOf("function birthDial"));
   t("접이식: 첫 문장을 뽑고 남은 글이 70자 미만이면 접지 않고 펼쳐 둔다", fa.includes("body.textContent.trim().length<70") && fa.includes("fold=has&&!flat"), true); }
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
@@ -640,7 +673,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

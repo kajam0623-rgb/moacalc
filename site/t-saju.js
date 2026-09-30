@@ -46,7 +46,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     sjHourOpts(-1)+'</select></div></div>'+
     '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
     '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label>정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="5" placeholder="예) 1430 (모르면 비워 두세요)" autocomplete="off" value=""></div>'+
+    '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
     '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
@@ -64,10 +64,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
     // 타고난 성격 원고(sj/char.json) — 결과가 그려질 때 도착해 있으면 섹션을 넣고, 못 받았으면 그 섹션만 뺀다
     var SJC=null;if(typeof fetch==="function")fetch("sj/char.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)SJC=j;}).catch(function(){});
+    // 쉬운 종합 원고(sj/easy.json) — 못 받으면 예전 조립 문장(synthOld)으로 대신한다
+    var SJE=null;if(typeof fetch==="function")fetch("sj/easy.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)SJE=j;}).catch(function(){});
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
     /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
        지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
-    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=(function(v){return /^([01]\d|2[0-3]):[0-5]\d$/.test(v)?v:"";})(el.querySelector("#tm").value),tv=el.querySelector("#t").value;
+    function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=(function(r){return r.ok?r.v:"";})(clockParse(el.querySelector("#tm").value)),tv=el.querySelector("#t").value;
       if(tm&&y){var sh=krClockShift(y,mo,d).min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
         return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,exact:tm};}
       var h=tv===""?null:+tv;return {y:y,mo:mo,d:d,h:h,mi:h==null?0:30,sh:0,exact:""};}
@@ -371,43 +373,53 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       /* 태어난 시각이 더하는 것 — 시주(자녀·말년 자리) 풀이. 시각 하늘 글자의 십성=말년, 아래 글자 본기의 십성=자녀·아랫사람·결실,
          일간의 시지 십이운성=말년 기운의 단계, 시지와 일지의 충·합, 시주가 더하는 오행이 용신을 채우는지 */
       function hourSec(){
-        if(!p.h)return "";
-        var HOUR_LATE={"비견":"늘그막에도 제 발로 서려는 기운이라 은퇴가 늦고 스스로 일을 만들어 가는 말년일세.",
-          "겁재":"늙어서도 사람이 끊이지 않는 말년이지만 나눠 주다 곳간이 비기 쉬우니 몫을 정해 두게.",
+        if(!p.h)return '<div class="sj-sec sj-hour fold-skip"><h3>태어난 시각을 넣으면 더해지는 것</h3><p>이번에는 태어난 시각 없이 여섯 글자로 풀었네. 타고난 성격과 재물·인연·올해 흐름 같은 큰 줄기는 그대로 볼 수 있으니 걱정하지 말게. 시각을 알게 되면 위쪽 <b>태어난 시각</b>을 골라 다시 물어보게. 말년의 모습, 자녀·아랫사람 복, 일의 마무리 이야기가 한 장 더 붙네.</p></div>';
+        var HOUR_LATE={"비견":"늘그막에도 제 발로 서려는 기운이라 은퇴가 늦고 스스로 일을 만들어 가는 활기찬 말년일세.",
+          "겁재":"늙어서도 사람이 끊이지 않는 북적이는 말년일세. 나눠 주는 몫을 미리 정해 두면 곳간도 든든하네.",
           "식신":"나이 들수록 여유가 붙고 먹고 누리는 복이 따르는 말년일세. 손을 놓지 않으면 더 편해지네.",
-          "상관":"늘그막에도 할 말은 하는 성미라 젊은 사람들과 부딪히기 쉬워. 가르치는 자리에 서면 그 입이 복이 되네.",
-          "편재":"말년에 판이 한 번 크게 벌어지는 짜임이야. 들뜨기보다 지킬 몫부터 떼어 두는 게 복을 오래 쥐는 길일세.",
+          "상관":"늘그막에도 하고 싶은 말을 또렷이 하는 멋진 어른이 되네. 가르치는 자리에 서면 그 입이 복이 되네.",
+          "편재":"말년에 판이 한 번 크게 벌어지는 짜임이야. 지킬 몫을 먼저 떼어 두면 그 복을 오래 쥐네.",
           "정재":"젊어서 모은 것이 늦게 꽃피는 말년일세. 꾸준함이 가장 큰 재산이 되네.",
-          "편관":"늘그막까지 책임이 따라다니는 말년이라 쉬는 법을 따로 배워 두게. 버틴 만큼 존중이 돌아오네.",
+          "편관":"늘그막까지 맡은 몫을 해내는 든든한 어른이 되네. 쉬는 법도 함께 배워 두면 더 오래 편안하고, 버틴 만큼 존중이 돌아오네.",
           "정관":"나이 들수록 이름과 체면이 서는 말년일세. 반듯하게 쌓은 평판이 노후를 받치네.",
           "편인":"말년에 남다른 공부나 취미에 깊이 빠져드는 짜임이야. 혼자 파는 시간이 자네를 젊게 하네.",
           "정인":"늙어서 돌봐 주는 손이 있는 말년일세. 배움을 놓지 않으면 어른 대접을 받네."};
         var HOUR_KIDS={"비견":"자식과 아랫사람이 친구처럼 곁에 서는 자리라 함께 일을 도모하기 좋네.",
-          "겁재":"자식과 아랫사람에게 몫을 떼어 주게 되는 자리라 줄 것과 지킬 것을 가려야 하네.",
+          "겁재":"자식과 아랫사람에게 아낌없이 나눠 주는 자리일세. 줄 것과 지킬 것을 미리 정해 두면 마음이 편하네.",
           "식신":"자식과 아랫사람이 자네 복을 늘려 주는 자리일세. 길러 준 만큼 돌아오네.",
           "상관":"자식과 아랫사람이 제 식대로 가려 하는 자리야. 믿고 맡기면 뜻밖의 결실을 들고 오네.",
-          "편재":"자식과 아랫사람 일로 돈이 크게 드나드는 자리일세. 교육과 뒷바라지에 드는 몫을 미리 셈해 두게.",
+          "편재":"자식과 아랫사람 일로 돈이 크게 드나드는 자리일세. 교육과 뒷바라지에 드는 몫을 미리 셈해 두면 든든하네.",
           "정재":"자식과 아랫사람이 살림을 보태는 자리야. 차근차근 가르친 만큼 든든해지네.",
-          "편관":"자식과 아랫사람 일로 마음 졸일 때가 많은 자리일세. 다그치기보다 버팀목이 되어 주게.",
+          "편관":"자식과 아랫사람에게 든든한 버팀목이 되는 자리일세. 다그치기보다 믿고 지켜봐 주면 잘 자라네.",
           "정관":"자식과 아랫사람이 반듯하게 자라 이름을 내는 자리야. 본보기가 되는 게 가장 큰 가르침일세.",
           "편인":"자식과 아랫사람이 남다른 재주로 제 길을 찾는 자리일세. 낯선 선택도 막지 말게.",
           "정인":"자식과 아랫사람에게서 도움과 효도를 받는 자리야. 늦게 받는 정이 크네."};
-        var HOUR_UN={장생:"말년 기운이 새로 싹트는 자리라 늦게 시작하는 일이 잘 자라네.",목욕:"말년 기운이 들뜨는 자리라 늦바람과 충동적인 씀씀이를 조심하게.",
+        var HOUR_WORK={"비견":"일의 마무리를 내 손으로 끝까지 책임지는 스타일이라 마감이 든든하네.",
+          "겁재":"일의 마무리에 사람들이 함께 붙어 결과가 풍성해지네. 몫을 미리 정해 두면 깔끔하네.",
+          "식신":"일의 마무리가 술술 풀려 손에서 나온 결과물이 오래 남네.",
+          "상관":"일의 마무리에 새로운 방식이 더해져 뜻밖의 좋은 결과가 나오기도 하네.",
+          "편재":"일의 마무리에서 큰 기회가 열려 판을 키울 수 있네.",
+          "정재":"일의 마무리가 꼼꼼해 결과가 믿음직하고 재산으로 남네.",
+          "편관":"일의 마무리에서 큰 책임을 해낸 사람으로 인정받네.",
+          "정관":"일의 마무리가 반듯해 이름과 신뢰가 남네.",
+          "편인":"일의 마무리에 깊은 전문성이 붙어 남다른 결과를 남기네.",
+          "정인":"일의 마무리에 도움과 문서가 따라 결과가 안정적으로 인정받네."};
+        var HOUR_UN={장생:"말년 기운이 새로 싹트는 자리라 늦게 시작하는 일이 잘 자라네.",목욕:"말년 기운이 설레고 활기찬 자리라 늙어서도 새로운 즐거움을 찾는 사람일세. 씀씀이만 정해 두면 더 즐겁네.",
           관대:"말년 기운이 한창 멋을 내는 자리라 늙어서도 젊게 사는 사람일세.",건록:"말년 기운이 제 힘으로 서는 자리라 늦게까지 현역으로 뛰네.",
-          제왕:"말년 기운이 가장 센 자리라 늘그막에 오히려 목소리가 커지니 너그러움을 챙기게.",쇠:"말년 기운이 한풀 꺾여 차분해지는 자리라 조용하고 편안한 노후가 맞네.",
-          병:"말년 기운이 잦아드는 자리라 몸 관리를 일찍 시작할수록 노후가 가볍네.",사:"말년 기운이 멈춰 쉬는 자리라 욕심을 내려놓을수록 마음이 편해지네.",
-          묘:"말년 기운이 창고에 드는 자리라 모아 둔 것을 지키는 노후일세.",절:"말년 기운이 끊겼다 이어지는 자리라 늦게 삶의 방향이 크게 바뀔 수 있네.",
+          제왕:"말년 기운이 가장 센 자리라 늘그막에 오히려 목소리에 힘이 실리네. 너그러움을 곁들이면 더 존경받네.",쇠:"말년 기운이 한풀 꺾여 차분해지는 자리라 조용하고 편안한 노후가 맞네.",
+          병:"말년 기운이 차분해지는 자리라 몸 관리를 일찍 시작할수록 노후가 가볍네.",사:"말년 기운이 멈춰 쉬는 자리라 욕심을 내려놓을수록 마음이 편해지네.",
+          묘:"말년 기운이 창고에 드는 자리라 모아 둔 것을 지키는 노후일세.",절:"말년 기운이 새 출발하는 자리라 늦게 삶의 방향이 새로 열릴 수 있네.",
           태:"말년 기운이 새로 잉태되는 자리라 늦게 새 인연이나 새 공부가 시작되네.",양:"말년 기운이 품에서 길러지는 자리라 돌봄을 주고받으며 따뜻하게 늙네."};
         var tgS=sjTenGod(ds,p.h.s),tgB=sjTenGod(ds,SJ_BMAIN[p.h.b]),un=sjUnseong(ds,p.h.b);
         var add=[SJ_EL[SJ_ES[p.h.s]],SJ_EL[SJ_EB[p.h.b]]].filter(function(e,i,a){return a.indexOf(e)===i;});
         var hb=p.h.b,dbb=p.d.b,rel=Math.abs(hb-dbb)===6?"충":(sjYukhap(dbb)===hb||(hb%4===dbb%4&&hb!==dbb))?"합":"";
-        return '<div class="sj-sec sj-hour fold-skip"><h3>태어난 시각이 더하는 것 — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+') 시주</h3><p>'+
-          '시각 자리는 말년과 자녀·아랫사람, 그리고 일의 결실을 보는 자리일세. 하늘 글자 '+SJ_S[p.h.s]+josa(SJ_S[p.h.s],"는/은")+' 자네에게 <b>'+tgS+'</b>, 아래 글자 '+SJ_B[p.h.b]+josa(SJ_B[p.h.b],"는/은")+' <b>'+tgB+'</b>이야. '+
-          '시각 자리가 '+add.join("·")+' 기운을 더해 '+(add.indexOf(yEl)>=0?'자네에게 필요한 '+yEl+' 기운을 채워 주네.':'필요한 '+yEl+' 기운은 시각 자리에서도 오지 않으니 바깥에서 채워야 하네.')+
-          '<br><br><b>말년</b> — '+HOUR_LATE[tgS]+'<br><b>자녀·아랫사람</b> — '+HOUR_KIDS[tgB]+'<br><b>말년 기운의 단계</b> — '+(HOUR_UN[un]||"")+
-          (rel==="충"?'<br><br>태어난 날 자리와 시각 자리가 부딪혀 집안일과 바깥일 사이에서 마음이 갈리기 쉬우니 늘그막엔 한쪽을 줄여 균형을 잡게.'
-            :rel==="합"?'<br><br>태어난 날 자리와 시각 자리가 붙어 늘그막에 집안이 화목하고 곁을 지키는 사람이 있네.':'')+
-          '</p></div>';}
+        return '<div class="sj-sec sj-hour fold-skip"><h3>태어난 시각이 더하는 것 — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+') 시주</h3>'+
+          '<p><b>쉽게 말하면</b> — 태어난 시각은 <b>말년(나이 들어서의 모습)</b>과 <b>자녀·아랫사람 복</b>, 그리고 <b>일의 마무리</b>를 보여 주는 자리일세. 자네의 시각 글자는 '+SJ_S[p.h.s]+SJ_B[p.h.b]+'이고, 위 글자 '+SJ_S[p.h.s]+josa(SJ_S[p.h.s],"는/은")+' 자네에게 <b>'+tgS+josa(tgS,"를/을")+'</b> 더해 주고, 아래 글자 '+SJ_B[p.h.b]+josa(SJ_B[p.h.b],"는/은")+' <b>'+tgB+josa(tgB,"를/을")+'</b> 더해 주네.</p>'+
+          '<p><b>말년</b> — '+HOUR_LATE[tgS]+'</p><p><b>자녀·아랫사람</b> — '+HOUR_KIDS[tgB]+'</p><p><b>일의 마무리</b> — '+HOUR_WORK[tgS]+'</p><p><b>말년의 기운</b> — '+(HOUR_UN[un]||"")+'</p>'+
+          '<p><b>필요한 기운과의 관계</b> — 시각 자리가 '+add.join("·")+' 기운을 더해 주네. '+(add.indexOf(yEl)>=0?'자네에게 필요한 '+yEl+' 기운이 여기서 채워지니 든든하네.':'자네에게 필요한 '+yEl+' 기운은 시각 자리에서 오지 않으니 생활 속에서 따로 챙기면 더 좋네.')+'</p>'+
+          (rel==="충"?'<p>태어난 날 자리와 시각 자리가 서로 마주 보아 집안일과 바깥일 사이의 균형이 중요한 시각이네. 늘그막엔 한쪽을 줄여 균형을 잡으면 마음이 편하네.</p>'
+            :rel==="합"?'<p>태어난 날 자리와 시각 자리가 붙어 늘그막에 집안이 화목하고 곁을 지키는 사람이 있네.</p>':'')+
+          '</div>';}
       /* 달마다 흐름. 사주의 달은 절기(매달 4~8일께)에 바뀐다 — 각 양력 달 20일의 월주를 그 달로 본다.
          그달 하늘 글자가 자네에게 어떤 십성인지, 용신을 받쳐 주는지, 그달 지지가 일지와 충·합인지, 해마다와 같은 영역 표시 */
       var MSC=[]; // 앞으로 열두 달의 점수(꼬리질문 "조심할 달"이 같은 값을 쓴다)
@@ -461,13 +473,14 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var CS=CB&&CB.s,fitK=duOk&&seOk?"both":duOk?"du":seOk?"se":"none";
       var p1=CS&&CS.p1&&CS.p1[st.strong?"strong":"weak"];
       var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격 — 이런 사람일세</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑에서는 /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일에서는 /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':"";
-      var synth='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+(p1||
+      var synthOld='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 자네는</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 자네를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가네. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 자네 길일세. '+
         (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버티네.':'다만 힘이 얇으니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두게.'))+
         '<br><br>'+[sinsal.slice(0,2).map(function(x){return (CS&&CS.sin&&CS.sin[x])||SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return (CS&&CS.miss&&CS.miss[x])||MISS[x];}).join(" ")].filter(Boolean).join(" ")+
         (sinsal.length||gZero.length?'<br><br>':'')+
         '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있네. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
+      var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — 그래서 '+(nmH?nmH+josa(nmH,"는/은"):"자네는")+'</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
       var headTxt=img+josa(img,"가/이")+(st.strong?" 힘이 넘쳐<br>"+need+josa(need,"로/으로")+" 풀어 주는 사주":" 기운이 얇아<br>"+need+josa(need,"를/을")+" 찾는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
@@ -627,10 +640,17 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");plainWords(outEl);foldAll(outEl,{open:4});[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:4});[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 태양 황경으로 재는 중","일간의 힘을 재어 보는 중","용신을 고르는 중","격국과 신살을 짚는 중","대운 여덟 구간을 펼치는 중","올해 세운을 겹쳐 보는 중","맺음말을 고르는 중"],
       "명식을 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
     el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);
-    el.querySelector("#tm").addEventListener("change",function(){syncT();prefetch();});
-    el.querySelector("#tm").addEventListener("input",function(){if(this.selectionStart===this.value.length){var dg=this.value.replace(/[^0-9]/g,"").slice(0,4),f=dg.slice(0,2)+(dg.length>2?":"+dg.slice(2,4):"");if(f!==this.value)this.value=f;}if(/^([01]\d|2[0-3]):[0-5]\d$/.test(this.value))this.dispatchEvent(new Event("change",{bubbles:true}));});prefetch();}});
+    // 정확한 시각 칸 — 4자리면 콜론만 이어 주고 0930·930·9:30·오후 2시 30분을 모두 읽는다. 못 읽으면 이유를 밝히고 결과로 가지 않는다
+    var tmEl=el.querySelector("#tm"),tmErr=el.querySelector("#tmerr"),tmSay=el.querySelector("#tmsay");
+    function tmCheck(fix){var r=clockParse(tmEl.value);tmErr.textContent=r.ok?"":r.err;tmSay.textContent=r.ok&&r.v?"읽은 시각: "+r.say:"";if(fix&&r.ok&&r.v)tmEl.value=r.v;return r;}
+    tmEl.addEventListener("change",function(){if(tmCheck(true).ok){syncT();prefetch();}});
+    tmEl.addEventListener("input",function(){var dg=this.value.replace(/[^0-9]/g,"");
+      if(/^[0-9:]*$/.test(this.value)&&dg.length===4&&this.value.indexOf(":")<0&&this.selectionStart===this.value.length)this.value=dg.slice(0,2)+":"+dg.slice(2);
+      tmErr.textContent="";tmSay.textContent="";if(/^\d\d:\d\d$/.test(this.value)&&tmCheck(true).ok){syncT();prefetch();}});
+    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go"))return;if(tmCheck(true).ok)return;e.stopImmediatePropagation();e.preventDefault();tmEl.focus();},true);
+    prefetch();}});

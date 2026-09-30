@@ -1287,6 +1287,49 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     inp.addEventListener("focus",function(){var e=this;setTimeout(function(){e.select();},0);});
     inp.addEventListener("keydown",function(e){if(e.key==="Enter"&&btn){e.preventDefault();btn.click();}});
     if(btn)btn.addEventListener("click",function(e){if(!bdParse(inp.value,err)){e.stopImmediatePropagation();inp.focus();}});}
+  // 태어난 시각 칸 — 0930·930·9:30·9시 30분·오후 2시 30분·14 처럼 사람이 적는 꼴을 HH:MM 으로 읽는다.
+  // 못 읽으면 이유(err)를 돌려준다: 조용히 버리면 시주 카드만 빠진 채 결과가 나와 왜 빠졌는지 모른다
+  function clockSay(H,M){function z(n){return n<10?"0"+n:""+n;}
+    var w=H===0?"밤 12시":H<6?"새벽 "+H+"시":H<12?"오전 "+H+"시":H===12?"낮 12시":H<18?"오후 "+(H-12)+"시":H<21?"저녁 "+(H-12)+"시":"밤 "+(H-12)+"시";
+    return w+(M?" "+M+"분":"")+" ("+z(H)+":"+z(M)+")";}
+  function clockParse(s){s=String(s==null?"":s).trim();if(!s)return {ok:true,v:"",say:"",err:""};
+    var pm=/오후|저녁|밤|낮|p\.?m/i.test(s),am=/오전|새벽|아침|a\.?m/i.test(s),night=/밤/.test(s),
+      t=s.replace(/오전|오후|새벽|아침|저녁|밤|낮|[ap]\.?m\.?/ig,"").trim(),H=-1,M=0,m;
+    if((m=/^(\d{1,2})\s*[:.시]\s*(\d{1,2})\s*분?$/.exec(t))){H=+m[1];M=+m[2];}
+    else if((m=/^(\d{1,2})\s*시?$/.exec(t)))H=+m[1];
+    else if((m=/^(\d)(\d{2})$/.exec(t))){H=+m[1];M=+m[2];}
+    else if((m=/^(\d{2})(\d{2})$/.exec(t))){H=+m[1];M=+m[2];}
+    if(H>=0){if(pm&&H<12)H+=12;if(H===12&&night)H=0;if(H===12&&am&&!pm)H=0;}
+    if(H<0||H>23||M>59)return {ok:false,v:"",say:"",err:"시각을 읽지 못했네. 숫자 4자리(24시간제)로 적어 주게. 예) 오전 9시 30분은 0930, 오후 2시 30분은 1430일세."};
+    return {ok:true,v:(H<10?"0"+H:""+H)+":"+(M<10?"0"+M:""+M),say:clockSay(H,M),err:""};}
+  // 이름을 물었으면 결과에서 그 이름으로 부른다("민지 님"). 엄마·아빠처럼 이미 호칭이면 님을 더 붙이지 않는다
+  function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모)$/.test(n)?n:n+" 님";}
+  // 결과 글의 섹션마다 첫 "자네"를 이름으로 바꾼다(한 섹션에 한 번). 조사는 이름의 받침에 맞춘다. 종합(.sj-synth)은 글 쓸 때 이미 이름을 넣는다
+  function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
+    [].forEach.call(root.querySelectorAll(".sj-sec"),function(sec){
+      if(sec.classList.contains("sj-synth"))return;
+      var w=document.createTreeWalker(sec,NodeFilter.SHOW_TEXT,null,false),tn;
+      while((tn=w.nextNode())){
+        if(tn.parentElement&&tn.parentElement.closest(".gh-note,.note"))continue;
+        var s=tn.nodeValue,m=/자네(는|가|를|와|에게는|에게|의|도|만|한테|께)?(?![가-힣])/.exec(s);
+        if(m){tn.nodeValue=s.slice(0,m.index)+n+(m[1]?(JO[m[1]]?josa(n,JO[m[1]]):m[1]):"")+s.slice(m.index+m[0].length);return;}}});}
+  /* 사주 종합 — 원고 D(content_saju_easy.js → sj/easy.json)에서 이 사람의 일간·힘의 세기·짜임(월지 십성)·눈에 띄는 별·비어 있는 기운·지금의 큰 흐름과 올해로 쉬운 문장을 골라 잇는다.
+     f = {ds,strong,yong:용신 오행 이름,wolTg,sin:[신살 이름],miss:[비어 있는 십성 무리],duTg,seTg,duOk,seOk,nm:"민지 님"|""}. 문단(HTML) 배열을 돌려준다. 순수 함수 — verify 가 무작위 명식으로 검사한다 */
+  var SJ_MISS_LAB={재성:"돈",관성:"일과 책임",인성:"배움과 도움",식상:"재주와 표현",비겁:"동료와 자립"};
+  function sjEasy(f,D){
+    var N=f.nm?f.nm+josa(f.nm,"는/은"):"자네는",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
+      sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,2),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
+    p.push('<b>쉽게 말하면</b> — '+N+' '+D.il[f.ds]+'일세. '+D.str[sk]+' '+D.gy[f.wolTg]);
+    p.push('<b>대표 강점</b> — '+D.str3[f.ds]+'일세.');
+    p.push('<b>이렇게 하면 술술 풀리네</b> — '+D.good[f.wolTg]+' '+D.strat[sk]);
+    p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
+    p.push('<b>이것만 챙기면 더 좋아지네</b> — '+D.care[f.wolTg]);
+    p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
+    sn.forEach(function(k){p.push('<b>'+D.sin[k][0]+'</b> — '+D.sin[k][1]);});
+    ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
+    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>일세. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg]+' '+D.fit[fk]);
+    p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
+    return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
