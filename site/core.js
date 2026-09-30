@@ -262,7 +262,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     ["재","관","식","인","비"].forEach(function(g){var a=gA[g],b=gB[g],d=D.role[g],who,txt;
       if(a>=3&&b>=3){who="둘 다";txt=d.both;}
       else if(Math.abs(a-b)>=2){var pa=a>b;who=pa?"자네":nb;txt=ghFill(d.lead,{P:who});}
-      else if(a<=1&&b<=1){who="둘 다 얇음";txt=d.none;}
+      else if(a<=1&&b<=1){who="둘 다 적은 편";txt=d.none;}
       else{who="비슷";txt=d.even;}
       roles.push({k:d.t,w:who,t:txt});});
     secs.push({k:"role",h:"역할 나누기 — 누가 무엇을 맡으면 편한가",roles:roles,n:D.note.role});
