@@ -118,7 +118,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
-      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 조율할 자리를 보게.":"부딪히는 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
+      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
     if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){

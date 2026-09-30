@@ -19,11 +19,27 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var ST_RANGE=["3.21~4.19","4.20~5.20","5.21~6.21","6.22~7.22","7.23~8.22","8.23~9.22","9.23~10.22","10.23~11.21","11.22~12.21","12.22~1.19","1.20~2.18","2.19~3.20"];
   var ST_ELE=["불","흙","공기","물"]; // 별자리 index%4
   var ST_RULER=["화성","금성","수성","달","태양","수성","금성","화성","목성","토성","토성","목성"]; // 전통 지배성
-  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자. 속도가 곧 무기입니다.","한번 정하면 끝까지 지키는 뚝심. 감각과 실속을 함께 챙깁니다.","호기심과 언어 감각이 살아 있는 전달자. 사람과 정보가 늘 모입니다.","마음의 온도를 먼저 읽는 보호자. 내 사람에게는 한없이 깊습니다.","존재만으로 무대를 만드는 사람. 인정받을 때 가장 빛납니다.","작은 어긋남을 먼저 보는 정밀한 눈. 완성도가 곧 자존심입니다.","균형과 관계의 조율자. 아름다움과 공정함을 동시에 봅니다.","한 번 파고들면 끝을 보는 집중력. 겉과 속의 깊이가 다릅니다.","시야가 넓고 낙천적인 탐험가. 갇히는 순간 답답해집니다.","시간을 자기 편으로 만드는 전략가. 늦어도 결국 올라섭니다.","남과 다른 각도로 보는 혁신가. 규칙보다 이유를 묻습니다.","경계 없이 스며드는 공감력. 예술과 직관이 강점입니다."];
+  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자일세. 속도가 곧 무기야.","한번 정하면 끝까지 지키는 뚝심이 있네. 감각과 실속을 함께 챙기지.","호기심과 말솜씨가 살아 있는 전달자일세. 사람과 정보가 늘 모여드네.","마음의 온도를 먼저 읽는 보호자일세. 내 사람에게는 한없이 깊지.","존재만으로 무대를 만드는 사람일세. 인정받을 때 가장 빛나지.","작은 어긋남을 먼저 알아보는 정밀한 눈을 가졌네. 완성도가 곧 자존심이지.","균형과 관계를 조율하는 사람일세. 아름다움과 공정함을 함께 보네.","한 번 파고들면 끝을 보는 집중력이 있네. 겉과 속의 깊이가 남다르지.","시야가 넓고 낙천적인 탐험가일세. 자유로울 때 가장 신나지.","시간을 자기 편으로 만드는 전략가일세. 늦어도 결국 올라서네.","남과 다른 각도로 보는 혁신가일세. 규칙보다 이유를 먼저 묻지.","경계 없이 스며드는 공감력이 있네. 예술과 직관이 강점일세."];
   var ST_ELE_RULERS={"불":["태양","화성","목성"],"흙":["금성","수성","토성"],"공기":["수성","금성","토성"],"물":["달","화성","목성"]};
   var WD_KO=["일","월","화","수","목","금","토"];
   var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
   function stOf(y,m,d){return Math.floor(sjSunLong(sjJdKST(y,m,d,12,0))/30);} // 태양황경으로 별자리 판정
+  /* 달의 자리 — 하루 낮 12시(KST) 기준. 황경은 Meeus(Astronomical Algorithms 47장)의 큰 항 30여 개로 구하고,
+     미국 해군천문대의 삭·상현·보름·하현 99개(2026~27)와 0.04° 안(위상 시각으로 5분 안)으로 맞는다.
+     하루의 결이 태양(한 달에 한 번 별자리를 옮긴다)이 아니라 달(2~3일마다 옮긴다)에서 나오게 하려는 것 */
+  var ST_MASP=[[86,[4,2,4,-2]],[72,[0,2,4,2]],[84,[8,6,6,0]],[60,[-8,-6,-4,-6]],[90,[8,6,8,4]],[64,[-4,0,-4,-6]],[70,[4,2,2,0]]]; // 달과 내 별자리의 각도(0~6) → [기본점수,[애정·재물·일·건강 보정]]
+  function hsMoonLong(jd){var T=(jd-2451545)/36525,T2=T*T,R=Math.PI/180,
+      Lp=218.3164477+481267.88123421*T-0.0015786*T2,D=297.8501921+445267.1114034*T-0.0018819*T2,M=357.5291092+35999.0502909*T-0.0001536*T2,
+      Mp=134.9633964+477198.8675055*T+0.0087414*T2,F=93.2720950+483202.0175233*T-0.0036539*T2,E=1-0.002516*T-0.0000074*T2,A1=119.75+131.849*T,A2=53.09+479264.290*T;
+    function S(x){return Math.sin(x*R);}
+    var s=6.288774*S(Mp)+1.274027*S(2*D-Mp)+0.658314*S(2*D)+0.213618*S(2*Mp)-0.185116*E*S(M)-0.114332*S(2*F)+0.058793*S(2*D-2*Mp)+0.057066*E*S(2*D-M-Mp)+0.053322*S(2*D+Mp)
+      +0.045758*E*S(2*D-M)-0.040923*E*S(M-Mp)-0.034720*S(D)-0.030383*E*S(M+Mp)+0.015327*S(2*D-2*F)-0.012528*S(Mp+2*F)+0.010980*S(Mp-2*F)+0.010675*S(4*D-Mp)+0.010034*S(3*Mp)
+      +0.008548*S(4*D-2*Mp)-0.007888*E*S(2*D+M-Mp)-0.006766*E*S(2*D+M)-0.005163*S(D-Mp)+0.004987*E*S(D+M)+0.004036*E*S(2*D-M+Mp)+0.003994*S(2*Mp+2*D)+0.003861*S(4*D)
+      +0.003665*S(2*D-3*Mp)+0.003958*S(A1)+0.001962*S(Lp-F)+0.000318*S(A2);
+    return ((Lp+s)%360+360)%360;}
+  // 달의 별자리(sign 0~11)·태양과의 각(el)·모양(phase 0 삭 … 4 보름 … 7 그믐)·밝기(illum %)
+  function hsMoon(y,m,d){var jd=sjJdKST(y,m,d,12,0),ml=hsMoonLong(jd),el=((ml-sjSunLong(jd))%360+360)%360;
+    return {sign:Math.floor(ml/30),el:el,phase:Math.floor(((el+22.5)%360)/45),illum:Math.round((1-Math.cos(el*Math.PI/180))/2*100)};}
   function stCard(i,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
     '<div class="cap"><div class="t">'+(label||"나의 별자리")+'</div><div class="n">'+ST_SYM[i]+' '+ST_KO[i]+'</div><p>'+ST_TRAIT[i]+'</p></div></div>';}
   // 태양의 각도 관계(어스펙트) — 거리 0~6, [기본점수, 이름, 총운, 애정, 재물·일, 조언, [애정·재물·일·건강 보정]]
@@ -135,18 +151,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 십이운성 — 일간이 각 지지에서 갖는 기운의 단계 (양간 순행 / 음간 역행)
   var SJ_UN=["장생","목욕","관대","건록","제왕","쇠","병","사","묘","절","태","양"];
   var SJ_UN_DESC={
-   "장생":"갓 태어난 기운일세. 순수하고 자랄 여지가 크며, 사람들 도움을 자연스럽게 받는 자리야.",
-   "목욕":"멋을 부리고 감정이 풍부한 자리일세. 매력은 있으나 마음이 잘 흔들리기도 하네.",
-   "관대":"세상에 갓 나선 청년의 기운이야. 자신감과 의욕이 넘치되 다소 성급하네.",
-   "건록":"스스로 벌어 스스로 서는, 열둘 중 가장 단단한 축에 드는 자리일세. 실속 있고 책임감이 서네.",
-   "제왕":"기운이 가장 왕성한 정점이야. 주도력이 뛰어난 만큼 고집으로 흐르지 않게 조절해야 하네.",
-   "쇠":"정점을 지나 안정으로 접어든 자리일세. 무리하지 않고 안을 다지는 데 강해.",
-   "병":"기운이 여려지며 예민해지는 자리야. 대신 감수성과 배려가 깊어 사람을 잘 살피네.",
-   "사":"활동보다 생각이 깊어지는 자리일세. 연구·기획처럼 안으로 파고드는 일에 어울려.",
-   "묘":"거두어 갈무리하는 자리야. 모으고 지키는 힘이 있어 관리와 축적에 강하네.",
-   "절":"끊어졌다 다시 이어지는 자리일세. 변화가 잦지만 새 출발의 기운도 같이 들어 있어.",
-   "태":"새 생명이 잉태되는 자리야. 아이디어와 가능성이 씨앗처럼 자리를 잡네.",
-   "양":"태어나기 전 길러지는 자리일세. 보호받으며 준비하는 시기라 기질이 온화해지네."};
+   "장생":"갓 태어난 아기처럼 새로 시작하는 맑은 기운일세. 순수하고 앞으로 자랄 힘이 크며, 주변 사람들의 도움을 자연스럽게 받는 자리야.",
+   "목욕":"멋을 내고 감정이 풍부해지는 자리일세. 사람을 끄는 매력이 큰 만큼 기분에 따라 마음이 잘 흔들리기도 하니, 결정은 차분할 때 하면 좋네.",
+   "관대":"이제 막 세상에 나선 씩씩한 청년의 기운이야. 자신감과 의욕이 넘치는 대신 조금 성급해질 수 있으니, 한 박자만 쉬어 가면 되네.",
+   "건록":"제 힘으로 벌어 제 발로 서는, 열두 단계 가운데서도 손꼽히게 단단한 자리일세. 실속이 있고 책임감이 강해서 곁의 사람들에게 믿음을 주네.",
+   "제왕":"기운이 가장 왕성한 맨 꼭대기 자리야. 앞장서는 힘이 뛰어난 만큼, 고집으로 흐르지 않게 남의 말도 한 번 들어 주면 그 힘이 더 크게 빛나네.",
+   "쇠":"가장 높은 때를 지나 안정으로 접어든 자리일세. 무리하지 않고 안을 다지는 데 강해서, 오래 가는 힘을 가졌네.",
+   "병":"기운이 여리고 섬세해지는 자리야. 대신 마음결이 깊고 배려심이 커서 사람을 잘 살피니, 몸만 잘 돌보면 그 따뜻함이 오래가네.",
+   "사":"움직이는 것보다 생각이 깊어지는 자리일세. 연구나 기획처럼 안으로 파고드는 일에 잘 어울려서 조용한 집중력이 빛나네.",
+   "묘":"거두어서 차곡차곡 챙기는 자리야. 모으고 지키는 힘이 있어서 살림을 관리하고 하나씩 쌓아 가는 데 특히 강하네.",
+   "절":"한 번 멈췄다가 다시 이어지는 자리일세. 변화가 잦은 대신 새 출발의 기운도 함께 들어 있어서 다시 시작하는 힘이 크네.",
+   "태":"새 생명이 막 생겨나는 자리야. 아이디어와 가능성이 씨앗처럼 자리를 잡아서 앞으로 크게 자랄 힘이 있네.",
+   "양":"세상에 나오기 전에 품 안에서 자라는 자리일세. 보호받으며 준비하는 시기라서 성품이 온화하고 부드러워, 사람들과 잘 어울리네."};
   // 개념 삽화 파일명 매핑 — 한글 개념명을 이미지 파일명으로 연결한다
   var ART_UN={"장생":"un-jangsaeng","목욕":"un-mogyok","관대":"un-gwandae","건록":"un-geollok","제왕":"un-jewang","쇠":"un-soe","병":"un-byeong","사":"un-sa","묘":"un-myo","절":"un-jeol","태":"un-tae","양":"un-yang"};
   var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
@@ -163,18 +179,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return '<img class="sj-art" width="520" height="520" src="img/char/'+file+'.webp" alt="'+escH(alt||"")+'" loading="lazy" onerror="this.remove()">';}
   // 십이운성 무드 — 하루의 '온도'를 총운에 접합 (오늘의 운세 총운 조립용, SJ_UN_DESC와 별개)
   var UN_MOOD={
-   "장생":"몸이 가볍게 열리는 날이라 새로 시작하는 일에 힘이 붙네.",
-   "목욕":"감정이 풍부해져 매력은 사는데, 기분 따라 정하면 흔들리기 쉬운 날일세.",
-   "관대":"의욕이 차오르는 날이야. 자신감은 좋으나 서두르면 마무리가 거칠어지네.",
-   "건록":"발밑이 단단한 날일세. 손에 쥔 것부터 끝내면 하루가 알차게 쌓여.",
-   "제왕":"기운이 정점이라 밀어붙이는 힘은 좋은데 과속만 조심하게.",
-   "쇠":"속도를 줄이고 안을 다지기 좋은 날이야. 벌이기보다 정리가 어울리네.",
-   "병":"감수성이 깊어지는 날일세. 몸의 신호에 예민해지니 컨디션부터 챙기게.",
-   "사":"생각이 안으로 파고드는 날이라 혼자 붙잡는 일에서 성과가 나네.",
-   "묘":"거두고 갈무리하는 날일세. 새 판 벌이기보다 모아둔 걸 지키게.",
-   "절":"흐름이 한 번 끊겼다 다시 이어지는 날이야. 변화가 와도 새 출발 신호로 읽게.",
-   "태":"생각이 씨앗처럼 맺히는 날일세. 바로 실행보다 적어두기 좋아.",
-   "양":"보호받으며 준비하는 날이야. 서두르지 말고 힘을 기르는 데 쓰게."};
+   "장생":"몸이 가볍고 마음이 열리는 날이라 새로 시작하는 일에 힘이 붙네. 첫걸음을 내딛기 좋은 하루일세.",
+   "목욕":"감정이 풍부해져서 매력이 살아나는 날일세. 다만 기분 따라 정하면 마음이 흔들리기 쉬우니 큰 결정은 한 번 더 생각하게.",
+   "관대":"의욕이 차오르고 자신감도 넘치는 날이야. 다만 마음이 앞서 서두르면 마무리가 거칠어지니 끝맺음을 한 번 더 살펴보게.",
+   "건록":"발밑이 단단해서 마음이 놓이는 날일세. 지금 손에 쥔 일부터 하나씩 끝내면 하루가 알차게 쌓이네.",
+   "제왕":"기운이 가장 높이 오른 날이라 밀어붙이는 힘이 아주 좋네. 속도만 조금 늦추면 더 멀리 가네.",
+   "쇠":"속도를 줄이고 안을 차분히 다지기 좋은 날이야. 새 일을 벌이기보다 정리하고 돌보는 일이 잘 어울리네.",
+   "병":"마음결이 여리고 섬세해지는 날일세. 몸이 보내는 신호가 잘 느껴지니 컨디션부터 먼저 챙겨 주면 하루가 편안하네.",
+   "사":"생각이 안으로 깊어지는 날이라 혼자 집중하는 일에서 좋은 성과가 나네. 조용한 시간을 만들어 보게.",
+   "묘":"모아 둔 것을 거두고 챙기는 날일세. 새 판을 벌이기보다 가진 것을 지키고 정리하면 마음이 차분해지네.",
+   "절":"흐름이 잠시 멈췄다가 새로 이어지는 날이야. 변화가 와도 놀라지 말고 새 출발의 신호로 받아들이게. 다시 시작하기 좋은 때일세.",
+   "태":"새로운 생각이 씨앗처럼 자리를 잡는 날일세. 바로 실행하기보다 적어 두고 키워 가기 좋은 때일세.",
+   "양":"보호받으며 차분히 준비하는 날이야. 서두르지 말고 배우고 쉬며 힘을 기르게. 몸도 마음도 조금씩 자라는 하루일세."};
   var SJ_JS=[11,6,2,9,2,9,5,0,8,3]; // 천간별 장생 지지
   function sjUnseong(s,b){var js=SJ_JS[s];return SJ_UN[(s%2===0)?((b-js+12)%12):((js-b+12)%12)];}
   // 신살 — 룩업 테이블 (일간·삼합 기준)
@@ -286,13 +302,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function byI(a){return a.slice().sort(function(p,q){return p.i-q.i;});}
     var srt=months.slice().sort(function(a,b){return b.sc-a.sc||a.i-b.i;}),best=byI(srt.filter(function(x){return x.sc>=92;}).slice(0,3)),worst=byI(srt.filter(function(x){return x.sc<=60;}).reverse().slice(0,2));
     var mrows=months.map(function(x){var isB=best.indexOf(x)>=0,isW=worst.indexOf(x)>=0;
-      return {h:ml(x),v:isB?"힘이 실리는 달":isW?"조심할 달":"무난",c:isB?"g":isW?"c":"o",
+      return {h:ml(x),v:isB?"힘이 실리는 달":isW?"차분히 가는 달":"무난",c:isB?"g":isW?"c":"o",
         sub:x.pil+"("+x.han+")월 · "+x.tg+(x.ch?" · 일지와 충":x.hp?" · 일지와 합":"")+" · "+x.term+"부터",t:x.t};});
     var evRows=NY_EV.map(function(E){var k=E[0],w=E[2],ysc=w[rel]+(fit===2?1:0),
         sm=months.map(function(x){return {x:x,s:w[x.tg]+(x.fit===2?2:x.fit===1?1:0)+(k==="meet"&&x.hp?2:0)-(x.ch?2:0)};}).sort(function(a,b){return b.s-a.s||a.x.i-b.x.i;}),
         good=byI(sm.filter(function(o){return o.s>=(E[3]||3);}).slice(0,3).map(function(o){return o.x;})),bad=byI(sm.filter(function(o){return o.s<=-1;}).reverse().slice(0,2).map(function(o){return o.x;}));
-      return {h:E[1],v:ysc>=3?"유리":ysc<=-1?"신중":"무난",c:ysc>=3?"g":ysc<=-1?"c":"o",
-        sub:(good.length?"좋은 달 "+nm(good):"뚜렷하게 좋은 달 없음")+(bad.length?" · 피할 달 "+nm(bad):""),t:ghFill(D.ev[k][NY_GRP[rel]],M)};});
+      return {h:E[1],v:ysc>=3?"유리":ysc<=-1?"차분히":"무난",c:ysc>=3?"g":ysc<=-1?"c":"o",
+        sub:(good.length?"좋은 달 "+nm(good):"뚜렷하게 좋은 달 없음")+(bad.length?" · 미뤄 두면 좋은 달 "+nm(bad):""),t:ghFill(D.ev[k][NY_GRP[rel]],M)};});
     var sm=best.length&&worst.length?D.sum.both:best.length?D.sum.bestOnly:worst.length?D.sum.worstOnly:D.sum.flat,Yo=SJ_YONG[yEl],secs=[];
     secs.push({k:"sum",h:"이 해 한눈에",p:[ghFill(D.fit[fit],M),ghFill(sm,{best:nm(best),worst:nm(worst)})]});
     secs.push({k:"money",h:"재물 — 돈이 오가는 모양",p:[ghFill(R.money,M)],n:D.note.money});
@@ -313,10 +329,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "문창귀인":"학문과 글재주의 별이야. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나네.",
    "도화살":"매력과 인기의 별일세. 사람을 끄는 힘이 강해 예술·연예·서비스·영업 쪽에서 강점이 되네.",
    "역마살":"이동과 변화의 별이야. 해외든 출장이든 이사든 유통이든, 움직이는 일에서 기회가 열리네.",
-   "화개살":"고독과 예술의 별일세. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
-   "양인살":"강한 칼의 기운이야. 결단력과 추진력이 뛰어나되 과하면 다툼이 되니 벼려서 써야 하네.",
-   "백호대살":"강렬한 기운의 별일세. 승부처에서 힘을 내지만 건강과 안전만은 각별히 챙겨야 하네.",
-   "괴강살":"우두머리의 기운이야. 카리스마와 리더십이 강하며, 그만큼 극단으로 흐르기도 쉽네."};
+   "화개살":"혼자 깊어지는 시간과 예술의 별일세. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
+   "양인살":"승부에 강한 기운이야. 결단력과 추진력이 뛰어나니 차분히 벼려서 쓰면 남을 지키는 힘이 되네.",
+   "백호대살":"강렬한 기운의 별일세. 승부처에서 힘을 내니 건강과 안전만 곁들여 챙기면 든든하네.",
+   "괴강살":"우두머리의 기운이야. 카리스마와 리더십이 강해 이끄는 자리에서 빛나네."};
   function sjSinsal(p){
     var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
     var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
@@ -404,7 +420,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>';}
   var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
   // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
-  var TF_LINE={"비견":"내 걸음으로 가는 날. 밀고 가되 돈은 각자.","겁재":"새는 날. 지갑도 마음도 잠가둘 것.","식신":"표현이 풀리는 날. 담아둔 말은 꺼낼 것.","상관":"번뜩이는 날. 단, 입은 한 박자 늦게.","편재":"큰돈이 움직이는 날. 계산기부터 두드릴 것.","정재":"성실이 돈 되는 날. 한탕 말고 확실한 것.","편관":"압박의 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 오늘은 원칙이 지름길.","편인":"생각이 깊어지는 날. 확답은 내일로.","정인":"귀인의 날. 혼자 앓지 말 것."};
+  var TF_LINE={"비견":"내 걸음대로 가도 좋은 날. 돈은 각자 계산.","겁재":"마음 넉넉한 날. 쓸 한도만 정해 둘 것.","식신":"말도 복도 술술 풀리는 날. 담아 둔 말은 꺼낼 것.","상관":"아이디어 번뜩이는 날. 입만 한 박자 늦출 것.","편재":"큰돈과 기회가 오가는 날. 계산기부터 두드릴 것.","정재":"성실함이 돈이 되는 날. 확실한 쪽을 잡을 것.","편관":"도전이 오는 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 원칙대로 가는 게 지름길.","편인":"생각이 깊어지는 날. 결정은 내일로.","정인":"도움이 찾아오는 날. 혼자 애쓰지 말 것."};
   function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
   function tfToday(y,m,d,now){
     now=now||new Date();
@@ -532,14 +548,60 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return"평";}
   function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
     return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
-  /* 별자리 오늘 점수 — 오늘 태양 별자리와 내 별자리의 각도(ST_ASP) + 요일 지배성이 내 수호성(+7)·같은 원소 지배성(+3)·그 밖(−3).
-     별자리 운세와 홈 "오늘의 별자리 순위"가 같이 쓴다. rk: 2 수호성의 요일, 1 결이 맞는 요일, 0 결이 다른 요일 */
-  var HS_LINE=["태양이 내 위를 지나는 날","잔잔하게 흐르는 날","손 뻗으면 기회가 닿는 날","마찰 끝에 자라는 날","순풍이 부는 날","조정과 타협의 날","관계가 주제인 날"];
-  function hsScore(mine,now){now=now||new Date();
-    var sun=stOf(now.getFullYear(),now.getMonth()+1,now.getDate()),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist];
-    var wdr=WD_RULER[now.getDay()],rk=wdr===ST_RULER[mine]?2:ST_ELE_RULERS[ST_ELE[mine%4]].indexOf(wdr)>=0?1:0;
-    return {sun:sun,dist:dist,A:A,wdr:wdr,rk:rk,score:Math.max(35,Math.min(98,A[0]+(rk===2?7:rk===1?3:-3)))};}
+  /* 띠별 운세 깊이 풀이 — 원고 D(content_zodiac_fortune.js → zf/deep.json)에서 오늘 일진과 내 띠의 관계(7)·오늘 하늘 글자의 역할(10)·띠(12)에 맞는 문장을 고른다.
+     순수 함수 — verify 가 12띠 × 60일진으로 검사한다. art 는 관계 그림(있으면 총운 첫 문단 앞에 붙는다) */
+  function zfDeep(b,today,D,art){var zf=zfScore(b,today),rel=zf.rel,tg=zf.tg;
+    return {rel:rel,tg:tg,secs:[
+      {k:"gen",h:"오늘의 총운",p:[(art||"")+D.gen[b][rel],D.tg[tg]]},
+      {k:"money",h:"재물·일",p:[D.money[rel]]},
+      {k:"love",h:"애정운",p:[D.love[rel]]},
+      {k:"body",h:"몸과 마음",p:[D.body[rel]]},
+      {k:"tip",h:"조언",p:[D.tip[rel]]}]};}
+  function zfYear(b,D){function y(Yb,YW,A){return {k:"year",h:YW+" 한 해",p:[ghFill(D.year[zfRel(b,Yb)],{Y:YW,A:A})]};}
+    return [y(7,"2027 정미년","미(未)"),y(6,"2026 병오년","오(午)")];}
+  /* 별자리 오늘 점수 — 하루의 결은 오늘 달이 내 별자리와 이루는 각도(ST_MASP)와 이달의 배경인 태양의 각도(ST_ASP)를 반씩 섞고,
+     요일 지배성이 내 수호성(+7)·같은 원소 지배성(+3)·그 밖(−3)을 더한다. 별자리 운세와 홈 "오늘의 별자리 순위"가 같이 쓴다.
+     rk: 2 수호성의 요일, 1 결이 맞는 요일, 0 결이 다른 요일 / md: 달과의 각 0~6 / dist: 태양과의 각 0~6 */
+  var HS_LINE=["달이 내 별자리에 든 날","잔잔하게 흐르는 날","손 뻗으면 기회가 닿는 날","마찰 끝에 자라는 날","순풍이 부는 날","조정과 타협의 날","관계가 주제인 날"];
+  var HS_PH=["삭","초승달","상현달","차오르는 달","보름달","기우는 달","하현달","그믐달"];
+  function hsGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
+  function hsScore(mine,now){now=now||new Date();var y=now.getFullYear(),m=now.getMonth()+1,d=now.getDate(),
+      sun=stOf(y,m,d),k=(sun-mine+12)%12,dist=Math.min(k,12-k),A=ST_ASP[dist],
+      mo=hsMoon(y,m,d),k2=(mo.sign-mine+12)%12,md=Math.min(k2,12-k2),MA=ST_MASP[md],
+      wdr=WD_RULER[now.getDay()],rk=wdr===ST_RULER[mine]?2:ST_ELE_RULERS[ST_ELE[mine%4]].indexOf(wdr)>=0?1:0;
+    return {sun:sun,dist:dist,A:A,moon:mo,md:md,MA:MA,wdr:wdr,rk:rk,score:Math.max(35,Math.min(98,Math.round((A[0]+MA[0])/2)+(rk===2?7:rk===1?3:-3)))};}
   function hsRank(now){return ST_KO.map(function(n,i){var h=hsScore(i,now);h.i=i;return h;}).sort(function(x,y){return y.score-x.score||x.i-y.i;});}
+  // 이번주 흐름 — 오늘부터 이레, 날마다 그날 달이 든 별자리와 등급
+  function hsWeekSec(mine,now){var days=[],i;
+    for(i=0;i<7;i++){var dt=new Date(now.getFullYear(),now.getMonth(),now.getDate()+i),h=hsScore(mine,dt),g=hsGrade(h.score);
+      days.push({d:(dt.getMonth()+1)+"."+dt.getDate()+" "+WD_KO[dt.getDay()],g:g,c:g==="대길"?"var(--fun-ink)":g==="길"?"var(--accent)":g==="주의"?"var(--deduct)":"var(--muted)",m:ST_SYM[h.moon.sign]+" "+ST_KO[h.moon.sign].replace("자리","")});}
+    return {k:"week",h:"이번주 흐름 — 달이 옮겨 가는 길",days:days,n:"칸마다 그날 낮 12시(한국 시각)에 달이 든 별자리와 요일의 별로 매긴 등급입니다. 달은 하루에 약 13도씩 옮겨 가 2~3일마다 별자리가 바뀝니다."};}
+  /* 별자리 운세 깊이 풀이 — 원고 D(content_horoscope.js → hs/deep.json)에서 오늘 달의 자리·모양과 내 별자리의 각도에 맞는 문장을 골라 잇는 순수 함수.
+     엔진 옆에 둔 이유: verify.js 가 무작위 별자리·날짜로 검사한다. 토큰: {wd} 요일 글자 {wdr} 요일의 별 {ele} 내 원소 {ruler} 내 수호성 {color} 색 */
+  function hsDeep(mine,now,D){var hs=hsScore(mine,now),mo=hs.moon,MT=D.moon[hs.md],wd=WD_KO[now.getDay()],M={wd:wd,wdr:hs.wdr,ele:ST_ELE[mine%4],ruler:ST_RULER[mine],color:D.lucky.color[hs.wdr]},secs=[];
+    secs.push({k:"sky",h:"오늘 하늘 한눈에",p:[D.sign[mo.sign],D.phase[mo.phase]]});
+    secs.push({k:"gen",h:"오늘의 총운",p:[MT.gen,ghFill(D.rnote[hs.rk],M)]});
+    secs.push({k:"love",h:"애정운",p:[MT.love]});
+    secs.push({k:"work",h:"재물·일",p:[MT.work]});
+    secs.push({k:"body",h:"몸과 마음",p:[MT.body]});
+    secs.push({k:"tip",h:"조언",p:[MT.tip]});
+    secs.push(hsWeekSec(mine,now));
+    secs.push({k:"sun",h:"이 달의 큰 배경",p:[D.sun[hs.dist]]});
+    secs.push({k:"lucky",h:"오늘 곁에 둘 색",p:[ghFill(D.lucky.line,M)],n:D.note});
+    return {secs:secs,hs:hs};}
+  /* 별자리 궁합 깊이 풀이 — 원고 D(content_stargunghap.js → sg/deep.json)에서 두 별자리 쌍·원소 조합·각도·수호성 결에 맞는 글을 골라 잇는 순수 함수.
+     엔진 옆에 둔 이유: verify.js 가 12×12 모든 조합으로 검사한다. 토큰: {ra} {rb} 두 별자리의 수호성 */
+  var SG_ANG=[["같은 자리","합"],["이웃한 자리","세미섹스타일"],["손을 맞잡는 자리","섹스타일"],["직각으로 마주 본 자리","스퀘어"],["순풍이 부는 자리","트라인"],["결이 다른 자리","퀸컹스"],["정반대 자리","오포지션"]];
+  function sgAng(dist){return SG_ANG[dist][0]+"("+SG_ANG[dist][1]+" "+dist*30+"°)";}
+  function sgDeep(a,b,D){var k=(b-a+12)%12,dist=Math.min(k,12-k),ea=Math.min(a%4,b%4),eb=Math.max(a%4,b%4),rA=ST_RULER[a],rB=ST_RULER[b],
+      rFit=(ST_ELE_RULERS[ST_ELE[b%4]].indexOf(rA)>=0?1:0)+(ST_ELE_RULERS[ST_ELE[a%4]].indexOf(rB)>=0?1:0),P=D.pair[Math.min(a,b)+"-"+Math.max(a,b)];
+    return {secs:[
+      {k:"core",h:"두 사람은 이런 사이야",p:[P.core]},
+      {k:"good",h:"함께하면 더 빛나는 순간",p:[P.good]},
+      {k:"el",h:"원소로 보면 — "+ST_ELE[a%4]+" × "+ST_ELE[b%4],p:[D.el[ST_ELE[ea]+"-"+ST_ELE[eb]]]},
+      {k:"asp",h:"하늘에서의 거리 — "+sgAng(dist),p:[D.asp[dist]]},
+      {k:"ruler",h:"수호성으로 보면",p:[ghFill(D.ruler[rFit],{ra:rA,rb:rB})],n:a===b?ST_KO[a]+"의 수호성은 "+rA+"입니다.":ST_KO[a]+"의 수호성은 "+rA+", "+ST_KO[b]+"의 수호성은 "+rB+"입니다."},
+      {k:"tip",h:"이렇게 하면 더 좋아지네",p:[P.tip]}],dist:dist,rFit:rFit};}
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
@@ -574,7 +636,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}
   function bosalPose(score){return score>=85?"cheer":score>=60?"smile":"worry";}
   function bosalSay(pose,html){return '<div class="bosal-say">'+bosalImg(pose,"bs-av")+'<div class="bs-b">'+html+'</div></div>';}
-  var BOSAL_LINE=[[85,"좋은 날일세! 오늘은 자네가 먼저 움직여도 되네."],[75,"괜찮은 흐름이야. 하던 일에 힘을 실어 보게."],[60,"무난한 날일세. 서두르지만 않으면 되네."],[0,"조심할 자리가 보이네. 아래 '피할 것'부터 먼저 보고 가게."]];
+  var BOSAL_LINE=[[85,"좋은 날일세! 오늘은 자네가 먼저 움직여도 되네."],[75,"괜찮은 흐름이야. 하던 일에 힘을 실어 보게."],[60,"무난한 날일세. 서두르지만 않으면 되네."],[0,"천천히 가면 더 좋은 날이네. 아래 '조언'부터 먼저 읽고 가게."]];
   function askWait(msg){
     return '<div class="ask-wait">'+bosalImg("smile","aw-bosal","자네를 기다리는 아기보살")+'<div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
       '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르게.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나오네.</div></div>';}
@@ -1275,6 +1337,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
     if(s.rows)h+='<div class="gh-yrs">'+s.rows.map(function(r){return '<div class="gh-yr"><div><b>'+r.h+'</b> <span class="gh-v '+r.c+'">'+r.v+'</span></div><div class="gh-yl">'+r.sub+'</div><p class="ny-mt">'+r.t+'</p></div>';}).join("")+'</div>';
     if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
+    if(s.n)h+='<p class="gh-note">'+s.n+'</p>';return h+'</div>';}
+  // 별자리 운세 깊이 풀이 한 칸을 그린다(접지 않고 펼친 채로). 이번주 표(days)와 근거 고지까지
+  function hsSecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
+    (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
+    if(s.days)h+='<div class="sj-daeun" tabindex="0" role="group" aria-label="'+s.h+'">'+s.days.map(function(d){return '<div class="sj-du"><div class="a">'+d.d+'</div><div class="g" style="font-size:14px;color:'+d.c+'">'+d.g+'</div><div class="a">'+d.m+'</div></div>';}).join("")+'</div>';
     if(s.n)h+='<p class="gh-note">'+s.n+'</p>';return h+'</div>';}
   // 생년월일 숫자 입력: 8자리만 치면 1995.01.01 꼴로 이어 붙이고, 틀리면 이유를 밝히며 결과로 가지 않는다
   function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}

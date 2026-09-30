@@ -498,7 +498,7 @@ t("공망: 일주 60쪽이 한눈에 표에 공망 행을 갖고 공망 찾기 �
 { let badSb = 0, nSb = 0; const OFF = [[4, 10, 4, 2], [6, -4, 2, 0], [-6, -2, -3, -8], [8, 8, -2, 4], [0, 0, 0, 0], [12, 12, 12, -20]];
   for (let sc = 35; sc <= 99; sc++) for (const o of OFF) { nSb++; const r = subBal(sc, o); if (r.reduce((a, b) => a + b, 0) !== sc * 4 || r.some(x => x < 30 || x > 99)) badSb++; }
   t("항목 점수 평균 = 종합 점수 (subBal: 점수 35~99 × 편차 6종 " + nSb + "건)", badSb, 0);
-  t("여섯 도구가 subBal 로 항목 점수를 만든다", ["subBal(score,T[5])", "subBal(score,A[6])", "subBal(score,Z[5])", "subBal(score,E[0])", "subBal(sc,[attract,stable,talk,life])", "subBal(sc,[(dist===0"].map(x => src.includes(x)).join(","), "true,true,true,true,true,true");
+  t("여섯 도구가 subBal 로 항목 점수를 만든다", ["subBal(score,T[5])", "subBal(score,hs.MA[1])", "subBal(score,Z[5])", "subBal(score,E[0])", "subBal(sc,[attract,stable,talk,life])", "subBal(sc,[(dist===0"].map(x => src.includes(x)).join(","), "true,true,true,true,true,true");
   t("옛 방식(종합 점수에 고정 가산값)이 남아 있지 않다", (src.match(/Math\.max\(30,Math\.min\(99,score\+/g) || []).length, 0); }
 // 오늘의 운세 생년월일은 달력·다이얼이 아니라 숫자 입력(홈·도구), 홈 생일은 자세히·사주로 넘어간다
 t("오늘의 운세 입력: 홈과 도구가 숫자 입력칸이고 달력(type=date)·다이얼이 아니다", [bs.includes('id="hb" inputmode="numeric"'), !bs.includes('type="date" id="hb"'), src.includes('id="d" inputmode="numeric" maxlength="10" placeholder="예) 19900315"'), !src.slice(src.indexOf('id:"todayfortune"'), src.indexOf('id:"horoscope"')).includes('birthDial(el,"#d")')].join(","), "true,true,true,true");
@@ -575,7 +575,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const tp = o.secs.find(s => s.k === "tip"); if (!tp || tp.list.length !== 3) cnt.tip++; }
   t("신년 깊이 풀이: 무작위 3000명 × 2026·2027 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·열두 달·고른 달 수 이상이 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, mon: 0, pick: 0, tip: 0 }));
   t("신년 깊이 풀이: 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 1900자 이상", minLen >= 1900, true);
-  t("신년 깊이 풀이: 힘이 실리는 달을 고른 비율 " + (withBest / 30).toFixed(0) + "% · 조심할 달을 고른 비율 " + (withWorst / 30).toFixed(0) + "% (둘 다 30~95% — 네 가지 한눈에 문장이 고루 나온다)", withBest / 30 >= 30 && withBest / 30 <= 95 && withWorst / 30 >= 30 && withWorst / 30 <= 95, true);
+  t("신년 깊이 풀이: 힘이 실리는 달을 고른 비율 " + (withBest / 30).toFixed(0) + "% · 차분히 가는 달을 고른 비율 " + (withWorst / 30).toFixed(0) + "% (둘 다 30~95% — 네 가지 한눈에 문장이 고루 나온다)", withBest / 30 >= 30 && withBest / 30 <= 95 && withWorst / 30 >= 30 && withWorst / 30 <= 95, true);
   { const nyb = toolBlock("newyear");
     t("신년운세 도구가 깊이 풀이 원고(ny/deep.json)를 받아 자리(#nydeep)에 채우고 결과 칸은 접지 않는다",
       [nyb.includes('fetch("ny/deep.json")'), nyb.includes('<div id="nydeep"></div>'), nyb.includes("nyLast={me:me,YR:YR,YW:YW};fillNy();"), !/<div class="sj-sec"><h3>/.test(nyb), bs.includes('"ny","deep.json"'), /nyDeep/.test(bs)].join(","), "true,true,true,true,true,true"); } }
@@ -610,6 +610,89 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   { const sj = toolBlock("saju");
     t("사주 도구: 쉬운 종합 원고(sj/easy.json)를 받아 종합을 쓰고, 못 받으면 예전 문장으로 대신하며, 결과의 섹션마다 이름을 부른다",
       [sj.includes('fetch("sj/easy.json")'), sj.includes("synthOld"), sj.includes("sjEasy({ds:ds"), sj.includes("nmSwap(outEl,nmHon(nm))"), sj.includes("쉽게 말하면</b> — 태어난 시각은"), bs.includes('"sj","easy.json"')].join(","), "true,true,true,true,true,true"); } }
+// 별자리 운세: 오늘의 달(hsMoon) — 미국 해군천문대(USNO) 삭·상현·보름·하현 99개(2026~27)와 대조 · 날마다 결이 바뀌는지 · 점수 분포
+{ const P = "2026-01-03 10:03 F|2026-01-10 15:48 L|2026-01-18 19:52 N|2026-01-26 04:47 Q|2026-02-01 22:09 F|2026-02-09 12:43 L|2026-02-17 12:01 N|2026-02-24 12:27 Q|2026-03-03 11:38 F|2026-03-11 09:38 L|2026-03-19 01:23 N|2026-03-25 19:18 Q|2026-04-02 02:12 F|2026-04-10 04:51 L|2026-04-17 11:52 N|2026-04-24 02:32 Q|2026-05-01 17:23 F|2026-05-09 21:10 L|2026-05-16 20:01 N|2026-05-23 11:11 Q|2026-05-31 08:45 F|2026-06-08 10:00 L|2026-06-15 02:54 N|2026-06-21 21:55 Q|2026-06-29 23:56 F|2026-07-07 19:29 L|2026-07-14 09:43 N|2026-07-21 11:05 Q|2026-07-29 14:36 F|2026-08-06 02:21 L|2026-08-12 17:37 N|2026-08-20 02:46 Q|2026-08-28 04:18 F|2026-09-04 07:51 L|2026-09-11 03:27 N|2026-09-18 20:44 Q|2026-09-26 16:49 F|2026-10-03 13:25 L|2026-10-10 15:50 N|2026-10-18 16:12 Q|2026-10-26 04:12 F|2026-11-01 20:28 L|2026-11-09 07:02 N|2026-11-17 11:48 Q|2026-11-24 14:53 F|2026-12-01 06:08 L|2026-12-09 00:52 N|2026-12-17 05:42 Q|2026-12-24 01:28 F|2026-12-30 18:59 L|2027-01-07 20:24 N|2027-01-15 20:34 Q|2027-01-22 12:17 F|2027-01-29 10:55 L|2027-02-06 15:56 N|2027-02-14 07:58 Q|2027-02-20 23:23 F|2027-02-28 05:16 L|2027-03-08 09:29 N|2027-03-15 16:25 Q|2027-03-22 10:44 F|2027-03-30 00:54 L|2027-04-06 23:51 N|2027-04-13 22:56 Q|2027-04-20 22:27 F|2027-04-28 20:18 L|2027-05-06 10:58 N|2027-05-13 04:44 Q|2027-05-20 10:59 F|2027-05-28 13:58 L|2027-06-04 19:40 N|2027-06-11 10:56 Q|2027-06-19 00:44 F|2027-06-27 04:54 L|2027-07-04 03:02 N|2027-07-10 18:39 Q|2027-07-18 15:45 F|2027-07-26 16:55 L|2027-08-02 10:05 N|2027-08-09 04:54 Q|2027-08-17 07:29 F|2027-08-25 02:27 L|2027-08-31 17:41 N|2027-09-07 18:31 Q|2027-09-15 23:03 F|2027-09-23 10:20 L|2027-09-30 02:36 N|2027-10-07 11:47 Q|2027-10-15 13:47 F|2027-10-22 17:29 L|2027-10-29 13:36 N|2027-11-06 08:00 Q|2027-11-14 03:26 F|2027-11-21 00:48 L|2027-11-28 03:24 N|2027-12-06 05:22 Q|2027-12-13 16:09 F|2027-12-20 09:11 L|2027-12-27 20:12 N".split("|"), WANT = { N: 0, Q: 90, F: 180, L: 270 }, jdUT = (y, m, d, h, mi) => Date.UTC(y, m - 1, d, h, mi) / 86400000 + 2440587.5;
+  let worst = 0; P.forEach(x => { const m = /^(\d+)-(\d+)-(\d+) (\d+):(\d+) (\w)$/.exec(x), jd = jdUT(+m[1], +m[2], +m[3], +m[4], +m[5]); worst = Math.max(worst, Math.abs(((hsMoonLong(jd) - sjSunLong(jd) - WANT[m[6]]) % 360 + 540) % 360 - 180)); });
+  t("달 황경: 미국 해군천문대 삭·상현·보름·하현 " + P.length + "개와 대조한 최대 오차 " + worst.toFixed(3) + "° (0.1° 이하 = 위상 시각 12분 안)", worst <= 0.1, true);
+  t("달 황경: Meeus 예제(1992-04-12 0h TD → 133.1627°)", Math.abs(hsMoonLong(2448724.5) - 133.162655) < 0.05, true);
+  t("달 모양: 2026-09-11 삭 · 2026-09-26 보름(밝기 100%) · 2026-09-30 기우는 달(황소자리)", [hsMoon(2026, 9, 11).phase, hsMoon(2026, 9, 26).phase, hsMoon(2026, 9, 26).illum, hsMoon(2026, 9, 30).phase, hsMoon(2026, 9, 30).sign].join(","), "0,4,100,5,1");
+  const D366 = []; for (let i = 0; i < 366; i++) D366.push(new Date(2026, 0, 1 + i));
+  let sumS = 0, nS = 0; const gd = { 대길: 0, 길: 0, 평온: 0, 주의: 0 }; D366.forEach(d => { for (let s = 0; s < 12; s++) { const h = hsScore(s, d); sumS += h.score; nS++; gd[hsGrade(h.score)]++; } });
+  const pc = k => gd[k] / nS * 100;
+  t("별자리 점수 분포(12별자리×366일): 평균 " + (sumS / nS).toFixed(1) + " · 대길 " + pc("대길").toFixed(0) + "% · 주의 " + pc("주의").toFixed(0) + "% — 평균 72~77 · 대길 8~25% · 주의 10% 이하", sumS / nS >= 72 && sumS / nS <= 77 && pc("대길") >= 8 && pc("대길") <= 25 && pc("주의") <= 10, true);
+  // 태양 각도만 쓰던 예전 방식은 30일 동안 글이 2종뿐이었다. 달을 쓰면 하루하루 다르다
+  const md = new Set(), scs = new Set(), mss = new Set(); for (let i = 0; i < 30; i++) { const h = hsScore(4, new Date(2026, 8, 1 + i)); md.add(h.md); scs.add(h.score); mss.add(h.moon.sign); }
+  t("별자리 운세는 날마다 달라진다: 사자자리 30일 동안 달 각도 " + md.size + "종(6 이상) · 점수 " + scs.size + "종(10 이상) · 달 별자리 " + mss.size + "개(10 이상)", md.size >= 6 && scs.size >= 10 && mss.size >= 10, true);
+  { const r = hsRank(new Date(2026, 8, 30)); t("오늘의 별자리 순위: 12개가 모두 나오고 점수 내림차순", r.length === 12 && new Set(r.map(x => x.i)).size === 12 && r.every((x, i) => i === 0 || r[i - 1].score >= x.score), true); }
+  t("홈 순위 한 줄은 달의 각도(md)로 고른다", bs.includes("HS_LINE[z.md]") && !bs.includes("HS_LINE[z.dist]"), true); }
+// 쉬운 말·긍정 베이스로 다시 쓴 원고(2026-09-30): 조합·판정·자리·꼬리질문·오늘의 운세 — 존댓말 0 · 겁주는 말 0 · 어려운 명리 용어 0 · 키 구조 유지
+{ const NEG = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/,
+    HARD = /격국|용신|십성|신강|신약|일간|월지|천간|비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|인성|재성|관성|식상|비겁/, JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
+  const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
+  const scan = (label, o, opts = {}) => { const a = strs(o); let jo = 0, ng = 0, hd = 0; a.forEach(s => { if (JOND.test(s)) jo++; if (NEG.test(s)) ng++; if (!opts.allowHard && HARD.test(s.replace(/\([^)]*\)/g, ""))) hd++; });
+    t(label + ": 문자열 " + a.length + "개 — 존댓말·겁주는 말·어려운 용어가 모두 0", jo + "," + ng + "," + hd, "0,0,0"); };
+  const CB = require("./content_saju_combo.js"), TGK = ["bigyeon", "geopjae", "siksin", "sanggwan", "pyeonjae", "jeongjae", "pyeongwan", "jeonggwan", "pyeonin", "jeongin"];
+  t("사주 조합 원고: 일간 10 × 짜임 10 × 5칸(core·money·job·love·health)이 모두 있다", Object.keys(CB).length === 10 && Object.values(CB).every(g => TGK.every(k => g[k] && ["core", "money", "job", "love", "health"].every(f => g[k][f] && g[k][f].length > 150))), true);
+  scan("사주 조합 원고", CB);
+  { const V = require("./content_saju_verdict.js"); scan("사주 판정 문장", V);
+    t("사주 판정 문장: head 는 한 문장(핵심 요약)·follow 와 이어 읽는다", ["money", "job", "love"].every(a => Object.values(V[a].head).every(h => Object.values(h).every(s => s.length >= 20 && s.length <= 90 && (s.match(/[.!?]/g) || []).length <= 2))), true); }
+  scan("사주 여덟 글자 자리 풀이", require("./content_saju_gung.js"));
+  scan("사주 꼬리질문 답", require("./content_saju_q.js"));
+  scan("오늘의 운세 꼬리질문 답", require("./content_today_q.js"));
+  { const src2 = inner.slice(inner.indexOf("{id:\"todayfortune\"")), code = src2.slice(src2.indexOf("var TXT="), src2.indexOf("el.innerHTML=")), tfl = (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0], R = new Function(tfl + "\n" + code + "\nreturn {TXT:TXT,TF_LINE:TF_LINE};")();
+    scan("오늘의 운세 그날 기운 원고(TXT·한 줄 요약)", { a: Object.values(R.TXT).map(v => v.filter(x => typeof x === "string")), b: R.TF_LINE });
+    t("오늘의 운세 그날 기운 원고: 10가지 × (총운·재물·조언·살펴 둘 것·애정·직장·건강) 칸이 모두 있고 각 칸이 두 문장 이상이다", Object.values(R.TXT).every(v => [1, 2, 3, 4, 6, 7, 8].every(i => typeof v[i] === "string" && (v[i].match(/[.!?]/g) || []).length >= 2)), true); }
+}
+// 별자리 운세 깊이 풀이(content_horoscope.js → hsDeep): 원고 칸 · 문체 · 무작위 별자리×날짜 3000개 · 도구 배선
+{ const HD = require("./content_horoscope.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGH = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/;
+  const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
+  t("별자리 원고: 달이 든 별자리 12 · 달 모양 8 · 달과의 각도 7×5 · 요일의 별 3 · 이 달의 배경 7 · 행운의 색 7이 모두 채워져 있다",
+    [HD.sign.length === 12 && HD.sign.every(x => x.length > 60), HD.phase.length === 8 && HD.phase.every(x => x.length > 40), HD.moon.length === 7 && HD.moon.every(m => ["gen", "love", "work", "body", "tip"].every(f => m[f] && m[f].length > 40)), HD.rnote.length === 3, HD.sun.length === 7 && HD.sun.every(x => x.length > 50), ["태양", "달", "화성", "수성", "목성", "금성", "토성"].every(k => HD.lucky.color[k]) && !!HD.lucky.line, !!HD.note].join(","), "true,true,true,true,true,true,true");
+  { const { note, ...body } = HD, all = strs(body).join("\n"); t("별자리 원고: 보살 말투(존댓말 0) · 겁주는 말 0 (근거 note 만 존댓말)", (JOND.test(all) ? "존댓말 " : "") + (NEGH.test(all) ? "겁주는말" : "") || "0", "0"); }
+  const cH = { token: 0, undef: 0, jondae: 0, secs: 0 }; let minH = 1e9, maxH = 0;
+  for (let i = 0; i < 3000; i++) { const mine = i % 12, now = new Date(2026 + Math.floor(i / 1500), Math.floor(Math.random() * 12), 1 + Math.floor(Math.random() * 28)), o = hsDeep(mine, now, HD),
+      parts = []; o.secs.forEach(s => { parts.push(s.h); (s.p || []).forEach(x => parts.push(x)); (s.days || []).forEach(d => parts.push(d.d + " " + d.g + " " + d.m)); }); const txt = parts.join("\n"), len = txt.replace(/\s+/g, "").length; minH = Math.min(minH, len); maxH = Math.max(maxH, len);
+    if (/[{}]/.test(txt)) cH.token++; if (/undefined|NaN|null/.test(txt)) cH.undef++; if (JOND.test(txt)) cH.jondae++; if (o.secs.length !== 9) cH.secs++; }
+  t("별자리 깊이 풀이: 무작위 3000개 — 남은 토큰·undefined·존댓말·섹션 수 이상이 모두 0", JSON.stringify(cH), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0 }));
+  t("별자리 깊이 풀이: 글자 수(공백 제외) 최소 " + minH + " · 최대 " + maxH + " — 예전(태양 각도 4문장 약 300자)의 3배를 넘는 900자 이상", minH >= 900, true);
+  { const hb = toolBlock("horoscope");
+    t("별자리 운세 도구가 원고(hs/deep.json)를 받아 자리(#hsdeep)에 채우고, 홈 순위·설명글이 달 기준으로 바뀌었다", [hb.includes('fetch("hs/deep.json")'), hb.includes('<div id="hsdeep">'), hb.includes("fillHs();"), bs.includes('"hs","deep.json"'), bs.includes("오늘 달의 자리와 요일의 별로 매긴 12별자리 순위"), !bs.includes("오늘 태양의 자리와 요일의 별로 매긴")].join(","), "true,true,true,true,true,true"); } }
+// 띠별 운세 깊이 풀이(content_zodiac_fortune.js → zfDeep·zfYear): 12띠 × 일진 60개 · 문체 · 도구 배선
+{ const ZD = require("./content_zodiac_fortune.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGZ = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/, RL = ["삼합", "육합", "복음", "평", "해", "형", "충"], TGN = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];
+  const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
+  t("띠 원고: 총운 12띠×7관계 · 재물·애정·몸·조언 각 7관계 · 하늘 글자 10 · 한 해 7관계가 모두 채워져 있다",
+    [Object.keys(ZD.gen).length === 12 && Object.values(ZD.gen).every(g => RL.every(r => g[r] && g[r].length > 80)), ["money", "love", "body", "tip"].every(k => RL.every(r => ZD[k][r] && ZD[k][r].length > 50)), TGN.every(k => ZD.tg[k] && ZD.tg[k].length > 30), RL.every(r => ZD.year[r] && /\{Y\}/.test(ZD.year[r]) && /\{A\}/.test(ZD.year[r]))].join(","), "true,true,true,true");
+  { const { note, ...body } = ZD, all = strs(body).join("\n"); t("띠 원고: 보살 말투 · 겁주는 말 0 (근거 note 만 존댓말)", (JOND.test(all) ? "존댓말 " : "") + (NEGZ.test(all) ? "겁주는말" : "") || "0", "0"); }
+  const cZ = { token: 0, undef: 0, jondae: 0, secs: 0, rels: new Set() }; let minZ = 1e9;
+  for (let b = 0; b < 12; b++) for (let d = 0; d < 60; d++) { const today = sjPillars(2026, 1, 1 + d, null, 0, false), o = zfDeep(b, today, ZD, ""), ys = zfYear(b, ZD), parts = []; o.secs.concat(ys).forEach(s => { parts.push(s.h); (s.p || []).forEach(x => parts.push(x)); }); const txt = parts.join("\n"); cZ.rels.add(o.rel); minZ = Math.min(minZ, txt.replace(/\s+/g, "").length);
+    if (/[{}]/.test(txt)) cZ.token++; if (/undefined|NaN|null/.test(txt)) cZ.undef++; if (JOND.test(txt)) cZ.jondae++; if (o.secs.length !== 5 || ys.length !== 2) cZ.secs++; }
+  t("띠 깊이 풀이: 12띠 × 일진 60개 — 남은 토큰·undefined·존댓말·섹션 수 이상이 모두 0 (본 관계 " + cZ.rels.size + "종)", JSON.stringify({ token: cZ.token, undef: cZ.undef, jondae: cZ.jondae, secs: cZ.secs }), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0 }));
+  t("띠 깊이 풀이: 글자 수(공백 제외) 최소 " + minZ + " — 예전 같은 일곱 칸(약 400자)의 1.5배를 넘는 650자 이상", minZ >= 650, true);
+  { const zb = toolBlock("zodiacfortune"); t("띠별 운세 도구가 원고(zf/deep.json)를 받아 자리(#zfdeep·#zfyear)에 채운다", [zb.includes('fetch("zf/deep.json")'), zb.includes('<div id="zfdeep">'), zb.includes('<div id="zfyear">'), zb.includes("fillZf();"), bs.includes('"zf","deep.json"')].join(","), "true,true,true,true,true"); } }
+// 별자리 궁합 깊이 풀이(content_stargunghap.js → sgDeep): 별자리 쌍 78 · 원소 10 · 각도 7 · 수호성 3 · 문체 · 12×12 모든 조합 · 도구 배선
+{ const SD = require("./content_stargunghap.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGS = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/;
+  const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
+  const PK = []; for (let i = 0; i < 12; i++) for (let j = i; j < 12; j++) PK.push(i + "-" + j);
+  t("별자리 궁합 원고: 별자리 쌍 78 · 원소 조합 10 · 각도 7 · 수호성 결 3이 모두 채워져 있다",
+    [PK.every(k => SD.pair[k] && ["core", "good", "tip"].every(f => SD.pair[k][f] && SD.pair[k][f].length > 60)) && Object.keys(SD.pair).length === 78, Object.keys(SD.el).length === 10 && Object.values(SD.el).every(x => x.length > 100), SD.asp.length === 7 && SD.asp.every(x => x.length > 100), SD.ruler.length === 3 && SD.ruler.every(x => /\{ra\}/.test(x) && /\{rb\}/.test(x))].join(","), "true,true,true,true");
+  { const all = strs(SD).join("\n"); t("별자리 궁합 원고: 보살 말투(존댓말 0) · 겁주는 말 0", (JOND.test(all) ? "존댓말 " : "") + (NEGS.test(all) ? "겁주는말" : "") || "0", "0"); }
+  { const KO = ["양자리", "황소자리", "쌍둥이자리", "게자리", "사자자리", "처녀자리", "천칭자리", "전갈자리", "궁수자리", "염소자리", "물병자리", "물고기자리"]; let mix = 0;
+    PK.forEach(k => { const [i, j] = k.split("-").map(Number), txt = SD.pair[k].core + SD.pair[k].good + SD.pair[k].tip; KO.forEach((n, x) => { if (x !== i && x !== j && txt.includes(n)) mix++; }); if (!SD.pair[k].core.includes(KO[i]) || !SD.pair[k].core.includes(KO[j])) mix++; });
+    t("별자리 궁합 원고: 쌍 글에 그 쌍의 두 별자리 이름이 있고 다른 별자리 이름은 섞이지 않는다", mix, 0); }
+  const cS = { token: 0, undef: 0, jondae: 0, secs: 0, term: 0 }; let minS = 1e9, maxS = 0;
+  for (let a = 0; a < 12; a++) for (let b = 0; b < 12; b++) { const o = sgDeep(a, b, SD), parts = []; o.secs.forEach(s => { parts.push(s.h); s.p.forEach(x => parts.push(x)); }); const txt = parts.join("\n"), len = txt.replace(/\s+/g, "").length, all = txt + (o.secs[4].n || ""); minS = Math.min(minS, len); maxS = Math.max(maxS, len);
+    if (/[{}]/.test(all)) cS.token++; if (/undefined|NaN|null/.test(all)) cS.undef++; if (JOND.test(txt)) cS.jondae++; if (o.secs.length !== 6) cS.secs++; if (/황도|섹스타일|스퀘어|트라인|오포지션|퀸컹스|세미/.test(txt.replace(/\([^)]*\)/g, ""))) cS.term++; }
+  t("별자리 궁합 깊이 풀이: 12×12 모든 조합 — 남은 토큰·undefined·존댓말·섹션 수·괄호 밖 점성술 용어가 모두 0", JSON.stringify(cS), JSON.stringify({ token: 0, undef: 0, jondae: 0, secs: 0, term: 0 }));
+  t("별자리 궁합 깊이 풀이: 글자 수(공백 제외) 최소 " + minS + " · 최대 " + maxS + " — 예전(약 300자)의 1.5배를 넘는 450자 이상", minS >= 450, true);
+  t("별자리 궁합: 같은 두 별자리는 누가 '나'든 같은 쌍 글이 나온다(양자리·물병자리 = 물병자리·양자리)", sgDeep(0, 10, SD).secs[0].p[0] === sgDeep(10, 0, SD).secs[0].p[0], true);
+  { const sb = toolBlock("stargunghap");
+    t("별자리 궁합 도구가 원고(sg/deep.json)를 받아 자리(#sgdeep)에 채우고, 빌드가 sg/deep.json 을 내보낸다", [sb.includes('fetch("sg/deep.json")'), sb.includes('<div id="sgdeep">'), sb.includes("fillSg();"), bs.includes('"sg","deep.json"')].join(","), "true,true,true,true"); } }
+// 토정비결 144괘·꿈해몽·타로 78장 풀이 문장: 겁주는 말과 존댓말 어미가 없다(등급·분류 이름·분류 소개글·꿈 제목은 제외)
+{ const NEGX = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/, JONDX = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
+  const flat = (o, p, a) => { if (typeof o === "string") a[p] = o; else if (o && typeof o === "object") Object.keys(o).forEach(k => flat(o[k], p ? p + "." + k : k, a)); return a; };
+  [["토정비결", require("./content_tojeong.js"), /\.(grade)$/], ["꿈해몽", require("./content_dream.js"), /\.(kind|id|ko|title|intro)$/], ["타로", require("./content_tarot_read.js"), /\.(no)$/]].forEach(([nm, d, skip]) => {
+    const f = flat(d, "", {}), bad = Object.entries(f).filter(([k, v]) => !skip.test(k) && (NEGX.test(v) || JONDX.test(v))).map(([k]) => k);
+    t(nm + " 풀이: 겁주는 말·존댓말 어미 0 (문자열 " + Object.keys(f).length + "개)" + (bad.length ? " — " + bad.slice(0, 3).join(",") : ""), bad.length, 0); }); }
 // 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
 t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳이 이를 밝힌다", bs.includes("sessionStorage.setItem(\"dnbs_hb\"") ? [(bs.match(/이 탭에 잠깐 두었다가/g)||[]).length>=3, fs.readFileSync("content_site.js","utf8").includes("임시 저장소(sessionStorage)에 잠깐 두었다가")].join(",") : "n/a", "true,true");
 { const bd = inner.slice(inner.indexOf("function birthDial"), inner.indexOf("function shareBtn"));
@@ -673,7 +756,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');

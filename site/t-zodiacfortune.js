@@ -14,6 +14,10 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function zbar(n,v){return rateBar(n,v);}
+    // 깊이 있는 풀이 원고(zf/deep.json) — 결과가 그려진 뒤에 도착해도 자리(#zfdeep·#zfyear)의 예전 글을 바꿔 끼운다
+    var ZFD=null,zfLast=null,zfDone=false;
+    function fillZf(){if(!ZFD||!zfLast)return;var h=el.querySelector("#zfdeep"),y=el.querySelector("#zfyear");if(!h||!y)return;h.innerHTML=zfDeep(zfLast.b,zfLast.today,ZFD,zfLast.art).secs.map(hsSecHtml).join("");y.innerHTML=zfYear(zfLast.b,ZFD).map(hsSecHtml).join("");if(zfDone){plainWords(h);plainWords(y);}}
+    if(typeof fetch==="function")fetch("zf/deep.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){ZFD=j;fillZf();}}).catch(function(){});
     function go(){
       var sel=+el.querySelector("#s").value,b;
       if(sel>=0)b=sel;else{var y=+el.querySelector("#y").value;if(!y)return;b=((y-4)%12+12)%12;}
@@ -39,18 +43,20 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
       '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">'+SJ_TTI[b]+'띠 공통 흐름 · 오늘 지지와 <b>'+(rel==="평"?"큰 합·충 없음":rel)+'</b></div></div>'+
       '<div class="sj-bars">'+zbar("애정",sub[0])+zbar("재물",sub[1])+zbar("직장",sub[2])+zbar("건강",sub[3])+'</div>'+
       zoCard(b)+
-      '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
-      '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
-      '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
-      '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>'+
+      '<div id="zfdeep">'+(zfLast={b:b,today:today,art:(ART_HAP[rel]?conceptArt(ART_HAP[rel],rel):"")},
+        '<div class="sj-sec"><h3>오늘의 총운</h3><p>'+zfLast.art+Z[1]+'<br><br>거기에 오늘 천간이 '+SJ_TTI[b]+'띠에게 '+tg+'이라, '+TG+' 결도 한 겹 얹혔네.</p></div>'+
+        '<div class="sj-sec"><h3>재물·일</h3><p>'+Z[2]+'</p></div>'+
+        '<div class="sj-sec"><h3>애정운</h3><p>'+Z[3]+'</p></div>'+
+        '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>')+'</div>'+
       '<div class="sj-sec"><h3>오늘 기운의 단계 — '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+'오늘 '+SJ_TTI[b]+'띠의 기운은 열두 단계 가운데 <b>'+un+'</b> 자리에 섰네. 하루 동안 몸으로 느끼는 결이 여기서 나오네.<br><br>오늘 날짜의 글자 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 속 글자 '+SJ_S[SJ_BMAIN[b]]+'에게 그 자리를 주는 걸세.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p></div>'+
-      '<div class="sj-sec"><h3>2027 정미년 한 해</h3><p>'+y27+'</p></div>'+
-      '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+
+      '<div id="zfyear">'+'<div class="sj-sec"><h3>2027 정미년 한 해</h3><p>'+y27+'</p></div>'+
+      '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+'</div>'+
       shareBtn()+
       '<p class="note">띠 글자와 오늘 날짜 글자가 뭉치는지, 맞는지, 부딪히는지를 보고 푸는 전통 방식입니다. 사주에서 띠는 입춘(2월 4일경)에 바뀌므로, 1~2월 초 출생이라면 앞 해의 띠일 수 있습니다. 참고용.</p>';
+      fillZf();
       bindShare(el,"띠별 운세",SJ_TTI[b]+"띠 오늘의 운세 "+score+"점 · "+grade+". 동네보살에서 확인:");
-      saveScore(el,"띠별운세",ymd3(ty,tm,td)+" 띠별 운세",SJ_TTI[b]+"띠 · 오늘 일진 "+SJ_SH[today.d.s]+SJ_BH[tb],score,grade,SJ_TTI[b]+"띠, 오늘 지지와 "+(rel==="평"?"큰 합·충 없음":rel),Z[1]);askFx(el,{score:score,grade:grade});}
+      saveScore(el,"띠별운세",ymd3(ty,tm,td)+" 띠별 운세",SJ_TTI[b]+"띠 · 오늘 일진 "+SJ_SH[today.d.s]+SJ_BH[tb],score,grade,SJ_TTI[b]+"띠, 오늘 지지와 "+(rel==="평"?"큰 합·충 없음":rel),ZFD?ZFD.gen[b][rel]:Z[1]);askFx(el,{score:score,grade:grade});zfDone=true;}
     askWire(el,go,["자네 띠부터 잡는다","오늘 지지와 맞춰 본다","삼합·육합·충을 짚는다"],"아직 안 물어봤네.");
     }});

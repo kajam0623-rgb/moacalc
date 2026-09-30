@@ -41,7 +41,7 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
         '<div class="tf-hl">'+Y+'년 자네 괘는 '+r.code+', '+g.title+'</div>'+
         '<div class="out" style="margin-top:16px"><div class="k">'+Y+' '+yg+'년 토정비결 · 음력 '+L.year+'년 '+L.month+'월'+(L.intercalation?'(윤)':'')+' '+L.day+'일생</div>'+
         '<div class="v">'+r.code+'<small>괘</small></div><div class="s">'+g.title+'</div></div>'+
-        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔네. 그래도 들뜨지 말고 달마다 짚은 대로 가게.":g.grade==="흉"?"조심할 대목이 많은 괘일세. 겁먹을 것 없네. 미리 알면 비켜 갈 수 있지.":"좋고 궂은 게 섞인 괘야. 달마다 흐름을 보고 고삐를 쥐게.")+
+        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔네. 그래도 들뜨지 말고 달마다 짚은 대로 가게.":g.grade==="흉"?"차분히 다져 갈 대목이 있는 괘일세. 걱정할 것 없네. 미리 알고 준비하면 오히려 든든하지.":"좋고 궂은 게 섞인 괘야. 달마다 흐름을 보고 고삐를 쥐게.")+
         '<div class="sj-sec"><h3>'+Y+'년 총운</h3><p>'+g.chongun+'</p></div>'+
         order.map(function(m){return '<div class="sj-sec"><h3>'+(m===cur?'이번 달 — ':'')+'음력 '+MON[m-1]+'</h3><p>'+g.months[m]+'</p></div>';}).join("")+
         '<div class="sj-sec"><h3>괘를 세운 근거</h3><p>상괘 '+r.code[0]+' = (세는 나이 '+r.age+' + 태세수 '+r.taese+' · '+yg+'년) ÷ 8의 나머지<br>'+
