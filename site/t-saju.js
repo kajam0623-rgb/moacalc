@@ -487,7 +487,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
-        (st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+yEl+'</div></div>';
+        (st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+yEl+'</div></div><div class="ilc-slot"></div>';
       // 한눈에 보기 — 결과 맨 위에서 용어 없이 세 줄로 요약한다
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+EL_TITLE[SJ_EL[SJ_ES[ds]]][1]+'일세. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났네.<br>'+
@@ -614,6 +614,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 덜 찼으면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
+      iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
       // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
       // 본문은 결과에 이미 있는 글(일간 성격·적성 두 문단 + 맺는 말 첫머리)을 이어 붙인다

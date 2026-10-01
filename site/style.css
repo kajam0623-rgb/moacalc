@@ -370,6 +370,16 @@
   .tool .invite-btn{margin-top:8px;width:100%;padding:12px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;
     color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
   .tool .save-btn:hover,.tool #pdf:hover,.tool .invite-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
+  /* 내 일주 카드(홈 오늘 카드 아래·사주 결과 위쪽) */
+  .ilc{margin:14px 0 4px;padding:14px 16px;border-radius:14px;border:1.5px solid #E6B25A;background:var(--surface-2);text-align:center;color:var(--ink);}
+  .ilc-k{font-size:12.5px;font-weight:800;color:var(--fun-ink);letter-spacing:.04em;}
+  .ilc-n{font-size:26px;font-weight:900;margin-top:2px;}.ilc-n small{font-size:14px;color:var(--muted);font-weight:700;margin-left:4px;}
+  .ilc-t{font-size:16px;font-weight:800;margin-top:4px;}
+  .ilc-d{font-size:13.5px;line-height:1.65;color:var(--muted);margin:8px 0 0;}
+  .ilc-b{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+  .ilc .save-btn,.ilc .ilc-share{margin:0 !important;width:100% !important;padding:11px 6px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;color:var(--fun-ink) !important;font:inherit;font-size:14px;font-weight:800 !important;white-space:nowrap;cursor:pointer;}
+  .ilc .save-btn:hover,.ilc .ilc-share:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
+  .ilc-a{display:inline-block;margin-top:10px;font-size:13.5px;font-weight:700;color:var(--fun-ink);}
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}

@@ -822,7 +822,7 @@ const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
 const called = [...codeOnly.matchAll(/(?:^|[^\w.$])([a-zA-Z_$][\w$]*)\s*\(/g)].map(m => m[1]);
-const known = new Set([...HELPERS, "fetch","encodeURIComponent","decodeURIComponent","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
+const known = new Set([...HELPERS, "fetch","encodeURIComponent","decodeURIComponent","iljuCardKey","ilKey","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
 const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/.test(n) && !toolsSrc.includes("function "+n) && !toolsSrc.includes("var "+n+"=") && !toolsSrc.includes(n+"=function"));
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
@@ -1127,5 +1127,38 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("띠 궁합 공유: 버튼 모양(.ttibtn·.ttishare)이 CSS 에 있다", bs.includes(".ttibtn{width:100%") && bs.includes(".ttishare{display:grid"), true);
   const iA = src.indexOf('<div class="gh-mkinv">'), iB = src.indexOf('<div id="ghdeep"></div>'), iC = src.indexOf("계산 근거 — 글자별로 본 궁합");
   t("사주 궁합: 상대에게 보내기 카드가 점수·글자 카드 바로 아래(깊은 풀이·계산 근거보다 위)에 있고 버튼 글이 알아보기 쉽다", [iA > 0 && iA < iB && iB < iC, src.includes(">친구에게 궁합 보자고 보내기</span>"), !src.includes(">초대 링크 만들기</span>")].join(","), "true,true,true"); }
+// ── 내 일주 카드(hub.html iljuCard · sj/ilju.json · 일주 페이지 공유 줄) ──
+{ const code = src.slice(src.indexOf("function ilKey("), src.indexOf("function iljuCard(host,y,m,d)"));
+  const ilKey = new Function(code + "return ilKey;")();
+  let bad = 0; for (let k = 0; k < 60; k++) if (ilKey(k % 10, k % 12) !== k) bad++;
+  t("일주 카드: 번호 k 는 (천간 k%10, 지지 k%12)에서 60칸 모두 왕복한다", bad, 0);
+  t("일주 카드: 짝이 안 맞는 (천간, 지지)는 -1", [ilKey(0, 1), ilKey(1, 0), ilKey(2, 5)].join(","), "-1,-1,-1");
+  const d0 = sjPillars(2000, 1, 1, null, 0, false).d;
+  t("일주 카드: 2000-01-01 은 무오일주(번호 54), 1900-01-01·2024-02-10 도 엔진 일주와 번호가 맞는다", [d0.s + "," + d0.b + "→" + ilKey(d0.s, d0.b), [[1900, 1, 1], [2024, 2, 10], [1984, 7, 20]].every(([y, m, d]) => { const q = sjPillars(y, m, d, null, 0, false).d, k = ilKey(q.s, q.b); return k >= 0 && k % 10 === q.s && k % 12 === q.b; })].join("|"), "4,6→54|true");
+  const IL = require("./content_ilju60.js"), keys = Object.keys(IL), first = x => IL[x].core.trim().split(/(?<=[.?!])\s+/)[0];
+  const BANIL = /약하|약한|약해|약점|허약|나약|취약|여리|여린|얇[은아다으고게]|힘이 없|모자란|부족한 사람/;
+  t("일주 카드 원고: 60칸, 별명(6~20자)·첫 문장(15~80자)이 모두 있고 별명이 서로 다르다", [keys.length, keys.every(k => IL[k].tag && IL[k].tag.length >= 6 && IL[k].tag.length <= 20), keys.every(k => first(k).length >= 15 && first(k).length <= 80), new Set(keys.map(k => IL[k].tag)).size].join(","), "60,true,true,60");
+  t("일주 카드 원고: 별명·첫 문장에 사람을 약하다고 판정하는 말이 없다", keys.filter(k => BANIL.test(IL[k].tag) || BANIL.test(first(k))).join(","), "");
+  // 실행: 가짜 문서·가짜 fetch 로 카드를 그리고 저장 카드 옵션·공유 문구를 본다
+  const J = [{ en: "gapja", ko: "갑자", han: "甲子", g: "gap", t: "겨울 물에 발 담근 대들보", d: "밤의 찬 물이 큰 나무 뿌리를 적시는 모양입니다." }];
+  const syncP = v => ({ then: f => syncP(f(v)), catch: () => syncP(v) });
+  const run = ok => { const calls = { share: null, card: null, saved: null, tracked: [], done: null }, els = {};
+    const mkEl = () => ({ innerHTML: "", handlers: {}, addEventListener(ty, fn) { this.handlers[ty] = fn; }, querySelector(sel) { return els[sel] || (els[sel] = mkEl()); } });
+    const host = { appended: [], querySelector: () => null, appendChild(n) { this.appended.push(n); } };
+    const E = new Function("sjPillars", "escH", "bindSave", "fortuneCard", "track", "shareOut", "document", "fetch", "location", "Image", code + "return {iljuCardKey:iljuCardKey};")(
+      sjPillars, escH, (el, o) => { calls.saved = o; }, o => { calls.card = o; return "CANVAS"; }, ev => calls.tracked.push(ev), (b, ti, full, idle) => { calls.share = [ti, full, idle]; },
+      { createElement: () => mkEl() }, () => syncP({ ok, json: () => J }), { origin: "https://dongnebosal.com", pathname: "/saju.html" }, class { set src(v) { this._src = v; if (this.onload) this.onload(); } });
+    let err = ""; try { E.iljuCardKey(host, 0); if (calls.saved) calls.saved.draw(c => { calls.done = c; }); if (els[".ilc-share"] && els[".ilc-share"].handlers.click) els[".ilc-share"].handlers.click.call({}); } catch (e) { err = String(e.message); }
+    return { calls, host, err }; };
+  const r1 = run(true), h1 = r1.host.appended[0] ? r1.host.appended[0].innerHTML : "";
+  t("일주 카드 실행: 칸에 일주 이름·한자·별명·한 줄·저장/공유 버튼·일주 페이지 링크가 그려진다", [r1.err, h1.includes("갑자일주 <small>甲子</small>"), h1.includes("겨울 물에 발 담근 대들보"), h1.includes("밤의 찬 물이 큰 나무"), h1.includes('class="save-btn"') && h1.includes('class="ilc-share"'), h1.includes('href="ilju-gapja.html"')].join("|"), "|true|true|true|true|true");
+  t("일주 카드 실행: 저장 카드는 큰 이름·한자·별명·한 줄·일간 그림을 담고 생일·이름은 없다", [JSON.stringify(Object.keys(r1.calls.card || {}).sort()), r1.calls.card && r1.calls.card.big, r1.calls.card && r1.calls.card.grade, r1.calls.card && r1.calls.card.headline, r1.calls.card && r1.calls.card.bosalImg && r1.calls.card.bosalImg._src, r1.calls.done].join("|"), '["big","body","bosalImg","grade","headline","ident","tool"]|갑자일주|甲子|겨울 물에 발 담근 대들보|img/char/ilgan-gap.webp|CANVAS');
+  t("일주 카드 실행: 공유는 그 일주 페이지(?from=share)로 가고 share_click 을 센다", [r1.calls.share && r1.calls.share[0], r1.calls.share && r1.calls.share[1], r1.calls.share && r1.calls.share[2], r1.calls.tracked.join(",")].join("|"), "갑자일주|나는 갑자일주(甲子) — 겨울 물에 발 담근 대들보. 내 일주는 뭘까? 동네보살에서 확인: https://dongnebosal.com/ilju-gapja.html?from=share|친구에게 알려주기|share_click");
+  const r2 = run(false); t("일주 카드 실행: 별명 파일을 못 받으면 칸을 그리지 않고 오류도 없다", r2.err + "|" + r2.host.appended.length, "|0");
+  const cardFn = code.slice(code.indexOf("function iljuCardKey("));
+  t("일주 카드: 카드·공유 코드에 생일·이름·저장값이 들어가지 않는다", !/birth|loadPrefs|localStorage|\.value|nm\b/.test(cardFn), true);
+  t("일주 카드 배선: 사주 결과 헤드라인 뒤에 칸을 두고 채우며, 그림은 big 을 그리고, 홈 오늘 카드·일주 페이지·sj/ilju.json 이 이어진다", [
+    src.includes("+yEl+'</div></div><div class=\"ilc-slot\"></div>';"), src.includes('iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));'), src.includes("else if(o.big){") && src.includes("hy2=(o.score!=null||o.big?700:520)+oy"),
+    bs.includes('if(window.iljuCard)iljuCard(box.querySelector(".today-card"),+p[0],+p[1],+p[2]);'), bs.includes("ttiBtn(\"이 일주 공유하기\"") && bs.includes("iljuShareRow(p) +"), bs.includes('path.join(OUT,"sj","ilju.json")')].join(","), "true,true,true,true,true,true"); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

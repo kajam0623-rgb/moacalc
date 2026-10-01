@@ -2174,6 +2174,8 @@ function iljinPage(p){
    일진 페이지와 간지는 같지만 보는 대상이 다르다. 여기서는 날이 아니라 사람을 본다.
    일간 = 나, 일지 = 배우자 자리라는 틀만 쓰고 일진 쪽 어휘(이 날·도래일·점수)는 쓰지 않는다. */
 function gmTxt(g){ return `${ENGINE.SJ_B[g.empty[0]]}(${ENGINE.SJ_BH[g.empty[0]]}) · ${ENGINE.SJ_B[g.empty[1]]}(${ENGINE.SJ_BH[g.empty[1]]})`; }
+// 일주 페이지 공유 줄 — 띠 궁합 페이지와 같은 작은 스크립트(TTI_SHARE_JS)를 쓴다. 공유는 이 일주 페이지 주소(?from=share)로 간다
+const iljuShareRow = p => `<div class="ttishare">` + ttiBtn("이 일주 공유하기", "share_click", `${p.ko}일주`, `${p.ko}일주(${p.han}) — ${p.txt.tag}. 내 일주는 뭘까? 동네보살에서 보기:`, `${DOMAIN}/ilju-${p.en}.html?from=share`) + `</div>` + TTI_SHARE_JS;
 function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
@@ -2200,7 +2202,7 @@ function iljuPage(p){
        ["육합 띠",p.yukhap],
        ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
-      `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+
+      `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) +
 
       `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
       `${para(C.core)}</div>`+
@@ -2739,6 +2741,7 @@ box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosa
 '<button type="button" class="today-reset">다른 생일로 보기</button>'+
 (function(){try{var n=JSON.parse(localStorage.getItem("dnbs_diary")||"[]").length;return n?'<a class="today-diary" href="diary.html">운세 일기 '+n+'개 보기 →</a>':"";}catch(e){return "";}})()+'</div>';
 if(window.plainWords)plainWords(box.querySelector(".w"));
+if(window.iljuCard)iljuCard(box.querySelector(".today-card"),+p[0],+p[1],+p[2]);
 box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();};});}
 function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}
 function bdParse(v){var d=v.replace(/[^0-9]/g,"");if(d.length!==8)return "";var y=+d.slice(0,4),m=+d.slice(4,6),dd=+d.slice(6,8),t=new Date(y,m-1,dd);if(y<1900||t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==dd||t>new Date())return "";return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8);}
@@ -3158,6 +3161,8 @@ Object.keys(SAJU_COMBO).forEach(il=>Object.keys(SAJU_COMBO[il]).forEach(tg=>fs.w
 fs.writeFileSync(path.join(OUT,"sj","q.json"), JSON.stringify(SAJU_Q));
 fs.writeFileSync(path.join(OUT,"sj","char.json"), JSON.stringify(SJ_CHAR));
 fs.writeFileSync(path.join(OUT,"sj","easy.json"), JSON.stringify(SJ_EASY));
+// 내 일주 카드(hub.html iljuCard)가 받는 60칸: 일주 페이지 원고의 별명(tag)과 첫 문장. 번호 k = 60갑자 순서(k%10 일간, k%12 일지)
+fs.writeFileSync(path.join(OUT,"sj","ilju.json"), JSON.stringify(ILJU_PAGES.map(p=>({en:p.en,ko:p.ko,han:p.han,g:p.gan.en,t:p.txt.tag,d:p.txt.core.trim().split(/(?<=[.?!])\s+/)[0]}))));
 fs.mkdirSync(path.join(OUT,"hs"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"hs","deep.json"), JSON.stringify(HS_DEEP));
 fs.mkdirSync(path.join(OUT,"zf"),{recursive:true});

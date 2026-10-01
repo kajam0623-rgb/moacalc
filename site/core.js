@@ -1392,8 +1392,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(o.score!=null){
         x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470+oy);
         x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
+      else if(o.big){ // 점수 없는 카드(내 일주): 큰 이름 + 한자
+        x.fillStyle="#fff";x.font="900 168px "+F;x.fillText(o.big,W/2,470+oy);
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null?700:520)+oy;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
@@ -1522,6 +1525,27 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       track(ev||"share_click",{tool:location.pathname});
       var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");
       shareOut(b,title,text+" "+url,idle);});}
+  /* 내 일주 카드 — 양력 생일(또는 사주 결과의 일주)로 60갑자 가운데 내 일주를 찾아 '나는 ○○일주 — 별명' 한 칸을 그린다.
+     별명·첫 문장은 일주 60편 원고(content_ilju60.js)에서 빌드가 만든 sj/ilju.json 에서 받는다. 저장 카드(이미지)와 공유(그 일주 페이지로 가는 링크)가 달린다.
+     생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
+  function ilKey(ds,db){for(var k=ds;k<60;k+=10)if(k%12===db)return k;return -1;}
+  var IL_DATA=null;
+  function iljuCardKey(host,k){
+    if(!host||k<0||typeof fetch!=="function")return;
+    function paint(J){var o=J[k];if(!o||host.querySelector(".ilc"))return;
+      var box=document.createElement("div");box.className="ilc";
+      box.innerHTML='<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(o.t)+'</div><p class="ilc-d">'+escH(o.d)+'</p>'+
+        '<div class="ilc-b"><button type="button" class="save-btn">이미지로 저장</button><button type="button" class="ilc-share">친구에게 알려주기</button></div>'+
+        '<a class="ilc-a" href="ilju-'+o.en+'.html">'+escH(o.ko)+'일주 자세히 보기 →</a>';
+      host.appendChild(box);
+      bindSave(box,{draw:function(finish){var im=new Image();
+        function go(x){finish(fortuneCard({tool:"나의 일주",ident:"태어난 날의 두 글자가 그리는 나",big:o.ko+"일주",grade:o.han,headline:o.t,body:o.d,bosalImg:x}));}
+        im.onload=function(){go(im);};im.onerror=function(){go(null);};im.src="img/char/ilgan-"+o.g+".webp";}});
+      box.querySelector(".ilc-share").addEventListener("click",function(){var b=this;track("share_click",{tool:location.pathname});
+        shareOut(b,o.ko+"일주","나는 "+o.ko+"일주("+o.han+") — "+o.t+". 내 일주는 뭘까? 동네보살에서 확인: "+location.origin+"/ilju-"+o.en+".html?from=share","친구에게 알려주기");});}
+    if(IL_DATA)return paint(IL_DATA);
+    fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;paint(j);}}).catch(function(){});}
+  function iljuCard(host,y,m,d){var p=sjPillars(y,m,d,null,0,false);iljuCardKey(host,ilKey(p.d.s,p.d.b));}
 
   // ---------- TOOLS ----------
   
