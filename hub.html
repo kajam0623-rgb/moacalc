@@ -2203,7 +2203,7 @@
   function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
     b.addEventListener("click",function(){
       track("share_click",{tool:location.pathname});
-      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]},full=d.text+" "+d.url;
+      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]+"?from=share"},full=d.text+" "+d.url;
       function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);}
       function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
         var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";

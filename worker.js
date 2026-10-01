@@ -4,7 +4,7 @@
    GET  /admin    대시보드. ADMIN_PASS 비밀값을 정하면 비밀번호가 걸린다
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 두 경로만 여기로 보낸다. */
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
-const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test"]);
+const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit"]);
 const BOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly/i;
 const SELF = /(^|\.)dongnebosal\.com$/;
 const kstDay = (off = 0) => new Date(Date.now() + 9 * 3600e3 - off * 86400e3).toISOString().slice(0, 10);
@@ -121,7 +121,7 @@ async function admin(req, env) {
   const rows = Object.entries(byDay);
   const sumV = rows.reduce((a, [, x]) => a + x.v, 0), sumP = rows.reduce((a, [, x]) => a + x.p, 0), sumM = rows.reduce((a, [, x]) => a + x.m, 0);
   const maxP = Math.max(1, ...rows.map(([, x]) => x.p));
-  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", image_save: "이미지 저장", js_error: "스크립트 오류" };
+  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", share_visit: "공유 링크로 들어옴", image_save: "이미지 저장", js_error: "스크립트 오류" };
   const table = (head, list) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${list.join("") || `<tr><td colspan="${head.length}" class="mu">아직 기록 없음</td></tr>`}</table>`;
   const kpi = (label, v, unit = "") => `<div class="k"><span>${label}</span><b>${v.toLocaleString("ko-KR")}${unit}</b></div>`;
 

@@ -429,6 +429,20 @@ t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp
   t("오류 기록: 메시지는 숫자 4자리 이상을 지우고 120자로 자른다", /replace\(\/\\d\{4,\}\/g, "#"\)/.test(wk) && wk.includes(".slice(0, 120)"), true);
   t("오류 기록: 브라우저는 js_error 에만 메시지·파일·주소를 보내고 오류 리스너는 하나뿐이다", src.includes('JSON.stringify(ev==="js_error"&&p?{e:ev,m:p.m,f:p.f,p:location.pathname}:{e:ev})') && (src.match(/addEventListener\("error"/g) || []).length === 1, true);
   t("오류 기록: 개인정보처리방침에 오류 메시지 보관(30일)이 적혀 있다", /오류 메시지\(120자 이내, 숫자 네 자리 이상은 지움\)/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("오류 메시지는 30일 뒤"), true); }
+// 공유 출처 측정: 공유 버튼이 만드는 주소에 ?from=share 를 달고, 그 주소로 열리면 비콘이 share_visit 을 한 번 더 보내며, 서버가 그 이벤트를 받는다
+{ const wk = fs.readFileSync("worker.js", "utf8");
+  const beacon = (bs.match(/`<script>(addEventListener\("load",function\(\)\{try\{navigator\.sendBeacon\("\/api\/hit".*?)<\/script>`/) || [])[1] || "";
+  const sent = search => { const out = []; let onLoad = null;
+    try { new Function("addEventListener", "navigator", "location", "document", beacon)((ev, fn) => { if (ev === "load") onLoad = fn; }, { sendBeacon: (u, b) => out.push(b) }, { pathname: "/namematch.html", search }, { referrer: "" }); if (onLoad) onLoad(); } catch (e) { out.push("ERR " + e.message); }
+    return out; };
+  const EV = new Function(wk.match(/const EVENTS = new Set\(\[[^\]]*\]\);/)[0] + "return EVENTS;")();
+  t("공유 출처: 비콘 코드를 소스에서 찾았다", beacon.includes("share_visit"), true);
+  t("공유 출처: 보통 방문은 조회 하나만 보낸다", sent("").join("|"), '{"p":"/namematch.html","r":""}');
+  t("공유 출처: ?from=share 로 열리면 조회 뒤에 share_visit 하나가 더 간다(다른 쿼리와 섞여도)", [sent("?from=share"), sent("?s=3&from=share"), sent("?from=share&s=3")].map(a => a.length + a[1]).join(","), '2{"e":"share_visit"},2{"e":"share_visit"},2{"e":"share_visit"}');
+  t("공유 출처: from=shared·xfrom=share 같은 비슷한 값은 세지 않는다", [sent("?from=shared").length, sent("?xfrom=share").length].join(","), "1,1");
+  t("공유 출처: 서버 허용 목록에 share_visit 이 있고 아무 이름이나 받지는 않는다", EV.has("share_visit") + "," + EV.has("share_visit2") + "," + EV.has("fortune_view"), "true,false,true");
+  t("공유 출처: 공유 버튼은 쿼리를 걷어낸 주소 뒤에 ?from=share 를 붙인다", src.includes('url:location.href.split("#")[0].split("?")[0]+"?from=share"'), true);
+  t("공유 출처: 대시보드가 share_visit 을 한글로 보여 주고 방침 문구에 적혀 있다", wk.includes('share_visit: "공유 링크로 들어옴"') && fs.readFileSync("content_site.js", "utf8").includes("공유 링크로 열렸는지 포함"), true); }
 t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
 // 모바일 화면 점검(2026-09)에서 나온 깨짐: 떠 있는 캐릭터 옆에 카드가 좁게 눌리거나 모서리를 덮이던 것, 값이 긴 표에서 라벨이 한 글자 폭으로 눌리던 것
 t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clear:both — 옆에 끼면 카드가 좁게 눌린다)", /\.learncta\{[^}]*clear:both/.test(bs) && /\.lprog\{clear:both;/.test(bs), true);

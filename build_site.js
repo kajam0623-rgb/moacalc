@@ -934,7 +934,7 @@ const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SIT
   (NAVER_VERIFY?`<meta name="naver-site-verification" content="${NAVER_VERIFY}">`:"")+
   (ANALYTICS_ID?`<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');addEventListener('load',function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}';document.head.appendChild(s);});</script>`:"")+
   // 자체 통계(worker.js /api/hit). 쿠키 없이 주소와 들어온 곳만 보낸다
-  `<script>addEventListener("load",function(){try{navigator.sendBeacon("/api/hit",JSON.stringify({p:location.pathname,r:document.referrer}))}catch(e){}});</script>`+
+  `<script>addEventListener("load",function(){try{navigator.sendBeacon("/api/hit",JSON.stringify({p:location.pathname,r:document.referrer}));if(/[?&]from=share(&|$)/.test(location.search))navigator.sendBeacon("/api/hit",JSON.stringify({e:"share_visit"}))}catch(e){}});</script>`+
   (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
 // 이미지: 리포 루트 img/ → site/img/ 복사. 파일 없으면 onerror로 조용히 숨김.
 const IMG_SRC = path.join(DIR,"img");
