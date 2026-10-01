@@ -894,3 +894,7 @@
 .exbox .res.ttisum{display:block;}
 .exbox .res.ttisum span{display:block;font-size:13px;color:var(--muted);margin-bottom:4px;}
 .exbox .res.ttisum b{font-family:inherit;font-weight:700;line-height:1.7;}
+.ttishare{display:grid;gap:8px;margin:14px 0 4px;}
+.ttibtn{width:100%;padding:12px;border:1px solid var(--fun);border-radius:10px;background:transparent;color:var(--fun-ink);font:inherit;font-weight:800;cursor:pointer;}
+.ttibtn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}
+.ttires .ttibtn{margin-top:8px;}

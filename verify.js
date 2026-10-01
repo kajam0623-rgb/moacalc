@@ -1105,5 +1105,27 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("띠 궁합 도입 글: 띠끼리 같은 문장이 없다", hdupS.slice(0, 3).join(" | "), "");
   t("띠 궁합 배선: 허브·띠별·짝 페이지를 만들고 사이트맵·llms·홈에 싣는다", [bs.includes("ttiMainPage()"), bs.includes("TTI.PAIR_LIST.forEach(p=>fs.writeFileSync"), bs.includes("TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl"), bs.includes("## 띠별 궁합 (13)"), bs.includes('"띠 궁합 " + (TTI.JI.length + 1)')].join(","), "true,true,true,true,true");
   t("띠 궁합 배선: 원고가 없으면 빌드가 멈춘다(빈 페이지를 내보내지 않는다)", bs.includes('throw new Error("띠 궁합 원고 없음: "') && bs.includes('throw new Error("띠 궁합 도입 글 없음: "'), true); }
+// ── 띠 궁합 공유·초대(정적 페이지의 인라인 스크립트) · 사주 궁합 초대 카드 위치 ──
+{ const m = bs.match(/const TTI_SHARE_JS = `<script>(.*?)<\/script>`;/s), js = m ? m[1] : "";
+  const run = (nav, ev, data) => { const out = { beacons: [], shared: null, copied: null }, hs = {};
+    const btn = { dataset: Object.assign({ share: "1", ev: ev }, data), textContent: "라벨", addEventListener(ty, fn) { hs[ty] = fn; } };
+    const doc = { readyState: "complete", querySelectorAll: () => [btn], addEventListener() {} };
+    const navi = Object.assign({ sendBeacon: (u, b) => { out.beacons.push(b); return true; } }, nav(out));
+    let err = ""; try { new Function("navigator", "document", "window", "setTimeout", js)(navi, doc, globalThis, () => {}); if (hs.click) hs.click(); } catch (e) { err = String(e.message); }
+    out.label = btn.textContent; out.err = err; delete globalThis.ttiShare; return out; };
+  const D = { title: "띠 궁합 보자", text: "나는 쥐띠, 너는 무슨 띠야? 우리 띠 궁합 보자:", url: "https://dongnebosal.com/tti-gunghap.html?from=share&a=0" };
+  const r1 = run(o => ({ share: x => { o.shared = x; return { catch() {} }; } }), "invite_make", D);
+  t("띠 궁합 공유: 기기 공유창에 제목과 '문구 + 주소'를 통째로 넘기고 invite_make 를 센다", [r1.err, JSON.stringify(r1.beacons), r1.shared && r1.shared.title, r1.shared && r1.shared.text].join("|"), '|["{\\"e\\":\\"invite_make\\"}"]|띠 궁합 보자|나는 쥐띠, 너는 무슨 띠야? 우리 띠 궁합 보자: https://dongnebosal.com/tti-gunghap.html?from=share&a=0');
+  const r2 = run(o => ({ clipboard: { writeText: x => { o.copied = x; return { then: f => f() }; } } }), "share_click", D);
+  t("띠 궁합 공유: 공유창이 없으면 클립보드로 복사하고 버튼에 안내를 띄우며 share_click 을 센다", [r2.err, JSON.stringify(r2.beacons), r2.copied, r2.label].join("|"), '|["{\\"e\\":\\"share_click\\"}"]|나는 쥐띠, 너는 무슨 띠야? 우리 띠 궁합 보자: https://dongnebosal.com/tti-gunghap.html?from=share&a=0|복사됨! 카톡에 붙여넣으세요');
+  const r3 = run(() => ({}), "share_click", D);
+  t("띠 궁합 공유: 공유창도 클립보드도 없으면 오류 없이 안내만 띄운다", r3.err + "|" + r3.label, "|이 기기에서는 복사를 못 했어요");
+  const hubSrc = bs.slice(bs.indexOf("function ttiMainPage()"), bs.indexOf("function ttiMainPage()") + 12000);
+  t("띠 궁합 배선: 짝 페이지·띠별 페이지에 공유·초대 줄을 달고, 허브는 위젯 앞에 공유 스크립트를 둔다", [bs.includes("ttiShareRow(`${cross} 궁합`"), bs.includes("ttiShareRow(`${z.name} 궁합`"), bs.includes("</p></div>` + TTI_SHARE_JS + sel +"), bs.includes('ttiShare(o)}')].join(","), "true,true,true,true");
+  t("띠 궁합 위젯: ?a=&b= 로 열면 고른 값으로 결과를, ?a= 만이면 보낸 띠를 상대 칸에 두고 내 띠 고르기 안내 + invite_open", [hubSrc.includes('u.get("a")') && hubSrc.includes('u.get("b")'), hubSrc.includes('new Option("내 띠를 골라 보세요","")'), hubSrc.includes("b.value=qa"), hubSrc.includes('{e:"invite_open"}'), hubSrc.includes('if(a.value===""||b.value==="")return;')].join(","), "true,true,true,true,true");
+  t("띠 궁합 위젯: 공유는 그 짝 페이지(?from=share)로, 초대는 허브(?from=share&a=내 띠)로 보낸다", [hubSrc.includes('location.origin+"/"+d[2]+"?from=share"'), hubSrc.includes('location.origin+location.pathname+"?from=share&a="+i')].join(","), "true,true");
+  t("띠 궁합 공유: 버튼 모양(.ttibtn·.ttishare)이 CSS 에 있다", bs.includes(".ttibtn{width:100%") && bs.includes(".ttishare{display:grid"), true);
+  const iA = src.indexOf('<div class="gh-mkinv">'), iB = src.indexOf('<div id="ghdeep"></div>'), iC = src.indexOf("계산 근거 — 글자별로 본 궁합");
+  t("사주 궁합: 상대에게 보내기 카드가 점수·글자 카드 바로 아래(깊은 풀이·계산 근거보다 위)에 있고 버튼 글이 알아보기 쉽다", [iA > 0 && iA < iB && iB < iC, src.includes(">친구에게 궁합 보자고 보내기</span>"), !src.includes(">초대 링크 만들기</span>")].join(","), "true,true,true"); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

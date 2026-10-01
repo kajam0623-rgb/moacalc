@@ -1535,6 +1535,12 @@ const ttiHubChips = cur => '<div class="sibs">' + TTI.JI.map(z => z.i === cur ? 
 // i 번 띠의 다른 짝 열두 개(현재 짝은 표시만)
 const ttiPairChips = (i, curJ) => '<div class="sibs">' + TTI.JI.map(z => { const lab = (i === z.i ? TTI.JI[i].name + "끼리" : TTI.JI[i].name + " × " + z.name); return z.i === curJ ? `<span class="cur">${lab}</span>` : `<a href="${ttiPairUrl(i, z.i)}">${lab}</a>`; }).join("") + '</div>';
 const TTI_IPCHUN = "사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.";
+// 띠 궁합 공유·초대 — 정적 페이지라 작은 인라인 스크립트로 단다. 공유는 그 짝(띠) 페이지 주소로, 초대는 허브(?a=내 띠 번호)로 보낸다. 이벤트 이름은 도구 쪽과 같다(share_click·invite_make)
+const TTI_SHARE_JS = `<script>(function(){function ev(n){try{navigator.sendBeacon("/api/hit",JSON.stringify({e:n}))}catch(e){}}function out(b,t,full,idle){function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle},2200)}if(navigator.share){navigator.share({title:t,text:full}).catch(function(){})}else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,function(){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요"})}else{b.textContent="이 기기에서는 복사를 못 했어요"}}window.ttiShare=function(root){[].forEach.call((root||document).querySelectorAll("[data-share]"),function(b){if(b.__s)return;b.__s=1;var idle=b.textContent;b.addEventListener("click",function(){ev(b.dataset.ev||"share_click");out(b,b.dataset.title||document.title,b.dataset.text+" "+b.dataset.url,idle)})})};if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",function(){ttiShare()});else ttiShare()})();</script>`;
+const ttiBtn = (label, ev, title, text, url) => `<button type="button" class="ttibtn" data-share="1" data-ev="${ev}" data-title="${esc(title)}" data-text="${esc(text)}" data-url="${esc(url)}">${esc(label)}</button>`;
+// file = 공유할 이 페이지 파일 이름, mine = 보내는 사람 띠 번호
+const ttiShareRow = (title, text, file, mine) => `<div class="ttishare">` + ttiBtn("이 궁합 공유하기", "share_click", title, text, `${DOMAIN}/${file}?from=share`) +
+  ttiBtn("친구에게 \"우리 띠 궁합 보자\" 보내기", "invite_make", "띠 궁합 보자", `나는 ${TTI.JI[mine].name}, 너는 무슨 띠야? 우리 띠 궁합 보자:`, `${DOMAIN}/tti-gunghap.html?from=share&a=${mine}`) + `</div>` + TTI_SHARE_JS;
 const ttiMore = "<p style='color:var(--muted);font-size:13px;margin:8px 0 0'>전통 띠 궁합은 참고용입니다. 실제 관계는 두 사람의 성격과 노력, 대화가 훨씬 크게 좌우합니다.</p>";
 
 function ttiPairPage(a, b) {
@@ -1564,7 +1570,7 @@ function ttiPairPage(a, b) {
     tool: "gunghap", noTool: true,
     tags: same ? [`${A.name}끼리 궁합`, `${A.name} ${A.name} 궁합`, `${A.name} 같은 띠 궁합`] : [`${A.name} ${B.name} 궁합`, `${B.name} ${A.name} 궁합`, `${A.name}와 ${B.name} 잘 맞나`, `${A.name} ${B.name} 결혼`, `${A.name} ${B.name} 연애`],
     body: `<div class="exbox"><h2>${cross} 한눈에 보기</h2>` + rows.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
-      `<div class="res ttisum"><span>요약</span><b>${esc(t.sum)}</b></div></div>` +
+      `<div class="res ttisum"><span>요약</span><b>${esc(t.sum)}</b></div></div>` + ttiShareRow(`${cross} 궁합`, `${cross} 궁합 — ${r.type === "무난" ? "무난한 사이" : r.type}. ${t.sum} 동네보살에서 보기:`, ttiPairUrl(a, b), a) +
       `<section class="guide"><h2>${cross}의 연애·결혼</h2><div class="intro" style="margin-top:0">${para(t.love)}</div></section>` +
       `<section class="guide"><h2>${cross}의 일·동업</h2><div class="intro" style="margin-top:0">${para(t.work)}</div></section>` +
       `<section class="guide"><h2>${cross}의 가족·친구</h2><div class="intro" style="margin-top:0">${para(t.home)}</div></section>` +
@@ -1604,7 +1610,7 @@ function ttiHubPage(i) {
     tool: "gunghap", noTool: true,
     tags: [`${z.name} 궁합`, `${z.name}궁합`, `${z.name} 잘 맞는 띠`, `${z.name} 안 맞는 띠`, `${z.name} 삼합 육합`],
     body: `<div class="exbox"><h2>${z.name} 궁합 한눈에 보기</h2>` + glance.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
-      `<div class="res ttisum"><span>출생 연도</span><b>${esc(TTI.years(i).join(" · "))}년생</b></div></div>` +
+      `<div class="res ttisum"><span>출생 연도</span><b>${esc(TTI.years(i).join(" · "))}년생</b></div></div>` + ttiShareRow(`${z.name} 궁합`, `${z.name} 궁합 — 잘 맞는 띠와 맞춰 갈 띠를 한눈에. 동네보살에서 보기:`, ttiHubUrl(i), i) +
       `<div class="intro">${para(h.intro)}</div>` +
       group("잘 맞는 띠 — 삼합·육합", `${z.name}와 같은 방향을 보기 쉬운 띠입니다. 짝 이름을 누르면 자세한 풀이가 열립니다.`, ["삼합", "육합"]) +
       group("맞춰 가면 좋은 띠 — 충·원진·형", `속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 안 맞는 띠가 아니라 서로 배울 것이 많은 띠입니다.`, ["충", "원진", "형"]) +
@@ -1630,8 +1636,15 @@ function ttiMainPage() {
   const data = {}; TTI.PAIR_LIST.forEach(p => { data[p.a + "-" + p.b] = [p.type, ttiTextOf(p.key).sum, ttiPairUrl(p.a, p.b)]; });
   const sel = `<div class="card tool" id="ttisel"><div class="r2"><div><label for="tta">내 띠</label><select id="tta">${TTI.JI.map(z => `<option value="${z.i}">${z.name}</option>`).join("")}</select></div>` +
     `<div><label for="ttb">상대 띠</label><select id="ttb">${TTI.JI.map(z => `<option value="${z.i}"${z.i === 1 ? " selected" : ""}>${z.name}</option>`).join("")}</select></div></div><div id="ttout" aria-live="polite" style="margin-top:12px"></div></div>` +
-    `<script>(function(){var D=${JSON.stringify(data).replace(/</g, "\\u003c")},N=${JSON.stringify(TTI.JI.map(z => z.name))},a=document.getElementById("tta"),b=document.getElementById("ttb"),o=document.getElementById("ttout");` +
-    `function show(){var i=+a.value,j=+b.value,k=Math.min(i,j)+"-"+Math.max(i,j),d=D[k],t=i===j?N[i]+"끼리":N[i]+" × "+N[j];o.innerHTML="";var h=document.createElement("div");h.className="ttires";var s=document.createElement("b");s.textContent=t+" — "+d[0];h.appendChild(s);var p=document.createElement("p");p.textContent=d[1];h.appendChild(p);var l=document.createElement("a");l.href=d[2];l.textContent=t+" 자세한 풀이 보기 →";h.appendChild(l);o.appendChild(h);}` +
+    `<script>(function(){var D=${JSON.stringify(data).replace(/</g, "\\u003c")},N=${JSON.stringify(TTI.JI.map(z => z.name))},a=document.getElementById("tta"),b=document.getElementById("ttb"),o=document.getElementById("ttout"),box=document.getElementById("ttisel"),u=new URLSearchParams(location.search);` +
+    `function idx(v){var n=v===null||v===""?-1:Number(v);return n>=0&&n<12&&n%1===0?n:-1}` +
+    `function btn(label,ev,title,text,url){var x=document.createElement("button");x.type="button";x.className="ttibtn";x.textContent=label;x.dataset.share="1";x.dataset.ev=ev;x.dataset.title=title;x.dataset.text=text;x.dataset.url=url;return x}` +
+    `function show(){o.innerHTML="";if(a.value===""||b.value==="")return;var i=+a.value,j=+b.value,k=Math.min(i,j)+"-"+Math.max(i,j),d=D[k],t=i===j?N[i]+"끼리":N[i]+" × "+N[j],kd=d[0]==="무난"?"무난한 사이":d[0];var h=document.createElement("div");h.className="ttires";var s=document.createElement("b");s.textContent=t+" — "+d[0];h.appendChild(s);var p=document.createElement("p");p.textContent=d[1];h.appendChild(p);var l=document.createElement("a");l.href=d[2];l.textContent=t+" 자세한 풀이 보기 →";h.appendChild(l);` +
+    `h.appendChild(btn("이 궁합 공유하기","share_click",t+" 궁합",t+" 궁합 — "+kd+". "+d[1]+" 동네보살에서 보기:",location.origin+"/"+d[2]+"?from=share"));` +
+    `h.appendChild(btn("친구에게 \\"우리 띠 궁합 보자\\" 보내기","invite_make","띠 궁합 보자","나는 "+N[i]+", 너는 무슨 띠야? 우리 띠 궁합 보자:",location.origin+location.pathname+"?from=share&a="+i));` +
+    `o.appendChild(h);ttiShare(o)}` +
+    `var qa=idx(u.get("a")),qb=idx(u.get("b"));` +
+    `if(qa>=0&&qb>=0){a.value=qa;b.value=qb}else if(qa>=0){a.insertBefore(new Option("내 띠를 골라 보세요",""),a.firstChild);a.value="";b.value=qa;var bar=document.createElement("div");bar.className="gh-inv";bar.textContent=N[qa]+" 친구가 띠 궁합을 보자고 보냈어요. 내 띠를 골라 보세요.";box.insertBefore(bar,box.firstChild);try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"invite_open"}))}catch(e){}}` +
     `a.addEventListener("change",show);b.addEventListener("change",show);show();})();</script>`;
   const kinds = [["삼합", "삼합은 세 띠가 모여 하나의 기운을 이루는 관계입니다. 넷으로 묶이며, 이 안에서는 둘만 만나도 같은 방향을 보기 쉽습니다.", TTI.SAMHAP.map(s => `${s[1].replace(" 삼합", "")}: ${s[0].map(n => TTI.JI[n].name).join("·")} → ${s[2]}(${({ 수: "水", 목: "木", 화: "火", 금: "金", 토: "土" })[s[2]]}) 기운`)],
     ["육합", "육합은 두 띠가 짝을 이뤄 서로를 끌어당기는 관계입니다. 여섯 쌍이 있습니다.", TTI.YUKHAP.map(p => `${TTI.jj(p[0], p[1])}: ${TTI.JI[p[0]].name} × ${TTI.JI[p[1]].name} → 합쳐서 ${p[2]}(${({ 수: "水", 목: "木", 화: "火", 금: "金", 토: "土" })[p[2]]})`)],
@@ -1648,7 +1661,7 @@ function ttiMainPage() {
     parent: "gunghap.html", parentName: "사주 궁합",
     tool: "gunghap", noTool: true,
     tags: ["띠별 궁합", "띠 궁합", "띠궁합표", "12띠 궁합", "삼합 육합 충 원진"],
-    body: `<div class="intro"><p style="margin-bottom:10px">내 띠와 상대 띠를 고르면 두 띠의 관계와 한 줄 풀이를 바로 볼 수 있습니다. 아래 표는 열두 띠 전체를 한 장에 놓은 것이고, 칸을 누르면 그 짝의 연애·결혼, 일·동업, 가족·친구 풀이가 열립니다.</p></div>` + sel +
+    body: `<div class="intro"><p style="margin-bottom:10px">내 띠와 상대 띠를 고르면 두 띠의 관계와 한 줄 풀이를 바로 볼 수 있습니다. 아래 표는 열두 띠 전체를 한 장에 놓은 것이고, 칸을 누르면 그 짝의 연애·결혼, 일·동업, 가족·친구 풀이가 열립니다.</p></div>` + TTI_SHARE_JS + sel +
       `<section class="guide"><h2>열두 띠 궁합표</h2>${matrix}<p style="color:var(--muted);font-size:13px;margin:0">가장 큰 관계 하나만 표시했습니다(삼합 &gt; 육합 &gt; 충 &gt; 원진 &gt; 형). 해(害)·파(破)처럼 겹쳐 읽는 관계는 짝별 풀이에 적었습니다.</p></section>` +
       `<section class="guide"><h2>내 띠 궁합 보기</h2>${ttiHubChips(-1)}</section>` +
       kinds.map(k => `<section class="guide"><h2>${k[0]} — 어떤 띠들인가요</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">${k[1]}</p><ul>${k[2].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></section>`).join("") +
@@ -3113,7 +3126,11 @@ const extraCss = `
   `\n.ttires a{font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;}`+
   `\n.exbox .res.ttisum{display:block;}`+
   `\n.exbox .res.ttisum span{display:block;font-size:13px;color:var(--muted);margin-bottom:4px;}`+
-  `\n.exbox .res.ttisum b{font-family:inherit;font-weight:700;line-height:1.7;}`;
+  `\n.exbox .res.ttisum b{font-family:inherit;font-weight:700;line-height:1.7;}`+
+  `\n.ttishare{display:grid;gap:8px;margin:14px 0 4px;}`+
+  `\n.ttibtn{width:100%;padding:12px;border:1px solid var(--fun);border-radius:10px;background:transparent;color:var(--fun-ink);font:inherit;font-weight:800;cursor:pointer;}`+
+  `\n.ttibtn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent);}`+
+  `\n.ttires .ttibtn{margin-top:8px;}`;
 
 // 쓰기
 const styleV = hash8(css+extraCss);

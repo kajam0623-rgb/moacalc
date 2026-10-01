@@ -104,6 +104,8 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div class="v">'+sc+'<small>점 · '+grade+'</small></div></div>'+
       '<div class="sj-bars">'+subs.map(function(x){return gbar(x[0],x[1]);}).join("")+'</div>'+
       '<div class="gh-pair">'+ghChar(A,ga,"나")+ghChar(B,gb,inv&&inv.n?escH(inv.n):"상대")+'</div>'+
+      '<div class="gh-mkinv">'+bosalImg("phone","bs-side","휴대폰을 든 아기보살")+'<h3>'+(inv?"나도 다른 사람에게 보내기":"이 궁합, 상대에게 보내기")+'</h3><p>내 사주 글자만 담은 링크를 보내면 받은 사람은 자기 생일만 넣고 우리 둘의 궁합을 봅니다. 생년월일은 서버로 가지 않고, 링크는 7일 뒤 지워집니다.</p>'+
+      '<div class="ai-row"><input class="gh-nick" maxlength="10" placeholder="내 이름 (선택)" aria-label="보내는 사람 이름"><span class="gh-mk" role="button" tabindex="0">친구에게 궁합 보자고 보내기</span></div><p class="gh-link" aria-live="polite"></p></div>'+
       '<div id="ghdeep"></div>'+
       '<h3 class="gh-basis">계산 근거 — 글자별로 본 궁합</h3>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
@@ -111,8 +113,6 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 챙길 점도 함께 겹칩니다.</p></div>'+
-      '<div class="gh-mkinv">'+bosalImg("phone","bs-side","휴대폰을 든 아기보살")+'<h3>'+(inv?"나도 다른 사람에게 보내기":"이 궁합, 상대에게 보내기")+'</h3><p>내 사주 글자만 담은 링크를 보내면 받은 사람은 자기 생일만 넣고 우리 둘의 궁합을 봅니다. 생년월일은 서버로 가지 않고, 링크는 7일 뒤 지워집니다.</p>'+
-      '<div class="ai-row"><input class="gh-nick" maxlength="10" placeholder="내 이름 (선택)" aria-label="보내는 사람 이름"><span class="gh-mk" role="button" tabindex="0">초대 링크 만들기</span></div><p class="gh-link" aria-live="polite"></p></div>'+
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 덜 찬 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
