@@ -452,7 +452,7 @@ t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clea
 t("사주 궁합: 일간 십성은 두 방향을 평균 내 점수가 순서와 무관하다", src.includes("r2=sjTenGod(b.d.s,a.d.s)") && src.includes("sc+=((RD1[r1]||0)+(RD1[r2]||0))/2;") && src.includes("((AT[f.r1]||0)+(AT[f.r2]||0))/2") && src.includes("((TK[f.r1]||0)+(TK[f.r2]||0))/2"), true);
 t("이름 궁합: 순서를 바꾸면 점수가 달라진다는 안내가 글자 수가 같을 때도 있다", (src.match(/이름 1·2의 순서를 바꾸면 점수가 달라집니다/g) || []).length, 2);
 // 일간·일주·십성·띠·일진·월력 페이지가 강의로 가는 문맥 링크를 갖는다(본문 링크 0개였음)
-t("생성 페이지 6군이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "6|true");
+t("생성 페이지 9군(별자리·띠·일간·십성·개념·타로 + 띠 궁합 허브·띠별·짝)이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "9|true");
 // 2027 정미(丁未)년 원고: 띠는 태세 지지 미(未)와의 관계, 일간은 천간 정(丁)과 미 본기 기(己)의 십성이 엔진 계산과 같아야 한다
 { const ZO = require("./content_zodiac.js"), IL = require("./content_ilgan.js");
   const REL = b => b === 7 ? "본명년" : (b + 6) % 12 === 7 ? "충(沖) 관계" : sjYukhap(b) === 7 ? "육합을 이룹니다" : b % 4 === 3 ? "삼합" : b === 0 ? "해(害) 관계" : b === 10 ? "형(刑)이자 파(破)" : "충·합 관계가 없습니다";
@@ -1030,5 +1030,42 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   { const d = tryDraw("김철수", "이영희"); let e4 = ""; if (d.r) { d.r.nodes["#a"].value = "민준"; d.r.nodes["#b"].value = "서연"; const h = d.r.nodes["#go"].handlers.find(x => x[0] === "click"); try { h[1](); } catch (e) { e4 = String(e.message); } }
     const o4 = d.r ? d.r.nodes["#out"].innerHTML : "";
     t("이름궁합 도구: 버튼을 누르면 다시 계산한다(민준♥서연 24점·도전형, 순서를 바꾼 줄 포함)", e4 + "|" + /24<small>점 · 도전형/.test(o4) + "|" + o4.includes("서연을 먼저 놓으면"), "|true|true"); } }
+// ── 띠 궁합(content_ttigunghap.js): 관계표를 독립 표와 대조 · 원고 78쌍·12띠 · 문체·중복 · 빌드 배선 ──
+{ const TT = require("./content_ttigunghap.js"), NAMES = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
+  const norm = s => s.split(" ").map(x => { const a = NAMES.indexOf(x[0]), b = NAMES.indexOf(x[1]); return Math.min(a, b) + "-" + Math.max(a, b); }).sort().join(" ");
+  const EXP = { "삼합": "자진 자신 진신 해묘 묘미 해미 인오 오술 인술 사유 유축 사축", "육합": "자축 인해 묘술 진유 사신 오미", "충": "자오 축미 인신 묘유 진술 사해", "원진": "자미 축오 인유 묘신 진해 사술", "형": "자묘 인사 축술 술미" };   // 지지 합·충·원진·형 일람(여러 명리 자료 교차 확인)을 코드와 따로 적은 것
+  const got = t => TT.PAIR_LIST.filter(p => p.type === t).map(p => p.a + "-" + p.b).sort().join(" ");
+  Object.keys(EXP).forEach(ty => t(`띠 궁합 관계표: ${ty} 쌍이 독립 표와 같다`, got(ty), norm(EXP[ty])));
+  t("띠 궁합: 78쌍 = 삼합 12·육합 6·충 6·원진 6·형 4·같은 띠 12·무난 32", TT.PAIR_LIST.length + "=" + ["삼합","육합","충","원진","형","같은 띠","무난"].map(x => TT.PAIR_LIST.filter(p => p.type === x).length).join("/"), "78=12/6/6/6/4/12/32");
+  t("띠 궁합: 관계는 두 띠 순서와 상관없다(대칭)", TT.JI.every(x => TT.JI.every(y => TT.rel(x.i, y.i).type === TT.rel(y.i, x.i).type)), true);
+  t("띠 궁합: 모든 띠가 삼합 상대 2·육합 1·충 1·원진 1", TT.JI.every(x => [["삼합",2],["육합",1],["충",1],["원진",1]].every(([ty, c]) => TT.JI.filter(y => y.i !== x.i && TT.rel(x.i, y.i).type === ty).length === c)), true);
+  t("띠 궁합: 짝 키 78개가 서로 다르다", new Set(TT.PAIR_LIST.map(p => p.key)).size, 78);
+  t("띠 궁합: 출생 연도 목록은 (연도−4)%12 가 띠 번호이고 2026 이하", TT.JI.every(z => TT.years(z.i).every(y => (y - 4) % 12 === z.i && y <= 2026)), true);
+  t("띠 궁합: 1984 쥐띠·1985 소띠·2019 돼지띠가 목록에 있다", TT.years(0).includes(1984) && TT.years(1).includes(1985) && TT.years(11).includes(2019), true);
+  const BAN = /위험|흉(?!내|터)|불행|재앙|재난|불길|불운|파탄|이혼|사별|실패|나쁜|망하|최악|저주|상극|원수|악연|헤어|깨지|절대|반드시|결혼하면 안|단점|약하|약한|약해|약점|얇[은아다으고게]|여리[다고지게며]|여린|여려|모자라|모자란|부족한 사람|힘이 없/, JARG = /일간|용신|십성|격국|신강|신약|지장간|천간|(?<![가-힣])지지(?![가-힣])|합화|오행|상생/, BOS = /(일세|하네|이야|이지|하게|하세나|이군|하군)[.!?]?$/;
+  const SENT = x => String(x).split(/(?<=[.!?])\s+/).map(y => y.trim()).filter(Boolean);
+  const P = TT.TEXT.pairs, Hh = TT.TEXT.hubs, badF = [], badL = [], badW = [], badN = [], seen = new Map(), dupS = [];
+  TT.PAIR_LIST.forEach(p => { const o = P[p.key]; if (!o) { badF.push(p.key); return; }
+    ["sum","love","work","home","myth"].forEach(f => { if (typeof o[f] !== "string" || !o[f]) badF.push(p.key + "." + f); });
+    if (!Array.isArray(o.tips) || o.tips.length !== 3) badF.push(p.key + ".tips");
+    const L = (f, v, lo, hi) => { if (String(v).length < lo || String(v).length > hi) badL.push(p.key + "." + f + ":" + String(v).length); };
+    L("sum", o.sum, 45, 90); L("love", o.love, 200, 350); L("work", o.work, 180, 330); L("home", o.home, 150, 290); L("myth", o.myth, 45, 105); (o.tips || []).forEach((x, i) => L("tips" + i, x, 45, 115));
+    const all = ["sum","love","work","home","myth"].map(f => o[f]).concat(o.tips || []).join(" ");
+    SENT(all).forEach(x => { if (BAN.test(x) || JARG.test(x) || BOS.test(x)) badW.push(p.key + ":" + x.slice(0, 18)); if (x.length >= 14) { if (!seen.has(x)) seen.set(x, new Set()); seen.get(x).add(p.key); } });
+    const nm = [TT.JI[p.a].name, TT.JI[p.b].name]; ["sum","love","work","home"].forEach(f => nm.forEach(n => { if (!String(o[f]).includes(n)) badN.push(p.key + "." + f + "/" + n); })); });
+  seen.forEach((v, x) => { if (v.size > 1) dupS.push([...v].join(",") + ":" + x.slice(0, 16)); });
+  t("띠 궁합 원고: 78쌍이 모든 칸(sum·love·work·home·tips 3·myth)을 갖췄다", badF.slice(0, 4).join(","), "");
+  t("띠 궁합 원고: 칸마다 분량 범위(sum 45~90 · love 200~350 · work 180~330 · home 150~290 · tips 45~115 · myth 45~105)", badL.slice(0, 4).join(","), "");
+  t("띠 궁합 원고: 금지어·어려운 명리 용어·보살 말투 끝맺음이 없다", badW.slice(0, 4).join(","), "");
+  t("띠 궁합 원고: sum·love·work·home 마다 두 띠 이름이 들어 있다", badN.slice(0, 4).join(","), "");
+  t("띠 궁합 원고: 다른 짝과 같은 문장(14자 이상)이 없다", dupS.slice(0, 3).join(" | "), "");
+  const hb = [], hdup = new Map(), hdupS = [];
+  TT.JI.forEach(z => { const o = Hh[z.en]; if (!o) { hb.push(z.en); return; }
+    [["intro",170,320],["love",150,280],["work",150,280],["tip",100,220]].forEach(([f, lo, hi]) => { const v = String(o[f] || ""); if (v.length < lo || v.length > hi) hb.push(z.en + "." + f + ":" + v.length); if (!v.includes(z.name)) hb.push(z.en + "." + f + ":이름없음"); SENT(v).forEach(x => { if (BAN.test(x) || JARG.test(x) || BOS.test(x) || /삼합|육합|원진|(?<![가-힣])충(?![가-힣])/.test(x)) hb.push(z.en + "." + f + ":" + x.slice(0, 14)); if (x.length >= 14) { if (!hdup.has(x)) hdup.set(x, new Set()); hdup.get(x).add(z.en); } }); }); });
+  hdup.forEach((v, x) => { if (v.size > 1) hdupS.push(x.slice(0, 16)); });
+  t("띠 궁합 도입 글: 12띠가 모두 있고 분량·문체·관계 이름 없음·띠 이름 포함", hb.slice(0, 4).join(","), "");
+  t("띠 궁합 도입 글: 띠끼리 같은 문장이 없다", hdupS.slice(0, 3).join(" | "), "");
+  t("띠 궁합 배선: 허브·띠별·짝 페이지를 만들고 사이트맵·llms·홈에 싣는다", [bs.includes("ttiMainPage()"), bs.includes("TTI.PAIR_LIST.forEach(p=>fs.writeFileSync"), bs.includes("TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl"), bs.includes("## 띠별 궁합 (13)"), bs.includes('"띠 궁합 " + (TTI.JI.length + 1)')].join(","), "true,true,true,true,true");
+  t("띠 궁합 배선: 원고가 없으면 빌드가 멈춘다(빈 페이지를 내보내지 않는다)", bs.includes('throw new Error("띠 궁합 원고 없음: "') && bs.includes('throw new Error("띠 궁합 도입 글 없음: "'), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

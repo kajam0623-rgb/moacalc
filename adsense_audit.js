@@ -19,7 +19,7 @@ const LUNAR_MIN = 1200;   // 4단계: 음력 페이지 정적 본문 최소 글�
 const THIN_MIN = 800;     // 이보다 얇은 검색 노출 페이지는 목록으로 보고한다
 const COLUMN_MIN = { count: 6, chars: 1500 };
 // 5단계. 개수보다 편마다 고유 표·구조가 우선이라 6편(2026-09 영상 검토 후 10→6)
-const UNIQ = { k: 10, ilju: 50 }; // 6단계: 노출 페이지 전체에서 이 페이지에만 있는 10자 조각 비율(%). 2026-09 측정 일주 12% · 별자리 74% · 타로 89%
+const UNIQ = { k: 10, ilju: 50, tti: 45 }; // 6단계: 노출 페이지 전체에서 이 페이지에만 있는 10자 조각 비율(%). 2026-09 측정 일주 12% · 별자리 74% · 타로 89%
 
 const args = Object.fromEntries(process.argv.slice(2).map(a => { const [k, v] = a.replace(/^--/, "").split("="); return [k, v ?? true]; }));
 const PHASE = +(args.phase || 0);
@@ -32,7 +32,7 @@ for (const m of hub.matchAll(/\{id:"([a-z0-9]+)",\s*cat:"([^"]+)"/g)) TOOL_CAT[m
 const typeOf = id => {
   if (TOOL_CAT[id]) return TOOL_CAT[id] === "재미·운세" ? "운세도구" : id === "lunar" ? "음력" : "계산기";
   if (/^manse-\d{4}-\d{2}$/.test(id)) return "월력";
-  const m = id.match(/^([a-z]+)-/); if (m) return { iljin: "일진", ilju: "일주", tarot: "타로", star: "별자리", zodiac: "띠", ilgan: "일간", sipseong: "십성", concept: "개념", column: "칼럼", manse: "만세력안내" }[m[1]] || m[1];
+  const m = id.match(/^([a-z]+)-/); if (m) return { iljin: "일진", ilju: "일주", tarot: "타로", star: "별자리", zodiac: "띠", ilgan: "일간", sipseong: "십성", concept: "개념", column: "칼럼", manse: "만세력안내", tti: "띠궁합" }[m[1]] || m[1];
   return { index: "홈", "404": "404", about: "소개", privacy: "약관", terms: "약관", iljin: "일진", manse: "만세력안내", column: "칼럼목록" }[id] || "기타";
 };
 const TEMPLATED = new Set(["월력", "일진", "일주"]);
@@ -120,6 +120,11 @@ gate(5, "칼럼이 사이트맵에 있다", cols.filter(p => !smIds.has(p.id)).m
 
 const ilju = indexable.filter(p => p.type === "일주");
 gate(6, `일주 60편 모두 고유율 ${UNIQ.ilju}% 이상`, ilju.filter(p => p.uniq < UNIQ.ilju).sort((a, b) => a.uniq - b.uniq).map(p => `${p.id}(${p.uniq}%)`).concat(ilju.length === 60 ? [] : [`일주 ${ilju.length}편`]));
+
+// 띠 궁합: 허브 1 + 띠별 12 + 짝 78 = 91편. 짝 페이지는 이름만 바꿔 끼운 글이 아니어야 한다(고유율)
+const ttiPages = indexable.filter(p => p.type === "띠궁합"), ttiPair = ttiPages.filter(p => /^tti-pair-/.test(p.id));
+gate(6, "띠 궁합 91편이 모두 노출되고 사이트맵에 있다", ttiPages.filter(p => !smIds.has(p.id)).map(p => p.id).concat(ttiPages.length === 91 ? [] : [`띠 궁합 ${ttiPages.length}편`]));
+gate(6, `띠 궁합 짝 78편 모두 고유율 ${UNIQ.tti}% 이상`, ttiPair.filter(p => p.uniq < UNIQ.tti).sort((a, b) => a.uniq - b.uniq).map(p => `${p.id}(${p.uniq}%)`).concat(ttiPair.length === 78 ? [] : [`짝 ${ttiPair.length}편`]));
 
 console.log(`\n== 게이트 (강제: 공통${PHASE >= 2 ? " + 2~" + PHASE + "단계" : ""})`);
 let fail = 0;

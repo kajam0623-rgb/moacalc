@@ -319,7 +319,7 @@ stargunghap:{
  intro:`별자리 궁합의 첫 번째 축은 <b>원소</b>입니다. 12별자리는 불(양자리·사자·궁수), 흙(황소·처녀·염소), 공기(쌍둥이·천칭·물병), 물(게·전갈·물고기) 네 원소로 나뉩니다. 같은 원소끼리는 말이 통하고, 불-공기·흙-물처럼 서로를 키워주는 조합은 다른 방식으로 같은 방향을 봅니다. 반대로 불-물, 흙-공기는 기질의 전제가 달라 조율이 필요합니다.
  두 번째 축은 <b>황도 위의 각도</b>입니다. 두 별자리가 120° 떨어진 트라인이면 같은 원소의 순풍이고, 60° 섹스타일은 친구 같은 편안함, 90° 스퀘어는 마찰을 통해 성장하는 관계, 180° 오포지션은 서로의 거울이 되는 관계입니다.
  세 번째 축은 <b>수호성</b>입니다. 각 별자리를 다스리는 행성(화성·금성·수성·달·태양·목성·토성)이 상대 원소와 결이 맞으면, 시간이 지날수록 편해지는 조합으로 봅니다. 이 계산기는 세 축을 40:40:20으로 종합해 점수를 냅니다.`,
- more:[{h2:"이름으로 보는 궁합도 해 보세요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>별자리 궁합이 태어난 날짜로 보는 것이라면, <a href='namematch.html'>이름궁합 테스트</a>는 두 사람의 이름 획수를 번갈아 더해 점수를 내는 전통 놀이입니다. 재미로 해 보기 좋습니다.</p>"}],
+ more:[{h2:"이름으로 보는 궁합도 해 보세요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>별자리 궁합이 태어난 날짜로 보는 것이라면, <a href='namematch.html'>이름궁합 테스트</a>는 두 사람의 이름 획수를 번갈아 더해 점수를 내는 전통 놀이입니다. 재미로 해 보기 좋습니다.</p>"},{h2:"띠로 보는 궁합도 있어요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>태어난 해의 띠로 보는 궁합도 있습니다. <a href='tti-gunghap.html'>띠별 궁합표</a>에서 열두 띠의 삼합·육합·충·원진·형을 한 장으로 볼 수 있습니다.</p>"}],
  example:{t:"사자자리 × 궁수자리 예시",rows:[["원소","불 × 불 — 같은 원소"],["각도","120° 트라인"],["수호성","태양 × 목성 — 둘 다 불과 친화"],["끌림·대화","높음"]],res:["종합","천생연분 급"]},
  caution:["<b>태양 별자리 기준입니다.</b> 본격 점성술 궁합(시나스트리)은 달·금성·상승궁까지 함께 봅니다. 여기서는 가장 큰 축인 태양만 봅니다.",
  "<b>긴장 조합이 나쁜 궁합은 아닙니다.</b> 스퀘어와 오포지션은 전통적으로 성장과 보완의 각으로도 읽습니다. 부딪히는 지점을 미리 아는 지도로 쓰세요.",
@@ -763,7 +763,7 @@ gunghap:{
  intro:`사주 궁합은 두 사람의 명식을 겹쳐 어떤 기운이 맞물리는지 보는 것입니다. 단순히 띠만 맞춰보는 것과는 깊이가 다릅니다. 이 계산기는 네 가지 축으로 봅니다.
  첫째 <b>일간 관계</b>입니다. 일간은 사주에서 '나 자신'을 뜻하는 글자라 두 사람의 일간이 어떤 관계인지가 가장 중요합니다. 갑기·을경·병신·정임·무계처럼 짝을 이루는 <b>천간합</b>이면 명리에서 가장 강한 끌림으로 봅니다. 둘째 <b>띠(연지)의 삼합·육합·충</b>, 셋째 <b>배우자궁(일지)</b>의 관계, 넷째 서로 부족한 <b>오행을 채워주는지</b>입니다.
  점수가 낮다고 안 될 인연이라는 뜻은 아닙니다. 부딪히기 쉬운 지점이 어디인지 미리 아는 지도에 가깝습니다. 충이 있는 관계는 자극이 강한 대신 생활 패턴 조율이 관건입니다.`,
- more:[{h2:"이름으로 보는 궁합도 해 보세요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>사주 궁합이 생년월일로 보는 것이라면, <a href='namematch.html'>이름궁합 테스트</a>는 두 사람의 이름 획수를 번갈아 더해 점수를 내는 전통 놀이입니다. 재미로 해 보기 좋습니다.</p>"}],
+ more:[{h2:"이름으로 보는 궁합도 해 보세요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>사주 궁합이 생년월일로 보는 것이라면, <a href='namematch.html'>이름궁합 테스트</a>는 두 사람의 이름 획수를 번갈아 더해 점수를 내는 전통 놀이입니다. 재미로 해 보기 좋습니다.</p>"},{h2:"띠로 보는 궁합도 있어요",html:"<p style='color:var(--muted);font-size:13px;margin:0 0 10px'>태어난 해의 띠만으로 빠르게 보는 방법도 있습니다. <a href='tti-gunghap.html'>띠별 궁합표</a>에서 열두 띠의 삼합·육합·충·원진·형을 한 장으로 볼 수 있습니다.</p>"}],
  example:{t:"궁합을 보는 네 가지 축",rows:[["일간 관계","천간합·상생·긴장 — 가장 큰 비중"],["띠(연지)","삼합·육합은 +, 충은 −"],["배우자궁(일지)","일상 호흡과 생활 궁합"],["오행 보완","서로 없는 기운을 채우는지"]],res:["종합","네 축을 합산해 점수화"]},
  caution:["<b>시각까지 넣으면 더 정확합니다.</b> 생년월일만으로는 여섯 글자만 보므로, 각자 만세력에서 시주까지 확인해 보세요.",
  "<b>띠 충은 절대 금기가 아닙니다.</b> 전통적 경계일 뿐이며 실제로는 일간·일지 관계가 더 중요합니다.",
@@ -1508,7 +1508,7 @@ function zodiacPage(z, i){
       `<section class="guide"><h2>${z.ko}띠 궁합 — 삼합·육합·충</h2>`+
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>삼합 — ${esc(z.match.best.join(", "))}</b><br>${z.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>육합 — ${esc(z.match.hap)}</b><br>${z.match.hapWhy}</p>`+
-      `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p></div></section>`+
+      `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p><p style="color:var(--muted);font-size:13px;margin:8px 0 0">${z.ko}띠와 열두 띠 모두의 궁합은 <a href="tti-gunghap-${z.en}.html">${z.ko}띠 궁합</a>에서 한눈에 볼 수 있습니다.</p></div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">12띠를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p></div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
     faq:[
@@ -1518,6 +1518,148 @@ function zodiacPage(z, i){
       [`띠는 언제 바뀌나요?`,`사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.`]],
     sibTitle:"다른 띠도 보기", sibs:zodiacChips(z.en),
     related:["zodiacfortune","gunghap","todayfortune","newyear"]});
+}
+
+// ── 띠 궁합: 허브 1 + 띠별 12 + 짝 78 (content_ttigunghap.js 의 관계표와 원고) ──
+// 관계 이름(삼합·육합·충·원진·형)은 content_ttigunghap.js 의 표가 정한다. 짝마다 다른 말은 원고(TEXT)에 있다.
+const TTI = require("./content_ttigunghap.js");
+const ttiPairUrl = (a, b) => "tti-pair-" + TTI.JI[Math.min(a, b)].en + "-" + TTI.JI[Math.max(a, b)].en + ".html";
+const ttiHubUrl = i => "tti-gunghap-" + TTI.JI[i].en + ".html";
+const TTI_CLS = { "삼합": "sam", "육합": "yuk", "충": "chung", "원진": "won", "형": "hyung", "같은 띠": "same", "무난": "plain" };
+const TTI_TAIL = { "삼합": "삼합, 손발이 잘 맞는 사이", "육합": "육합, 서로 끌어당기는 사이", "충": "충, 정반대라 배울 게 많은 사이", "원진": "원진, 말로 확인하면 좋아지는 사이", "형": "형, 서로 다듬어 주는 사이", "같은 띠": "같은 띠, 닮아서 편한 사이", "무난": "무난한 사이, 이렇게 맞춰 보세요" };
+const ttiLead = r => r.type === "무난" ? "특별한 합·충이 없는 사이" : r.name;
+const ttiTextOf = key => { const t = TTI.TEXT.pairs[key]; if (!t || !t.sum || !t.tips) throw new Error("띠 궁합 원고 없음: " + key); return t; };
+const ttiHubChips = cur => '<div class="sibs">' + TTI.JI.map(z => z.i === cur ? `<span class="cur">${z.name} 궁합</span>` : `<a href="${ttiHubUrl(z.i)}">${z.name} 궁합</a>`).join("") + '</div>';
+// i 번 띠의 다른 짝 열두 개(현재 짝은 표시만)
+const ttiPairChips = (i, curJ) => '<div class="sibs">' + TTI.JI.map(z => { const lab = (i === z.i ? TTI.JI[i].name + "끼리" : TTI.JI[i].name + " × " + z.name); return z.i === curJ ? `<span class="cur">${lab}</span>` : `<a href="${ttiPairUrl(i, z.i)}">${lab}</a>`; }).join("") + '</div>';
+const TTI_IPCHUN = "사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.";
+const ttiMore = "<p style='color:var(--muted);font-size:13px;margin:8px 0 0'>전통 띠 궁합은 참고용입니다. 실제 관계는 두 사람의 성격과 노력, 대화가 훨씬 크게 좌우합니다.</p>";
+
+function ttiPairPage(a, b) {
+  const A = TTI.JI[a], B = TTI.JI[b], r = TTI.rel(a, b), key = TTI.keyOf(a, b), t = ttiTextOf(key), same = a === b;
+  const pair = same ? A.name + "끼리" : A.name + "와 " + B.name, cross = same ? A.name + "끼리" : A.name + " × " + B.name;
+  const rows = [["관계", ttiLead(r)], [same ? "띠" : "두 띠", same ? `${A.name} ${A.ji}` : `${A.name} ${A.ji} · ${B.name} ${B.ji}`]];
+  if (r.type === "삼합" || r.type === "육합") rows.push(["합쳐서 되는 기운", r.ele + "(" + ({ 수: "水", 목: "木", 화: "火", 금: "金", 토: "土" })[r.ele] + ")"]);
+  else rows.push(["기운", same ? A.ele : `${A.name} ${A.ele} · ${B.name} ${B.ele}`]);
+  rows.push([A.name + " 출생", TTI.years(a).join(" · ") + "년생"]);
+  if (!same) rows.push([B.name + " 출생", TTI.years(b).join(" · ") + "년생"]);
+  const tagP = r.tags.length ? `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">참고로 전통 자료에는 이 두 띠를 ${esc(r.tags.join(", "))}로도 겹쳐 읽는 설명이 있습니다. 이 페이지는 가장 큰 관계 하나만 표시했고, 두 사람의 노력과 대화가 관계를 더 크게 좌우합니다.</p>` : "";
+  const marry = r.type === "삼합" || r.type === "육합"
+    ? "좋은 관계로 전해지지만, 합이라고 해서 갈등이 없는 것은 아닙니다. 대화와 서로 맞춰 가는 노력이 결혼 생활을 좌우합니다."
+    : (r.type === "충" || r.type === "원진" || r.type === "형")
+      ? `전통 띠 궁합은 참고 자료일 뿐 결혼 여부를 정하는 기준이 아닙니다. ${r.type}으로 불리는 사이에도 오래 행복하게 지내는 부부가 많고, 서로의 속도와 방식을 존중하면 오히려 단단해집니다.`
+      : "특별히 가리는 관계가 없는 사이라 두 사람의 성격과 대화가 가장 중요합니다. 서로의 생활 리듬과 가치관을 미리 이야기해 보면 도움이 됩니다.";
+  const lead = r.type === "무난" ? "특별한 합이나 충이 없는 무난한 사이" : ttiLead(r);
+  return seoPage({
+    crumb: same ? `${A.name}끼리 궁합` : `${A.name} ${B.name} 궁합`,
+    learn: learnMore(`띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지)입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
+    title: same ? `${A.name}끼리 궁합 — ${TTI_TAIL[r.type]} | 동네보살` : `${A.name} ${B.name} 궁합 — ${TTI_TAIL[r.type]} | 동네보살`,
+    desc: `${pair} 궁합(${lead}). ${t.sum} 연애·결혼, 일·동업, 가족·친구로 나눠 보는 풀이와 풀어 가는 법.`,
+    url: `${DOMAIN}/${ttiPairUrl(a, b)}`, img: `img/char/zo-${A.en}.webp`, hero: "img/tool/h-gunghap.webp",
+    h1: same ? `${A.name}끼리 궁합` : `${A.name} × ${B.name} 궁합`,
+    sub: `${r.type === "무난" ? "특별한 합·충이 없는 사이" : r.name} · ${A.ji}${same ? "" : " × " + B.ji}`,
+    parent: ttiHubUrl(a), parentName: `${A.name} 궁합`,
+    tool: "gunghap", noTool: true,
+    tags: same ? [`${A.name}끼리 궁합`, `${A.name} ${A.name} 궁합`, `${A.name} 같은 띠 궁합`] : [`${A.name} ${B.name} 궁합`, `${B.name} ${A.name} 궁합`, `${A.name}와 ${B.name} 잘 맞나`, `${A.name} ${B.name} 결혼`, `${A.name} ${B.name} 연애`],
+    body: `<div class="exbox"><h2>${cross} 한눈에 보기</h2>` + rows.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
+      `<div class="res ttisum"><span>요약</span><b>${esc(t.sum)}</b></div></div>` +
+      `<section class="guide"><h2>${cross}의 연애·결혼</h2><div class="intro" style="margin-top:0">${para(t.love)}</div></section>` +
+      `<section class="guide"><h2>${cross}의 일·동업</h2><div class="intro" style="margin-top:0">${para(t.work)}</div></section>` +
+      `<section class="guide"><h2>${cross}의 가족·친구</h2><div class="intro" style="margin-top:0">${para(t.home)}</div></section>` +
+      `<section class="guide"><h2>이 관계를 풀어 가는 법 세 가지</h2><ol class="lsteps">${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ol></section>` +
+      `<section class="guide"><h2>${r.type === "무난" ? "특별한 합·충이 없다는 뜻" : r.type + ", 이렇게 읽습니다"}</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">${TTI.EXPLAIN[r.type]}</p><p style="margin-bottom:10px">${esc(t.myth)}</p>${tagP}${ttiMore}</div></section>` +
+      (same ? "" : `<section class="guide"><h2>${B.name}의 다른 궁합</h2>${ttiPairChips(b, a)}</section>`) +
+      `<section class="guide"><h2>열두 띠 궁합을 한 장에서</h2><div class="intro" style="margin-top:0"><p>${A.name}${same ? "" : "와 " + B.name}의 다른 만남은 <a href="${ttiHubUrl(a)}">${A.name} 궁합</a>${same ? "" : `, <a href="${ttiHubUrl(b)}">${B.name} 궁합</a>`}에서, 열두 띠 전체는 <a href="tti-gunghap.html">띠별 궁합표</a>에서 볼 수 있습니다. 생년월일로 두 사람의 사주를 겹쳐 보려면 <a href="gunghap.html">사주 궁합</a>을 이용하세요.</p></div></section>`,
+    faq: [
+      [`${pair} 궁합은 잘 맞나요?`, `${t.sum} 전통 띠 궁합에서는 ${lead}로 봅니다.`],
+      [`${cross} 궁합은 남녀에 따라 달라지나요?`, "전통 띠 궁합은 성별을 가리지 않고 두 띠의 관계로 봅니다. 누가 어느 띠인지와 상관없이 같은 풀이를 쓰며, 실제 관계는 두 사람의 성격과 노력이 크게 좌우합니다."],
+      [`${cross} 궁합이면 결혼해도 괜찮나요?`, marry],
+      [`띠는 언제 바뀌나요?`, TTI_IPCHUN]],
+    sibTitle: `${A.name}의 다른 궁합`, sibs: ttiPairChips(a, b),
+    related: ["gunghap", "zodiacfortune", "namematch", "todayfortune"]});
+}
+
+function ttiHubPage(i) {
+  const z = TTI.JI[i], h = TTI.TEXT.hubs[z.en];
+  if (!h || !h.intro || !h.tip) throw new Error("띠 궁합 도입 글 없음: " + z.en);
+  const rs = TTI.JI.map(o => ({ j: o.i, r: TTI.rel(i, o.i), t: ttiTextOf(TTI.keyOf(i, o.i)) }));
+  const by = types => rs.filter(x => types.includes(x.r.type));
+  const names = type => rs.filter(x => x.r.type === type).map(x => TTI.JI[x.j].name);
+  const row = x => `<div class="row"><span><a href="${ttiPairUrl(i, x.j)}">${x.j === i ? z.name + "끼리" : z.name + " × " + TTI.JI[x.j].name}</a></span><b>${esc(x.r.type)}</b></div><p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(x.t.sum)}</p>`;
+  const group = (title, sub, types) => { const g = by(types); return g.length ? `<section class="guide"><h2>${title}</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">${sub}</p><div class="exbox">${g.map(row).join("")}</div></section>` : ""; };
+  const sam = names("삼합"), yuk = names("육합"), chu = names("충"), won = names("원진"), hyu = names("형");
+  const glance = [["삼합", sam.join(" · ")], ["육합", yuk.join(" · ")], ["충", chu.join(" · ")], ["원진", won.join(" · ")]].concat(hyu.length ? [["형", hyu.join(" · ")]] : []).filter(x => x[1]);
+  const join = (xs, sep) => xs.join(sep || "와 ");
+  return seoPage({
+    crumb: `${z.name} 궁합`,
+    learn: learnMore(`${z.name}는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
+    title: `${z.name} 궁합 — 잘 맞는 띠·맞춰 갈 띠 | 동네보살`,
+    desc: `${z.name} 궁합 한눈에. 삼합 ${join(sam, "·")}, 육합 ${join(yuk, "·")}. 충·원진·형 띠까지 열두 띠 전부의 궁합을 짝마다 자세한 풀이로 볼 수 있습니다.`,
+    url: `${DOMAIN}/${ttiHubUrl(i)}`, img: `img/char/zo-${z.en}.webp`, hero: "img/tool/h-gunghap.webp",
+    h1: `${z.name} 궁합 — 열두 띠 한눈에`,
+    sub: `${z.ji} · ${z.ele} 기운 · 삼합 ${join(sam, " · ")} · 육합 ${join(yuk, " · ")}`,
+    parent: "tti-gunghap.html", parentName: "띠별 궁합",
+    tool: "gunghap", noTool: true,
+    tags: [`${z.name} 궁합`, `${z.name}궁합`, `${z.name} 잘 맞는 띠`, `${z.name} 안 맞는 띠`, `${z.name} 삼합 육합`],
+    body: `<div class="exbox"><h2>${z.name} 궁합 한눈에 보기</h2>` + glance.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
+      `<div class="res ttisum"><span>출생 연도</span><b>${esc(TTI.years(i).join(" · "))}년생</b></div></div>` +
+      `<div class="intro">${para(h.intro)}</div>` +
+      group("잘 맞는 띠 — 삼합·육합", `${z.name}와 같은 방향을 보기 쉬운 띠입니다. 짝 이름을 누르면 자세한 풀이가 열립니다.`, ["삼합", "육합"]) +
+      group("맞춰 가면 좋은 띠 — 충·원진·형", `속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 안 맞는 띠가 아니라 서로 배울 것이 많은 띠입니다.`, ["충", "원진", "형"]) +
+      group("그 밖의 띠 — 무난한 사이와 같은 띠", `특별한 합·충 표시가 없는 사이입니다. 두 사람의 성격과 대화가 관계의 모양을 정합니다.`, ["무난", "같은 띠"]) +
+      `<section class="guide"><h2>${z.name}의 연애·결혼 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.love)}</div></section>` +
+      `<section class="guide"><h2>${z.name}의 일·동업 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.work)}</div></section>` +
+      `<section class="guide"><h2>궁합을 볼 때 기억할 한 가지</h2><div class="intro" style="margin-top:0">${para(h.tip)}${ttiMore}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">${z.name}의 성격과 오늘의 운세는 <a href="zodiac-${z.en}.html">${z.name} 운세·성격</a>에서 볼 수 있습니다.</p></div></section>`,
+    faq: [
+      [`${z.name}와 잘 맞는 띠는?`, `삼합인 ${join(sam)}, 육합인 ${join(yuk)}이 대표적입니다. ${rs.find(x => x.r.type === "삼합").t.sum} 이 페이지의 표에서 열두 띠 각각의 풀이를 볼 수 있습니다.`],
+      [`${z.name}와 상극이라고 하는 띠는?`, `흔히 상극이라고 부르는 관계는 충인 ${join(chu)}${won.length ? ", 원진인 " + join(won) : ""}${hyu.length ? ", 형인 " + join(hyu) : ""}를 가리킵니다. 하지만 안 맞는 띠가 아니라 속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 짝별 풀이에서 구체적인 방법을 볼 수 있습니다.`],
+      [`${z.name} 남자와 여자의 궁합은 다른가요?`, "전통 띠 궁합은 성별을 가리지 않고 두 띠의 관계로 봅니다. 남자가 어느 띠인지, 여자가 어느 띠인지와 상관없이 같은 풀이를 쓰며, 실제 관계는 두 사람의 성격과 노력이 크게 좌우합니다."],
+      [`${z.name}는 몇 년생인가요?`, `${TTI.years(i).join(", ")}년생이 ${z.name}입니다. ${TTI_IPCHUN}`]],
+    sibTitle: "다른 띠 궁합도 보기", sibs: ttiHubChips(i),
+    related: ["gunghap", "zodiacfortune", "namematch", "todayfortune"]});
+}
+
+function ttiMainPage() {
+  const short = ["쥐", "소", "호", "토", "용", "뱀", "말", "양", "원", "닭", "개", "돼"];
+  const head = '<tr><th scope="col" class="ttimx-corner">띠</th>' + TTI.JI.map(z => `<th scope="col" title="${z.name}">${short[z.i]}</th>`).join("") + "</tr>";
+  const rowsHtml = TTI.JI.map(x => `<tr><th scope="row"><a href="${ttiHubUrl(x.i)}" title="${x.name} 궁합" aria-label="${x.name} 궁합">${x.name.replace("띠", "")}</a></th>` + TTI.JI.map(y => { const r = TTI.rel(x.i, y.i); return `<td class="${TTI_CLS[r.type]}"><a href="${ttiPairUrl(x.i, y.i)}" aria-label="${x.name}${x.i === y.i ? "끼리" : "와 " + y.name} 궁합: ${r.type}">${TTI.SYMBOL[r.type]}</a></td>`; }).join("") + "</tr>").join("");
+  const matrix = `<div class="ttimx-wrap"><table class="ttimx"><caption class="ttimx-cap">열두 띠 궁합표 — 칸을 누르면 그 짝의 풀이로 갑니다</caption><thead>${head}</thead><tbody>${rowsHtml}</tbody></table></div>` +
+    `<div class="ttileg">${TTI.TYPES.map(t => `<span>${TTI.SYMBOL[t]} ${t}</span>`).join("")}</div>`;
+  const data = {}; TTI.PAIR_LIST.forEach(p => { data[p.a + "-" + p.b] = [p.type, ttiTextOf(p.key).sum, ttiPairUrl(p.a, p.b)]; });
+  const sel = `<div class="card tool" id="ttisel"><div class="r2"><div><label for="tta">내 띠</label><select id="tta">${TTI.JI.map(z => `<option value="${z.i}">${z.name}</option>`).join("")}</select></div>` +
+    `<div><label for="ttb">상대 띠</label><select id="ttb">${TTI.JI.map(z => `<option value="${z.i}"${z.i === 1 ? " selected" : ""}>${z.name}</option>`).join("")}</select></div></div><div id="ttout" aria-live="polite" style="margin-top:12px"></div></div>` +
+    `<script>(function(){var D=${JSON.stringify(data).replace(/</g, "\\u003c")},N=${JSON.stringify(TTI.JI.map(z => z.name))},a=document.getElementById("tta"),b=document.getElementById("ttb"),o=document.getElementById("ttout");` +
+    `function show(){var i=+a.value,j=+b.value,k=Math.min(i,j)+"-"+Math.max(i,j),d=D[k],t=i===j?N[i]+"끼리":N[i]+" × "+N[j];o.innerHTML="";var h=document.createElement("div");h.className="ttires";var s=document.createElement("b");s.textContent=t+" — "+d[0];h.appendChild(s);var p=document.createElement("p");p.textContent=d[1];h.appendChild(p);var l=document.createElement("a");l.href=d[2];l.textContent=t+" 자세한 풀이 보기 →";h.appendChild(l);o.appendChild(h);}` +
+    `a.addEventListener("change",show);b.addEventListener("change",show);show();})();</script>`;
+  const kinds = [["삼합", "삼합은 세 띠가 모여 하나의 기운을 이루는 관계입니다. 넷으로 묶이며, 이 안에서는 둘만 만나도 같은 방향을 보기 쉽습니다.", TTI.SAMHAP.map(s => `${s[1].replace(" 삼합", "")}: ${s[0].map(n => TTI.JI[n].name).join("·")} → ${s[2]}(${({ 수: "水", 목: "木", 화: "火", 금: "金", 토: "土" })[s[2]]}) 기운`)],
+    ["육합", "육합은 두 띠가 짝을 이뤄 서로를 끌어당기는 관계입니다. 여섯 쌍이 있습니다.", TTI.YUKHAP.map(p => `${TTI.jj(p[0], p[1])}: ${TTI.JI[p[0]].name} × ${TTI.JI[p[1]].name} → 합쳐서 ${p[2]}(${({ 수: "水", 목: "木", 화: "火", 금: "金", 토: "土" })[p[2]]})`)],
+    ["충", "충은 열두 띠를 둥글게 놓았을 때 정반대에 마주 서는 관계입니다. 여섯 쌍이 있고, 속도와 방식이 반대라 서로 배울 것이 많은 사이로 읽습니다.", TTI.CHUNG.map(p => `${TTI.jj(p[0], p[1])}: ${TTI.JI[p[0]].name} × ${TTI.JI[p[1]].name}`)],
+    ["원진", "원진은 이유 없이 서운함이 쌓이기 쉽다고 전해지는 관계입니다. 여섯 쌍이 있고, 마음을 말로 확인하는 습관이 도움이 됩니다.", TTI.WONJIN.map(p => `${TTI.jj(p[0], p[1])}: ${TTI.JI[p[0]].name} × ${TTI.JI[p[1]].name}`)],
+    ["형", "형은 서로를 자극해 다듬는 관계로 전해집니다. 자묘 상형, 인사신 삼형, 축술미 삼형이 있습니다.", ["자묘(子卯): 쥐띠 × 토끼띠", "인사신(寅巳申): 호랑이띠 · 뱀띠 · 원숭이띠", "축술미(丑戌未): 소띠 · 개띠 · 양띠"]]];
+  return seoPage({
+    crumb: "띠별 궁합",
+    learn: learnMore("띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지)입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.", [3, 11, 4]),
+    title: "띠별 궁합 — 12띠 궁합표·잘 맞는 띠 한눈에 | 동네보살",
+    desc: "띠별 궁합을 열두 띠 표 한 장으로. 삼합·육합은 잘 맞는 띠, 충·원진·형은 맞춰 갈 띠로 나눠 보고, 띠마다 자세한 궁합 풀이로 이어집니다.",
+    url: `${DOMAIN}/tti-gunghap.html`, img: "img/char/zo-rat.webp", hero: "img/tool/h-gunghap.webp",
+    h1: "띠별 궁합 — 12띠 궁합표", sub: "삼합 · 육합 · 충 · 원진 · 형으로 보는 78가지 만남",
+    parent: "gunghap.html", parentName: "사주 궁합",
+    tool: "gunghap", noTool: true,
+    tags: ["띠별 궁합", "띠 궁합", "띠궁합표", "12띠 궁합", "삼합 육합 충 원진"],
+    body: `<div class="intro"><p style="margin-bottom:10px">내 띠와 상대 띠를 고르면 두 띠의 관계와 한 줄 풀이를 바로 볼 수 있습니다. 아래 표는 열두 띠 전체를 한 장에 놓은 것이고, 칸을 누르면 그 짝의 연애·결혼, 일·동업, 가족·친구 풀이가 열립니다.</p></div>` + sel +
+      `<section class="guide"><h2>열두 띠 궁합표</h2>${matrix}<p style="color:var(--muted);font-size:13px;margin:0">가장 큰 관계 하나만 표시했습니다(삼합 &gt; 육합 &gt; 충 &gt; 원진 &gt; 형). 해(害)·파(破)처럼 겹쳐 읽는 관계는 짝별 풀이에 적었습니다.</p></section>` +
+      `<section class="guide"><h2>내 띠 궁합 보기</h2>${ttiHubChips(-1)}</section>` +
+      kinds.map(k => `<section class="guide"><h2>${k[0]} — 어떤 띠들인가요</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">${k[1]}</p><ul>${k[2].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div></section>`).join("") +
+      `<section class="guide"><h2>띠 궁합, 이렇게 읽으세요</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">삼합과 육합은 손발이 잘 맞는 사이, 충·원진·형은 맞춰 갈 점이 있는 사이로 읽습니다. 맞춰 갈 점이 있다는 것은 안 맞는다는 뜻이 아니라, 서로의 속도와 방식을 알고 시작하면 오히려 배울 것이 많다는 뜻입니다.</p><p style="margin-bottom:10px">띠 궁합은 태어난 해 하나만 보는 간단한 방법입니다. 태어난 날과 달까지 겹쳐 보는 <a href="gunghap.html">사주 궁합</a>이나 이름 획수로 보는 놀이 <a href="namematch.html">이름궁합 테스트</a>와 함께 보면 더 재미있습니다.</p></div></section>`,
+    faq: [
+      ["띠 궁합은 어떻게 보나요?", "두 사람이 태어난 해의 띠를 열두 띠 표에서 찾아 관계를 봅니다. 삼합·육합은 손발이 잘 맞는 사이, 충·원진·형은 속도와 방식이 달라 맞춰 갈 점이 있는 사이로 읽습니다."],
+      ["삼합과 육합은 뭐가 다른가요?", "삼합은 세 띠가 모여 하나의 기운을 이루는 관계(넷으로 묶임)이고, 육합은 두 띠가 짝을 이루는 관계(여섯 쌍)입니다. 둘 다 서로를 돕는 좋은 관계로 전해집니다."],
+      ["원진살이면 결혼하면 안 되나요?", "그렇지 않습니다. 원진은 이유 없이 서운함이 쌓이기 쉽다고 전해지는 관계일 뿐, 결혼 여부를 정하는 기준이 아닙니다. 마음을 말로 확인하는 습관이 있으면 오래 잘 지내는 부부가 많습니다."],
+      ["충이 있으면 정말 안 맞나요?", "충은 열두 띠 가운데 정반대에 마주 서는 관계입니다. 속도와 방식이 반대라 부딪히기 쉽지만 서로에게 없는 것을 가진 사이로도 읽습니다. 역할을 나누고 방식을 존중하면 단단한 관계가 됩니다."],
+      ["띠 궁합과 사주 궁합은 뭐가 다른가요?", "띠 궁합은 태어난 해(띠)만 보고, 사주 궁합은 태어난 날의 글자와 오행까지 함께 봅니다. 띠 궁합은 빠르게 확인하는 방법이고 사주 궁합이 더 자세합니다."],
+      ["띠는 언제 바뀌나요?", TTI_IPCHUN]],
+    sibTitle: "다른 궁합도 보기", sibs: "<div class=\"sibs\"><a href=\"gunghap.html\">사주 궁합</a><a href=\"stargunghap.html\">별자리 궁합</a><a href=\"namematch.html\">이름궁합 테스트</a><a href=\"zodiacfortune.html\">띠별 운세</a></div>",
+    related: ["gunghap", "zodiacfortune", "namematch", "todayfortune"]});
 }
 
 // 일간·십성은 사주 도구의 하위 개념 페이지다. 부모를 saju.html로 두어 링크가 만세력으로 모이게 한다
@@ -2172,6 +2314,8 @@ const conceptGroups = [
       STAR_PAGES.map(s=>[`star-${s.en}.html`, `${s.ko} 성격`, `${s.range} · ${s.ele} 원소`])],
     ["띠 12", "태어난 해로 정해진다. 삼합·육합·충으로 궁합을 본다.",
       ZODIAC_PAGES.map(z=>[`zodiac-${z.en}.html`, `${z.ko}띠 성격`, `지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`])],
+    ["띠 궁합 " + (TTI.JI.length + 1), "열두 띠를 짝지어 보는 궁합. 삼합·육합·충·원진·형으로 78가지 만남을 정리했다.",
+      [["tti-gunghap.html", "띠별 궁합표", "열두 띠 한 장 · 삼합·육합·충·원진·형"]].concat(TTI.JI.map(z=>[ttiHubUrl(z.i), `${z.name} 궁합`, `${z.ji} · 열두 띠와의 궁합`]))],
     ["일간 10", "사주 여덟 글자 중 '나'를 뜻하는 글자. 태어난 날의 천간이다.",
       ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
     ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
@@ -2555,7 +2699,7 @@ function indexPage(){
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/crystal.webp" alt="수정구를 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 별자리 순위</h2><p>오늘 달의 자리와 요일의 별로 매긴 12별자리 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="srank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/heart.webp" alt="하트를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
-<nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a></nav>
+<nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a><a href="tti-gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/smile.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>띠로 보면 우리 잘 맞을까</b><span>띠별 궁합 — 열두 띠 궁합표와 짝별 풀이</span></div></a></nav>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/point.webp" alt="짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
 <div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일을 서버로 보내지 않습니다</b><p>가입을 받지 않고, 넣은 생년월일은 서버로 보내지 않으며 직접 저장을 누르기 전에는 이 기기에도 남기지 않습니다. 홈의 오늘 카드에서 자세히나 내 사주 보기로 넘어갈 때만 다음 화면이 읽을 때까지 이 탭에 잠깐 두었다가 읽는 즉시 지웁니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
@@ -2647,6 +2791,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   smUrl("")+"\n"+pubMeta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
+  smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -2688,6 +2833,11 @@ ${STAR_PAGES.map(s=>`- [${s.ko}](${DOMAIN}/star-${s.en}.html): ${s.range} · ${s
 ## 띠별 상세 (12)
 
 ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`).join("\n")}
+
+## 띠별 궁합 (13) — 열두 띠 궁합표와 띠마다 짝별 풀이(짝 78편은 각 띠 페이지에서 이어진다)
+
+- [띠별 궁합표](${DOMAIN}/tti-gunghap.html): 삼합·육합·충·원진·형으로 보는 열두 띠 궁합
+${TTI.JI.map(z=>`- [${z.name} 궁합](${DOMAIN}/${ttiHubUrl(z.i)}): ${z.name}와 열두 띠 각각의 궁합`).join("\n")}
 
 ## 일간별 상세 (10) — 사주에서 '나'에 해당하는 글자
 
@@ -2938,7 +3088,30 @@ const extraCss = `
   `\n.sibs a,.sibs .cur{display:inline-flex;align-items:center;min-height:44px;font-size:13px;text-decoration:none;border:1px solid var(--line-2);`+
   `border-radius:100px;padding:0 12px;color:var(--muted);}`+
   `\n.sibs a:hover{border-color:var(--accent);color:var(--accent);}`+
-  `\n.sibs .cur{background:color-mix(in srgb,var(--fun) 12%,transparent);border-color:color-mix(in srgb,var(--fun) 40%,transparent);color:var(--fun-ink);font-weight:700;}`;
+  `\n.sibs .cur{background:color-mix(in srgb,var(--fun) 12%,transparent);border-color:color-mix(in srgb,var(--fun) 40%,transparent);color:var(--fun-ink);font-weight:700;}`+
+  `\n.ttimx-wrap{overflow-x:auto;margin:0 0 6px;-webkit-overflow-scrolling:touch;}`+
+  `\n.ttimx{border-collapse:collapse;table-layout:fixed;font-size:12.5px;min-width:340px;width:100%;}`+
+  `\n.ttimx-cap{caption-side:top;text-align:left;font-size:12.5px;color:var(--muted);padding:0 0 6px;}`+
+  `\n.ttimx th,.ttimx td{border:1px solid var(--line-2);padding:0;text-align:center;}`+
+  `\n.ttimx thead th{background:var(--surface);font-weight:700;height:34px;font-size:12.5px;}`+
+  `\n.ttimx thead th:first-child,.ttimx tbody th{width:54px;}`+
+  `
+.ttimx tbody th{position:sticky;left:0;background:var(--surface);text-align:left;padding:0 5px;white-space:nowrap;overflow:hidden;font-weight:700;}`+
+  `\n.ttimx tbody th a{color:var(--ink);text-decoration:none;}`+
+  `\n.ttimx td a{display:block;height:38px;line-height:38px;text-decoration:none;color:var(--ink);}`+
+  `\n.ttimx td.sam a{background:color-mix(in srgb,var(--fun) 24%,transparent);font-weight:800;}`+
+  `\n.ttimx td.yuk a{background:color-mix(in srgb,var(--fun) 13%,transparent);font-weight:800;}`+
+  `\n.ttimx td.chung a{background:color-mix(in srgb,var(--muted) 16%,transparent);}`+
+  `\n.ttimx td.won a,.ttimx td.hyung a{background:color-mix(in srgb,var(--muted) 8%,transparent);}`+
+  `\n.ttimx td.same a{color:var(--muted);}`+
+  `\n.ttimx td a:hover,.ttimx td a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;}`+
+  `\n.ttileg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin:8px 0 12px;}`+
+  `\n.ttires{border:1px solid var(--line-2);border-radius:12px;padding:12px 14px;line-height:1.7;}`+
+  `\n.ttires p{margin:6px 0 8px;font-size:14px;}`+
+  `\n.ttires a{font-size:14px;font-weight:700;color:var(--accent);text-decoration:none;}`+
+  `\n.exbox .res.ttisum{display:block;}`+
+  `\n.exbox .res.ttisum span{display:block;font-size:13px;color:var(--muted);margin-bottom:4px;}`+
+  `\n.exbox .res.ttisum b{font-family:inherit;font-weight:700;line-height:1.7;}`;
 
 // 쓰기
 const styleV = hash8(css+extraCss);
@@ -2986,6 +3159,9 @@ DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCat
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
+fs.writeFileSync(path.join(OUT,"tti-gunghap.html"), ttiMainPage());
+TTI.JI.forEach(z=>fs.writeFileSync(path.join(OUT,ttiHubUrl(z.i)), ttiHubPage(z.i)));
+TTI.PAIR_LIST.forEach(p=>fs.writeFileSync(path.join(OUT,ttiPairUrl(p.a,p.b)), ttiPairPage(p.a,p.b)));
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
@@ -3149,5 +3325,6 @@ if (fs.existsSync(IMG_SRC)) {
 }
 
 console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", TAROT_PAGES.length, "타로 +", ILJIN_PAGES.length, "일진(+달력 1) +", ILJU_PAGES.length, "일주 +", MANSE_PAGES.length, "월력");
+console.log("   띠 궁합: 허브 1 + 띠별", TTI.JI.length, "+ 짝", TTI.PAIR_LIST.length);
 console.log("✅ 생성 완료:", meta.length, "개 도구 페이지 + index + sitemap + robots");
 console.log("   → site/ 폴더. DOMAIN 상수를 실제 도메인으로 바꾸고 재실행 후 배포.");
