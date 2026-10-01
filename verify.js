@@ -440,7 +440,7 @@ t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clea
 // "이미지로 저장" 버튼을 그리는 도구는 모두 저장을 연결해야 한다(6곳이 버튼만 있고 눌러도 무반응이었다 — 2026-09-30 발견)
 { const nBtn = (src.match(/shareBtn\(\)\+/g) || []).length;
   const nSave = (src.match(/(?<!function )saveScore\(el,/g) || []).length + (src.match(/bindSave\(el,cardData\)/g) || []).length + (src.match(/bindSave\(el,\{file:"오늘의운세"/g) || []).length;
-  t("저장 버튼(shareBtn)을 그리는 도구 " + nBtn + "곳은 모두 이미지 저장(saveScore/bindSave)이 연결돼 있다", nBtn + "|" + nSave, "8|8"); }
+  t("저장 버튼(shareBtn)을 그리는 도구 " + nBtn + "곳은 모두 이미지 저장(saveScore/bindSave)이 연결돼 있다", nBtn + "|" + nSave, "9|9"); }
 // 공유 미리보기 카드(img/og, tools/og_cards.js 가 만든다): 규격과 개수
 { const jpgDims = f => { const b = fs.readFileSync(f); let i = 2; while (i < b.length) { if (b[i] !== 0xFF) { i++; continue; } const m = b[i + 1]; if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)]; i += 2 + b.readUInt16BE(i + 2); } return null; };
   const ogs = fs.existsSync("img/og") ? fs.readdirSync("img/og").filter(f => f.endsWith(".jpg")) : [];
@@ -803,7 +803,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -980,5 +980,55 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   const mt = E.sjMonthTerms(sjJdKST(1992,6,18,8,30));
   t("1992-06-18 월주 구간 망종~소서", mt.prevName + "~" + mt.nextName, "망종~소서");
   t("1992 망종 절입일 6월 5일", E.sjKst(mt.prev).startsWith("1992년 6월 5일 "), true); }
+// ── 이름 궁합(획수): 순수 함수(NM 블록)·한글 11,172자 전수·점수 규칙·안내글과의 일치·도구 배선 ──
+{ const ID = [2,4,2,3,6,5,4,4,8,2,4,1,3,6,4,3,4,4,3], MD = [2,3,3,4,2,3,3,4,2,4,5,3,3,2,4,5,3,3,1,2,1], FD = [0,2,4,4,2,5,5,3,5,7,9,9,7,9,9,8,4,4,6,2,4,1,3,4,3,4,4,3]; // 선분수 기준 초성 19·중성 21·받침 28 값(구성 자모 합 규칙과 따로 손으로 적은 표)
+  let n = 0; const bad = [];
+  for (let c = 0xAC00; c <= 0xD7A3; c++) { const q = c - 0xAC00, exp = ID[Math.floor(q / 588)] + MD[Math.floor((q % 588) / 28)] + FD[q % 28], got = nmChar(String.fromCharCode(c)).n; n++; if (got !== exp && bad.length < 5) bad.push(String.fromCharCode(c) + got + "≠" + exp); }
+  t("이름궁합 획수: 한글 11,172자가 독립 표(초성 19·중성 21·받침 28)와 같다", n + ":" + bad.join(","), "11172:");
+  t("이름궁합 획수: 김·이·철·영·수·희 = 7,2,11,5,4,5", ["김","이","철","영","수","희"].map(c => nmChar(c).n).join(","), "7,2,11,5,4,5");
+  t("이름궁합 획수: 쌍자음·겹받침·복합 모음(쌍·값·닭·괜·왕·최·뒤·읊)", ["쌍","값","닭","괜","왕","최","뒤","읊"].map(c => nmChar(c).n).join(","), "7,10,12,9,6,7,6,11");
+  t("이름궁합 획수: 한글 음절이 아니면 null(영문·숫자·자음·공백)", [nmChar("A"), nmChar("1"), nmChar("ㄱ"), nmChar(" ")].every(x => x === null), true);
+  const c1 = nmCalc("김철수", "이영희"), c2 = nmCalc("이영희", "김철수"), c3 = nmCalc("철수", "영희"), c4 = nmCalc("영희", "철수");
+  t("이름궁합: 김철수♥이영희 줄어드는 과정과 점수", c1.steps.map(r => r.join("")).join("/") + "=" + c1.score, "721545/93699/2958/143/57=57");
+  t("이름궁합: 순서를 바꾸면(97)·성을 빼면(58·25) 점수가 달라진다", [c2.score, c3.score, c4.score].join(","), "97,58,25");
+  t("이름궁합: 한글이 없는 쪽이 있으면 null(영문·숫자·빈 칸)", [nmCalc("Kim", "이영희"), nmCalc("", "이영희"), nmCalc("김철수", "123")].every(x => x === null), true);
+  t("이름궁합: 영문·공백은 빼고 한글만 센다", nmCalc("김 철수 ab", "이영희").score, 57);
+  t("이름궁합: 한 글자씩이면 두 수가 곧 점수(김·이 → 72)", nmCalc("김", "이").score, 72);
+  t("이름궁합: 마지막 두 자리가 00이면 100점, 08이면 8점(값·값, 값·박)", [nmCalc("값", "값").score, nmCalc("값", "박").score].join(","), "100,8");
+  let seed = 12345; const rnd = m => (seed = (seed * 1103515245 + 12345) & 0x7fffffff) % m;
+  const SY = "김이박최정강조윤장임한오서신권황안송류전홍고문양손배백허유남심노하곽성차주우구민나진지엄채원천방공현함변염여추도소석선설마길연위표명기반왕금옥육인맹제모".split(""), badR = [];
+  for (let i = 0; i < 400; i++) { const mk = () => Array.from({ length: 1 + rnd(4) }, () => SY[rnd(SY.length)]).join(""), a = mk(), b = mk(), r = nmCalc(a, b), lens = r.steps.map(x => x.length), last = r.steps[r.steps.length - 1];
+    const ok = r.steps[0].length === a.length + b.length && lens.every((L, k) => k === 0 || L === lens[k - 1] - 1) && last.length === 2 && r.steps.every(x => x.every(d => d >= 0 && d <= 9)) && r.score === (last[0] * 10 + last[1] || 100) && r.score >= 1 && r.score <= 100;
+    if (!ok && badR.length < 3) badR.push(a + "/" + b); }
+  t("이름궁합: 무작위 이름 400쌍 — 줄이 한 칸씩 줄어 두 자리에서 끝나고 점수는 1~100", badR.join(","), "");
+  const JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGS = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/, bandBad = [];
+  [100, 95, 90, 89, 80, 75, 74, 60, 55, 54, 40, 35, 34, 10, 1].forEach(sc => { const b = nmBand(sc); ["msg", "good", "care", "tip"].forEach(k => { if (!b[k] || JOND.test(b[k]) || NEGS.test(b[k])) bandBad.push(sc + k); }); });
+  t("이름궁합 풀이: 점수대 다섯 유형의 문장이 모두 있고 보살 말투·겁주는 말 없음", bandBad.join(","), "");
+  t("이름궁합 점수대: 90/75/55/35 경계가 안내글 표와 같다", [[100, "운명형"], [90, "운명형"], [89, "안정형"], [75, "안정형"], [74, "성장형"], [55, "성장형"], [54, "밀당형"], [35, "밀당형"], [34, "도전형"], [1, "도전형"]].every(([sc, ty]) => nmBand(sc).type === ty)
+    && ['["90점 이상","운명형"', '["75~89점","안정형"', '["55~74점","성장형"', '["35~54점","밀당형"', '["34점 이하","도전형"'].every(x => bs.includes(x)), true);
+  const NMB = (() => { const a = src.indexOf("/*NM-BEGIN*/"), b = src.indexOf("/*NM-END*/"); return new Function(src.slice(a, b) + "\nreturn {nmCalc:nmCalc};")(); })();
+  t("이름궁합: NM 블록이 혼자서도 돈다(build_site.js 가 그대로 읽어 안내글 숫자를 만든다)", NMB.nmCalc("김철수", "이영희").score, 57);
+  t("이름궁합 안내글: 숫자·획수표는 NM 블록 함수로 만들고 제목 검색어를 맞춘다", [bs.includes("/*NM-BEGIN*/"), bs.includes("NMX.o1.score"), bs.includes("NMX.cons"), bs.includes('namematch: "이름 궁합 테스트"'), bs.includes('namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트"')].join(","), "true,true,true,true,true");
+  const nb = toolBlock("namematch");
+  t("이름궁합 도구 배선: 순수 함수로 계산하고 공유·이미지 저장을 단다", [nb.includes("nmCalc(an,bn)"), nb.includes("shareBtn()"), nb.includes('bindShare(el,"이름 궁합"'), nb.includes('saveScore(el,"이름궁합"'), !nb.includes("strokes(")].join(","), "true,true,true,true,true");
+  t("이름궁합 도구는 이름만 다루고 저장·전송을 하지 않는다(localStorage·fetch 없음)", !/localStorage|fetch\(/.test(nb), true);
+  t("이름궁합 통계: 눌렀을 때만 fortune_view 를 보낸다(처음 그려질 때는 안 보냄)", [nb.includes('if(user===true)track("fortune_view",{tool:"namematch"})'), nb.includes('function(){go(true);}'), nb.includes("\ngo();}}") || nb.includes("go();}}")].join(","), "true,true,true"); }
+// 이름 궁합 도구를 실제로 그려 본다(가짜 DOM) — 정의 안 한 변수(bv) 때문에 결과가 아예 안 그려졌는데도 문자열 검사만으론 통과했던 일(2026-10-01)
+{ const nb2 = toolBlock("namematch"), blk = nb2.slice(0, nb2.indexOf("\n  ];"));
+  const draw = (a, b) => { const nodes = {}, shared = [];
+    const mk = (sel, v) => (nodes[sel] = { value: v, innerHTML: "", handlers: [], addEventListener(ty, fn) { this.handlers.push([ty, fn]); }, querySelector: () => null });
+    mk("#a", a); mk("#b", b); mk("#go", ""); mk("#out", "");
+    const el = { innerHTML: "", querySelector: sel => nodes[sel] || mk(sel, "") };
+    const tool = new Function("nmCalc", "nmBand", "nmJ", "escH", "josa", "track", "shareBtn", "bindShare", "saveScore", "return (" + blk + ");")(nmCalc, nmBand, nmJ, escH, josa, () => {}, () => '<button class="share-btn"></button><button class="save-btn"></button>', () => shared.push("share"), (e, f, tl, id, sc, gr) => shared.push("save:" + sc + ":" + gr));
+    tool.render(el); return { out: nodes["#out"].innerHTML, shared, nodes }; };
+  const tryDraw = (a, b) => { try { return { r: draw(a, b), err: "" }; } catch (e) { return { r: null, err: String(e.message) }; } };
+  const d1 = tryDraw("김철수", "이영희"), o1 = d1.r ? d1.r.out : "", tx1 = o1.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  t("이름궁합 도구 그리기(가짜 DOM): 실행 오류 없이 결과를 그린다", d1.err, "");
+  t("이름궁합 도구 결과: 57점·성장형·글자별 획수·피라미드·순서 바꾼 97점·풀이 칸·버튼·공유/저장 연결", [/57<small>점 · 성장형/.test(o1), tx1.includes("김 · ㄱ(2)+ㅣ(1)+ㅁ(4) = 7"), tx1.includes("글자별 획수") && tx1.includes("획수 피라미드"), tx1.includes("이영희를 먼저 놓으면 97점 · 운명형"), ["풀이", "이 조합의 좋은 점", "맞춰 가면 좋은 점", "조언"].every(h => tx1.includes(h)), o1.includes("share-btn") && o1.includes("save-btn"), d1.r && d1.r.shared.join(",")].join(","), "true,true,true,true,true,true,share,save:57:성장형");
+  const d2 = tryDraw("Kim", "이영희"); t("이름궁합 도구: 영문만 넣으면 한글 안내만 보이고 오류가 없다", d2.err + "|" + (d2.r ? d2.r.out.includes("두 칸 모두 한글 이름을 넣어 주세요") : "x"), "|true");
+  const d3 = tryDraw("김철수1", "이영희"); t("이름궁합 도구: 한글이 아닌 글자를 빼고 계산하면 안내 문구가 붙는다", d3.err + "|" + (d3.r ? d3.r.out.includes("한글이 아닌 글자는 빼고 계산했어요") : "x"), "|true");
+  { const d = tryDraw("김철수", "이영희"); let e4 = ""; if (d.r) { d.r.nodes["#a"].value = "민준"; d.r.nodes["#b"].value = "서연"; const h = d.r.nodes["#go"].handlers.find(x => x[0] === "click"); try { h[1](); } catch (e) { e4 = String(e.message); } }
+    const o4 = d.r ? d.r.nodes["#out"].innerHTML : "";
+    t("이름궁합 도구: 버튼을 누르면 다시 계산한다(민준♥서연 24점·도전형, 순서를 바꾼 줄 포함)", e4 + "|" + /24<small>점 · 도전형/.test(o4) + "|" + o4.includes("서연을 먼저 놓으면"), "|true|true"); } }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
