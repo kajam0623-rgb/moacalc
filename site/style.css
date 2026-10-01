@@ -755,6 +755,13 @@
 .today-btns{display:flex;flex-wrap:wrap;gap:8px;}.today-btns a{border:1.5px solid var(--line-2);border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--ink);}
 .today-btns .p{border-color:#E6B25A;}
 .today-diary{display:block;margin-top:6px;font-size:13px;color:var(--accent);font-weight:700;}
+.hppl{margin:0 0 10px;}
+.today-keep{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;}
+.tk-b{padding:8px 12px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.tk-i{flex:1;min-width:110px;padding:8px 10px;border:1px solid var(--line-2);border-radius:10px;font:inherit;font-size:14px;background:var(--surface);color:var(--ink);}
+.tk-n{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.today-a2hs{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface-2);font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:8px;align-items:flex-start;justify-content:space-between;}
+.today-a2hs button{flex:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}

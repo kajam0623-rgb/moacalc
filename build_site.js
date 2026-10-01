@@ -2648,6 +2648,12 @@ ${iljuChips(null)}</section>
 ${footer}
 </div></body></html>`;
 }
+// 홈 '저장해 둔 생일' — 직접 저장을 눌렀을 때만 이 기기(localStorage dnbs_people)에 남긴다(자동 저장 없음, 2026-09 결정). 형식은 도구 페이지의 저장 명단(peopleChips)과 같은 [{n:이름, b:"YYYY-MM-DD"}] 8명까지.
+// dnbA2hs: 홈 화면 추가 방법을 알려 줄지. 앱 안 브라우저(카톡 등)와 이미 설치해 연 화면, 30일 안에 닫은 경우는 안 보인다. ios|android|""
+const HOME_KEEP_JS = `var DNB_P="dnbs_people";
+function dnbPeople(raw){var a;try{a=JSON.parse(raw||"[]");}catch(e){a=[];}return Array.isArray(a)?a.filter(function(x){return x&&typeof x.n==="string"&&x.n&&typeof x.b==="string"&&/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(x.b);}).slice(0,8):[];}
+function dnbKeep(list,name,b){name=String(name||"").trim().slice(0,8);if(!name||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(String(b)))return list;return [{n:name,b:b}].concat(list.filter(function(x){return x.n!==name&&x.b!==b;})).slice(0,8);}
+function dnbA2hs(ua,standalone,last,now){if(standalone||/KAKAOTALK|NAVER|Instagram|FBAN|FBAV|Line[/]|DaumApps|; wv[)]/i.test(ua))return "";if(last&&now-last<2592000000)return "";return /iPhone|iPad|iPod/.test(ua)?"ios":/Android/.test(ua)?"android":"";}`;
 function indexPage(){
   const rows = PUB_CATS.map(function(c){
     var items=catItems(c);
@@ -2707,7 +2713,7 @@ function indexPage(){
 <img class="hero-bosal" id="heroBosal" src="img/mascot-460.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
 <h1 class="hero-h"><span class="hh-sp" aria-hidden="true"></span>무료사주 사이트 동네보살<br><b>사주풀이·<span class="nw">오늘의 운세</span>·<span class="nw">궁합·타로</span></b></h1>
 <div class="hero-sub">가입 없이 생일 하나로 끝까지 무료. 결과마다 어떻게 계산했는지 근거를 함께 보여 줍니다.</div>
-<div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="text" id="hb" inputmode="numeric" maxlength="10" placeholder="예) 19950101" aria-describedby="hberr"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-err" id="hberr" role="alert"></p><p class="today-note">생일은 서버로 보내지 않습니다. 이 탭을 닫으면 지워집니다.</p></div></div>
+<div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="text" id="hb" inputmode="numeric" maxlength="10" placeholder="예) 19950101" aria-describedby="hberr"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-err" id="hberr" role="alert"></p><p class="today-note">생일은 서버로 보내지 않습니다. 직접 저장하지 않으면 이 탭을 닫을 때 지워집니다.</p></div></div>
 </header>
 <nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="tojeong.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>토정비결</b><span>음력 생일로 뽑는 144괘</span></a><a href="dream.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>꿈해몽</b><span>간밤 꿈 241가지 풀이</span></a></nav>
 <a class="dictcta seasoncta" href="column-zodiac-2027.html"><b>2027 정미년 운세</b><span>띠·일간·별자리별로 2027년 운세를 표 하나에 담았습니다</span><i>→</i></a>
@@ -2734,6 +2740,31 @@ ${homeFaqLd}
 <script>(function(){var box=document.getElementById("today");if(!box)return;var form=box.innerHTML;
 function load(cb){if(window.tfToday)return cb();var sc=document.createElement("script");sc.src="core.js?v=${coreV}";sc.onload=cb;document.head.appendChild(sc);}
 var midT=null;
+${HOME_KEEP_JS}
+function ev(n){try{navigator.sendBeacon("/api/hit",JSON.stringify({e:n}))}catch(e){}}
+function esc2(s){return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function getP(){try{return dnbPeople(localStorage.getItem(DNB_P));}catch(e){return [];}}
+function putP(a){try{localStorage.setItem(DNB_P,JSON.stringify(a));}catch(e){}}
+function chips(){var inn=box.querySelector(".today-in"),old=box.querySelector(".hppl");if(old)old.remove();var a=getP();if(!inn||!a.length)return;
+var d=document.createElement("div");d.className="ppl hppl";
+d.innerHTML=a.map(function(x,i){return '<span class="ppl-c" data-i="'+i+'" role="button" tabindex="0">'+esc2(x.n)+'<i data-del="'+i+'" role="button" aria-label="'+esc2(x.n)+' 지우기">×</i></span>';}).join("");
+d.onclick=function(e){var t=e.target,a=getP();if(t.dataset.del!=null){a.splice(+t.dataset.del,1);putP(a);chips();return;}
+var c=t.closest(".ppl-c");if(c){var x=a[+c.dataset.i];if(x){ev("person_use");document.getElementById("hb").value=bdFmt(x.b);document.getElementById("hgo").click();}}};
+d.onkeydown=function(e){if((e.key==="Enter"||e.key===" ")&&e.target.getAttribute("role")==="button"){e.preventDefault();e.target.click();}};
+inn.insertBefore(d,inn.firstChild);}
+function a2hs(after){var last=0,k;try{last=+localStorage.getItem("dnbs_a2hs")||0;}catch(e){}
+k=dnbA2hs(navigator.userAgent,matchMedia("(display-mode: standalone)").matches||navigator.standalone===true,last,Date.now());if(!k)return;
+var h=document.createElement("div");h.className="today-a2hs";
+h.innerHTML='<span>매일 보려면 홈 화면에 추가해 두세요. '+(k==="ios"?"공유 버튼(□↑) → 홈 화면에 추가":"브라우저 메뉴(⋮) → 홈 화면에 추가")+'</span><button type="button">닫기</button>';
+h.querySelector("button").onclick=function(){try{localStorage.setItem("dnbs_a2hs",String(Date.now()));}catch(e){}h.remove();};
+after.parentNode.insertBefore(h,after.nextSibling);}
+function keepBox(card,v){if(!card)return;var s=document.createElement("div");s.className="today-keep";card.insertBefore(s,card.querySelector(".today-reset"));
+var hit=getP().filter(function(x){return x.b===v;})[0];
+if(hit){s.innerHTML='<span class="tk-n">저장됨 · '+esc2(hit.n)+' (이 기기에만 있어요)</span>';a2hs(s);return;}
+s.innerHTML='<button type="button" class="tk-b">이 생일 저장해 두기</button><span class="tk-n">이 기기에만 남고 서버로 가지 않아요. 다음엔 이름만 누르면 돼요.</span>';
+s.querySelector(".tk-b").onclick=function(){s.innerHTML='<input class="tk-i" maxlength="8" placeholder="이름 (예: 나)" aria-label="저장할 이름"><button type="button" class="tk-b tk-ok">저장</button>';var i=s.querySelector(".tk-i");i.focus();
+function ok(){var n=i.value.trim();if(!n){i.focus();return;}putP(dnbKeep(getP(),n,v));ev("person_save");s.innerHTML='<span class="tk-n">저장했어요 · '+esc2(n.slice(0,8))+'. 다음엔 위쪽 이름만 누르면 돼요.</span>';a2hs(s);}
+s.querySelector(".tk-ok").onclick=ok;i.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();ok();}};};}
 function show(b){clearTimeout(midT);var nx=new Date();nx.setHours(24,0,5,0);midT=setTimeout(function(){show(b);},nx-new Date());load(function(){var p=b.split("-"),t=tfToday(+p[0],+p[1],+p[2]),d=new Date();
 box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosal/'+(t.score>=85?"cheer":t.score>=60?"smile":"worry")+'.webp" alt="아기보살" onerror="this.remove()"><div class="k">'+(d.getMonth()+1)+'월 '+d.getDate()+'일 · 자네 오늘 운세</div><div class="v">'+t.score+'<small>점 · '+t.grade+'</small></div>'+
 '<p class="l">'+TF_LINE[t.rel]+'</p><p class="w">'+t.rel+'의 날 — 오늘 날짜의 글자가 자네를 뜻하는 글자에게 '+t.rel+'이 되네.</p>'+
@@ -2742,6 +2773,7 @@ box.innerHTML='<div class="today-card"><img class="bosal tc-bosal" src="img/bosa
 (function(){try{var n=JSON.parse(localStorage.getItem("dnbs_diary")||"[]").length;return n?'<a class="today-diary" href="diary.html">운세 일기 '+n+'개 보기 →</a>':"";}catch(e){return "";}})()+'</div>';
 if(window.plainWords)plainWords(box.querySelector(".w"));
 if(window.iljuCard)iljuCard(box.querySelector(".today-card"),+p[0],+p[1],+p[2]);
+keepBox(box.querySelector(".today-card"),b);
 box.querySelector(".today-reset").onclick=function(){box.innerHTML=form;wire();};});}
 function bdFmt(v){var d=v.replace(/[^0-9]/g,"").slice(0,8);return d.slice(0,4)+(d.length>4?"."+d.slice(4,6):"")+(d.length>6?"."+d.slice(6,8):"");}
 function bdParse(v){var d=v.replace(/[^0-9]/g,"");if(d.length!==8)return "";var y=+d.slice(0,4),m=+d.slice(4,6),dd=+d.slice(6,8),t=new Date(y,m-1,dd);if(y<1900||t.getFullYear()!==y||t.getMonth()!==m-1||t.getDate()!==dd||t>new Date())return "";return d.slice(0,4)+"-"+d.slice(4,6)+"-"+d.slice(6,8);}
@@ -2751,7 +2783,7 @@ hb.onfocus=function(){var e=this;setTimeout(function(){e.select();},0);};
 hb.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();g.click();}};
 g.onclick=function(){var v=bdParse(hb.value);if(!v){er.textContent=hb.value.replace(/[^0-9]/g,"").length===8?"없는 날짜예요. 다시 확인해 주세요.":"생년월일 8자리를 숫자로 입력해 주세요. 예) 19950101";hb.focus();return;}er.textContent="";
 try{sessionStorage.setItem("dnbs_hb",JSON.stringify({v:v,t:Date.now()}));}catch(e){}
-show(v);};}
+show(v);};chips();}
 load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)return;
 var sl=document.getElementById("srank");if(sl&&window.hsRank)sl.innerHTML=hsRank().map(function(z,i){return '<li><a href="horoscope.html?s='+z.i+'#go"><em>'+(i+1)+'</em><b>'+ST_KO[z.i]+'</b><span>'+HS_LINE[z.md]+(z.rk===2?' · 수호성의 요일':'')+'</span><i>'+z.score+'</i></a></li>';}).join("");
 ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
@@ -2973,6 +3005,13 @@ const extraCss = `
 .today-btns{display:flex;flex-wrap:wrap;gap:8px;}.today-btns a{border:1.5px solid var(--line-2);border-radius:12px;padding:10px 14px;font-weight:700;text-decoration:none;color:var(--ink);}
 .today-btns .p{border-color:#E6B25A;}
 .today-diary{display:block;margin-top:6px;font-size:13px;color:var(--accent);font-weight:700;}
+.hppl{margin:0 0 10px;}
+.today-keep{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;}
+.tk-b{padding:8px 12px;border:1px solid var(--accent);border-radius:10px;background:transparent;color:var(--accent);font:inherit;font-size:13px;font-weight:800;cursor:pointer;}
+.tk-i{flex:1;min-width:110px;padding:8px 10px;border:1px solid var(--line-2);border-radius:10px;font:inherit;font-size:14px;background:var(--surface);color:var(--ink);}
+.tk-n{font-size:12.5px;color:var(--muted);line-height:1.5;}
+.today-a2hs{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface-2);font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:8px;align-items:flex-start;justify-content:space-between;}
+.today-a2hs button{flex:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}

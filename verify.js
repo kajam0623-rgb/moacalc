@@ -1160,5 +1160,29 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("일주 카드 배선: 사주 결과 헤드라인 뒤에 칸을 두고 채우며, 그림은 big 을 그리고, 홈 오늘 카드·일주 페이지·sj/ilju.json 이 이어진다", [
     src.includes("+yEl+'</div></div><div class=\"ilc-slot\"></div>';"), src.includes('iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));'), src.includes("else if(o.big){") && src.includes("hy2=(o.score!=null||o.big?700:520)+oy"),
     bs.includes('if(window.iljuCard)iljuCard(box.querySelector(".today-card"),+p[0],+p[1],+p[2]);'), bs.includes("ttiBtn(\"이 일주 공유하기\"") && bs.includes("iljuShareRow(p) +"), bs.includes('path.join(OUT,"sj","ilju.json")')].join(","), "true,true,true,true,true,true"); }
+// ── 홈 저장 명단(직접 저장만) · 홈 화면 추가 안내 ──
+{ const m = bs.match(/const HOME_KEEP_JS = `(.*?)`;/s), js = m ? m[1] : "";
+  const K = new Function(js + "return {dnbPeople:dnbPeople,dnbKeep:dnbKeep,dnbA2hs:dnbA2hs};")();
+  const good = [{ n: "나", b: "1990-03-15" }, { n: "민지", b: "1995-01-02" }];
+  t("홈 저장 명단: 도구 페이지 저장 명단과 같은 [{n,b}] 를 읽고, 이름이 없거나 생일 꼴이 틀린 줄·깨진 값은 버린다", [JSON.stringify(K.dnbPeople(JSON.stringify(good))), JSON.stringify(K.dnbPeople(JSON.stringify(good.concat([{ n: "", b: "1990-03-15" }, { n: "가", b: "19900315" }, { n: 3, b: "1990-03-15" }, null, "x"])))), JSON.stringify(K.dnbPeople("{깨짐")), JSON.stringify(K.dnbPeople('{"n":"나"}')), JSON.stringify(K.dnbPeople(null))].join("|"), JSON.stringify(good) + "|" + JSON.stringify(good) + "|[]|[]|[]");
+  t("홈 저장 명단: 최대 8명", K.dnbPeople(JSON.stringify(Array.from({ length: 12 }, (_, i) => ({ n: "사람" + i, b: "1990-03-15" })))).length, 8);
+  let l = K.dnbKeep([], "  나  ", "1990-03-15");
+  t("홈 저장: 이름 앞뒤 공백을 지우고 맨 앞에 넣는다", JSON.stringify(l), JSON.stringify([{ n: "나", b: "1990-03-15" }]));
+  l = K.dnbKeep(l, "민지", "1995-01-02"); const l2 = K.dnbKeep(l, "민지", "2000-05-05"), l3 = K.dnbKeep(l, "새이름", "1995-01-02");
+  t("홈 저장: 같은 이름은 새 생일로 바꾸고 같은 생일은 새 이름으로 바꾼다(중복 없음), 맨 앞이 최신", [l.map(x => x.n).join(","), l2.map(x => x.n + x.b).join(","), l3.map(x => x.n).join(",")].join("|"), "민지,나|민지2000-05-05,나1990-03-15|새이름,나");
+  t("홈 저장: 이름이 비었거나 생일 꼴이 틀리면 그대로 둔다, 이름은 8자까지", [K.dnbKeep(l, "", "1990-03-15") === l, K.dnbKeep(l, "가", "1990.03.15") === l, K.dnbKeep([], "가나다라마바사아자차", "1990-03-15")[0].n].join(","), "true,true,가나다라마바사아");
+  t("홈 저장: 9번째 저장은 가장 오래된 것을 밀어낸다", K.dnbKeep(Array.from({ length: 8 }, (_, i) => ({ n: "사람" + i, b: "1990-03-1" + (i % 10) })), "새사람", "1999-12-31").map(x => x.n).join(",").split(",").length + "|" + K.dnbKeep(Array.from({ length: 8 }, (_, i) => ({ n: "사람" + i, b: "1990-03-1" + (i % 10) })), "새사람", "1999-12-31")[0].n, "8|새사람");
+  const IOS = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1", AND = "Mozilla/5.0 (Linux; Android 14; SM-S918N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36", DESK = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36", NOW = 1800000000000, DAY = 86400000;
+  t("홈 화면 추가 안내: iPhone·Android 브라우저에서만, 이미 앱으로 연 화면·30일 안에 닫은 경우는 안 보인다", [K.dnbA2hs(IOS, false, 0, NOW), K.dnbA2hs(AND, false, 0, NOW), K.dnbA2hs(DESK, false, 0, NOW) === "", K.dnbA2hs(IOS, true, 0, NOW) === "", K.dnbA2hs(IOS, false, NOW - 10 * DAY, NOW) === "", K.dnbA2hs(AND, false, NOW - 40 * DAY, NOW)].join(","), "ios,android,true,true,true,android");
+  t("홈 화면 추가 안내: 카톡·네이버·인스타 같은 앱 안 브라우저와 안드로이드 웹뷰에서는 안 보인다(거기엔 그 메뉴가 없다)", [IOS + " KAKAOTALK 10.4.0", AND.replace("Mobile Safari", "Mobile Safari KAKAOTALK 10.4.0"), IOS + " NAVER(inapp; search; 1000; 12.0)", AND + " Instagram 320.0", AND.replace("SM-S918N)", "SM-S918N; wv)")].map(u => K.dnbA2hs(u, false, 0, NOW) === "").join(","), "true,true,true,true,true");
+  // 배선: 자동 저장이 없다 — 저장은 '저장' 버튼·× 버튼에서만 일어난다
+  const home = bs.slice(bs.indexOf('<script>(function(){var box=document.getElementById("today")'), bs.indexOf('<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite"'));
+  const showFn = home.slice(home.indexOf("function show(b){"), home.indexOf("function bdFmt(")), wireFn = home.slice(home.indexOf("function wire(){"), home.indexOf("load(function(){var ol="));
+  t("홈 저장 배선: 입력·결과를 그리는 동안(show·wire)에는 저장하지 않는다 — putP 호출은 지우기(×)와 '저장' 버튼 둘뿐이다", [(home.match(/putP\(/g) || []).length - 1, showFn.includes("putP(") || wireFn.includes("putP("), /d\.onclick=function\(e\)\{[^]*?putP\(a\);chips\(\)/.test(home), /function ok\(\)\{[^]*?putP\(dnbKeep\(getP\(\),n,v\)\)/.test(home)].join(","), "2,false,true,true");
+  t("홈 저장 배선: 결과 카드 뒤에 저장 줄을 달고, 입력칸을 묶을 때(처음·다른 생일 뒤) 칩을 그리고, localStorage 쓰기는 명단·닫기 기록 둘뿐이다", [home.includes('keepBox(box.querySelector(".today-card"),b);'), home.includes("show(v);};chips();}"), home.includes("${HOME_KEEP_JS}") || home.includes("\${HOME_KEEP_JS}"), (home.match(/localStorage\.setItem\(/g) || []).length + "개:" + (home.match(/localStorage\.setItem\(([^,]+),/g) || []).map(x => x.replace("localStorage.setItem(", "").replace(",", "")).join("+")].join("|"), "true|true|true|2개:DNB_P+\"dnbs_a2hs\"");
+  const wk3 = fs.readFileSync("worker.js", "utf8");
+  t("홈 저장 통계: 서버가 person_save·person_use 를 허용하고 대시보드에 한글로 보인다", [/const EVENTS = new Set\(\[[^\]]*"person_save"[^\]]*"person_use"/.test(wk3), wk3.includes('person_save: "홈에서 생일 저장"'), wk3.includes('person_use: "저장한 생일로 보기"'), home.includes('ev("person_save")'), home.includes('ev("person_use")')].join(","), "true,true,true,true,true");
+  const pol = fs.readFileSync("content_site.js", "utf8");
+  t("홈 저장 방침: 홈에서 저장한 생일도 같은 이름표 저장소라는 것과 홈 화면 추가 안내를 닫은 날짜가 적혀 있고, 홈 안내문은 '직접 저장하지 않으면 탭을 닫을 때 지워진다'로 정확하다", [pol.includes("홈 화면에서 저장한 것도 같은 곳에 남습니다"), pol.includes("홈 화면 추가 안내를 닫은 날짜입니다"), bs.includes("직접 저장하지 않으면 이 탭을 닫을 때 지워집니다"), !bs.includes("<p class=\"today-note\">생일은 서버로 보내지 않습니다. 이 탭을 닫으면 지워집니다.")].join(","), "true,true,true,true"); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
