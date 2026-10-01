@@ -441,7 +441,7 @@ t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp
   t("공유 출처: ?from=share 로 열리면 조회 뒤에 share_visit 하나가 더 간다(다른 쿼리와 섞여도)", [sent("?from=share"), sent("?s=3&from=share"), sent("?from=share&s=3")].map(a => a.length + a[1]).join(","), '2{"e":"share_visit"},2{"e":"share_visit"},2{"e":"share_visit"}');
   t("공유 출처: from=shared·xfrom=share 같은 비슷한 값은 세지 않는다", [sent("?from=shared").length, sent("?xfrom=share").length].join(","), "1,1");
   t("공유 출처: 서버 허용 목록에 share_visit 이 있고 아무 이름이나 받지는 않는다", EV.has("share_visit") + "," + EV.has("share_visit2") + "," + EV.has("fortune_view"), "true,false,true");
-  t("공유 출처: 공유 버튼은 쿼리를 걷어낸 주소 뒤에 ?from=share 를 붙인다", src.includes('url:location.href.split("#")[0].split("?")[0]+"?from=share"'), true);
+  t("공유 출처: 공유 버튼은 쿼리를 걷어낸 주소 뒤에 ?from=share(와 결과 쿼리 q)를 붙인다", src.includes('var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");'), true);
   t("공유 출처: 대시보드가 share_visit 을 한글로 보여 주고 방침 문구에 적혀 있다", wk.includes('share_visit: "공유 링크로 들어옴"') && fs.readFileSync("content_site.js", "utf8").includes("공유 링크로 열렸는지 포함"), true); }
 t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
 // 모바일 화면 점검(2026-09)에서 나온 깨짐: 떠 있는 캐릭터 옆에 카드가 좁게 눌리거나 모서리를 덮이던 것, 값이 긴 표에서 라벨이 한 글자 폭으로 눌리던 것
@@ -822,7 +822,7 @@ const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
 const called = [...codeOnly.matchAll(/(?:^|[^\w.$])([a-zA-Z_$][\w$]*)\s*\(/g)].map(m => m[1]);
-const known = new Set([...HELPERS, "fetch","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
+const known = new Set([...HELPERS, "fetch","encodeURIComponent","decodeURIComponent","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
 const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/.test(n) && !toolsSrc.includes("function "+n) && !toolsSrc.includes("var "+n+"=") && !toolsSrc.includes(n+"=function"));
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
@@ -1029,21 +1029,45 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("이름궁합 통계: 눌렀을 때만 fortune_view 를 보낸다(처음 그려질 때는 안 보냄)", [nb.includes('if(user===true)track("fortune_view",{tool:"namematch"})'), nb.includes('function(){go(true);}'), nb.includes("\ngo();}}") || nb.includes("go();}}")].join(","), "true,true,true"); }
 // 이름 궁합 도구를 실제로 그려 본다(가짜 DOM) — 정의 안 한 변수(bv) 때문에 결과가 아예 안 그려졌는데도 문자열 검사만으론 통과했던 일(2026-10-01)
 { const nb2 = toolBlock("namematch"), blk = nb2.slice(0, nb2.indexOf("\n  ];"));
-  const draw = (a, b) => { const nodes = {}, shared = [];
-    const mk = (sel, v) => (nodes[sel] = { value: v, innerHTML: "", handlers: [], addEventListener(ty, fn) { this.handlers.push([ty, fn]); }, querySelector: () => null });
+  const draw = (a, b, search) => { const nodes = {}, shared = [], sargs = [], tracked = [], bar = [];
+    const mk = (sel, v) => (nodes[sel] = { value: v, innerHTML: "", focused: false, handlers: [], addEventListener(ty, fn) { this.handlers.push([ty, fn]); }, querySelector: () => null, focus() { this.focused = true; } });
     mk("#a", a); mk("#b", b); mk("#go", ""); mk("#out", "");
-    const el = { innerHTML: "", querySelector: sel => nodes[sel] || mk(sel, "") };
-    const tool = new Function("nmCalc", "nmBand", "nmJ", "escH", "josa", "track", "shareBtn", "bindShare", "saveScore", "return (" + blk + ");")(nmCalc, nmBand, nmJ, escH, josa, () => {}, () => '<button class="share-btn"></button><button class="save-btn"></button>', () => shared.push("share"), (e, f, tl, id, sc, gr) => shared.push("save:" + sc + ":" + gr));
-    tool.render(el); return { out: nodes["#out"].innerHTML, shared, nodes }; };
-  const tryDraw = (a, b) => { try { return { r: draw(a, b), err: "" }; } catch (e) { return { r: null, err: String(e.message) }; } };
+    const el = { innerHTML: "", querySelector: sel => nodes[sel] || mk(sel, ""), insertBefore: n => bar.push(n), firstChild: null };
+    const doc = { createElement: () => ({ className: "", innerHTML: "" }) };
+    const tool = new Function("nmCalc", "nmBand", "nmJ", "escH", "josa", "track", "shareBtn", "bindShare", "saveScore", "location", "document", "return (" + blk + ");")(nmCalc, nmBand, nmJ, escH, josa, ev => tracked.push(ev), () => '<button class="share-btn"></button><button class="save-btn"></button>', (e, ti, tx, q, sel, ev) => { shared.push("share"); sargs.push([tx, q || "", sel || "", ev || ""]); }, (e, f, tl, id, sc, gr) => shared.push("save:" + sc + ":" + gr), { search: search || "" }, doc);
+    tool.render(el); return { out: nodes["#out"].innerHTML, shared, sargs, tracked, bar, nodes }; };
+  const tryDraw = (a, b, search) => { try { return { r: draw(a, b, search), err: "" }; } catch (e) { return { r: null, err: String(e.message) }; } };
   const d1 = tryDraw("김철수", "이영희"), o1 = d1.r ? d1.r.out : "", tx1 = o1.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
   t("이름궁합 도구 그리기(가짜 DOM): 실행 오류 없이 결과를 그린다", d1.err, "");
-  t("이름궁합 도구 결과: 57점·성장형·글자별 획수·피라미드·순서 바꾼 97점·풀이 칸·버튼·공유/저장 연결", [/57<small>점 · 성장형/.test(o1), tx1.includes("김 · ㄱ(2)+ㅣ(1)+ㅁ(4) = 7"), tx1.includes("글자별 획수") && tx1.includes("획수 피라미드"), tx1.includes("이영희를 먼저 놓으면 97점 · 운명형"), ["풀이", "이 조합의 좋은 점", "맞춰 가면 좋은 점", "조언"].every(h => tx1.includes(h)), o1.includes("share-btn") && o1.includes("save-btn"), d1.r && d1.r.shared.join(",")].join(","), "true,true,true,true,true,true,share,save:57:성장형");
+  t("이름궁합 도구 결과: 57점·성장형·글자별 획수·피라미드·순서 바꾼 97점·풀이 칸·버튼·공유/저장 연결", [/57<small>점 · 성장형/.test(o1), tx1.includes("김 · ㄱ(2)+ㅣ(1)+ㅁ(4) = 7"), tx1.includes("글자별 획수") && tx1.includes("획수 피라미드"), tx1.includes("이영희를 먼저 놓으면 97점 · 운명형"), ["풀이", "이 조합의 좋은 점", "맞춰 가면 좋은 점", "조언"].every(h => tx1.includes(h)), o1.includes("share-btn") && o1.includes("save-btn"), d1.r && d1.r.shared.join(",")].join(","), "true,true,true,true,true,true,share,share,save:57:성장형");
   const d2 = tryDraw("Kim", "이영희"); t("이름궁합 도구: 영문만 넣으면 한글 안내만 보이고 오류가 없다", d2.err + "|" + (d2.r ? d2.r.out.includes("두 칸 모두 한글 이름을 넣어 주세요") : "x"), "|true");
   const d3 = tryDraw("김철수1", "이영희"); t("이름궁합 도구: 한글이 아닌 글자를 빼고 계산하면 안내 문구가 붙는다", d3.err + "|" + (d3.r ? d3.r.out.includes("한글이 아닌 글자는 빼고 계산했어요") : "x"), "|true");
   { const d = tryDraw("김철수", "이영희"); let e4 = ""; if (d.r) { d.r.nodes["#a"].value = "민준"; d.r.nodes["#b"].value = "서연"; const h = d.r.nodes["#go"].handlers.find(x => x[0] === "click"); try { h[1](); } catch (e) { e4 = String(e.message); } }
     const o4 = d.r ? d.r.nodes["#out"].innerHTML : "";
-    t("이름궁합 도구: 버튼을 누르면 다시 계산한다(민준♥서연 24점·도전형, 순서를 바꾼 줄 포함)", e4 + "|" + /24<small>점 · 도전형/.test(o4) + "|" + o4.includes("서연을 먼저 놓으면"), "|true|true"); } }
+    t("이름궁합 도구: 버튼을 누르면 다시 계산한다(민준♥서연 24점·도전형, 순서를 바꾼 줄 포함)", e4 + "|" + /24<small>점 · 도전형/.test(o4) + "|" + o4.includes("서연을 먼저 놓으면"), "|true|true"); }
+  // 공유·초대 링크: 결과 링크는 두 이름을, 초대 링크는 내 이름만 싣고, 받는 쪽은 열자마자 결과(또는 초대 안내)를 본다. 한글 아닌 값·깨진 값은 버린다
+  const enc = encodeURIComponent, dd = tryDraw("김철수", "이영희"), sa = dd.r ? dd.r.sargs : [];
+  t("이름궁합 링크: 결과 공유는 두 이름을, 초대는 첫 이름만 싣고 초대는 invite_make 로 센다", JSON.stringify([sa[0] && sa[0][1], sa[0] && sa[0][2], sa[1] && sa[1][1], sa[1] && sa[1][2], sa[1] && sa[1][3]]), JSON.stringify(["a=" + enc("김철수") + "&b=" + enc("이영희"), "", "a=" + enc("김철수"), ".invite-btn", "invite_make"]));
+  t("이름궁합 링크: 초대 문구에 보낸 사람 이름과 조사가 맞게 들어간다(김철수가·김철민이)", [sa[1] && sa[1][0], (tryDraw("김철민", "이영희").r.sargs[1] || [])[0]].join("|"), "김철수가 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:|김철민이 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:");
+  t("이름궁합 링크: 초대 버튼이 결과에 그려진다", dd.r && dd.r.out.includes('class="invite-btn"'), true);
+  { const r = tryDraw("김철수", "이영희", "?from=share&a=" + enc("민준") + "&b=" + enc("서연")).r;
+    t("이름궁합 링크: ?a=&b= 로 열면 두 칸을 채우고 열자마자 결과(24점·도전형)를 그리며 통계 이벤트는 안 보낸다", r && [r.nodes["#a"].value, r.nodes["#b"].value, /24<small>점 · 도전형/.test(r.out), r.tracked.length].join("|"), "민준|서연|true|0"); }
+  { const r = tryDraw("김철수", "이영희", "?from=share&a=" + enc("김철민")).r;
+    t("이름궁합 링크: ?a= 만 있으면 첫 칸만 채우고 둘째 칸을 비워 입력을 기다리며 invite_open 하나만 센다", r && [r.nodes["#a"].value, JSON.stringify(r.nodes["#b"].value), r.nodes["#b"].focused, r.out === "", r.tracked.join(",")].join("|"), '김철민|""|true|true|invite_open');
+    t("이름궁합 링크: 초대 안내에 보낸 이름이 조사와 함께 나온다", r && r.bar.length === 1 && r.bar[0].className === "gh-inv" && r.bar[0].innerHTML.includes("<b>김철민</b>이 이름궁합을 보자고 보냈어요"), true); }
+  { const bad = ["?a=%3Cscript%3Ealert(1)%3C%2Fscript%3E&b=" + enc("영희"), "?a=%E0%A4%A&b=%E0%A4%A", "?a=Kim&b=Lee", "?a=&b=" + enc("영희")].map(s => { const x = tryDraw("김철수", "이영희", s); return x.err + (x.r ? [x.r.bar.length, x.r.nodes["#a"].value, /57<small>점/.test(x.r.out)].join(":") : "x"); });
+    t("이름궁합 링크: 스크립트·영문·깨진 값은 버리고 예전처럼 기본 결과(57점)를 그린다(오류 없음)", bad.join(","), "0:김철수:true,0:김철수:true,0:김철수:true,0:김철수:true"); }
+  // 미리보기(워커): 같은 점수 함수를 쓰는 nm_core.js 가 hub.html 의 NM 블록과 같고, ogName 이 한글만 받아 제목을 만든다
+  { const hubNM = src.slice(src.indexOf("/*NM-BEGIN*/"), src.indexOf("/*NM-END*/") + "/*NM-END*/".length).replace(/\r\n/g, "\n"), coreTxt = fs.readFileSync("nm_core.js", "utf8").replace(/\r\n/g, "\n"), ogTxt = fs.readFileSync("worker_og.js", "utf8");
+    t("이름궁합 미리보기: nm_core.js 가 hub.html 의 NM 블록 그대로다(오래됐으면 node build_site.js 로 다시 만든다)", coreTxt.includes(hubNM) && coreTxt.trimEnd().endsWith("export { nmCalc, nmBand };"), true);
+    const ogName = new Function(coreTxt.replace(/^export \{[^}]*\};?\s*$/m, "") + "\n" + ogTxt.replace(/^import .*$/m, "").replace("export function ogName", "function ogName") + "\nreturn ogName;")();
+    const og1 = ogName("김철수", "이영희"), og2 = ogName("김철수", ""), og3 = ogName("김철민", "");
+    t("이름궁합 미리보기: 김철수♥이영희 = '57점 · 성장형' 제목(화면과 같은 점수)이고 설명에 내 이름 안내가 있다", [og1 && og1.title, og1 && og1.desc.endsWith("내 이름으로도 해 보세요 — 동네보살"), og1 && og1.title.includes(nmCalc("김철수", "이영희").score + "점")].join("|"), "김철수 ♥ 이영희 이름궁합 57점 · 성장형|true|true");
+    t("이름궁합 미리보기: 초대 링크 제목은 조사가 맞다(김철수가·김철민이)", [og2 && og2.title, og3 && og3.title].join("|"), "김철수가 이름궁합을 보냈어요|김철민이 이름궁합을 보냈어요");
+    t("이름궁합 미리보기: 한글이 아니거나 비었거나 너무 긴 값은 null(원래 페이지 그대로)", [ogName("", "이영희"), ogName("Kim", "이영희"), ogName("김철수", "Lee"), ogName("<b>", ""), ogName("김철수철수철수철수철수", "이영희"), ogName("김철수", "이영희이영희이영희이영희")].map(x => x === null).join(","), "true,true,true,true,true,true");
+    const wk2 = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
+    t("이름궁합 미리보기: 워커가 /namematch.html 만 받아 title·description·og 를 바꾸고 noindex 를 붙이며 wrangler 가 그 경로를 먼저 워커로 보낸다", [wk2.includes('import { ogName } from "./worker_og.js"'), wk2.includes('pathname === "/namematch.html"'), wk2.includes("new HTMLRewriter()"), wk2.includes('.on(\'meta[property="og:title"]\'') && wk2.includes('.on(\'meta[property="og:description"]\'') && wk2.includes('.on(\'meta[name="description"]\''), wk2.includes("noindex,follow"), /"run_worker_first": \["\/api\/\*", "\/admin", "\/namematch\.html"\]/.test(wr)].join(","), "true,true,true,true,true,true");
+    t("이름궁합 링크: 개인정보처리방침에 이름이 링크에 담긴다는 것과 서버가 저장하지 않는다는 것이 적혀 있다", /넣은 이름\(초대 링크는 내 이름만\)이 담깁니다/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("서버가 이름을 읽지만 저장하지 않습니다"), true); } }
 // ── 띠 궁합(content_ttigunghap.js): 관계표를 독립 표와 대조 · 원고 78쌍·12띠 · 문체·중복 · 빌드 배선 ──
 { const TT = require("./content_ttigunghap.js"), NAMES = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
   const norm = s => s.split(" ").map(x => { const a = NAMES.indexOf(x[0]), b = NAMES.indexOf(x[1]); return Math.min(a, b) + "-" + Math.max(a, b); }).sort().join(" ");

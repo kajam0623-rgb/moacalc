@@ -1504,20 +1504,24 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
-  function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
+  // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
+  function shareOut(b,title,full,idle){
+    function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
+    function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
+      var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
+      document.body.removeChild(ta);}
+    if(navigator.share){navigator.share({title:title,text:full}).catch(function(){});}
+    else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
+    else legacy();}
+  // 공유·초대 링크 = 쿼리·해시를 걷어낸 이 페이지 주소 + ?from=share(공유로 들어온 방문을 세는 표시) + 결과를 실은 쿼리 q.
+  // 생년월일은 q 에 넣지 않는다(이름궁합처럼 이름만 받는 도구의 이름·띠 번호 정도). sel·ev 를 주면 다른 버튼(초대)에도 쓴다
+  function bindShare(el,title,text,q,sel,ev){var b=el.querySelector(sel||".share-btn");if(!b)return;var idle=b.textContent;
     b.addEventListener("click",function(){
-      track("share_click",{tool:location.pathname});
-      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]+"?from=share"},full=d.text+" "+d.url;
-      function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);}
-      function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
-        var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";
-        document.body.appendChild(ta);ta.select();
-        try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
-        document.body.removeChild(ta);}
-      // url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버린다. 본문에 url 을 녹여 통째로 넘긴다
-      if(navigator.share){navigator.share({title:d.title,text:full}).catch(function(){});}
-      else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
-      else legacy();});}
+      track(ev||"share_click",{tool:location.pathname});
+      var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");
+      shareOut(b,title,text+" "+url,idle);});}
 
   // ---------- TOOLS ----------
   

@@ -19,6 +19,8 @@ const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
 // 이름 궁합 안내글의 숫자(예시·FAQ·획수표)는 도구와 같은 함수(hub.html 의 NM 블록)로 만든다 — 손으로 쓴 숫자가 도구와 어긋나지 않게
 const NM = (() => { const a = src.indexOf("/*NM-BEGIN*/"), b = src.indexOf("/*NM-END*/"); if (a < 0 || b < a) throw new Error("hub.html 의 NM 블록을 찾지 못했습니다");
   return new Function(src.slice(a, b) + "\nreturn {nmJ:nmJ,nmChar:nmChar,nmCalc:nmCalc,nmBand:nmBand};")(); })();
+// 워커(이름궁합 공유 링크 미리보기)가 도구와 같은 점수를 내도록 NM 블록을 그대로 ES 모듈로 내보낸다. 손으로 고치지 말 것 — verify 가 hub.html 과 같은지 본다
+fs.writeFileSync(path.join(DIR, "nm_core.js"), "// 자동 생성: node build_site.js (hub.html 의 NM 블록). 직접 고치지 말고 hub.html 을 고친 뒤 빌드한다\n" + src.slice(src.indexOf("/*NM-BEGIN*/"), src.indexOf("/*NM-END*/") + "/*NM-END*/".length) + "\nexport { nmCalc, nmBand };\n");
 const NMX = (() => {
   const o1 = NM.nmCalc("김철수", "이영희"), o2 = NM.nmCalc("이영희", "김철수"), o3 = NM.nmCalc("철수", "영희"), o4 = NM.nmCalc("영희", "철수");
   const jam = str => "<div class=\"chips\">" + [...str].map(j => "<span class=\"chip\">" + j + "=" + NM.nmJ(j) + "</span>").join("") + "</div>";

@@ -368,7 +368,9 @@
     color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
   .tool #pdf{margin-top:8px;width:100%;padding:12px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;
     color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
-  .tool .save-btn:hover,.tool #pdf:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
+  .tool .invite-btn{margin-top:8px;width:100%;padding:12px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;
+    color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
+  .tool .save-btn:hover,.tool #pdf:hover,.tool .invite-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
@@ -684,7 +686,7 @@
     .toolhero .cap .tl{color:#555}
     .sj-char,.exbox .row{break-inside:avoid;page-break-inside:avoid}
     h1,h2,h3{break-after:avoid;page-break-after:avoid}
-    .share-btn,.save-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
+    .share-btn,.save-btn,.invite-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
     @page{margin:14mm}
   }
 </style>
@@ -2200,20 +2202,24 @@
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
-  function bindShare(el,title,text){var b=el.querySelector(".share-btn");if(!b)return;
+  // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
+  function shareOut(b,title,full,idle){
+    function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
+    function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
+      var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
+      document.body.removeChild(ta);}
+    if(navigator.share){navigator.share({title:title,text:full}).catch(function(){});}
+    else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
+    else legacy();}
+  // 공유·초대 링크 = 쿼리·해시를 걷어낸 이 페이지 주소 + ?from=share(공유로 들어온 방문을 세는 표시) + 결과를 실은 쿼리 q.
+  // 생년월일은 q 에 넣지 않는다(이름궁합처럼 이름만 받는 도구의 이름·띠 번호 정도). sel·ev 를 주면 다른 버튼(초대)에도 쓴다
+  function bindShare(el,title,text,q,sel,ev){var b=el.querySelector(sel||".share-btn");if(!b)return;var idle=b.textContent;
     b.addEventListener("click",function(){
-      track("share_click",{tool:location.pathname});
-      var d={title:title,text:text,url:location.href.split("#")[0].split("?")[0]+"?from=share"},full=d.text+" "+d.url;
-      function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent="결과 공유하기";},2200);}
-      function legacy(){ // clipboard API가 거부돼도 동작하는 최후 폴백
-        var ta=document.createElement("textarea");ta.value=full;ta.style.position="fixed";ta.style.opacity="0";
-        document.body.appendChild(ta);ta.select();
-        try{document.execCommand("copy");done();}catch(e){b.textContent="복사 실패 — 길게 눌러 직접 복사하세요";}
-        document.body.removeChild(ta);}
-      // url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버린다. 본문에 url 을 녹여 통째로 넘긴다
-      if(navigator.share){navigator.share({title:d.title,text:full}).catch(function(){});}
-      else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(full).then(done,legacy);}
-      else legacy();});}
+      track(ev||"share_click",{tool:location.pathname});
+      var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");
+      shareOut(b,title,text+" "+url,idle);});}
 
   // ---------- TOOLS ----------
   var TOOLS=[
@@ -4540,12 +4546,22 @@
       '<div class="sj-sec"><h3>맞춰 가면 좋은 점</h3><p>'+band.care+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+band.tip+'</p></div>'+
       shareBtn()+
+      '<button type="button" class="invite-btn">친구에게 "우리 이름궁합 해 보자" 보내기</button>'+
       '<p class="note">이름 글자의 획수를 번갈아 놓고 이웃끼리 더하는 전통 이름궁합 놀이입니다. 한글 자모를 선분수(ㄱ=2, ㅎ=3)로 세어 계산하며, 획수 기준은 사이트마다 달라 같은 이름도 점수가 다를 수 있습니다. 한자 이름과도 결과가 다릅니다. 재미로만 보세요. 사주 기반 궁합은 궁합 보기를 이용하세요.</p>';
-      bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:");
+      // 결과 공유 링크는 두 이름을 싣고(받은 사람이 열자마자 같은 결과를 본다), 초대 링크는 내 이름(첫 칸)만 싣는다(받은 사람이 자기 이름만 넣는다)
+      bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:","a="+encodeURIComponent(A)+"&b="+encodeURIComponent(B));
+      bindShare(el,"이름 궁합",A+josa(A,"가/이")+" 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:","a="+encodeURIComponent(A),".invite-btn","invite_make");
       saveScore(el,"이름궁합","이름 궁합",A+" ♥ "+B,r.score,band.type,band.msg,band.good,r.score>=55?"heart":"diary");}
     el.querySelector("#go").addEventListener("click",function(){go(true);});
     ["#a","#b"].forEach(function(q){el.querySelector(q).addEventListener("keydown",function(e){if(e.key==="Enter")go(true);});});
-    go();}}
+    // 공유·초대 링크(?a=&b=): 둘 다 있으면 열자마자 같은 결과를, a 만 있으면 보낸 사람 이름을 채우고 내 이름을 받는다. 한글만 받는다
+    function qp(k){var m=new RegExp("[?&]"+k+"=([^&#]*)").exec(location.search),v="";try{v=m?decodeURIComponent(m[1]):"";}catch(e){}return v.replace(/[^가-힣]/g,"").slice(0,10);}
+    var qa=qp("a"),qb=qp("b");
+    if(qa&&qb){el.querySelector("#a").value=qa;el.querySelector("#b").value=qb;go();}
+    else if(qa){el.querySelector("#a").value=qa;el.querySelector("#b").value="";track("invite_open",{});
+      var bar=document.createElement("div");bar.className="gh-inv";bar.innerHTML='<b>'+escH(qa)+'</b>'+josa(qa,"가/이")+' 이름궁합을 보자고 보냈어요. 아래 이름 2에 내 이름을 넣고 계산해 보세요.';
+      el.insertBefore(bar,el.firstChild);el.querySelector("#b").focus();}
+    else go();}}
   ];
 
   // ---------- router / render ----------

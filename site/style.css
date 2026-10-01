@@ -367,7 +367,9 @@
     color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
   .tool #pdf{margin-top:8px;width:100%;padding:12px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;
     color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
-  .tool .save-btn:hover,.tool #pdf:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
+  .tool .invite-btn{margin-top:8px;width:100%;padding:12px !important;border:1px solid var(--fun) !important;border-radius:10px !important;background:transparent !important;
+    color:var(--fun-ink) !important;font:inherit;font-weight:800 !important;cursor:pointer;}
+  .tool .save-btn:hover,.tool #pdf:hover,.tool .invite-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
   .ad{margin:26px 0 0;padding:12px;border:1px dashed var(--line-2);border-radius:2px;text-align:center;color:var(--muted);font-size:10.5px;font-family:var(--mono);letter-spacing:.08em;}
   .foot{text-align:center;font-size:11px;color:var(--muted);margin-top:28px;font-family:var(--mono);letter-spacing:.03em;}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
@@ -683,7 +685,7 @@
     .toolhero .cap .tl{color:#555}
     .sj-char,.exbox .row{break-inside:avoid;page-break-inside:avoid}
     h1,h2,h3{break-after:avoid;page-break-after:avoid}
-    .share-btn,.save-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
+    .share-btn,.save-btn,.invite-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
     @page{margin:14mm}
   }
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}

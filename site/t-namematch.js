@@ -31,9 +31,19 @@ TOOLS.push({id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",des
       '<div class="sj-sec"><h3>맞춰 가면 좋은 점</h3><p>'+band.care+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+band.tip+'</p></div>'+
       shareBtn()+
+      '<button type="button" class="invite-btn">친구에게 "우리 이름궁합 해 보자" 보내기</button>'+
       '<p class="note">이름 글자의 획수를 번갈아 놓고 이웃끼리 더하는 전통 이름궁합 놀이입니다. 한글 자모를 선분수(ㄱ=2, ㅎ=3)로 세어 계산하며, 획수 기준은 사이트마다 달라 같은 이름도 점수가 다를 수 있습니다. 한자 이름과도 결과가 다릅니다. 재미로만 보세요. 사주 기반 궁합은 궁합 보기를 이용하세요.</p>';
-      bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:");
+      // 결과 공유 링크는 두 이름을 싣고(받은 사람이 열자마자 같은 결과를 본다), 초대 링크는 내 이름(첫 칸)만 싣는다(받은 사람이 자기 이름만 넣는다)
+      bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:","a="+encodeURIComponent(A)+"&b="+encodeURIComponent(B));
+      bindShare(el,"이름 궁합",A+josa(A,"가/이")+" 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:","a="+encodeURIComponent(A),".invite-btn","invite_make");
       saveScore(el,"이름궁합","이름 궁합",A+" ♥ "+B,r.score,band.type,band.msg,band.good,r.score>=55?"heart":"diary");}
     el.querySelector("#go").addEventListener("click",function(){go(true);});
     ["#a","#b"].forEach(function(q){el.querySelector(q).addEventListener("keydown",function(e){if(e.key==="Enter")go(true);});});
-    go();}});
+    // 공유·초대 링크(?a=&b=): 둘 다 있으면 열자마자 같은 결과를, a 만 있으면 보낸 사람 이름을 채우고 내 이름을 받는다. 한글만 받는다
+    function qp(k){var m=new RegExp("[?&]"+k+"=([^&#]*)").exec(location.search),v="";try{v=m?decodeURIComponent(m[1]):"";}catch(e){}return v.replace(/[^가-힣]/g,"").slice(0,10);}
+    var qa=qp("a"),qb=qp("b");
+    if(qa&&qb){el.querySelector("#a").value=qa;el.querySelector("#b").value=qb;go();}
+    else if(qa){el.querySelector("#a").value=qa;el.querySelector("#b").value="";track("invite_open",{});
+      var bar=document.createElement("div");bar.className="gh-inv";bar.innerHTML='<b>'+escH(qa)+'</b>'+josa(qa,"가/이")+' 이름궁합을 보자고 보냈어요. 아래 이름 2에 내 이름을 넣고 계산해 보세요.';
+      el.insertBefore(bar,el.firstChild);el.querySelector("#b").focus();}
+    else go();}});

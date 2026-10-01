@@ -2,7 +2,9 @@
    POST /api/hit  페이지가 보내는 조회·이벤트 기록 (build_site.js 의 비콘, hub.html 의 track())
    POST /api/invite  궁합 초대 링크 만들기(사주 글자만), GET /api/invite?i=  받기 — 7일 보관
    GET  /admin    대시보드. ADMIN_PASS 비밀값을 정하면 비밀번호가 걸린다
-   그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 두 경로만 여기로 보낸다. */
+   GET  /namematch.html  ?a=&b= 가 붙은 공유·초대 링크만 미리보기 제목·설명을 결과로 바꿔 돌려준다(없으면 정적 자산 그대로)
+   그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 경로만 여기로 보낸다. */
+import { ogName } from "./worker_og.js";
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
 const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit"]);
 const BOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly/i;
@@ -15,6 +17,7 @@ export default {
     if (pathname === "/api/hit") return req.method === "POST" ? hit(req, env) : new Response(null, { status: 405 });
     if (pathname === "/api/invite") return req.method === "POST" ? inviteMake(req, env) : req.method === "GET" ? inviteGet(req, env) : new Response(null, { status: 405 });
     if (pathname === "/admin") return admin(req, env);
+    if (pathname === "/namematch.html") return namematch(req, env);
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
@@ -24,6 +27,23 @@ export default {
     try { await env.DB.prepare("DELETE FROM errors WHERE day < ?").bind(kstDay(30)).run(); } catch {}
   },
 };
+
+// 이름궁합 공유·초대 링크: 카톡 같은 앱은 링크를 열어 og:title·description 을 읽어 미리보기 카드를 만든다(스크립트는 돌리지 않는다).
+// 그래서 서버에서 제목·설명만 결과로 바꾼다. 화면의 계산은 브라우저가 한다. 이름은 읽기만 하고 저장하지 않는다.
+// 이름이 든 주소는 검색에 올리지 않는다(noindex). 정식 주소(canonical)는 그대로다.
+async function namematch(req, env) {
+  const res = await env.ASSETS.fetch(req);
+  const q = new URL(req.url).searchParams, og = ogName(q.get("a") || "", q.get("b") || "");
+  if (!og || !res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  const content = key => ({ element(e) { e.setAttribute("content", og[key]); } });
+  return new HTMLRewriter()
+    .on("title", { element(e) { e.setInnerContent(og.title + " | 동네보살"); } })
+    .on('meta[name="description"]', content("desc"))
+    .on('meta[property="og:title"]', content("title"))
+    .on('meta[property="og:description"]', content("desc"))
+    .on("head", { element(e) { e.append('<meta name="robots" content="noindex,follow">', { html: true }); } })
+    .transform(res);
+}
 
 async function hit(req, env) {
   const ok = new Response(null, { status: 204 });
