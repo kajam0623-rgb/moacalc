@@ -1188,7 +1188,15 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
 { const CI = require("./content_column_img.js"), CP = require("./content_column.js"), ens = CP.map(c => c.en);
   const cnt = {}; CI.tiles.forEach(t => { cnt[t[1]] = (cnt[t[1]] || 0) + 1; });
   t("칼럼 그림: 타일이 칼럼 전부를 한 번씩 덮고(순서가 곧 그리드 순서) 크기는 큰 1·가로 3·작은 10 → 4열 5줄 20칸이 빈칸 없이 찬다", [CI.tiles.length === ens.length, new Set(CI.tiles.map(x => x[0])).size === ens.length, CI.tiles.every(x => ens.includes(x[0])), "l" + cnt.l + "w" + cnt.w + "s" + cnt.s, (cnt.l || 0) * 4 + (cnt.w || 0) * 2 + (cnt.s || 0)].join(","), "true,true,true,l1w3s10,20");
-  t("칼럼 그림: 타일 초점(pos)은 '가로% 세로%' 꼴이다", CI.tiles.every(x => /^[0-9]{1,3}% [0-9]{1,3}%$/.test(x[2])), true);
+  // 얼굴 상자: 타일 그림은 3:2 원본 그대로 두고 칸에 깔 때 object-fit:cover 로 잘린다. 어떤 칸 비율(폰 1.15 ~ 데스크톱 1.3 · 가로 칸 2.33~2.68)에서도 상자가 보이는 창 안에 통째로 들어야 한다
+  t("칼럼 그림: 타일 얼굴 상자는 [x0,y0,x1,y1](0~1, x0<x1·y0<y1)이고 객체 위치(tilePos)는 '가로% 세로%' 꼴이다", CI.tiles.every(x => Array.isArray(x[2]) && x[2].length === 4 && x[2].every(v => v >= 0 && v <= 1) && x[2][0] < x[2][2] && x[2][1] < x[2][3] && /^[0-9]{1,3}% [0-9]{1,3}%$/.test(x[3] || CI.tilePos(x[2], x[1]))), true);
+  { const inWin = (lo, hi, v, p) => { const s = v >= 1 ? 0 : p / 100 * (1 - v); return s <= lo + 0.005 && s + v >= hi - 0.005; }, bad = [], textBand = [];
+    CI.tiles.forEach(([en, sz, f, at]) => { const [px, py] = (at || CI.tilePos(f, sz)).split(" ").map(parseFloat);
+      [CI.AR[sz][0] * 0.97, CI.AR[sz][0], CI.AR[sz][1], CI.AR[sz][1] * 1.03].forEach(a => { const vx = Math.min(1, a / CI.SRC), vy = Math.min(1, CI.SRC / a);
+        if (!inWin(f[0], f[2], vx, px) || !inWin(f[1], f[3], vy, py)) bad.push(en + "@" + a.toFixed(2));
+        if (sz === "w") { const s = vy >= 1 ? 0 : py / 100 * (1 - vy); if ((f[3] - s) / vy > 0.62) textBand.push(en + "@" + a.toFixed(2)); } }); });
+    t("칼럼 그림: 어느 칸 비율(±3%)에서도 얼굴 상자가 보이는 창 안에 통째로 든다(얼굴이 잘리지 않는다)", bad.slice(0, 4).join(","), "");
+    t("칼럼 그림: 가로 타일은 얼굴이 아래 38% 글자 띠를 피해 위쪽 62% 안에 놓인다", textBand.slice(0, 4).join(","), ""); }
   let nf = 0, badF = [];
   Object.entries(CI.figs).forEach(([en, a]) => { const c = CP.find(x => x.en === en); if (!c) { badF.push(en + ":칼럼 없음"); return; } nf += a.length;
     a.forEach((f, k) => { if (!Number.isInteger(f.after) || f.after < 0 || f.after >= c.sections.length) badF.push(en + ":after " + f.after); if (typeof f.alt !== "string" || f.alt.length < 15 || f.alt.length > 120) badF.push(en + ":alt " + k); if (k && f.after <= a[k - 1].after) badF.push(en + ":순서 " + k); }); });
@@ -1198,18 +1206,19 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     if (k === "VP8 ") return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff }; if (k === "VP8X") return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
     if (k === "VP8L") { const v = b.readUInt32LE(21); return { w: (v & 0x3fff) + 1, h: ((v >> 14) & 0x3fff) + 1 }; } return null; };
   const want = [], tileSz = Object.fromEntries(CI.tiles.map(x => [x[0], x[1]]));
-  CI.tiles.forEach(x => want.push(["tile-" + x[0], x[1] === "w" ? [2.4, 60] : x[1] === "l" ? [1.2, 80] : [1.2, 40]]));
+  CI.tiles.forEach(x => want.push(["tile-" + x[0], [CI.SRC, x[1] === "s" ? 40 : 80]]));
   Object.entries(CI.figs).forEach(([en, a]) => a.forEach((_, k) => want.push([`fig-${en}-${k + 1}`, [16 / 9, 80]])));
   const miss = [], notWebp = [], badAsp = [], big = []; let total = 0;
   want.forEach(([n, [asp, kb]]) => { const f = `img/col/${n}.webp`; if (!fs.existsSync(f)) { miss.push(n); return; } const d = webpDim(f), sz = fs.statSync(f).size; total += sz;
     if (!d) { notWebp.push(n); return; } if (Math.abs(d.w / d.h - asp) > 0.03 * asp) badAsp.push(n + " " + d.w + "x" + d.h); if (sz > kb * 1024) big.push(n + " " + Math.round(sz / 1024) + "KB"); });
   t("칼럼 그림: 50장(타일 14 + 글 안 36)이 모두 img/col 에 있다", want.length + "|" + miss.slice(0, 4).join(","), "50|");
-  t("칼럼 그림: 전부 진짜 webp 이고 칸 비율(작은·큰 타일 6:5, 가로 타일 2.4:1, 글 안 16:9)대로 잘려 있다", notWebp.slice(0, 3).join(",") + "|" + badAsp.slice(0, 3).join(","), "|");
-  t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일 80KB · 가로 타일 60KB · 글 안 80KB 이하), 전체 3.2MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 3.2 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
+  t("칼럼 그림: 전부 진짜 webp 이고 원본 비율 그대로다(타일 3:2, 글 안 16:9 — 미리 자르면 얼굴이 잘린다)", notWebp.slice(0, 3).join(",") + "|" + badAsp.slice(0, 3).join(","), "|");
+  t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일·가로 타일·글 안 80KB 이하), 전체 3.6MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 3.6 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
   t("칼럼 그림: img/col 에는 webp 말고 다른 파일이 없다(원본 PNG 는 리포에 두지 않는다)", fs.readdirSync("img/col").filter(f => !f.endsWith(".webp")).join(","), "");
   // 배선
   t("칼럼 그림 배선: 홈은 벤토(columnBento)를 쓰고 옛 한 줄 목록 카드는 없다, 타일 그림은 지연 로딩·alt 비움(제목이 글로 있다)", [bs.includes("${columnBento()}"), bs.includes("function columnBento()"), !bs.includes('class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"'), bs.includes('alt="" width="${w}" height="${h}" loading="lazy" decoding="async"'), bs.includes("보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기")].join(","), "true,true,true,true,true");
   t("칼럼 그림 배선: 4열 dense 그리드(+모바일 2열), 큰 타일 2×2·가로 타일 2×1, 칼럼 글은 섹션 뒤에 그림을 끼우고 16:9 로 보인다", [bs.includes(".colbento{display:grid;grid-template-columns:repeat(4,1fr);") && bs.includes("grid-auto-flow:dense"), bs.includes(".cb-l{grid-column:span 2;grid-row:span 2;}.cb-w{grid-column:span 2;}"), /@media \(max-width:899px\)\{\.colbento\{grid-template-columns:repeat\(2,1fr\)/.test(bs), bs.includes("+colFig(c.en, i)).join"), bs.includes("aspect-ratio:16/9")].join(","), "true,true,true,true,true");
+  t("칼럼 그림 배선: 타일 칸 비율을 행 높이로 고정(열 폭÷비율, 컨테이너 단위 cqw — 구형 브라우저는 옛 clamp 행 높이로 폴백), 타일마다 얼굴 상자로 정한 object-position·transform-origin 을 단다", [bs.includes('<div class="cbwrap"><div class="colbento">'), bs.includes(".cbwrap{container-type:inline-size;}"), bs.includes("@supports (width:1cqw){.colbento{grid-auto-rows:calc((100cqw - 3 * var(--cg)) / 4 / ${COLIMG.AR.s[1]});}}"), bs.includes("/ 2 / ${COLIMG.AR.s[0]});}}}"), bs.includes('style="object-position:${pos};transform-origin:${pos}"')].join(","), "true,true,true,true,true");
   t("칼럼 그림: 만든 법(tools/colimg: 작업 목록·생성기·변환기·README)이 리포에 있다", ["jobs.json", "gen.js", "convert.js", "README.md"].every(f => fs.existsSync("tools/colimg/" + f)), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

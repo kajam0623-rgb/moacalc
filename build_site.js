@@ -1767,16 +1767,17 @@ function columnPage(c){
 // 칼럼 글 안 큰 그림: 섹션 i 뒤에 둘 그림(content_column_img.js figs). 파일은 img/col/fig-<en>-<번호>.webp(16:9, 1120×630). 장식 그림이라 alt 만 단다
 const colFig = (en, i) => (COLIMG.figs[en] || []).map((f, k) => ({ ...f, n: k + 1 })).filter(f => f.after === i)
   .map(f => `<figure class="colfig"><img src="img/col/fig-${en}-${f.n}.webp" alt="${esc(f.alt)}" width="1120" height="630" loading="lazy" decoding="async"></figure>`).join("");
-// 홈 칼럼 벤토: 그림 든 타일 14장이 4열(모바일 2열) 그리드를 가로 끝까지 채운다. 순서·크기·초점은 content_column_img.js 가 정한다
-// 타일 그림은 보이는 비율로 미리 잘라 둔다: s 560×466 · l 960×800 · w 900×375 (tools/colimg/convert.js)
-const CB_DIM = { s: [560, 466], l: [960, 800], w: [900, 375] };
+// 홈 칼럼 벤토: 그림 든 타일 14장이 4열(모바일 2열) 그리드를 가로 끝까지 채운다. 순서·크기·얼굴 상자는 content_column_img.js 가 정한다
+// 타일 그림은 3:2 원본 그대로 둔다(s 600×400 · l 1000×666 · w 900×600, tools/colimg/convert.js). 미리 자르면 얼굴이 잘려서, 칸에 깔 때만
+// object-fit:cover 로 가리고 얼굴 상자가 보이는 창 안에 들도록 object-position 을 준다(COLIMG.tilePos). 칸 비율은 CSS 의 행 높이(열 폭÷1.3, 폰은 ÷1.15)가 고정한다
+const CB_DIM = { s: [600, 400], l: [1000, 666], w: [900, 600] };
 function columnBento() {
   const by = Object.fromEntries(COLUMN_PAGES.map(c => [c.en, c]));
-  const order = COLIMG.tiles.filter(t => by[t[0]]).concat(COLUMN_PAGES.filter(c => !COLIMG.tiles.some(t => t[0] === c.en)).map(c => [c.en, "s"]));
-  return `<div class="colbento">` + order.map(([en, sz]) => { const c = by[en], big = sz !== "s", [w, h] = CB_DIM[sz];
-    return `<a class="cb cb-${sz}" href="column-${c.en}.html"><img src="img/col/tile-${c.en}.webp" alt="" width="${w}" height="${h}" loading="lazy" decoding="async">` +
+  const order = COLIMG.tiles.filter(t => by[t[0]]).concat(COLUMN_PAGES.filter(c => !COLIMG.tiles.some(t => t[0] === c.en)).map(c => [c.en, "s", [.3, .05, .7, .4]]));
+  return `<div class="cbwrap"><div class="colbento">` + order.map(([en, sz, face, at]) => { const c = by[en], big = sz !== "s", [w, h] = CB_DIM[sz], pos = at || COLIMG.tilePos(face, sz);
+    return `<a class="cb cb-${sz}" href="column-${c.en}.html"><img src="img/col/tile-${c.en}.webp" alt="" width="${w}" height="${h}" loading="lazy" decoding="async" style="object-position:${pos};transform-origin:${pos}">` +
       `<span class="cb-t"><b>${esc(big ? c.title : c.crumb)}</b>${big ? `<i>${esc(c.lead)}</i>` : ""}</span></a>`; }).join("") +
-    `</div><p class="cb-all"><a href="column.html">보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기 →</a></p>`;
+    `</div></div><p class="cb-all"><a href="column.html">보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기 →</a></p>`;
 }
 function columnHubPage(){
   return sitePage({
@@ -3026,7 +3027,9 @@ const extraCss = `
 .tk-n{font-size:12.5px;color:var(--muted);line-height:1.5;}
 .today-a2hs{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface-2);font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:8px;align-items:flex-start;justify-content:space-between;}
 .today-a2hs button{flex:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;}
-.colbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:clamp(150px,17vw,215px);grid-auto-flow:dense;gap:12px;margin:14px 0 6px;}
+.cbwrap{container-type:inline-size;}
+.colbento{display:grid;grid-template-columns:repeat(4,1fr);--cg:12px;grid-auto-rows:clamp(150px,17vw,215px);grid-auto-flow:dense;gap:var(--cg);margin:14px 0 6px;}
+@supports (width:1cqw){.colbento{grid-auto-rows:calc((100cqw - 3 * var(--cg)) / 4 / ${COLIMG.AR.s[1]});}}
 .cb{position:relative;display:block;overflow:hidden;border-radius:18px;background:#0b1226;isolation:isolate;color:#fff;text-decoration:none;box-shadow:0 10px 26px -14px rgba(8,12,30,.55);}
 .cb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1);}
 .cb::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,10,26,.92) 0%,rgba(6,10,26,.6) 34%,rgba(6,10,26,0) 66%);}
@@ -3037,11 +3040,13 @@ const extraCss = `
 .cb-l .cb-t{padding:22px 24px 24px;}.cb-l .cb-t b{font-size:clamp(20px,2.3vw,28px);}
 .cb-w .cb-t{padding:16px 20px 18px;}.cb-w .cb-t b{font-size:18px;-webkit-line-clamp:2;}
 .cb-l .cb-t i,.cb-w .cb-t i{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.cb:hover img,.cb:focus-visible img{transform:scale(1.06);}
+.cb:hover img,.cb:focus-visible img{transform:scale(1.04);}
 .cb:focus-visible{outline:3px solid var(--accent);outline-offset:3px;}
 .cb-all{margin:10px 2px 0;text-align:right;font-size:13.5px;font-weight:700;}.cb-all a{color:var(--accent);}
 .sect h2{white-space:nowrap;}
-@media (max-width:899px){.colbento{grid-template-columns:repeat(2,1fr);grid-auto-rows:clamp(128px,36vw,230px);gap:10px;}.cb{border-radius:15px;}.cb-t{padding:12px 13px 13px;}.cb-t b{font-size:14px;}.cb-l .cb-t b{font-size:21px;}.cb-w .cb-t b{font-size:16px;}}
+@media (max-width:899px){.colbento{grid-template-columns:repeat(2,1fr);--cg:10px;grid-auto-rows:clamp(128px,36vw,230px);}.cb{border-radius:15px;}.cb-t{padding:12px 13px 13px;}.cb-t b{font-size:14px;}.cb-l .cb-t b{font-size:21px;}.cb-w .cb-t b{font-size:16px;}}
+@supports (width:1cqw){@media (max-width:899px){.colbento{grid-auto-rows:calc((100cqw - var(--cg)) / 2 / ${COLIMG.AR.s[1]});}}@media (max-width:599px){.colbento{grid-auto-rows:calc((100cqw - var(--cg)) / 2 / ${COLIMG.AR.s[0]});}}}
+@media (max-width:599px){.cb-w .cb-t i{display:none;}}
 @media (prefers-reduced-motion:reduce){.cb img{transition:none;}}
 .colfig{margin:16px 0 4px;}
 .colfig img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}

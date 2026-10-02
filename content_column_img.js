@@ -1,24 +1,41 @@
 /* 보살 칼럼 그림 — 홈 벤토 타일 14장(img/col/tile-<en>.webp)과 칼럼 글 안 큰 그림 36장(img/col/fig-<en>-<번호>.webp).
    그림은 Codex 이미지 생성(gpt-image-2)으로 만들어 webp 로 줄여 넣는다(만든 법: tools/colimg/README.md).
-   tiles: [칼럼 en, 크기, 그림 초점] — 크기 l(큰 2×2)·w(가로 2×1)·s(1×1). 순서가 곧 그리드 순서다.
+   tiles: [칼럼 en, 크기, 얼굴 상자 [x0,y0,x1,y1], (선택) object-position 직접 지정] — 크기 l(큰 2×2)·w(가로 2×1)·s(1×1). 순서가 곧 그리드 순서다.
+          직접 지정은 얼굴이 아래쪽(글자 띠 자리)에 있는 그림에서 사람이 왼쪽 아래 제목 글씨에 가려지지 않게 창을 옮길 때만 쓴다(gapja-60).
           데스크톱은 4열 + dense 로 빈칸 없이 채워진다(l 1 + w 3 + s 10 = 20칸 = 5줄). 칼럼이 늘면 여기 없는 것은 s 로 뒤에 붙는다.
-   figs: 칼럼 en → [{after: 그림을 둘 섹션 번호(그 섹션 뒤), alt}]. 번호 n 은 배열 순서(1부터)이고 파일은 fig-<en>-<n>.webp */
+          얼굴 상자 = 원본 그림에서 절대 잘리면 안 되는 곳(머리카락·모자 포함, 가로·세로 0~1). 타일 그림은 3:2 원본 그대로 두고(미리 자르지 않는다),
+          칸에 깔릴 때 이 상자가 보이는 창 안에 들도록 tilePos 가 object-position 을 정한다.
+   figs: 칼럼 en → [{after: 그림을 둘 섹션 번호(그 섹션 뒤), alt}]. 번호 n 은 배열 순서(1부터)이고 파일은 fig-<en>-<n>.webp(16:9 그대로, 자르지 않는다) */
+const SRC = 1.5;                                                    // 타일 원본 비율(가로/세로) 3:2
+// 칸 비율(가로/세로)의 범위 [폰(≤599px), 태블릿·데스크톱]. 그리드 행 높이 = 열 폭/s 비율이라 작은 칸이 정확히 1.15·1.3 이고,
+// 2×2(l)·2×1(w)는 간격 때문에 조금 다르다. build_site.js CSS 가 AR.s 를 그대로 쓴다
+const AR = { s: [1.15, 1.3], l: [1.14, 1.295], w: [2.33, 2.68] };
+// 한 축: 원본 중 v(0~1)만 보일 때 구간 [lo,hi] 가 들어가는 창 시작점 s 를 골라 object-position(%)으로 바꾼다.
+// v 가 클수록 들어갈 수 있는 p 범위가 넓어지므로 가장 좁은 v(가장 많이 잘리는 칸)로 고르면 다른 칸 비율에서도 들어간다. top 이면 구간을 창 위쪽에 붙인다(아래 글자 띠를 비우려고)
+function axisPos(lo, hi, v, top) {
+  if (v >= 1) return 50;
+  const sMin = Math.max(0, hi - v), sMax = Math.min(lo, 1 - v);
+  const s = sMin <= sMax ? (top ? Math.max(sMin, sMax - 0.02) : (sMin + sMax) / 2) : Math.min(1 - v, Math.max(0, (lo + hi) / 2 - v / 2));
+  return Math.round(s / (1 - v) * 100);
+}
+const tilePos = (face, sz) => axisPos(face[0], face[2], Math.min(1, AR[sz][0] / SRC), false) + "% " + axisPos(face[1], face[3], Math.min(1, SRC / AR[sz][1]), true) + "%";
 module.exports = {
+  SRC, AR, tilePos,
   tiles: [
-    ["zodiac-2027", "l", "50% 40%"],
-    ["birth-time-unknown", "s", "50% 40%"],
-    ["star-cusp", "s", "50% 40%"],
-    ["daeun-reading", "w", "50% 50%"],
-    ["sipseong-lookup-table", "s", "50% 40%"],
-    ["new-year-start", "s", "50% 40%"],
-    ["gapja-60", "s", "50% 40%"],
-    ["tarot-vs-saju", "w", "50% 50%"],
-    ["online-saju-checklist", "s", "50% 40%"],
-    ["free-saju-result-items", "s", "50% 40%"],
-    ["tti-vs-saju-gunghap", "s", "50% 40%"],
-    ["yearly-luck-table", "w", "50% 50%"],
-    ["zodiac-move-years", "s", "50% 40%"],
-    ["saju-helper-guide", "s", "50% 40%"]
+    ["zodiac-2027", "l", [0.43, 0.03, 0.67, 0.42]],
+    ["birth-time-unknown", "s", [0.38, 0.01, 0.58, 0.24]],
+    ["star-cusp", "s", [0.44, 0.15, 0.55, 0.30]],
+    ["daeun-reading", "w", [0.41, 0.21, 0.52, 0.40]],
+    ["sipseong-lookup-table", "s", [0.34, 0.05, 0.54, 0.28]],
+    ["new-year-start", "s", [0.32, 0.04, 0.48, 0.32]],
+    ["gapja-60", "s", [0.40, 0.65, 0.50, 0.78], "0% 50%"],
+    ["tarot-vs-saju", "w", [0.40, 0.05, 0.58, 0.32]],
+    ["online-saju-checklist", "s", [0.26, 0.03, 0.41, 0.35]],
+    ["free-saju-result-items", "s", [0.43, 0.00, 0.62, 0.26]],
+    ["tti-vs-saju-gunghap", "s", [0.40, 0.11, 0.64, 0.42]],
+    ["yearly-luck-table", "w", [0.19, 0.15, 0.34, 0.41]],
+    ["zodiac-move-years", "s", [0.45, 0.23, 0.58, 0.42]],
+    ["saju-helper-guide", "s", [0.42, 0.00, 0.68, 0.31]]
   ],
   figs: {
     "birth-time-unknown": [
