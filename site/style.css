@@ -372,6 +372,7 @@
   .tool .save-btn:hover,.tool #pdf:hover,.tool .invite-btn:hover{background:color-mix(in srgb,var(--fun) 12%,transparent) !important;}
   /* 내 일주 카드(홈 오늘 카드 아래·사주 결과 위쪽) */
   .ilc{margin:14px 0 4px;padding:14px 16px;border-radius:14px;border:1.5px solid #E6B25A;background:var(--surface-2);text-align:center;color:var(--ink);}
+  .ilc-img{display:block;margin:2px auto 12px;max-width:100%;max-height:300px;width:auto;height:auto;border-radius:12px;background:#0b1226;}
   .ilc-k{font-size:12.5px;font-weight:800;color:var(--fun-ink);letter-spacing:.04em;}
   .ilc-n{font-size:26px;font-weight:900;margin-top:2px;}.ilc-n small{font-size:14px;color:var(--muted);font-weight:700;margin-left:4px;}
   .ilc-t{font-size:16px;font-weight:800;margin-top:4px;}
@@ -785,6 +786,10 @@
 @media (prefers-reduced-motion:reduce){.cb img{transition:none;}}
 .colfig{margin:16px 0 4px;}
 .colfig img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
+.iljufig{margin:18px auto 8px;}.iljufig.sq{max-width:600px;}.iljufig.pt{max-width:500px;}
+.iljufig img{display:block;width:100%;height:auto;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
+.cardshow{display:grid;gap:14px;margin:4px 0 6px;}.cardshow.n1{grid-template-columns:minmax(0,300px);}.cardshow.n2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:640px;}
+.cardshow figure{margin:0;}.cardshow img{display:block;width:100%;height:auto;border-radius:14px;background:#0d1424;box-shadow:0 10px 26px -14px rgba(8,12,30,.6);}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}

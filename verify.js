@@ -1220,5 +1220,46 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("칼럼 그림 배선: 4열 dense 그리드(+모바일 2열), 큰 타일 2×2·가로 타일 2×1, 칼럼 글은 섹션 뒤에 그림을 끼우고 16:9 로 보인다", [bs.includes(".colbento{display:grid;grid-template-columns:repeat(4,1fr);") && bs.includes("grid-auto-flow:dense"), bs.includes(".cb-l{grid-column:span 2;grid-row:span 2;}.cb-w{grid-column:span 2;}"), /@media \(max-width:899px\)\{\.colbento\{grid-template-columns:repeat\(2,1fr\)/.test(bs), bs.includes("+colFig(c.en, i)).join"), bs.includes("aspect-ratio:16/9")].join(","), "true,true,true,true,true");
   t("칼럼 그림 배선: 타일 칸 비율을 행 높이로 고정(열 폭÷비율, 컨테이너 단위 cqw — 구형 브라우저는 옛 clamp 행 높이로 폴백), 타일마다 얼굴 상자로 정한 object-position·transform-origin 을 단다", [bs.includes('<div class="cbwrap"><div class="colbento">'), bs.includes(".cbwrap{container-type:inline-size;}"), bs.includes("@supports (width:1cqw){.colbento{grid-auto-rows:calc((100cqw - 3 * var(--cg)) / 4 / ${COLIMG.AR.s[1]});}}"), bs.includes("/ 2 / ${COLIMG.AR.s[0]});}}}"), bs.includes('style="object-position:${pos};transform-origin:${pos}"')].join(","), "true,true,true,true,true");
   t("칼럼 그림: 만든 법(tools/colimg: 작업 목록·생성기·변환기·README)이 리포에 있다", ["jobs.json", "gen.js", "convert.js", "README.md"].every(f => fs.existsSync("tools/colimg/" + f)), true); }
+// ── 일주 그림(사용자의 '일주 60편 시리즈' 그림 → img/ilju) · 결과 카드 예시(img/promo) ──
+{ const IG = require("./content_ilju_img.js"), IL = require("./content_ilju60.js"), AT = ["top", "scene", "love", "seat", "work", "care"];
+  const keys = Object.keys(IG), bad = [];
+  keys.forEach(en => { const a = IG[en];
+    if (!IL[en]) bad.push(en + ":없는 일주");
+    if (!Array.isArray(a) || !a.length || a[0].at !== "top") bad.push(en + ":1번이 top 이 아니다");
+    if (a.filter(f => f.at === "top").length !== 1) bad.push(en + ":top 이 하나가 아니다");
+    a.forEach((f, k) => { if (!AT.includes(f.at)) bad.push(en + ":at " + f.at); if (typeof f.alt !== "string" || f.alt.length < 10 || f.alt.length > 80) bad.push(en + ":alt " + (k + 1)); if (/일주|<|"/.test(f.alt)) bad.push(en + ":alt 에 일주 이름·따옴표 " + (k + 1)); }); });
+  t("일주 그림 데이터: 키는 실제 일주, 1번은 top(대표 그림) 하나, 놓을 곳은 정해진 여섯 중 하나, 설명은 10~80자(일주 이름은 빌드가 붙인다)", [keys.length >= 33, bad.slice(0, 4).join("|")].join("|"), "true|");
+  // 파일: 데이터와 img/ilju 가 1:1, 진짜 webp, 용량 예산 100KB · 결과 카드 70KB
+  const webpOk = f => { const b = fs.readFileSync(f); return b.toString("latin1", 0, 4) === "RIFF" && b.toString("latin1", 8, 12) === "WEBP"; };
+  const want = []; keys.forEach(en => IG[en].forEach((_, k) => want.push(`${en}-${k + 1}.webp`)));
+  const have = fs.existsSync("img/ilju") ? fs.readdirSync("img/ilju") : [];
+  const miss = want.filter(f => !have.includes(f)), orphan = have.filter(f => !want.includes(f));
+  const big = want.filter(f => have.includes(f) && fs.statSync("img/ilju/" + f).size > 100 * 1024), notWebp = want.filter(f => have.includes(f) && !webpOk("img/ilju/" + f));
+  t("일주 그림 파일: 데이터의 그림이 img/ilju 에 다 있고 남는 파일이 없으며(원본 PNG 금지) 전부 진짜 webp · 100KB 이하", [want.length, miss.slice(0, 3).join(","), orphan.slice(0, 3).join(","), big.slice(0, 3).join(","), notWebp.slice(0, 3).join(",")].join("|"), want.length + "||||");
+  const promo = ["tarot-card-1", "tarot-card-2", "namematch-card-1"].map(n => "img/promo/" + n + ".webp");
+  t("결과 카드 예시 파일: 타로 2장 · 이름궁합 1장이 진짜 webp · 70KB 이하로 있다", promo.every(f => fs.existsSync(f) && webpOk(f) && fs.statSync(f).size <= 70 * 1024), true);
+  t("일주 그림 배선: 일주 페이지는 한눈에 보기 아래(top)와 다섯 절 끝에 그림을 끼우고, 1번 그림을 대표 그림(og:image)으로, sj/ilju.json 에 i·iw·ih 를 싣는다", [
+    bs.includes('iljuShareRow(p) + iljuFig(p, "top") +'), ["scene", "love", "seat", "work", "care"].every(a => bs.includes(`\${iljuFig(p, "${a}")}</section>`)),
+    bs.includes("img:(iljuImgs(p.en)[0] || {}).rel || `img/char/ilgan-${G.en}.webp`"), bs.includes("...(im?{i:im.rel,iw:im.w,ih:im.h}:{})"),
+    bs.includes('alt="${esc(p.ko + "일주 그림 — " + f.alt)}" width="${f.w}" height="${f.h}" loading="lazy" decoding="async"'), bs.includes(".iljufig.sq{max-width:600px;}.iljufig.pt{max-width:500px;}")].join(","), "true,true,true,true,true,true");
+  t("결과 카드 예시 배선: 타로·이름궁합 도구 페이지 설명 뒤에 예시 카드 칸(실제 크기 width/height · 지연 로딩)", [bs.includes("${introHtml}${cardShowHtml(t.id)}"), bs.includes("promo/tarot-card-1.webp") && bs.includes("promo/namematch-card-1.webp"), bs.includes('width="${w}" height="${h}" loading="lazy" decoding="async"></figure>`; }).join("")')].join(","), "true,true,true");
+  // 내 일주 카드 — 그림이 있는 일주(i)는 카드 맨 위에 그림을 싣고, 저장 이미지는 일간 그림 대신 그 그림(photo)을 쓴다
+  const code = src.slice(src.indexOf("function ilKey("), src.indexOf("function iljuCard(host,y,m,d)"));
+  const J2 = [{ en: "gapja", ko: "갑자", han: "甲子", g: "gap", t: "겨울 물에 발 담근 대들보", d: "밤의 찬 물이 큰 나무 뿌리를 적시는 모양입니다.", i: "img/ilju/gapja-1.webp", iw: 1200, ih: 800 }];
+  const syncP = v => ({ then: f => syncP(f(v)), catch: () => syncP(v) }), calls = { card: null, saved: null };
+  const mkEl = () => ({ innerHTML: "", addEventListener() {}, querySelector() { return mkEl(); } });
+  const host = { appended: [], querySelector: () => null, appendChild(n) { this.appended.push(n); } };
+  const E = new Function("sjPillars", "escH", "bindSave", "fortuneCard", "track", "shareOut", "document", "fetch", "location", "Image", code + "return {iljuCardKey:iljuCardKey};")(
+    sjPillars, escH, (el, o) => { calls.saved = o; }, o => { calls.card = o; return "CANVAS"; }, () => {}, () => {}, { createElement: () => mkEl() }, () => syncP({ ok: true, json: () => J2 }),
+    { origin: "https://dongnebosal.com", pathname: "/" }, class { set src(v) { this._src = v; if (this.onload) this.onload(); } });
+  let err = ""; try { E.iljuCardKey(host, 0); calls.saved.draw(() => {}); } catch (e) { err = String(e.message); }
+  const h = host.appended[0] ? host.appended[0].innerHTML : "";
+  t("일주 그림 · 내 일주 카드: 그림이 있으면 카드 맨 위에 실제 크기로 싣고, 저장 이미지는 photo 로 그 그림을 쓴다(bosalImg 없음)", [err, h.startsWith('<img class="ilc-img" src="img/ilju/gapja-1.webp" width="1200" height="800" alt="갑자일주 그림"'), calls.card && calls.card.photo && calls.card.photo._src, calls.card && "bosalImg" in calls.card].join("|"), "|true|img/ilju/gapja-1.webp|false");
+  t("일주 그림 · 저장 카드: photo 는 글이 끝난 아래~브랜드 위 남는 높이(220~440)에 둥근 모서리 · 금빛 테로 비율 그대로 그리고, 본문은 네 줄로 줄인다", [src.includes("if(o.photo){var ph=o.photo,mh=Math.max(220,Math.min(440,H-218-(endY+70)))"), src.includes("x.clip();x.drawImage(ph,pxx,pyy,mw,mh);x.restore();"), src.includes("cap2=o.bosalImg||o.photo?4:6"), src.includes("endY=by2+(Math.min(bl2.length,cap2)-1)*60;"), src.includes("else if(o.bosalImg){var bh=300")].join(","), "true,true,true,true,true");
+  // 배치 계산: 가장 긴 별명(두 줄)·본문 네 줄이어도 그림 윗변이 글 아래 70px 밑에 오고, 220 이상이며 브랜드(H-218) 위에서 끝난다
+  { const H = 1920, hy2 = 700 + 285; const lay = (hl, bl) => { const by2 = hy2 + hl * 74 + 56, endY = by2 + (bl - 1) * 60, mh = Math.max(220, Math.min(440, H - 218 - (endY + 70))); return { top: H - 218 - mh, endY, mh }; };
+    const cases = [[1, 1], [1, 4], [2, 4], [3, 4]].map(([a, c]) => lay(a, c));
+    t("일주 그림 · 저장 카드 배치: 별명 1~2줄 · 본문 1~4줄에서 그림이 글과 겹치지 않는다(높이 " + cases.map(c => c.mh).join("/") + ")", cases.slice(0, 3).every(c => c.top >= c.endY + 60 && c.mh >= 220), true); }
+  t("일주 그림: 만든 법(tools/iljuimg/convert.js · README)이 리포에 있다", ["convert.js", "README.md"].every(f => fs.existsSync("tools/iljuimg/" + f)), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

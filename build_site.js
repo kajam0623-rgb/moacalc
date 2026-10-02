@@ -59,6 +59,7 @@ const LEARN_JS = fs.readFileSync(path.join(__dirname, "learn_client.js"), "utf8"
   .replace("/*ILGAN_META*/[]", JSON.stringify(require("./content_ilgan.js").map(g => ({ en: g.en, m: g.metaphor }))));
 const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex").slice(0, 8);
 const COLIMG = require("./content_column_img.js");   // 보살 칼럼 그림 — 홈 벤토 타일 14·칼럼 글 안 큰 그림 36 (img/col/*.webp)
+const ILJUIMG = require("./content_ilju_img.js");    // 일주 페이지 그림 — 사용자의 '일주 60편 시리즈' 그림 (img/ilju/*.webp, tools/iljuimg)
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
@@ -1026,6 +1027,19 @@ function toolColumnsHtml(id){
   const learnChip = id === "saju" ? '<a href="learn.html">명리학 배우기 16강</a>' : "";
   return (l.length || learnChip) ? '<section class="guide"><h2>관련 칼럼</h2><div class="sibs">'+learnChip+l.map(c=>`<a href="column-${c.en}.html">${esc(c.crumb)}</a>`).join("")+'</div></section>' : "";
 }
+/* 결과 카드 예시 — 사용자가 실제로 저장한 결과 카드(Downloads\동네보살 사진 → tools/iljuimg/convert.js → img/promo).
+   도구를 써 보기 전에 무엇을 받는지 보여 준다. 그림 속 이름은 예시 이름(김철수 · 이영희)이다. */
+const CARD_SHOW = {
+  tarot: { lead: "세 장을 다 뽑으면 '이미지로 저장'으로 결과 카드를 받을 수 있습니다. 질문과 뽑은 카드 세 장, 보살의 한마디가 한 장에 담겨 메신저나 스토리에 바로 올릴 수 있습니다.",
+    imgs: [["promo/tarot-card-1.webp", "연애 타로 결과 카드 예시 — 내 마음 절제(역), 그 사람 마음 컵 에이스(역), 둘의 앞날 완드 시종"],
+           ["promo/tarot-card-2.webp", "연애 타로 결과 카드 예시 — 내 마음 완드 5, 그 사람 마음 정의, 둘의 앞날 컵 9(역)"]] },
+  namematch: { lead: "두 이름을 넣고 나면 '이미지로 저장'으로 휴대폰 화면 비율(9:16) 카드를 받을 수 있습니다. 점수와 궁합 유형, 보살의 한마디가 담겨 스토리에 바로 올릴 수 있습니다.",
+    imgs: [["promo/namematch-card-1.webp", "이름궁합 결과 카드 예시 — 김철수 ♥ 이영희, 57점 성장형"]] },
+};
+const cardShowHtml = id => { const c = CARD_SHOW[id]; if (!c) return "";
+  return `<section class="guide"><h2>결과는 이런 카드로 저장됩니다</h2><p style="color:var(--muted);font-size:13px;margin:0 0 12px">${esc(c.lead)}</p><div class="cardshow n${c.imgs.length}">` +
+    c.imgs.map(([f, alt]) => { const [w, h] = webpSize(path.join(IMG_SRC, f));
+      return `<figure><img src="img/${f}" alt="${esc(alt)}" width="${w}" height="${h}" loading="lazy" decoding="async"></figure>`; }).join("") + `</div></section>`; };
 function toolPage(t){
   const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 동네보살";
   const desc = (intro[t.id]||t.desc).slice(0,155);
@@ -1092,7 +1106,7 @@ ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
-${introHtml}
+${introHtml}${cardShowHtml(t.id)}
 ${guideHtml}${elemHtml}${exHtml}${moreHtml}${cauHtml}${toolColumnsHtml(t.id)}${faqHtml}
 ${adSlot()}
 </main>
@@ -2190,6 +2204,23 @@ function iljinPage(p){
    일진 페이지와 간지는 같지만 보는 대상이 다르다. 여기서는 날이 아니라 사람을 본다.
    일간 = 나, 일지 = 배우자 자리라는 틀만 쓰고 일진 쪽 어휘(이 날·도래일·점수)는 쓰지 않는다. */
 function gmTxt(g){ return `${ENGINE.SJ_B[g.empty[0]]}(${ENGINE.SJ_BH[g.empty[0]]}) · ${ENGINE.SJ_B[g.empty[1]]}(${ENGINE.SJ_BH[g.empty[1]]})`; }
+// webp 파일의 가로·세로(헤더만 읽는다). 그림 칸에 실제 크기를 적어 레이아웃이 밀리지 않게 한다
+function webpSize(file){ const b = fs.readFileSync(file), k = b.toString("latin1", 12, 16);
+  if (b.toString("latin1", 0, 4) !== "RIFF" || b.toString("latin1", 8, 12) !== "WEBP") throw new Error("webp 가 아니다: " + file);
+  if (k === "VP8 ") return [b.readUInt16LE(26) & 0x3fff, b.readUInt16LE(28) & 0x3fff];
+  if (k === "VP8X") return [1 + b.readUIntLE(24, 3), 1 + b.readUIntLE(27, 3)];
+  if (k === "VP8L") { const v = b.readUInt32LE(21); return [(v & 0x3fff) + 1, ((v >> 14) & 0x3fff) + 1]; }
+  throw new Error("webp 헤더를 못 읽는다: " + file); }
+/* 일주 그림(content_ilju_img.js) — 파일 번호는 배열 순서(1부터). 데이터에 있는데 파일이 없으면 빌드를 멈춘다(조용히 빠지지 않게).
+   1번 그림은 페이지 대표 그림이라 og:image·구조화 데이터·내 일주 카드(sj/ilju.json)에도 쓴다. */
+const ILJU_IMG = {};
+const iljuImgs = en => ILJU_IMG[en] || (ILJU_IMG[en] = (ILJUIMG[en] || []).map((f, k) => {
+  const rel = `img/ilju/${en}-${k + 1}.webp`, abs = path.join(IMG_SRC, "ilju", `${en}-${k + 1}.webp`);
+  if (!fs.existsSync(abs)) throw new Error(`content_ilju_img.js 의 그림 파일이 없다: ${rel} — node tools/iljuimg/convert.js`);
+  const [w, h] = webpSize(abs); return { ...f, rel, w, h }; }));
+// 가로 그림은 본문 폭 그대로, 정사각·세로 그림은 폭을 줄여 화면을 다 덮지 않게 한다(.iljufig.sq · .pt)
+const iljuFig = (p, at) => iljuImgs(p.en).filter(f => f.at === at).map(f =>
+  `<figure class="iljufig ${f.w > f.h * 1.05 ? "ls" : f.h > f.w * 1.05 ? "pt" : "sq"}"><img src="${f.rel}" alt="${esc(p.ko + "일주 그림 — " + f.alt)}" width="${f.w}" height="${f.h}" loading="lazy" decoding="async"></figure>`).join("");
 // 일주 페이지 공유 줄 — 띠 궁합 페이지와 같은 작은 스크립트(TTI_SHARE_JS)를 쓴다. 공유는 이 일주 페이지 주소(?from=share)로 간다
 const iljuShareRow = p => `<div class="ttishare">` + ttiBtn("이 일주 공유하기", "share_click", `${p.ko}일주`, `${p.ko}일주(${p.han}) — ${p.txt.tag}. 내 일주는 뭘까? 동네보살에서 보기:`, `${DOMAIN}/ilju-${p.en}.html?from=share`) + `</div>` + TTI_SHARE_JS;
 function iljuPage(p){
@@ -2201,7 +2232,7 @@ function iljuPage(p){
     learn: learnMore(`${p.ko}일주는 일간 ${gEl}과 일지 ${J.ko}(${J.tti}띠)가 만든 두 글자입니다. 일주를 읽는 순서는 1강, 일간의 뜻은 5강, 일지 ${J.ko} 속에 숨은 글자는 10강, 일간이 일지에서 놓이는 기운의 단계(${p.un})는 12강, 일지의 십성(${p.tengod})은 6강에서 배웁니다.`, [1, 5, 10, 12, 6]),
     title:`${p.ko}일주 성격 — ${C.tag}, 여자·남자 차이 | 동네보살`,
     desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(C.core,1)} 여자와 남자의 차이, 일과 재물까지.`,
-    url:`${DOMAIN}/ilju-${p.en}.html`, img:`img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
+    url:`${DOMAIN}/ilju-${p.en}.html`, img:(iljuImgs(p.en)[0] || {}).rel || `img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${p.han} ${p.ko}일주 — ${C.tag}`,
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
@@ -2218,7 +2249,7 @@ function iljuPage(p){
        ["육합 띠",p.yukhap],
        ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
-      `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) +
+      `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) + iljuFig(p, "top") +
 
       `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
       `${para(C.core)}</div>`+
@@ -2226,22 +2257,22 @@ function iljuPage(p){
       `<p style="color:var(--muted);font-size:13px;margin:6px 2px 0">${p.ko}일주가 속한 순은 ${p.gm.sun}이고, 이 순에서 짝 없이 남는 지지 ${gmTxt(p.gm)}이 공망(空亡)입니다. 연지·월지·시지까지 견주어 보려면 <a href="gongmang.html">공망 찾기</a>에 생년월일을 넣어 보세요.</p>`+
 
       `<section class="guide"><h2>${C.tag} — ${p.ko}일주가 드러나는 장면</h2>`+
-      `<div class="intro" style="margin-top:0">${para(C.scene)}</div></section>`+
+      `<div class="intro" style="margin-top:0">${para(C.scene)}</div>${iljuFig(p, "scene")}</section>`+
 
       `<section class="guide"><h2>${p.ko}일주 여자와 남자</h2><div class="intro" style="margin-top:0">`+
       `<p style="margin-bottom:10px"><b>${p.ko}일주 여자</b><br>${C.woman}</p>`+
       `<p style="margin-bottom:10px"><b>${p.ko}일주 남자</b><br>${C.man}</p>`+
-      `<p style="margin-bottom:10px">남녀가 갈리는 근거는 십성입니다. 여자는 관성(官星), 남자는 재성(財星)을 배우자로 읽습니다.</p></div></section>`+
+      `<p style="margin-bottom:10px">남녀가 갈리는 근거는 십성입니다. 여자는 관성(官星), 남자는 재성(財星)을 배우자로 읽습니다.</p></div>${iljuFig(p, "love")}</section>`+
 
       `<section class="guide"><h2>일지 ${J.ko}(${J.han}) — 배우자 자리</h2><div class="intro" style="margin-top:0">`+
       `${para(J.seat)}${para(J.pair)}`+
-      `<p style="margin-bottom:10px">상대의 사주와 맞춰 보려면 <a href="gunghap.html">궁합</a>에서 두 사람의 생년월일을 함께 넣어 보세요.</p></div></section>`+
+      `<p style="margin-bottom:10px">상대의 사주와 맞춰 보려면 <a href="gunghap.html">궁합</a>에서 두 사람의 생년월일을 함께 넣어 보세요.</p></div>${iljuFig(p, "seat")}</section>`+
 
       `<section class="guide"><h2>${p.ko}일주의 일과 재물</h2>`+
-      `<div class="intro" style="margin-top:0">${para(C.work)}</div></section>`+
+      `<div class="intro" style="margin-top:0">${para(C.work)}</div>${iljuFig(p, "work")}</section>`+
 
       `<section class="guide"><h2>${p.ko}일주가 조심할 것</h2>`+
-      `<div class="intro" style="margin-top:0">${para(C.care)}</div></section>`+
+      `<div class="intro" style="margin-top:0">${para(C.care)}</div>${iljuFig(p, "care")}</section>`+
 
       `<section class="guide"><h2>십이운성 ${p.un}${josa(p.un,"과/와")} 일지 십성 ${p.tengod}</h2><div class="intro" style="margin-top:0">`+
       `<p style="margin-bottom:10px"><b>십이운성 ${p.un}</b> — ${esc(ILJU_SRC.UN_DESC[p.un])}</p>`+
@@ -3050,6 +3081,10 @@ const extraCss = `
 @media (prefers-reduced-motion:reduce){.cb img{transition:none;}}
 .colfig{margin:16px 0 4px;}
 .colfig img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
+.iljufig{margin:18px auto 8px;}.iljufig.sq{max-width:600px;}.iljufig.pt{max-width:500px;}
+.iljufig img{display:block;width:100%;height:auto;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
+.cardshow{display:grid;gap:14px;margin:4px 0 6px;}.cardshow.n1{grid-template-columns:minmax(0,300px);}.cardshow.n2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:640px;}
+.cardshow figure{margin:0;}.cardshow img{display:block;width:100%;height:auto;border-radius:14px;background:#0d1424;box-shadow:0 10px 26px -14px rgba(8,12,30,.6);}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}
@@ -3239,7 +3274,9 @@ fs.writeFileSync(path.join(OUT,"sj","q.json"), JSON.stringify(SAJU_Q));
 fs.writeFileSync(path.join(OUT,"sj","char.json"), JSON.stringify(SJ_CHAR));
 fs.writeFileSync(path.join(OUT,"sj","easy.json"), JSON.stringify(SJ_EASY));
 // 내 일주 카드(hub.html iljuCard)가 받는 60칸: 일주 페이지 원고의 별명(tag)과 첫 문장. 번호 k = 60갑자 순서(k%10 일간, k%12 일지)
-fs.writeFileSync(path.join(OUT,"sj","ilju.json"), JSON.stringify(ILJU_PAGES.map(p=>({en:p.en,ko:p.ko,han:p.han,g:p.gan.en,t:p.txt.tag,d:p.txt.core.trim().split(/(?<=[.?!])\s+/)[0]}))));
+// i·iw·ih — 일주 그림(content_ilju_img.js 1번)이 있는 일주만. 내 일주 카드가 화면과 저장 이미지에 그 그림을 쓴다
+fs.writeFileSync(path.join(OUT,"sj","ilju.json"), JSON.stringify(ILJU_PAGES.map(p=>{const im=iljuImgs(p.en)[0];
+  return {en:p.en,ko:p.ko,han:p.han,g:p.gan.en,t:p.txt.tag,d:p.txt.core.trim().split(/(?<=[.?!])\s+/)[0],...(im?{i:im.rel,iw:im.w,ih:im.h}:{})};})));
 fs.mkdirSync(path.join(OUT,"hs"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"hs","deep.json"), JSON.stringify(HS_DEEP));
 fs.mkdirSync(path.join(OUT,"zf"),{recursive:true});

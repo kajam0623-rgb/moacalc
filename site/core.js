@@ -1396,14 +1396,20 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         x.fillStyle="#fff";x.font="900 168px "+F;x.fillText(o.big,W/2,470+oy);
         x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy,endY=hy2+(Math.min(hl2.length,3)-1)*74;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
-        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg?4:6;if(bl2.length>cap2){bl2=bl2.slice(0,cap2);bl2[cap2-1]=bl2[cap2-1].replace(/.$/,"…");}
-        for(var k2=0;k2<bl2.length&&k2<cap2;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}}
+        var bl2=wrapText(x,o.body,W-220),by2=hy2+hl2.length*74+56,cap2=o.bosalImg||o.photo?4:6;if(bl2.length>cap2){bl2=bl2.slice(0,cap2);bl2[cap2-1]=bl2[cap2-1].replace(/.$/,"…");}
+        for(var k2=0;k2<bl2.length&&k2<cap2;k2++){x.fillText(bl2[k2],W/2,by2+k2*60);}
+        endY=by2+(Math.min(bl2.length,cap2)-1)*60;}
+      // 그림(내 일주 그림처럼 바탕이 있는 그림) — 글이 끝난 아래부터 브랜드 위까지 남는 높이(220~440)에 비율 그대로, 둥근 모서리 + 금빛 테
+      if(o.photo){var ph=o.photo,mh=Math.max(220,Math.min(440,H-218-(endY+70))),mw=Math.round(ph.width*mh/ph.height);if(mw>W-240){mw=W-240;mh=Math.round(ph.height*mw/ph.width);}
+        var pxx=(W-mw)/2,pyy=H-218-mh;
+        x.save();x.beginPath();if(x.roundRect)x.roundRect(pxx,pyy,mw,mh,22);else x.rect(pxx,pyy,mw,mh);x.clip();x.drawImage(ph,pxx,pyy,mw,mh);x.restore();
+        x.strokeStyle="rgba(212,175,110,.55)";x.lineWidth=2;x.beginPath();if(x.roundRect)x.roundRect(pxx,pyy,mw,mh,22);else x.rect(pxx,pyy,mw,mh);x.stroke();}
       // 아기보살 — 점수에 맞는 자세. 본문을 네 줄로 줄여 겹치지 않게 한다
-      if(o.bosalImg){var bh=300,bw=Math.round(o.bosalImg.width*bh/o.bosalImg.height);x.drawImage(o.bosalImg,(W-bw)/2,H-218-bh,bw,bh);}}
+      else if(o.bosalImg){var bh=300,bw=Math.round(o.bosalImg.width*bh/o.bosalImg.height);x.drawImage(o.bosalImg,(W-bw)/2,H-218-bh,bw,bh);}}
     // 저장 이미지는 출처를 달고 돌아다닌다. 도메인이 안 보이면 퍼져도 유입이 없다
     // 주소 기준선이 테두리(H-48)와 4px 떨어져 'g' 꼬리가 선을 넘었다. 블록째 올려 테두리와 띄운다
     x.fillStyle="#d4af6e";x.font="700 46px "+F;x.fillText("동네보살",W/2,H-158);
@@ -1534,13 +1540,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(!host||k<0||typeof fetch!=="function")return;
     function paint(J){var o=J[k];if(!o||host.querySelector(".ilc"))return;
       var box=document.createElement("div");box.className="ilc";
-      box.innerHTML='<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(o.t)+'</div><p class="ilc-d">'+escH(o.d)+'</p>'+
+      // 일주 그림(o.i)이 있는 일주는 카드 맨 위에 그 그림을 싣고, 저장 이미지에도 일간 그림 대신 쓴다
+      box.innerHTML=(o.i?'<img class="ilc-img" src="'+escH(o.i)+'" width="'+(+o.iw||0)+'" height="'+(+o.ih||0)+'" alt="'+escH(o.ko)+'일주 그림" decoding="async">':'')+
+        '<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(o.t)+'</div><p class="ilc-d">'+escH(o.d)+'</p>'+
         '<div class="ilc-b"><button type="button" class="save-btn">이미지로 저장</button><button type="button" class="ilc-share">친구에게 알려주기</button></div>'+
         '<a class="ilc-a" href="ilju-'+o.en+'.html">'+escH(o.ko)+'일주 자세히 보기 →</a>';
       host.appendChild(box);
       bindSave(box,{draw:function(finish){var im=new Image();
-        function go(x){finish(fortuneCard({tool:"나의 일주",ident:"태어난 날의 두 글자가 그리는 나",big:o.ko+"일주",grade:o.han,headline:o.t,body:o.d,bosalImg:x}));}
-        im.onload=function(){go(im);};im.onerror=function(){go(null);};im.src="img/char/ilgan-"+o.g+".webp";}});
+        function go(x){var c={tool:"나의 일주",ident:"태어난 날의 두 글자가 그리는 나",big:o.ko+"일주",grade:o.han,headline:o.t,body:o.d};
+          if(o.i)c.photo=x;else c.bosalImg=x;finish(fortuneCard(c));}
+        im.onload=function(){go(im);};im.onerror=function(){go(null);};im.src=o.i||"img/char/ilgan-"+o.g+".webp";}});
       box.querySelector(".ilc-share").addEventListener("click",function(){var b=this;track("share_click",{tool:location.pathname});
         shareOut(b,o.ko+"일주","나는 "+o.ko+"일주("+o.han+") — "+o.t+". 내 일주는 뭘까? 동네보살에서 확인: "+location.origin+"/ilju-"+o.en+".html?from=share","친구에게 알려주기");});}
     if(IL_DATA)return paint(IL_DATA);
