@@ -58,6 +58,7 @@ const LEARN_JS = fs.readFileSync(path.join(__dirname, "learn_client.js"), "utf8"
   .replace("/*SHORTS*/[]", JSON.stringify(LEARN.LECTURES.map(c => c.short)))
   .replace("/*ILGAN_META*/[]", JSON.stringify(require("./content_ilgan.js").map(g => ({ en: g.en, m: g.metaphor }))));
 const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex").slice(0, 8);
+const COLIMG = require("./content_column_img.js");   // 보살 칼럼 그림 — 홈 벤토 타일 14·칼럼 글 안 큰 그림 36 (img/col/*.webp)
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
@@ -1750,7 +1751,7 @@ function columnPage(c){
     parent:"column.html", parentName:"보살 칼럼",
     tool:c.tool, tags:c.tags, date:c.date, dateModified:c.dateModified,
     body:`<img class="bosal page-bosal" src="img/bosal/diary.webp" alt="붓으로 적는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><p style="color:var(--muted);font-size:12.5px;margin:4px 0 14px">동네보살 편집팀 · ${ymdKo(c.date)} 작성${c.dateModified ? " · " + ymdKo(c.dateModified) + " 고침" : ""}</p>`+
-      c.sections.map(([h, t])=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("")+
+      c.sections.map(([h, t], i)=>`<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`+colFig(c.en, i)).join("")+
       // 편마다 직접 계산하거나 정리한 표. 문장만 있는 글보다 이 페이지에만 있는 자료가 되게 한다
       (c.tables || []).map(tb=>`<section class="guide"><h2>${esc(tb.h)}</h2>`+
         (tb.lead ? `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">${esc(tb.lead)}</p>` : "")+
@@ -1762,6 +1763,20 @@ function columnPage(c){
     faq:c.faq,
     sibTitle:"다른 칼럼도 보기", sibs:columnChips(c.en),
     related:c.related});
+}
+// 칼럼 글 안 큰 그림: 섹션 i 뒤에 둘 그림(content_column_img.js figs). 파일은 img/col/fig-<en>-<번호>.webp(16:9, 1120×630). 장식 그림이라 alt 만 단다
+const colFig = (en, i) => (COLIMG.figs[en] || []).map((f, k) => ({ ...f, n: k + 1 })).filter(f => f.after === i)
+  .map(f => `<figure class="colfig"><img src="img/col/fig-${en}-${f.n}.webp" alt="${esc(f.alt)}" width="1120" height="630" loading="lazy" decoding="async"></figure>`).join("");
+// 홈 칼럼 벤토: 그림 든 타일 14장이 4열(모바일 2열) 그리드를 가로 끝까지 채운다. 순서·크기·초점은 content_column_img.js 가 정한다
+// 타일 그림은 보이는 비율로 미리 잘라 둔다: s 560×466 · l 960×800 · w 900×375 (tools/colimg/convert.js)
+const CB_DIM = { s: [560, 466], l: [960, 800], w: [900, 375] };
+function columnBento() {
+  const by = Object.fromEntries(COLUMN_PAGES.map(c => [c.en, c]));
+  const order = COLIMG.tiles.filter(t => by[t[0]]).concat(COLUMN_PAGES.filter(c => !COLIMG.tiles.some(t => t[0] === c.en)).map(c => [c.en, "s"]));
+  return `<div class="colbento">` + order.map(([en, sz]) => { const c = by[en], big = sz !== "s", [w, h] = CB_DIM[sz];
+    return `<a class="cb cb-${sz}" href="column-${c.en}.html"><img src="img/col/tile-${c.en}.webp" alt="" width="${w}" height="${h}" loading="lazy" decoding="async">` +
+      `<span class="cb-t"><b>${esc(big ? c.title : c.crumb)}</b>${big ? `<i>${esc(c.lead)}</i>` : ""}</span></a>`; }).join("") +
+    `</div><p class="cb-all"><a href="column.html">보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기 →</a></p>`;
 }
 function columnHubPage(){
   return sitePage({
@@ -2727,8 +2742,7 @@ function indexPage(){
 <div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일을 서버로 보내지 않습니다</b><p>가입을 받지 않고, 넣은 생년월일은 서버로 보내지 않으며 직접 저장을 누르기 전에는 이 기기에도 남기지 않습니다. 홈의 오늘 카드에서 자세히나 내 사주 보기로 넘어갈 때만 다음 화면이 읽을 때까지 이 탭에 잠깐 두었다가 읽는 즉시 지웁니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
 ${COLUMN_PAGES.length ? `<div class="sect"><h2>보살 칼럼</h2><p>사주·운세 볼 때 헷갈리는 것들을 한 편씩 풀었습니다</p></div>
-<div class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"><span>칼럼 ${COLUMN_PAGES.length}편</span></div>${COLUMN_PAGES.map(c=>
-  `<a class="idxrow" href="column-${c.en}.html"><span class="ix-n">${esc(c.title)}</span><span class="ix-d">${esc(c.lead)}</span><span class="ix-a">→</span></a>`).join("")}</section></div>` : ""}
+${columnBento()}` : ""}
 ${learnCta()}
 <a class="dictcta" href="dict.html"><img class="bosal dc-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><b>사주 사전</b><span>일주 60 · 일간 10 · 십성 10 · 별자리 12 · 띠 12 · 타로 78장 뜻을 한곳에</span><i>→</i></a>
 ${homeFaqHtml}
@@ -3012,6 +3026,25 @@ const extraCss = `
 .tk-n{font-size:12.5px;color:var(--muted);line-height:1.5;}
 .today-a2hs{margin-top:10px;padding:9px 12px;border-radius:10px;background:var(--surface-2);font-size:12.5px;line-height:1.55;color:var(--muted);display:flex;gap:8px;align-items:flex-start;justify-content:space-between;}
 .today-a2hs button{flex:none;background:none;border:0;color:var(--muted);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:0;}
+.colbento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:clamp(150px,17vw,215px);grid-auto-flow:dense;gap:12px;margin:14px 0 6px;}
+.cb{position:relative;display:block;overflow:hidden;border-radius:18px;background:#0b1226;isolation:isolate;color:#fff;text-decoration:none;box-shadow:0 10px 26px -14px rgba(8,12,30,.55);}
+.cb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.2,.7,.2,1);}
+.cb::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(6,10,26,.92) 0%,rgba(6,10,26,.6) 34%,rgba(6,10,26,0) 66%);}
+.cb-t{position:absolute;z-index:2;left:0;right:0;bottom:0;padding:14px 15px 15px;display:flex;flex-direction:column;gap:5px;}
+.cb-t b{font-size:15px;line-height:1.35;font-weight:800;letter-spacing:-.3px;text-shadow:0 1px 8px rgba(0,0,0,.5);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.cb-t i{display:none;font-style:normal;font-size:13px;line-height:1.5;color:rgba(255,255,255,.84);}
+.cb-l{grid-column:span 2;grid-row:span 2;}.cb-w{grid-column:span 2;}
+.cb-l .cb-t{padding:22px 24px 24px;}.cb-l .cb-t b{font-size:clamp(20px,2.3vw,28px);}
+.cb-w .cb-t{padding:16px 20px 18px;}.cb-w .cb-t b{font-size:18px;-webkit-line-clamp:2;}
+.cb-l .cb-t i,.cb-w .cb-t i{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.cb:hover img,.cb:focus-visible img{transform:scale(1.06);}
+.cb:focus-visible{outline:3px solid var(--accent);outline-offset:3px;}
+.cb-all{margin:10px 2px 0;text-align:right;font-size:13.5px;font-weight:700;}.cb-all a{color:var(--accent);}
+.sect h2{white-space:nowrap;}
+@media (max-width:899px){.colbento{grid-template-columns:repeat(2,1fr);grid-auto-rows:clamp(128px,36vw,230px);gap:10px;}.cb{border-radius:15px;}.cb-t{padding:12px 13px 13px;}.cb-t b{font-size:14px;}.cb-l .cb-t b{font-size:21px;}.cb-w .cb-t b{font-size:16px;}}
+@media (prefers-reduced-motion:reduce){.cb img{transition:none;}}
+.colfig{margin:16px 0 4px;}
+.colfig img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}

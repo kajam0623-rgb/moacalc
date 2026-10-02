@@ -51,7 +51,7 @@ const pages = fs.readdirSync(SITE).filter(f => f.endsWith(".html")).map(f => {
   const canon = (html.match(/<link rel="canonical" href="([^"]+)"/i) || [])[1] || "";
   const navHtml = (html.match(/<nav class="sitenav">[\s\S]*?<\/nav>/) || [""])[0];
   const links = [...html.matchAll(/href="([a-z0-9-]+)\.html(?:[#?][^"]*)?"/g)].map(m => m[1]);
-  return { f, id, type: typeOf(id), noindex: /noindex/i.test(robots), canon, chars: visible(html).length, body: visible(html.replace(/<div class="sibs">[\s\S]*?<\/div>/g, "")), links, navLinks: [...navHtml.matchAll(/href="([a-z0-9-]+)\.html"/g)].map(m => m[1]) };
+  return { f, id, type: typeOf(id), noindex: /noindex/i.test(robots), canon, chars: visible(html).length, body: visible(html.replace(/<div class="sibs">[\s\S]*?<\/div>/g, "")), links, imgs: [...html.replace(/<script[\s\S]*?<\/script>/gi, "").matchAll(/<img[^>]*\ssrc="([^"]+)"/g)].map(m => m[1]), navLinks: [...navHtml.matchAll(/href="([a-z0-9-]+)\.html"/g)].map(m => m[1]) };
 });
 const byId = Object.fromEntries(pages.map(p => [p.id, p]));
 const sitemap = fs.readFileSync(path.join(SITE, "sitemap.xml"), "utf8");
@@ -94,6 +94,9 @@ gate(0, "사이트맵 주소가 실제 페이지로 있다", [...smIds].filter(i
 gate(0, "사이트맵에 noindex 페이지가 없다", [...smIds].filter(id => byId[id] && byId[id].noindex));
 gate(0, "노출 페이지의 canonical 이 자기 주소다", indexable.filter(p => p.canon !== `${DOMAIN}/${p.id === "index" ? "" : p.f}`).map(p => p.id));
 gate(0, "RSS·llms.txt 에 noindex 페이지 주소가 없다", pages.filter(p => p.noindex && (rss.includes(`/${p.f}<`) || rss.includes(`/${p.f}"`) || llms.includes(`/${p.f})`))).map(p => p.id));
+// 이미지: 화면에 쓰는 <img> 는 모두 webp(아이콘·OG 카드는 <img> 가 아니라 <link>/<meta> 라 해당 없음). 칼럼 그림(img/col)은 파일이 실제로 있어야 한다
+gate(0, "화면에 쓰는 이미지는 모두 webp 다(용량)", pages.flatMap(p => p.imgs.filter(s => !/\.webp([?#]|$)/i.test(s)).map(s => `${p.id}: ${s}`)).slice(0, 20));
+gate(0, "칼럼 그림(img/col) 파일이 모두 있다", pages.flatMap(p => p.imgs.filter(s => /^\/?img\/col\//.test(s) && !fs.existsSync(path.join(SITE, s.replace(/^\//, "")))).map(s => `${p.id}: ${s}`)).slice(0, 20));
 
 // 계산기는 처음엔 noindex 로 숨겼다가(7bf1139) 사이트에서 아예 뺐다. 페이지가 하나라도 생기면 실패
 const calcs = Object.keys(TOOL_CAT).filter(id => typeOf(id) === "계산기");   // hub.html 에 남은 계산기 전부

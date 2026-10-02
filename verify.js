@@ -1184,5 +1184,32 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("홈 저장 통계: 서버가 person_save·person_use 를 허용하고 대시보드에 한글로 보인다", [/const EVENTS = new Set\(\[[^\]]*"person_save"[^\]]*"person_use"/.test(wk3), wk3.includes('person_save: "홈에서 생일 저장"'), wk3.includes('person_use: "저장한 생일로 보기"'), home.includes('ev("person_save")'), home.includes('ev("person_use")')].join(","), "true,true,true,true,true");
   const pol = fs.readFileSync("content_site.js", "utf8");
   t("홈 저장 방침: 홈에서 저장한 생일도 같은 이름표 저장소라는 것과 홈 화면 추가 안내를 닫은 날짜가 적혀 있고, 홈 안내문은 '직접 저장하지 않으면 탭을 닫을 때 지워진다'로 정확하다", [pol.includes("홈 화면에서 저장한 것도 같은 곳에 남습니다"), pol.includes("홈 화면 추가 안내를 닫은 날짜입니다"), bs.includes("직접 저장하지 않으면 이 탭을 닫을 때 지워집니다"), !bs.includes("<p class=\"today-note\">생일은 서버로 보내지 않습니다. 이 탭을 닫으면 지워집니다.")].join(","), "true,true,true,true"); }
+// ── 보살 칼럼 그림(홈 벤토 타일 14 · 글 안 큰 그림 36 · 전부 webp, 용량 예산) ──
+{ const CI = require("./content_column_img.js"), CP = require("./content_column.js"), ens = CP.map(c => c.en);
+  const cnt = {}; CI.tiles.forEach(t => { cnt[t[1]] = (cnt[t[1]] || 0) + 1; });
+  t("칼럼 그림: 타일이 칼럼 전부를 한 번씩 덮고(순서가 곧 그리드 순서) 크기는 큰 1·가로 3·작은 10 → 4열 5줄 20칸이 빈칸 없이 찬다", [CI.tiles.length === ens.length, new Set(CI.tiles.map(x => x[0])).size === ens.length, CI.tiles.every(x => ens.includes(x[0])), "l" + cnt.l + "w" + cnt.w + "s" + cnt.s, (cnt.l || 0) * 4 + (cnt.w || 0) * 2 + (cnt.s || 0)].join(","), "true,true,true,l1w3s10,20");
+  t("칼럼 그림: 타일 초점(pos)은 '가로% 세로%' 꼴이다", CI.tiles.every(x => /^[0-9]{1,3}% [0-9]{1,3}%$/.test(x[2])), true);
+  let nf = 0, badF = [];
+  Object.entries(CI.figs).forEach(([en, a]) => { const c = CP.find(x => x.en === en); if (!c) { badF.push(en + ":칼럼 없음"); return; } nf += a.length;
+    a.forEach((f, k) => { if (!Number.isInteger(f.after) || f.after < 0 || f.after >= c.sections.length) badF.push(en + ":after " + f.after); if (typeof f.alt !== "string" || f.alt.length < 15 || f.alt.length > 120) badF.push(en + ":alt " + k); if (k && f.after <= a[k - 1].after) badF.push(en + ":순서 " + k); }); });
+  t("칼럼 그림: 글 안 그림 36장 — 칼럼마다 2~3장, 섹션 번호가 범위 안·오름차순이고 설명(alt)이 15~120자다", [nf, badF.slice(0, 3).join("|"), Object.values(CI.figs).every(a => a.length >= 2 && a.length <= 3), Object.keys(CI.figs).length === ens.length].join(","), "36,,true,true");
+  // 파일: 전부 있고 진짜 webp 이며 비율·용량 예산을 지킨다 (원본 PNG 2~3MB 를 줄인 것)
+  const webpDim = f => { const b = fs.readFileSync(f); if (b.toString("latin1", 0, 4) !== "RIFF" || b.toString("latin1", 8, 12) !== "WEBP") return null; const k = b.toString("latin1", 12, 16);
+    if (k === "VP8 ") return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff }; if (k === "VP8X") return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
+    if (k === "VP8L") { const v = b.readUInt32LE(21); return { w: (v & 0x3fff) + 1, h: ((v >> 14) & 0x3fff) + 1 }; } return null; };
+  const want = [], tileSz = Object.fromEntries(CI.tiles.map(x => [x[0], x[1]]));
+  CI.tiles.forEach(x => want.push(["tile-" + x[0], x[1] === "w" ? [2.4, 60] : x[1] === "l" ? [1.2, 80] : [1.2, 40]]));
+  Object.entries(CI.figs).forEach(([en, a]) => a.forEach((_, k) => want.push([`fig-${en}-${k + 1}`, [16 / 9, 80]])));
+  const miss = [], notWebp = [], badAsp = [], big = []; let total = 0;
+  want.forEach(([n, [asp, kb]]) => { const f = `img/col/${n}.webp`; if (!fs.existsSync(f)) { miss.push(n); return; } const d = webpDim(f), sz = fs.statSync(f).size; total += sz;
+    if (!d) { notWebp.push(n); return; } if (Math.abs(d.w / d.h - asp) > 0.03 * asp) badAsp.push(n + " " + d.w + "x" + d.h); if (sz > kb * 1024) big.push(n + " " + Math.round(sz / 1024) + "KB"); });
+  t("칼럼 그림: 50장(타일 14 + 글 안 36)이 모두 img/col 에 있다", want.length + "|" + miss.slice(0, 4).join(","), "50|");
+  t("칼럼 그림: 전부 진짜 webp 이고 칸 비율(작은·큰 타일 6:5, 가로 타일 2.4:1, 글 안 16:9)대로 잘려 있다", notWebp.slice(0, 3).join(",") + "|" + badAsp.slice(0, 3).join(","), "|");
+  t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일 80KB · 가로 타일 60KB · 글 안 80KB 이하), 전체 3.2MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 3.2 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
+  t("칼럼 그림: img/col 에는 webp 말고 다른 파일이 없다(원본 PNG 는 리포에 두지 않는다)", fs.readdirSync("img/col").filter(f => !f.endsWith(".webp")).join(","), "");
+  // 배선
+  t("칼럼 그림 배선: 홈은 벤토(columnBento)를 쓰고 옛 한 줄 목록 카드는 없다, 타일 그림은 지연 로딩·alt 비움(제목이 글로 있다)", [bs.includes("${columnBento()}"), bs.includes("function columnBento()"), !bs.includes('class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"'), bs.includes('alt="" width="${w}" height="${h}" loading="lazy" decoding="async"'), bs.includes("보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기")].join(","), "true,true,true,true,true");
+  t("칼럼 그림 배선: 4열 dense 그리드(+모바일 2열), 큰 타일 2×2·가로 타일 2×1, 칼럼 글은 섹션 뒤에 그림을 끼우고 16:9 로 보인다", [bs.includes(".colbento{display:grid;grid-template-columns:repeat(4,1fr);") && bs.includes("grid-auto-flow:dense"), bs.includes(".cb-l{grid-column:span 2;grid-row:span 2;}.cb-w{grid-column:span 2;}"), /@media \(max-width:899px\)\{\.colbento\{grid-template-columns:repeat\(2,1fr\)/.test(bs), bs.includes("+colFig(c.en, i)).join"), bs.includes("aspect-ratio:16/9")].join(","), "true,true,true,true,true");
+  t("칼럼 그림: 만든 법(tools/colimg: 작업 목록·생성기·변환기·README)이 리포에 있다", ["jobs.json", "gen.js", "convert.js", "README.md"].every(f => fs.existsSync("tools/colimg/" + f)), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);
