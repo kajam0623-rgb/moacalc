@@ -58,6 +58,7 @@ module.exports = {
     ["개별 페이지 바로가기", `띠: ${ZO.map(([k, e]) => link("zodiac-" + e + ".html", k + "띠")).join(" · ")}
 일간: ${GAN.map(([k, el, e]) => link("ilgan-" + e + ".html", k + el)).join(" · ")}
 별자리: ${ST.map((k, i) => link("star-" + STEN[i] + ".html", k)).join(" · ")}
+태어난 해별: ${link("newyear.html#by-year", "년생별 2027년 운세(1950~2009년생)")} · 삼재: ${link("samjae.html", "삼재 계산기 — 2027 삼재띠")}
 내 생년월일로 직접 보려면 ${link("newyear.html", "신년운세")}와 ${link("tojeong.html", "토정비결")}을 이용하세요.`],
   ],
   tables: [

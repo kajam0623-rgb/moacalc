@@ -1261,5 +1261,55 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     const cases = [[1, 1], [1, 4], [2, 4], [3, 4]].map(([a, c]) => lay(a, c));
     t("일주 그림 · 저장 카드 배치: 별명 1~2줄 · 본문 1~4줄에서 그림이 글과 겹치지 않는다(높이 " + cases.map(c => c.mh).join("/") + ")", cases.slice(0, 3).every(c => c.top >= c.endY + 60 && c.mh >= 220), true); }
   t("일주 그림: 만든 법(tools/iljuimg/convert.js · README)이 리포에 있다", ["convert.js", "README.md"].every(f => fs.existsSync("tools/iljuimg/" + f)), true); }
+// ── 2027 신년 시즌: 삼재(독립 일람 대조·위젯 실행) · 년생별 60(엔진 대조·원고 문체·중복) · 날짜 · 빌드 배선 ──
+{ const SJ = require("./content_samjae.js"), NB = require("./content_newyear_by.js"), NC = require("./tools/newyear2027/ny_check.js");
+  const B12 = [...Array(12).keys()];
+  // 신자진→인묘진 · 사유축→해자축 · 인오술→신유술 · 해묘미→사오미 (여러 명리 자료 교차 확인 — 코드와 따로 적은 것)
+  const EXP = ["인묘진", "해자축", "신유술", "사오미", "인묘진", "해자축", "신유술", "사오미", "인묘진", "해자축", "신유술", "사오미"];
+  const sjOrd = b => { const ys = B12.filter(yb => SJ.samjae(b, yb)); return ["들삼재", "눌삼재", "날삼재"].map(k => SJ_B[ys.find(yb => SJ.samjae(b, yb) === k)]).join(""); };
+  t("삼재: 띠마다 들·눌·날삼재 세 해(지지)가 독립 일람과 같다", B12.map(sjOrd).join(","), EXP.join(","));
+  t("삼재: 2027(미) 삼재띠 = 토끼·양·돼지 날삼재 · 2028(신) = 호랑이·말·개 들삼재", [2027, 2028].map(y => B12.filter(b => SJ.samjae(b, SJ.branchOf(y))).map(b => SJ_B[b] + ":" + SJ.samjae(b, SJ.branchOf(y))).join(" ")).join(" | "), "묘:날삼재 미:날삼재 해:날삼재 | 인:들삼재 오:들삼재 술:들삼재");
+  t("삼재: 다음 첫해 — 말띠(2027부터) 2028 · 돼지띠(2028부터) 2037 · 쥐띠 2034 · 소띠 2031", [SJ.nextStart(6, 2027), SJ.nextStart(11, 2028), SJ.nextStart(0, 2027), SJ.nextStart(1, 2027)].join(","), "2028,2037,2034,2031");
+  { const js = SJ.widgetScript(NB.Y0, NB.Y1).replace(/^<script>/, "").replace(/<\/script>$/, ""), el = {}, win = {};
+    const doc = { getElementById: id => el[id] || (el[id] = { value: "", innerHTML: "" }) };
+    let err = ""; try { new Function("document", "window", js)(doc, win); } catch (e) { err = String(e.message); }
+    const C = y => win.samjaeCalc ? win.samjaeCalc(y, 2027) : null, s = r => JSON.stringify(r && [r.tti, r.years, r.cur, r.next]);
+    t("삼재 위젯: 1990(말띠) → 2026·2027 아님, 2028 들삼재, 다음 2028~2030", err + s(C(1990)), JSON.stringify(["말띠", [[2026, ""], [2027, ""], [2028, "들삼재"]], null, [2028, 2029, 2030]]));
+    t("삼재 위젯: 1991(양띠) → 2026 눌삼재·2027 날삼재, 지금 2025~2027, 다음 2037~2039", s(C(1991)), JSON.stringify(["양띠", [[2026, "눌삼재"], [2027, "날삼재"], [2028, ""]], [2025, 2026, 2027], [2037, 2038, 2039]]));
+    t("삼재 위젯: 1920~2026 모든 해가 함수(samjae)와 같은 판정", Array.from({ length: 107 }, (_, i) => 1920 + i).every(y => { const r = C(y); return r && r.years.every(([x, k]) => k === SJ.samjae(SJ.branchOf(y), SJ.branchOf(x))); }), true);
+    if (el.sjgo && el.sjgo.onclick) { el.sjy.value = "1987"; el.sjgo.onclick(); }
+    const h = el.sjout ? el.sjout.innerHTML : "";
+    t("삼재 위젯: 1987 입력 → 토끼띠·날삼재·다음 2037~2039·1987년생 페이지 링크", [h.includes("1987년생은 토끼띠"), h.includes("날삼재"), h.includes("2037~2039"), h.includes('href="newyear-1987.html"')].join(","), "true,true,true,true");
+    if (el.sjgo && el.sjgo.onclick) { el.sjy.value = "abc"; el.sjgo.onclick(); }
+    t("삼재 위젯: 숫자가 아니면 안내만 띄운다", (el.sjout ? el.sjout.innerHTML : "").includes("네 자리 숫자"), true); }
+  t("년생별: 1950~2009 60해의 간지가 60갑자를 한 번씩 돈다", new Set(NB.YEARS.map(y => NB.facts(y).ko)).size + "/" + NB.YEARS.length, "60/60");
+  t("년생별: 간지가 만세력 엔진의 연주(그해 7월 1일)와 같다", NB.YEARS.filter(y => { const p = sjPillars(y, 7, 1, null, 0, false).y; return SJ_S[p.s] + SJ_B[p.b] !== NB.facts(y).ko; }).join(","), "");
+  t("년생별: 한 해의 주제 = 정(丁)이 태어난 해 천간에게 되는 십성(엔진 sjTenGod)", NB.YEARS.filter(y => { const f = NB.facts(y); return sjTenGod(f.s, 3) !== f.stem[0]; }).join(","), "");
+  { const ny = src.slice(src.indexOf('{id:"newyear"')), j = ny.indexOf("var TXT="), TX = new Function("return " + ny.slice(j + 8, ny.indexOf("};", j) + 1))();
+    t("년생별: 한 해의 제목이 신년운세 도구의 제목과 같다(같은 사이트에서 말이 갈리지 않게)", NB.STEM_REL.filter(([g, ti]) => !TX[g] || TX[g][0] !== ti).map(x => x[0]).join(","), ""); }
+  t("년생별: 색 띠 — 1990 흰 말띠 · 1952 검은 용띠 · 1959 황금 돼지띠 · 1964 푸른 용띠 · 1976 붉은 용띠", [1990, 1952, 1959, 1964, 1976].map(y => NB.facts(y).color + " " + NB.facts(y).animal).join(","), "흰 말띠,검은 용띠,황금 돼지띠,푸른 용띠,붉은 용띠");
+  t("년생별: 2027년 만 나이 — 1990 36/37 · 2009 17/18 · 1950 76/77", [1990, 2009, 1950].map(y => NB.facts(y).age.join("/")).join(","), "36/37,17/18,76/77");
+  t("년생별 원고: 60해가 모두 있다", NB.YEARS.filter(y => !NB.TEXT[String(y)]).join(","), "");
+  const ne = []; NB.YEARS.forEach(y => { const f = NB.facts(y), o = NB.TEXT[String(y)]; if (!o) return;
+    NC.checkOne({ key: String(y), year: y, short: String(y).slice(2) + "년생", animal: f.animal, rel: { type: f.rel.type }, samjae2027: f.samjae || "삼재 아님", ageNum: f.age, sjNext: f.sjNext }, o).forEach(x => ne.push(x)); });
+  t("년생별 원고: 칸·분량·금지어·명리 용어·존댓말·관계 이름·삼재·나이·연도 규칙(tools/newyear2027/ny_check.js)", ne.slice(0, 4).join(" | "), "");
+  t("년생별 원고: 다른 해와 같은 문장(14자 이상)이 없다", NC.dupSentences(NB.TEXT).slice(0, 3).join(" | "), "");
+  const X = SJ.TEXT, sjAll = [X.intro, X.what, X.custom, X.bok, X.when, X.note].concat(X.kinds.map(k => k[1]), X.tips, X.faq.map(q => q[1]));
+  t("삼재 원고: 금지어 없음 · 모든 문장이 존댓말로 끝난다", NC.SENT(sjAll.join(" ")).filter(x => NC.BAN.test(x) || !NC.END.test(x)).slice(0, 3).join(" | "), "");
+  { const q = X.faq.find(f => f[0].startsWith("2027년 삼재는 몇 년생")), bad = []; const NAME = { "돼지띠": 11, "토끼띠": 3, "양띠": 7 };
+    (q[1].match(/(돼지띠|토끼띠|양띠) ([\d·]+)년생/g) || []).forEach(m => { const [, n, ys] = m.match(/(\S+) ([\d·]+)년생/); ys.split("·").forEach(y => { if (SJ.branchOf(+y) !== NAME[n]) bad.push(n + y); }); });
+    t("삼재 원고: 2027 삼재 출생 연도 목록이 띠 계산과 같다(세 띠 모두 있음)", bad.join(",") + "|" + ["돼지띠", "토끼띠", "양띠"].every(n => q[1].includes(n)), "|true"); }
+  { const jd = sjTermJd(2027, 315), ms = Math.round(((jd - 2440587.5) * 86400000 + 9 * 3600000) / 60000) * 60000, d = new Date(ms), K = require("./vendor-lunar.js"), c = new K(); c.setLunarDate(2027, 1, 1, false); const sol = c.getSolarCalendar();
+    const ip = `${d.getUTCMonth() + 1}월 ${d.getUTCDate()}일 오전 ${d.getUTCHours()}시 ${d.getUTCMinutes()}분`, seol = `${sol.month}월 ${sol.day}일`;
+    t("2027 날짜: 입춘(태양황경 315°)·설날(음력 1월 1일) 계산값이 삼재 원고·삼재 표·신년운세 FAQ·llms 에 적힌 것과 같다(" + ip + " · 설날 " + seol + ")",
+      [X.when.includes(ip) && X.when.includes("설날(음력 1월 1일)은 " + seol), X.faq.some(f => f[1].includes(ip)), bs.includes("2027년은 " + ip), bs.includes("2027년 입춘(" + ip + ")부터 정미년"), bs.includes("입춘(" + ip + ")부터이고, 설날(음력 1월 1일)은 " + seol)].join(","), "true,true,true,true,true"); }
+  t("2027 날짜: 옛 어림값 '입춘 10시 40분경'이 사이트 원고에 남아 있지 않다(한 페이지에서 시각이 둘로 갈리지 않게)", bs.includes("10시 40분"), false);
+  t("2027 시즌 배선: 삼재·년생별 페이지를 쓰고 사이트맵·llms·RSS·띠 페이지·신년운세·토정비결·칼럼에 잇는다",
+    [bs.includes('fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());'), bs.includes("NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));"),
+     bs.includes('smUrl("samjae.html")+"\\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y)))'), bs.includes("## 2027 정미년 — 삼재와 년생별 운세 (61)"), bs.includes('[DOMAIN + "/samjae.html", "삼재 계산기'),
+     bs.includes("${z.ko}띠 년생별 2027년 운세"), bs.includes('<section class="guide" id="by-year">'), bs.includes('t.id==="tojeong" ? \'<section class="guide"><h2>2027 정미년 함께 보기</h2>\'+SEASON_LINKS'),
+     fs.readFileSync("columns/zodiac-2027.js", "utf8").includes('link("samjae.html"')].join(","), "true,true,true,true,true,true,true,true,true");
+  t("2027 시즌 배선: 원고가 없으면 빌드가 멈추고, 위젯은 content_samjae.js 의 것을 쓴다", [bs.includes('throw new Error("년생별 2027 원고 없음: "'), bs.includes("const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);")].join(","), "true,true");
+  t("2027 시즌: 원고 파이프라인(tools/newyear2027)이 리포에 있다", ["make_inputs.js", "STYLE_NY.md", "ny_check.js", "merge_ny.js", "README.md"].every(f => fs.existsSync("tools/newyear2027/" + f)), true); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

@@ -60,6 +60,8 @@ const LEARN_JS = fs.readFileSync(path.join(__dirname, "learn_client.js"), "utf8"
 const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex").slice(0, 8);
 const COLIMG = require("./content_column_img.js");   // 보살 칼럼 그림 — 홈 벤토 타일 14·칼럼 글 안 큰 그림 36 (img/col/*.webp)
 const ILJUIMG = require("./content_ilju_img.js");    // 일주 페이지 그림 — 사용자의 '일주 60편 시리즈' 그림 (img/ilju/*.webp, tools/iljuimg)
+const SAMJAE = require("./content_samjae.js");       // 삼재 규칙과 삼재 계산기 페이지 원고
+const NYB = require("./content_newyear_by.js");      // 년생별 2027 운세 60 — 계산 + 원고(content_newyear_by_text.js, tools/newyear2027)
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
@@ -783,7 +785,7 @@ tojeong:{
  "<b>윤달생과 30일생</b>은 문헌에 정해진 규칙이 없어 통례를 따릅니다. 윤달생은 평달로, 그해 생월이 작은달이면 30일생은 29일로 셉니다.",
  "<b>운세는 참고입니다.</b> 조심할 달은 미리 준비하는 데 쓰세요."]},
 newyear:{
- intro:`2027년은 <b>정미년(丁未年)</b>, 붉은 양의 해입니다. 정(丁)은 등불·촛불 같은 작은 불이고 미(未)는 여름 끝의 뜨거운 흙이라, 2026년 병오년의 큰 불이 한 김 식으며 <b>불이 흙으로 옮겨 가는</b> 해입니다. 크게 벌이던 일을 다듬고 쌓아 두는 쪽에 힘이 실립니다. 사주에서 2027년은 1월 1일이 아니라 <b>입춘(2월 4일 오전 10시 40분경)</b>부터입니다.
+ intro:`2027년은 <b>정미년(丁未年)</b>, 붉은 양의 해입니다. 정(丁)은 등불·촛불 같은 작은 불이고 미(未)는 여름 끝의 뜨거운 흙이라, 2026년 병오년의 큰 불이 한 김 식으며 <b>불이 흙으로 옮겨 가는</b> 해입니다. 크게 벌이던 일을 다듬고 쌓아 두는 쪽에 힘이 실립니다. 사주에서 2027년은 1월 1일이 아니라 <b>입춘(2월 4일 오전 10시 46분)</b>부터입니다.
  2026년은 <b>병오년(丙午年)</b>, 붉은 말의 해입니다. 병(丙)은 태양 같은 큰 불이고 오(午)도 화(火)에 속해, 한 해 전체에 <b>불의 기운</b>이 강하게 흐릅니다. 위 도구에서 어느 해를 볼지 고를 수 있습니다.
  같은 해라도 사람마다 운세가 다른 이유는 <b>내 일간과의 관계</b>가 다르기 때문입니다. 그 해 천간(2027은 정, 2026은 병)이 나에게 재성이면 재물이 움직이는 해, 관성이면 일과 책임이 커지는 해, 인성이면 배움과 귀인의 해가 됩니다. 이 계산기는 그 십성 관계로 한 해의 주제를 뽑습니다.
  여기에 태세 지지(2027은 미, 2026은 오)와 내 띠·일지의 <b>삼합·육합·충</b>을 겹쳐 세부 흐름을 봅니다. 충이 걸리면 이동·변동수가 있으니 이사나 이직 같은 변화를 계획 안으로 끌어오는 편이 낫습니다.`,
@@ -910,7 +912,7 @@ stargunghap:[["별자리 궁합은 뭘 기준으로 보나요?","원소 관계(4
 zodiacfortune:[["띠마다 정해진 시각이 있다는 게 무슨 말인가요?","열두 지지는 해뿐 아니라 하루도 열둘로 나눕니다. 자시는 밤 11시부터 새벽 1시, 축시는 새벽 1시부터 3시 하는 식입니다. 태어난 시각이 어느 지지에 드는지가 사주의 시주가 됩니다."],["띠와 지지는 같은 말인가요?","같은 것을 다르게 부르는 말입니다. 자(子)를 쥐로, 축(丑)을 소로 바꿔 부른 것이 띠입니다. 지지에는 오행과 계절, 하루 중 시각이 함께 붙어 있어 위 표처럼 정리됩니다."],["내 띠는 어떻게 정해지나요?","태어난 해의 지지입니다. 다만 사주에서는 입춘(2월 4일경)에 바뀌므로 1~2월 초 출생이면 앞 해의 띠일 수 있습니다."],["같은 띠면 다 같은 운세인가요?","띠만으로 보면 열두 갈래로 나뉩니다. 더 정밀하게 보려면 생년월일을 모두 넣는 오늘의 운세를 이용하세요."],["삼합·육합·충이 뭔가요?","십이지가 서로 끌어당기거나 부딪히는 정해진 짝입니다. 삼합·육합은 순하게 맞물리고, 충은 변동, 형·해는 마찰을 뜻합니다."],["충이 든 날은 나가지 말아야 하나요?","아니요. 충은 움직이는 기운이라 변동이 잦다는 뜻입니다. 여유 시간을 미리 빼두면 오히려 유리한 날이 됩니다."],["2026년 띠별 운세는요?","2026년은 병오년입니다. 태세 오(午)와 쥐띠는 충, 호랑이·개띠는 삼합, 양띠는 육합, 소띠는 해에 해당합니다."]],
 gunghap:[["별자리 궁합과는 어떻게 다른가요?","보는 재료가 다릅니다. 별자리 궁합은 태양이 지나는 자리와 각도를 보고, 이 페이지는 두 사람의 사주 여덟 글자에서 천간합과 지지의 합충, 오행 보완을 봅니다. 서로 다른 셈이라 결과가 달라도 이상한 것이 아닙니다."],["천간합이 뭔가요?","열 개 천간 중 다섯 쌍이 서로 묶이는 관계입니다. 갑기·을경·병신·정임·무계 다섯 쌍이며, 두 사람의 일간이 이 짝이면 서로 끌리는 힘이 강한 것으로 봅니다."],["나이 차이가 네 살이면 잘 맞나요?","네 살이나 여덟 살 터울이 맞는다는 말은 띠의 삼합에서 나왔습니다. 해의 지지 셋이 한 묶음이 되기 때문입니다. 다만 여덟 글자 중 한 글자만 본 것이라 보조 근거로만 씁니다."],["생년월일만으로 충분한가요?","연·월·일 여섯 글자로 핵심 합·충·오행을 봅니다. 시각까지 넣으면 더 정밀해지므로 만세력에서 확인해보세요."],["점수가 낮으면 헤어져야 하나요?","아니요, 부딪히기 쉬운 지점을 알려주는 지도일 뿐입니다. 아는 만큼 조율할 수 있습니다."],["띠 충이면 결혼하면 안 되나요?","전통적 경계일 뿐 절대 규칙이 아닙니다. 실제로는 일간·일지 관계가 더 중요합니다."]],
 tojeong:[["토정비결은 어떻게 계산하나요?","세는 나이에 그해 숫자(태세수)를 더해 8로, 볼 해 음력 생월의 날수에 그달 숫자(월건수)를 더해 6으로, 음력 생일에 그날 숫자(일진수)를 더해 3으로 나눈 나머지로 세 자리 괘를 세웁니다. 나머지가 0이면 8·6·3을 씁니다."],["양력 생일만 알아도 되나요?","네. 양력 생일을 넣으면 한국천문연구원 기준 음력으로 바꿔 계산합니다."],["태어난 시각이 필요한가요?","아니요. 토정비결은 생시를 쓰지 않습니다."],["풀이는 어디서 온 건가요?","괘를 세우는 방법은 전통 작괘법 그대로이고, 144괘의 풀이 문장은 전통 괘의 방향과 상징을 바탕으로 동네보살이 쉬운 말로 새로 썼습니다."]],
-newyear:[["2027년은 무슨 해인가요?","정미년(丁未年), 붉은 양의 해입니다. 사주에서는 2027년 입춘(2월 4일 오전 10시 40분경)부터 정미년입니다."],["2026년은 무슨 해인가요?","병오년(丙午年), 붉은 말의 해입니다."],["왜 사람마다 신년운세가 다른가요?","같은 해라도 내 일간과의 십성 관계, 내 띠와의 합충이 달라서입니다."],["운세가 나쁘면 한 해를 망치나요?","아니요, 주의 구간을 미리 아는 지도일 뿐입니다. 전략 항목을 참고하세요."]],
+newyear:[["2027년은 무슨 해인가요?","정미년(丁未年), 붉은 양의 해입니다. 사주에서는 2027년 입춘(2월 4일 오전 10시 46분)부터 정미년입니다. 2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재)입니다."],["2026년은 무슨 해인가요?","병오년(丙午年), 붉은 말의 해입니다."],["왜 사람마다 신년운세가 다른가요?","같은 해라도 내 일간과의 십성 관계, 내 띠와의 합충이 달라서입니다."],["운세가 나쁘면 한 해를 망치나요?","아니요, 주의 구간을 미리 아는 지도일 뿐입니다. 전략 항목을 참고하세요."]],
 namematch:[["이름궁합 테스트는 어떻게 계산하나요?","두 이름의 글자를 한 글자씩 번갈아 한 줄로 놓고, 글자마다 한글 획수를 적습니다. 이웃한 두 숫자를 더해 일의 자리만 남기며 한 줄씩 줄이고, 마지막에 남은 두 자리가 궁합 점수입니다."],["이 방식은 뭔가요?","이름 획수를 번갈아 놓고 이웃끼리 더해가는 전통 놀이(속칭 이름궁합 테스트)입니다. 학창 시절 노트에 적어 보던 그 계산을 자동으로 해 줍니다."],["실제 궁합인가요?","재미용입니다. 통계적·명리학적 근거는 없습니다. 생년월일로 보는 진지한 궁합은 사주 궁합 보기를 이용하세요."],["한글 획수는 어떻게 세나요?","글자를 초성·중성·종성으로 나눠 각 자모의 획수를 더합니다. 이 도구는 글자를 이루는 선의 수로 세는 방식(ㄱ=2, ㅁ=4, ㅣ=1)이라 '김'은 7획입니다. 쌍자음·겹받침·복합 모음은 구성 자모를 더합니다. 페이지의 한글 획수표에서 전체 값을 볼 수 있습니다."],["이름 순서를 바꾸면 점수가 왜 달라지나요?","번갈아 놓는 순서가 바뀌면 이웃끼리 더하는 짝이 전부 달라지기 때문입니다. 김철수와 이영희를 이 순서로 넣으면 "+NMX.o1.score+"점, 이영희를 먼저 넣으면 "+NMX.o2.score+"점입니다."],["성도 같이 넣어야 하나요?","성까지 넣는 방식이 가장 흔합니다. 성을 빼면 글자 수와 획수가 달라져 점수가 바뀝니다(철수와 영희는 "+NMX.o3.score+"점). 비교할 때는 한 가지 방식으로 통일하세요."],["다른 사이트와 점수가 왜 다른가요?","한글 획수를 세는 기준(ㄱ=1로 세는 방식과 ㄱ=2로 세는 방식 등), 이름을 놓는 순서, 성을 넣는지가 사이트마다 달라서입니다. 어느 쪽이 정답이라고 할 수 없는 놀이라, 같은 방식으로 여러 쌍을 비교하는 용도로 쓰는 편이 좋습니다."],["영어 이름도 되나요?","한글 이름 기준입니다. 한글로 적어 계산해 보세요. 영문·숫자는 계산에서 빠집니다."],["두 이름의 글자 수가 다르면 어떻게 되나요?","짧은 쪽이 먼저 끝나고 남은 글자가 뒤에 이어 붙습니다. 첫 번째 이름의 글자가 먼저 놓입니다."],["점수가 낮으면 안 맞는 사이인가요?","아닙니다. 숫자를 줄여 가다 나온 값일 뿐 실제 관계와는 별개입니다. 점수가 낮은 조합도 풀이는 '맞춰 가면 좋은 점'과 조언 중심으로 안내합니다."],["마지막 두 자리가 00이면 몇 점인가요?","이 도구는 00이면 100점으로 표시합니다. 05처럼 앞자리가 0이면 5점으로 표시합니다."],["점수대는 어떻게 풀이하나요?","90점 이상 운명형, 75~89점 안정형, 55~74점 성장형, 35~54점 밀당형, 34점 이하 도전형의 다섯 유형으로 풀이합니다. 위의 '점수대별 다섯 가지 유형'을 참고하세요."]],
 };
 
@@ -1102,7 +1104,9 @@ ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` 
 ${tagHtml}
 ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
  : t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
- : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'</section>'
+ : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
+ : t.id==="newyear" ? '<section class="guide" id="by-year"><h2>태어난 해로 보는 2027년 운세</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">1950년생부터 2009년생까지 60갑자 한 바퀴를 한 해씩 풀었습니다. 태어난 해만으로 보는 큰 흐름이고, 위에 생년월일을 넣으면 내 사주로 본 2027년이 나옵니다. 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서 확인하세요.</p>'+nybGrid()+'</section>'
+ : t.id==="tojeong" ? '<section class="guide"><h2>2027 정미년 함께 보기</h2>'+SEASON_LINKS+'</section>'
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
                    '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
@@ -1526,7 +1530,8 @@ function zodiacPage(z, i){
       `<div class="intro" style="margin-top:0"><p style="margin-bottom:10px"><b>삼합 — ${esc(z.match.best.join(", "))}</b><br>${z.match.why}</p>`+
       `<p style="margin-bottom:10px"><b>육합 — ${esc(z.match.hap)}</b><br>${z.match.hapWhy}</p>`+
       `<p style="margin-bottom:10px"><b>충 — ${esc(z.match.hard.join(", "))}</b><br>${z.match.hardWhy}</p><p style="color:var(--muted);font-size:13px;margin:8px 0 0">${z.ko}띠와 열두 띠 모두의 궁합은 <a href="tti-gunghap-${z.en}.html">${z.ko}띠 궁합</a>에서 한눈에 볼 수 있습니다.</p></div></section>`+
-      `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">12띠를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p></div></section>`+
+      `<section class="guide"><h2>${z.ko}띠의 2027 정미년</h2><div class="intro" style="margin-top:0">${para(z.y2027)}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">12띠를 한 장에서 견주려면 <a href=\"column-zodiac-2027.html\">2027 정미년 한눈에</a> 표를 보세요.</p>`+
+      `<p style="margin:10px 0 0"><b>${z.ko}띠 년생별 2027년 운세</b> — ${NYB.YEARS.filter(y => ((y - 4) % 12 + 12) % 12 === i).map(y => `<a href="${nybUrl(y)}">${y}년생</a>`).join(" · ")} · <a href="samjae.html">삼재 계산기</a></p></div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
     faq:[
       [`${z.ko}띠와 잘 맞는 띠는?`,`삼합인 ${z.match.best.join("와 ")}, 육합인 ${z.match.hap}가 대표적입니다. ${z.match.why}`],
@@ -1535,6 +1540,102 @@ function zodiacPage(z, i){
       [`띠는 언제 바뀌나요?`,`사주에서 띠는 양력 1월 1일이 아니라 입춘(2월 4일경)에 바뀝니다. 1월이나 2월 초에 태어났다면 앞 해의 띠일 수 있으니 사주팔자 만세력에서 확인하세요.`]],
     sibTitle:"다른 띠도 보기", sibs:zodiacChips(z.en),
     related:["zodiacfortune","gunghap","todayfortune","newyear"]});
+}
+
+// ── 2027 신년 시즌: 삼재 계산기(samjae.html) + 년생별 2027 운세 60(newyear-YYYY.html) ──
+// 계산은 content_samjae.js·content_newyear_by.js, 원고는 content_newyear_by_text.js(tools/newyear2027 파이프라인).
+const nybUrl = y => `newyear-${y}.html`;
+const SEASON_DATE = "2026-10-03";
+/* 띠가 바뀌는 입춘 시각. 1954-03-21~1961-08-10 은 한국 표준시가 UTC+8:30 이라(tzdb Asia/Seoul,
+   hub.html '출생 당시 시계'와 같은 기준) 그해 입춘(2월)은 1955~1961년이 해당한다 — 그해 시계로는 30분 이르다. */
+function ipchunOf(y) {
+  const k = jdToKst(ENGINE.sjTermJd(y, 315));
+  if (y < 1955 || y > 1961) return { now: k, then: null };
+  const d = new Date(Date.UTC(k.y, k.mo - 1, k.d, k.h, k.mi) - 30 * 60000);
+  return { now: k, then: { y: d.getUTCFullYear(), mo: d.getUTCMonth() + 1, d: d.getUTCDate(), h: d.getUTCHours(), mi: d.getUTCMinutes() } };
+}
+const ipchunShort = ip => { const t = ip.then || ip.now; return `${t.mo}월 ${t.d}일 ${hhmm(t)}`; };
+const ipchunText = ip => ipchunShort(ip) + (ip.then ? `(그해 한국 시계 기준, 지금 시계로는 ${hhmm(ip.now)})` : "");
+// 연대별 묶음(1990년대 열 해) — 년생별 페이지 아래, 신년운세 도구 페이지에 쓴다
+const nybChips = y => '<div class="sibs">' + NYB.YEARS.filter(x => Math.floor(x / 10) === Math.floor(y / 10)).map(x => x === y
+  ? `<span class="cur">${x}년생</span>` : `<a href="${nybUrl(x)}">${x}년생</a>`).join("") + '</div>';
+const nybGrid = () => '<div class="nybg">' + [1950, 1960, 1970, 1980, 1990, 2000].map(d => `<div class="nybg-r"><b>${d}년대</b><div class="sibs">` +
+  NYB.YEARS.filter(x => x >= d && x < d + 10).map(x => `<a href="${nybUrl(x)}">${String(x).slice(2)}년생</a>`).join("") + '</div></div>').join("") + '</div>';
+const SEASON_LINKS = `<div class="sibs"><a href="newyear.html">2027 신년운세</a><a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="column-zodiac-2027.html">2027 정미년 한눈에</a><a href="zodiacfortune.html">띠별 운세</a></div>`;
+
+function nybPage(y) {
+  const f = NYB.facts(y), t = NYB.TEXT[String(y)];
+  if (!t || !t.sum || !t.all || !Array.isArray(t.tips)) throw new Error("년생별 2027 원고 없음: " + y + " — node tools/newyear2027/merge_ny.js");
+  const A = f.animal, yy = String(y).slice(2), ip = ipchunOf(y), pf = NYB.facts(y - 1), same = NYB.sameTti(y);
+  const sjRow = f.samjae ? `${f.samjae} · 2025~2027 삼재의 마지막 해` : `아님 · 다음 삼재 ${f.sjNext}~${f.sjNext + 2}년`;
+  const relRow = f.rel.type === "무난" ? f.relPlain : f.rel.type === "같은 띠" ? `${f.relPlain}(본명년)` : `${f.relPlain} — ${f.rel.name}`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: `${y}년생`, date: SEASON_DATE,
+    title: `${y}년생 2027년 운세 — ${f.ko}년생 ${A}(${yy}년생) | 동네보살`,
+    desc: `${y}년생(${yy}년생 ${f.color} ${A})은 2027년에 만 ${f.age[1]}세가 됩니다. ${t.sum}`,
+    // 배너는 열두 띠 그림(모든 띠에 맞는다). 신년운세 배너(h-newyear)는 2026 병오년의 말 그림이라 다른 띠에 어색하다
+    url: `${DOMAIN}/${nybUrl(y)}`, img: `img/char/zo-${f.en}.webp`, hero: "img/tool/h-zodiacfortune.webp",
+    h1: `${y}년생 2027년 운세`, sub: `${f.ko}(${f.han})년생 · ${f.color} ${A} · 2027년 만 ${f.age[0]}~${f.age[1]}세`,
+    parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
+    tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`],
+    body: `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
+      [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `만 ${f.age[1]}세 (생일 전 ${f.age[0]}세)`],
+       ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
+        .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
+      `<div class="res ttisum"><span>한 줄로</span><b>${esc(t.sum)}</b></div></div>` +
+      `<div class="intro">${bodyCut("zoc-" + f.en, A + " 상징")}${para(t.all)}</div>` +
+      sec(`${y}년생의 일과 돈`, para(t.work)) + sec(`사람과 가족`, para(t.people)) + sec(`건강과 생활`, para(t.life)) +
+      `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
+      sec(`1월~2월 초에 태어났다면 — 띠가 바뀌는 날`, `<p style="margin-bottom:10px">사주에서는 해가 1월 1일이 아니라 입춘에 바뀝니다. ${y}년 입춘은 ${ipchunText(ip)}입니다. ${y}년 1월 1일부터 이 시각 전에 태어났다면 사주로는 ${y - 1}년 ${pf.ko}년생 ${pf.animal}로 봅니다.${y - 1 >= NYB.Y0 ? ` 그런 분은 <a href="${nybUrl(y - 1)}">${y - 1}년생 2027년 운세</a>를 함께 보세요.` : ""}</p>`) +
+      sec(`더 자세히 보기`, `<p style="margin-bottom:10px">생년월일을 넣으면 <a href="newyear.html">2027 신년운세</a>에서 내 사주로 본 한 해와 달마다의 흐름을 볼 수 있습니다. 띠 성격과 궁합은 <a href="zodiac-${f.en}.html">${A} 운세·성격</a>과 <a href="tti-gunghap-${f.en}.html">${A} 궁합</a>에, 삼재는 <a href="samjae.html">삼재 계산기</a>에 있습니다.</p>` +
+        `<p style="margin-bottom:10px">같은 ${A}: ${same.map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join(" · ")}</p>` +
+        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">이 풀이는 태어난 해의 간지와 2027년 정미년의 관계(띠끼리의 관계, 태어난 해 위 글자와 정(丁)의 관계)로 본 큰 흐름입니다. 사주에서 '나'를 뜻하는 글자는 태어난 날의 위 글자(일간)라서, 같은 ${y}년생이라도 생일과 태어난 시각에 따라 한 해의 모양이 달라집니다.</p>`),
+    faq: [
+      [`${y}년생은 2027년에 몇 살인가요?`, `2027년에 생일이 지나면 만 ${f.age[1]}세, 생일 전에는 만 ${f.age[0]}세입니다. 2023년 6월부터 법과 행정에서는 만 나이를 씁니다.`],
+      [`${y}년생은 무슨 띠인가요?`, `${f.ko}(${f.han})년생 ${A}이고, 색으로 부르면 ${f.color} ${A}입니다. 다만 ${y}년 1월 1일부터 입춘(${ipchunShort(ip)}) 전에 태어났다면 사주로는 ${y - 1}년생 ${pf.animal}입니다.`],
+      [`${y}년생은 2027년에 삼재인가요?`, f.samjae ? `네. ${A}는 2025~2027년이 삼재이고, 2027년은 세 해 가운데 마지막 해인 날삼재입니다. 정리하고 다음을 준비하는 해로 보면 됩니다. 다음 삼재는 ${f.sjNext}년부터입니다.` : `아닙니다. ${A}의 다음 삼재는 ${f.sjNext}~${f.sjNext + 2}년입니다.`],
+      [`${y}년생의 2027년 운세는 어떤가요?`, `${t.sum} 한 해의 주제는 ${f.stem[1]}이고, 띠로 보면 ${f.relPlain}입니다.`]],
+    sibTitle: `${Math.floor(y / 10) * 10}년대생 2027년 운세`, sibs: nybChips(y),
+    related: ["newyear", "tojeong", "zodiacfortune", "saju"] });
+}
+
+// 삼재 계산기 위젯 — 정적 페이지라 작은 인라인 스크립트로 단다. 스크립트는 content_samjae.js 가 만들고 verify 가 실행해 맞춰 본다
+const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);
+
+function samjaePage() {
+  const X = SAMJAE.TEXT, now = 2027;
+  const tableRows = SAMJAE.GROUPS.map(g => { const s = SAMJAE.nextStart(g.b[0], now - 11), cur = s <= now && now <= s + 2;
+    const past = s <= now ? s : s - 12, nx = s <= now ? s + 12 : s;
+    return `<tr><th scope="row">${g.name}<small>${g.han}</small></th><td>${g.yrs}</td><td>${past}~${past + 2}${cur ? " <b>(지금)</b>" : ""}</td><td>${nx}~${nx + 2}</td></tr>`; }).join("");
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "삼재", date: SEASON_DATE,
+    title: "삼재 계산기 — 2027 삼재띠·2028 삼재띠(들삼재·눌삼재·날삼재) | 동네보살",
+    desc: "2027년 정미년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년에는 호랑이띠·말띠·개띠가 들삼재에 듭니다. 태어난 해를 넣으면 지금 삼재와 다음 삼재 연도를 바로 계산합니다.",
+    url: `${DOMAIN}/samjae.html`, img: "img/tool/h-zodiacfortune.webp", hero: "img/tool/h-zodiacfortune.webp",
+    h1: "삼재 계산기 — 2027·2028 삼재띠", sub: "띠 셋씩 네 무리 · 12년마다 3년 · 해의 경계는 입춘",
+    parent: "zodiacfortune.html", parentName: "띠별 운세", tool: "zodiacfortune", noTool: true,
+    tags: ["삼재", "2027 삼재띠", "2028 삼재띠", "삼재 계산기", "날삼재", "들삼재", "삼재 나이"],
+    body: `<div class="exbox"><h2>2026·2027·2028 삼재 한눈에</h2>` +
+      [["2026년(병오년)", "돼지띠·토끼띠·양띠 — 눌삼재"], ["2027년(정미년)", "돼지띠·토끼띠·양띠 — 날삼재"], ["2028년(무신년)", "호랑이띠·말띠·개띠 — 들삼재"], ["주기", "12년마다 3년씩(9년은 쉬어 갑니다)"]]
+        .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
+      `<div class="res ttisum"><span>해가 바뀌는 날</span><b>입춘 — 2027년은 2월 4일 오전 10시 46분</b></div></div>` +
+      `<div class="sjw" id="sjw"><h2>내 삼재 계산하기</h2><label for="sjy">태어난 해 (양력)</label><div class="sjw-row"><input id="sjy" type="text" inputmode="numeric" maxlength="4" placeholder="예) 1990" autocomplete="off"><button type="button" id="sjgo">삼재 보기</button></div>` +
+      `<p class="sjw-note">1월~2월 초(입춘 전)에 태어났다면 앞 해를 넣으세요.</p><div id="sjout" aria-live="polite"></div></div>` + SAMJAE_JS +
+      `<div class="intro">${para(X.intro)}</div>` +
+      sec("삼재란 무엇인가요", para(X.what)) +
+      sec("들삼재·눌삼재·날삼재", X.kinds.map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")) +
+      `<section class="guide"><h2>띠별 삼재 연도표</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">띠</th><th scope="col">삼재가 드는 해</th><th scope="col">최근</th><th scope="col">다음</th></tr></thead><tbody>${tableRows}</tbody></table></div>` +
+        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">세 해는 차례로 들삼재·눌삼재·날삼재입니다. 같은 무리의 띠는 나이와 상관없이 같은 해에 삼재를 맞습니다.</p></section>` +
+      `<section class="guide"><h2>삼재 해를 편하게 보내는 법</h2><ul>${X.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="intro" style="margin-top:8px">${para(X.custom)}</div></section>` +
+      sec("복삼재 — 삼재에도 좋은 일이 있습니다", para(X.bok)) +
+      sec("삼재는 언제부터인가요 — 입춘과 설날", para(X.when).replace("사주팔자 만세력", '<a href="saju.html">사주팔자 만세력</a>')) +
+      sec("태어난 해로 보는 2027년 운세", `<p style="margin-bottom:10px">1950년생부터 2009년생까지 한 해씩 2027년 흐름을 풀었습니다. 삼재 여부도 함께 적었습니다.</p>${nybGrid()}`) +
+      `<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${esc(X.note)}</p>`,
+    faq: X.faq,
+    sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
+    related: ["newyear", "tojeong", "zodiacfortune", "saju"] });
 }
 
 // ── 띠 궁합: 허브 1 + 띠별 12 + 짝 78 (content_ttigunghap.js 의 관계표와 원고) ──
@@ -2887,6 +2988,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   smUrl("")+"\n"+pubMeta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
+  smUrl("samjae.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
   smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
@@ -2929,6 +3031,14 @@ ${STAR_PAGES.map(s=>`- [${s.ko}](${DOMAIN}/star-${s.en}.html): ${s.range} · ${s
 ## 띠별 상세 (12)
 
 ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z.ji} · ${z.ele} 기운 · ${z.season}`).join("\n")}
+
+## 2027 정미년 — 삼재와 년생별 운세 (61)
+
+2027년은 정미(丁未)년, 붉은 양의 해다. 사주 달력으로는 2027년 입춘(2월 4일 오전 10시 46분)부터이고, 설날(음력 1월 1일)은 2월 7일이다.
+
+- [삼재 계산기 — 2027·2028 삼재띠](${DOMAIN}/samjae.html): 2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재, 2025~2027의 마지막 해), 2028년은 호랑이띠·말띠·개띠(들삼재, 2028~2030). 띠 셋씩 네 무리마다 12년에 3년씩 든다. 해의 경계는 입춘.
+- 년생별 2027년 운세(60): 1950~2009년생을 한 해씩 풀었다. 주소는 ${DOMAIN}/newyear-출생연도.html 형식이다(예: newyear-1990.html). 페이지마다 그해 간지·띠·2027년 만 나이·정미년과 띠의 관계·삼재 여부·띠가 바뀌는 입춘 시각이 계산되어 있다. 태어난 해만으로 본 큰 흐름이며, 개인 풀이는 생년월일로 보는 신년운세가 따로 있다.
+${NYB.YEARS.map(y=>{const f=NYB.facts(y);return `- [${y}년생 2027년 운세](${DOMAIN}/${nybUrl(y)}): ${f.ko}(${f.han})년생 ${f.animal} · 2027년 만 ${f.age[1]}세 · ${f.stem[1]}${f.samjae?" · "+f.samjae:""}`;}).join("\n")}
 
 ## 띠별 궁합 (13) — 열두 띠 궁합표와 띠마다 짝별 풀이(짝 78편은 각 띠 페이지에서 이어진다)
 
@@ -3085,6 +3195,18 @@ const extraCss = `
 .iljufig img{display:block;width:100%;height:auto;border-radius:16px;background:#0b1226;box-shadow:0 12px 30px -16px rgba(8,12,30,.6);}
 .cardshow{display:grid;gap:14px;margin:4px 0 6px;}.cardshow.n1{grid-template-columns:minmax(0,300px);}.cardshow.n2{grid-template-columns:repeat(2,minmax(0,1fr));max-width:640px;}
 .cardshow figure{margin:0;}.cardshow img{display:block;width:100%;height:auto;border-radius:14px;background:#0d1424;box-shadow:0 10px 26px -14px rgba(8,12,30,.6);}
+.sjw{margin:16px 0;padding:16px;border:1.5px solid #E6B25A;border-radius:16px;background:var(--surface);}.sjw h2{font-size:18px;margin:0 0 10px;}
+.sjw label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.sjw-row{display:flex;gap:8px;}.sjw-row input{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);}
+.sjw-row button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;background:#E6B25A;color:#1b1406;cursor:pointer;white-space:nowrap;}
+.sjw-note{font-size:12.5px;color:var(--muted);margin:8px 2px 0;}.sjw-err{font-size:13px;font-weight:700;color:var(--deduct);margin:10px 0 0;}
+.sjw-res{margin-top:12px;font-size:14.5px;line-height:1.7;}.sjw-res p{margin:6px 0;}
+.sjw-y{list-style:none;padding:0;margin:8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.sjw-y li{border:1px solid var(--line-2);border-radius:10px;padding:8px 4px;text-align:center;font-size:13px;}.sjw-y li b{display:block;font-size:14px;}.sjw-y span.on{color:var(--accent);font-weight:800;}
+.sjt-wrap{overflow-x:auto;}.sjt{width:100%;border-collapse:collapse;font-size:14px;}
+.sjt th,.sjt td{border-bottom:1px solid var(--line);padding:9px 6px;text-align:left;vertical-align:top;word-break:keep-all;}.sjt th small{display:block;font-weight:400;color:var(--muted);font-size:12px;}
+.nybg{display:grid;gap:8px;}.nybg-r{display:grid;grid-template-columns:76px 1fr;gap:8px;align-items:start;}.nybg-r>b{font-size:13px;padding-top:7px;}
+@media (max-width:560px){.nybg-r{grid-template-columns:1fr;gap:4px;}.nybg-r>b{padding-top:0;}}
 .today-reset{margin-top:12px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px 0;}
 .tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0 8px;}
 @media (min-width:760px){.tgrid{grid-template-columns:repeat(6,1fr);}}
@@ -3297,6 +3419,8 @@ DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCat
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
+fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
+NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));
 fs.writeFileSync(path.join(OUT,"tti-gunghap.html"), ttiMainPage());
 TTI.JI.forEach(z=>fs.writeFileSync(path.join(OUT,ttiHubUrl(z.i)), ttiHubPage(z.i)));
 TTI.PAIR_LIST.forEach(p=>fs.writeFileSync(path.join(OUT,ttiPairUrl(p.a,p.b)), ttiPairPage(p.a,p.b)));
@@ -3363,6 +3487,9 @@ const rssRows = [
   [DOMAIN + "/", "동네보살 — 무료 사주·운세 " + pubMeta.length + "가지", RSS_DESC],
   [DOMAIN + "/manse.html", "무료 만세력 — 사주 만세력 계산기", "생년월일시로 사주 여덟 글자와 대운을 계산하는 무료 만세력. 절기는 태양황경으로 직접 계산합니다."],
   [DOMAIN + "/manse-howto.html", "만세력 보는법 — 원국표 읽는 여섯 단계", "만세력 원국표를 오른쪽부터 읽는 법, 일간 찾기, 오행 세기, 십성과 대운을 예시로 풀었습니다."],
+  // 2027 신년 시즌(새 페이지 61) — 뒤 항목이 잘려 나가지 않게 아래 slice 상한을 그만큼 늘렸다
+  [DOMAIN + "/samjae.html", "삼재 계산기 — 2027 삼재띠·2028 삼재띠", "2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년은 호랑이띠·말띠·개띠(들삼재). 태어난 해로 삼재 연도를 계산합니다."],
+  ...NYB.YEARS.map(y => { const f = NYB.facts(y); return [`${DOMAIN}/${nybUrl(y)}`, `${y}년생 2027년 운세`, `${f.ko}년생 ${f.animal}, 2027년 만 ${f.age[1]}세. ${(NYB.TEXT[String(y)] || {}).sum || ""}`]; }),
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
   ...COLUMN_PAGES.map(c => [`${DOMAIN}/column-${c.en}.html`, c.title, c.desc]),
   [DOMAIN + "/learn.html", "명리학 배우기 — 사주 기초부터 대운까지 16강", LEARN_HUB_DESC],
@@ -3382,7 +3509,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120);
+].slice(0, 120 + 61);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
