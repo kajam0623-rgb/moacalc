@@ -1568,7 +1568,8 @@ function nybPage(y) {
   if (!t || !t.sum || !t.all || !Array.isArray(t.tips)) throw new Error("년생별 2027 원고 없음: " + y + " — node tools/newyear2027/merge_ny.js");
   const A = f.animal, yy = String(y).slice(2), ip = ipchunOf(y), pf = NYB.facts(y - 1), same = NYB.sameTti(y);
   const sjRow = f.samjae ? `${f.samjae} · 2025~2027 삼재의 마지막 해` : `아님 · 다음 삼재 ${f.sjNext}~${f.sjNext + 2}년`;
-  const relRow = f.rel.type === "무난" ? f.relPlain : f.rel.type === "같은 띠" ? `${f.relPlain}(본명년)` : `${f.relPlain} — ${f.rel.name}`;
+  // rel.name 은 "해묘미(亥卯未) 삼합"처럼 지지를 그대로 쓴 원문이라 풀이 없이 보여 주면 안 읽힌다. 관계 종류(rel.type)만 덧붙인다
+  const relRow = f.rel.type === "무난" ? f.relPlain : f.rel.type === "같은 띠" ? `${f.relPlain}(본명년)` : `${f.relPlain} — ${f.rel.type}`;
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
     crumb: `${y}년생`, date: SEASON_DATE,

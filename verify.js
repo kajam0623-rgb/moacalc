@@ -1288,6 +1288,8 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   { const ny = src.slice(src.indexOf('{id:"newyear"')), j = ny.indexOf("var TXT="), TX = new Function("return " + ny.slice(j + 8, ny.indexOf("};", j) + 1))();
     t("년생별: 한 해의 제목이 신년운세 도구의 제목과 같다(같은 사이트에서 말이 갈리지 않게)", NB.STEM_REL.filter(([g, ti]) => !TX[g] || TX[g][0] !== ti).map(x => x[0]).join(","), ""); }
   t("년생별: 색 띠 — 1990 흰 말띠 · 1952 검은 용띠 · 1959 황금 돼지띠 · 1964 푸른 용띠 · 1976 붉은 용띠", [1990, 1952, 1959, 1964, 1976].map(y => NB.facts(y).color + " " + NB.facts(y).animal).join(","), "흰 말띠,검은 용띠,황금 돼지띠,푸른 용띠,붉은 용띠");
+  // "정미년과 띠" 표 줄(한눈에 보기)은 rel.name("해묘미(亥卯未) 삼합" 같은 지지 원문)을 그대로 쓰면 안 읽힌다 — 관계 종류만 보여야 한다
+  t("년생별: '정미년과 띠' 표 줄에 지지 원문(rel.name)이 아니라 관계 종류만 들어간다(해묘미·오미·자오 같은 글자 없음)", /relRow = f\.rel\.type === "무난" \? f\.relPlain : f\.rel\.type === "같은 띠" \? `\$\{f\.relPlain\}\(본명년\)` : `\$\{f\.relPlain\} — \$\{f\.rel\.type\}`;/.test(bs), true);
   t("년생별: 2027년 만 나이 — 1990 36/37 · 2009 17/18 · 1950 76/77", [1990, 2009, 1950].map(y => NB.facts(y).age.join("/")).join(","), "36/37,17/18,76/77");
   t("년생별 원고: 60해가 모두 있다", NB.YEARS.filter(y => !NB.TEXT[String(y)]).join(","), "");
   const ne = []; NB.YEARS.forEach(y => { const f = NB.facts(y), o = NB.TEXT[String(y)]; if (!o) return;
