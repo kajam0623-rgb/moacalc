@@ -410,6 +410,7 @@
   .wz-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px;}.wz-nav button{padding:12px 16px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;}
   .wz-next{background:#E6B25A;color:#1b1406;border:0;flex:1;}.wz-prev{background:none;border:1px solid var(--line-2);color:var(--ink);}
   /* 웹툰 칸(sjToon): 굵은 테두리 컷 + 망점 바탕 위 아기보살 말풍선 */
+  .ss-save{display:block;width:100%;margin:14px 0 0;padding:12px;border-radius:12px;border:1.5px solid #e6b25a;background:rgba(230,178,90,.12);color:#f0c46e;font:inherit;font-weight:800;cursor:pointer;}
   .ss-mchart{display:block;width:100%;max-width:420px;margin:4px auto 0;}
   .ss-mchart .rg{stroke:#4a3d29;stroke-width:1;stroke-dasharray:3 3;}.ss-mchart .rl{fill:#efe3c9;font-size:11.5px;font-weight:800;}
   .ss-mchart .ml{fill:none;stroke:#E6B25A;stroke-width:2.5;stroke-linejoin:round;}.ss-mchart .ma{fill:rgba(230,178,90,.16);}
@@ -1195,6 +1196,55 @@
   function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
   /* 사주 결과 맨 위 '한 장 요약' — 일주 별명(sj/ilju.json 의 t, 결과가 뜬 뒤 채운다)·큰 일간 글자·칩·오행 칸·십성 별 그림·상위 N%·풀이 한 스푼.
      o: {p, cnt(오행 5), G(십성 무리 {비겁..}), strong, yEl, nm(호칭, 없으면 ""), hasH}. 문장은 보살 말투, 근거 주석만 존댓말 */
+  // 칸이 하나 이상인 무리 가운데 드문 순서로 셋. 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
+  function sjPcList(G,hasH){
+    return SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;})
+      .filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);}
+  /* 한 장 요약을 그림 한 장(1080 폭)으로 — 화면 카드와 같은 어두운 금빛. 생년월일은 싣지 않는다(공유 카드 규칙)
+     d={ttl,sub,arch,archd,glyph:{ch,el},chips:[],five:[[목..수 개수]],radar:{lab:[],val:[],top},pcts:[[v,설명]],line} */
+  function sumCanvas(d){
+    if(typeof document==="undefined")return null;
+    var W=1080,F='"Noto Sans KR","Malgun Gothic",sans-serif',EH={목:"#5fbe84",화:"#e57468",토:"#d9a648",금:"#a9b0ba",수:"#5f9de0"},HJ={목:"木",화:"火",토:"土",금:"金",수:"水"};
+    var H=570+(d.five?290:0)+610+(d.line?100:0)+(d.pcts&&d.pcts.length?190:0)+170,c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");
+    var g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#2a2219");g.addColorStop(1,"#17120d");x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.strokeStyle="rgba(230,178,90,.45)";x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
+    function rr(px,py,w,h,r){x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h);}
+    x.textAlign="left";x.fillStyle="#e6b25a";x.font="800 30px "+F;x.fillText("한눈에",90,120);
+    x.fillStyle="#fff";x.font="900 58px "+F;x.fillText(d.ttl,90,192);
+    x.fillStyle="#bba98a";x.font="500 30px "+F;x.fillText(d.sub,90,240);
+    var y=280;rr(90,y,W-180,170,24);x.fillStyle="rgba(230,178,90,.10)";x.fill();x.strokeStyle="rgba(230,178,90,.45)";x.stroke();
+    var gx=120;if(d.glyph){rr(120,y+25,120,120,18);x.strokeStyle="#e6b25a";x.lineWidth=3;x.stroke();x.lineWidth=2;x.textAlign="center";x.fillStyle=EH[d.glyph.el]||"#f0c46e";x.font="900 84px "+F;x.fillText(d.glyph.ch,180,y+116);gx=270;}
+    x.textAlign="left";x.fillStyle="#f0c46e";x.font="900 46px "+F;var at=wrapText(x,d.arch,W-90-gx-40);x.fillText(at[0],gx,y+(at.length>1?72:88));if(at[1])x.fillText(at[1],gx,y+124);
+    x.fillStyle="#efe3c9";x.font="500 27px "+F;if(at.length<2){var ad=wrapText(x,d.archd||"",W-90-gx-60);x.fillText((ad[0]||"")+(ad.length>1?"…":""),gx,y+136);}
+    y+=200;
+    // 칩
+    x.font="800 26px "+F;var cx0=90;(d.chips||[]).forEach(function(t,i){var w=x.measureText(t).width+44;if(cx0+w>W-90)return;rr(cx0,y,w,50,25);
+      x.fillStyle=i?"rgba(255,255,255,.04)":"rgba(230,178,90,.16)";x.fill();x.strokeStyle="rgba(230,178,90,.6)";x.stroke();x.fillStyle=i?"#efe3c9":"#f0c46e";x.fillText(t,cx0+22,y+34);cx0+=w+14;});
+    y+=90;
+    // 다섯 기운 칸
+    if(d.five){x.fillStyle="#e6b25a";x.font="900 30px "+F;x.fillText("五行",90,y+10);x.fillStyle="#fff";x.font="800 30px "+F;x.fillText("타고난 다섯 기운",170,y+10);
+      var mx=Math.max.apply(null,d.five)||1,tw=(W-180-4*24)/5;["목","화","토","금","수"].forEach(function(e,i){var tx=90+i*(tw+24),ty=y+36,th=110;
+        rr(tx,ty,tw,th,18);x.fillStyle="rgba(255,255,255,.06)";x.fill();var fh=th*d.five[i]/mx;
+        if(fh>0){x.save();rr(tx,ty,tw,th,18);x.clip();x.fillStyle=EH[e];x.fillRect(tx,ty+th-fh,tw,fh);x.restore();}
+        x.textAlign="center";x.fillStyle=EH[e];x.font="900 40px "+F;x.fillText(HJ[e],tx+tw/2,ty+th+48);x.fillStyle="#efe3c9";x.font="800 26px "+F;x.fillText(String(d.five[i]),tx+tw/2,ty+th+82);x.textAlign="left";});
+      y+=290;}
+    // 별 그림
+    var R=d.radar,N=R.lab.length,ccx=W/2,ccy=y+312,rad=200,top=R.top||Math.max.apply(null,R.val)||1;
+    x.fillStyle="#e6b25a";x.font="900 30px "+F;x.fillText(d.five?"十星":"四軸",90,y+10);x.fillStyle="#fff";x.font="800 30px "+F;x.fillText(d.five?"무엇에 무게가 실렸나":"어디에 힘이 실렸나",170,y+10);
+    function P(k,r){var a=(-90+360/N*k)*Math.PI/180;return [ccx+r*Math.cos(a),ccy+r*Math.sin(a)];}
+    x.strokeStyle="#4a3d29";x.lineWidth=2;[1,2/3,1/3].forEach(function(f){x.beginPath();for(var k=0;k<N;k++){var q=P(k,rad*f);k?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]);}x.closePath();x.stroke();});
+    for(var k=0;k<N;k++){var q=P(k,rad);x.beginPath();x.moveTo(ccx,ccy);x.lineTo(q[0],q[1]);x.stroke();}
+    x.beginPath();for(k=0;k<N;k++){q=P(k,rad*R.val[k]/top);k?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]);}x.closePath();x.fillStyle="rgba(230,178,90,.28)";x.fill();x.strokeStyle="#e6b25a";x.lineWidth=4;x.stroke();
+    var vmax=Math.max.apply(null,R.val);x.textAlign="center";
+    for(k=0;k<N;k++){q=P(k,rad*R.val[k]/top);x.beginPath();x.arc(q[0],q[1],10,0,6.283);x.fillStyle=R.val[k]===vmax&&vmax?"#f08a7c":"#e6b25a";x.fill();
+      var l=P(k,rad+52);x.fillStyle="#efe3c9";x.font="800 30px "+F;x.fillText(R.lab[k]+" "+R.val[k],l[0],l[1]+10);}
+    y+=610;
+    if(d.line){x.fillStyle="#fff";x.font="700 30px "+F;wrapText(x,d.line,W-200).slice(0,2).forEach(function(t,i){x.fillText(t,W/2,y+40+i*44);});y+=100;}
+    // 상위 %
+    if(d.pcts&&d.pcts.length){var pw=(W-180-(d.pcts.length-1)*24)/d.pcts.length;d.pcts.forEach(function(p,i){var px=90+i*(pw+24);rr(px,y,pw,150,22);x.fillStyle="rgba(230,178,90,.10)";x.fill();x.strokeStyle="rgba(230,178,90,.45)";x.stroke();
+        x.fillStyle="#efe3c9";x.font="800 26px "+F;x.fillText("상위",px+pw/2,y+42);x.fillStyle="#f08a7c";x.font="900 56px "+F;x.fillText(p[0]+"%",px+pw/2,y+102);x.fillStyle="#bba98a";x.font="600 22px "+F;x.fillText(p[1],px+pw/2,y+136);});y+=190;}
+    x.fillStyle="#e6b25a";x.font="800 40px "+F;x.fillText("동네보살",W/2,H-110);x.fillStyle="#bba98a";x.font="600 28px "+F;x.fillText(BRAND_URL,W/2,H-68);
+    return c;}
   function sjSumHtml(o){
     var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
     var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
@@ -1213,9 +1263,7 @@
         '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+LBL[k]+' '+vals[k]+'</text>';}).join("")+'</svg>';
     // 상위 N%: 칸이 하나 이상인 무리 가운데 드문 순서로 셋
     var PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"};
-    var pc=SJ_GRP5.map(function(k,i){return {k:k,c:o.G[k],v:sjPct(i,o.G[k],o.hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;});
-    // 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
-    pc=pc.filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);
+    var pc=sjPcList(o.G,o.hasH);
     var pcts=pc.map(function(x){return '<div class="ss-pc"><b>상위 <em>'+x.v+'</em>%</b><span>'+PL[x.k]+' 기운 '+x.c+'칸</span></div>';}).join("");
     var who=o.nm?o.nm.replace(/[&<>"']/g,""):"";
     return '<div class="sj-sum">'+
@@ -1227,6 +1275,7 @@
       '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-mo"></div>'+
+      '<button type="button" class="ss-save">이 요약 이미지로 저장</button>'+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
   /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
@@ -1267,7 +1316,7 @@
       (o.pct&&o.pct.v<=60?'<div class="ss-pcs"><div class="ss-pc"><b>상위 <em>'+o.pct.v+'</em>%</b><span>'+escH(o.pct.t)+'</span></div></div><p class="ss-note">'+escH(o.pct.n)+'</p>':'')+
       '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
       '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
-      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div></div>';}
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div><button type="button" class="ss-save">이 요약 이미지로 저장</button></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
@@ -1688,7 +1737,11 @@
   function askFx(el,o){
     var out=el.querySelector("#out");if(!out)return;o=o||{};
     if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
-    if(o.sum)out.insertAdjacentHTML("afterbegin",o.sum);
+    if(o.sumO){out.insertAdjacentHTML("afterbegin",sumCard(o.sumO));var so=o.sumO,mx=so.axes.reduce(function(m,a){return a[1]>m[1]?a:m;});
+      bindSave(el,{btn:".sj-sum .ss-save",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
+        cb(sumCanvas({ttl:so.ttl,sub:so.sub,arch:tx(".ss-arch-t")||so.arch,archd:tx(".ss-arch-d")||so.archd,chips:bx?[].map.call(bx.querySelectorAll(".ss-chips span"),function(n){return n.textContent;}):so.chips,
+        radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)일세.",
+        pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});}
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
       var sb=out.querySelector(".share-btn");
@@ -1803,6 +1856,7 @@
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
   var PLAIN_SKIP="a,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  function plainTxt(t){if(typeof document==="undefined")return t;var d=document.createElement("div");d.textContent=t;plainWords(d);return d.textContent;}
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
     var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];
@@ -2259,12 +2313,16 @@
     }else{
       if(o.score!=null){
         x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470+oy);
-        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);
+        // 상위 % 띠(사주 카드와 같은 모양) — 등급과 핵심 문장 사이
+        if(o.badge){x.font="800 28px "+F;var sbw=x.measureText(o.badge).width+60,sbx=(W-sbw)/2,sby=590+oy;
+          x.fillStyle="rgba(230,178,90,.16)";x.beginPath();if(x.roundRect)x.roundRect(sbx,sby,sbw,48,24);else x.rect(sbx,sby,sbw,48);x.fill();
+          x.strokeStyle="rgba(230,178,90,.7)";x.lineWidth=2;x.stroke();x.fillStyle="#f0c46e";x.fillText(o.badge,W/2,sby+34);}}
       else if(o.big){ // 점수 없는 카드(내 일주): 큰 이름 + 한자
         x.fillStyle="#fff";x.font="900 168px "+F;x.fillText(o.big,W/2,470+oy);
         x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy,endY=hy2+(Math.min(hl2.length,3)-1)*74;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy+(o.badge&&o.score!=null?40:0),endY=hy2+(Math.min(hl2.length,3)-1)*74;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
@@ -2285,11 +2343,11 @@
     x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-76);
     return c;}
   function bindSave(el,opts){
-    var b=el.querySelector(".save-btn");if(!b)return;
+    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
     b.addEventListener("click",function(){
       track("image_save",{tool:location.pathname});
       var name=(opts&&opts.file||"dongnebosal")+".png";
-      function reset(){b.textContent="이미지로 저장";}
+      function reset(){b.textContent=lab;}
       function finish(c){
         if(!c){reset();return;}
         try{c.toBlob(function(blob){
@@ -2379,8 +2437,8 @@
     p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
-  function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
-    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
+  function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){
+    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose,badge:badge||""});}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){
     function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
@@ -3551,6 +3609,11 @@
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
+      bindSave(el,{btn:".sj-sum .ss-save",file:"사주_한장요약",draw:function(cb){var bx=el.querySelector(".sj-sum"),PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"},myE=SJ_EL[SJ_ES[ds]],vals=SJ_GRP5.map(function(k){return G[k];});
+        cb(sumCanvas({ttl:(nmHon(nm)?nmHon(nm)+" ":"")+"한 장 요약",sub:"타고난 기운의 무게중심",arch:bx.querySelector(".ss-arch-t").textContent,archd:bx.querySelector(".ss-arch-d").textContent,
+          glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,
+          radar:{lab:["자아","표현","재물","명예","학문"],val:vals,top:Math.max(3,Math.max.apply(null,vals))},
+          pcts:sjPcList(G,!!p.h).map(function(q){return [q.v,PL[q.k]+" "+q.c+"칸"];})}));}});
       (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
         if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
@@ -4556,7 +4619,7 @@
       ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
-      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{sum:sumCard({ttl:"두 사람 한 장 요약",sub:"이 궁합의 무게중심",arch:grade,archd:SJ_TTI[A.y.b]+"띠 × "+SJ_TTI[B.y.b]+"띠 · "+sc+"점",
+      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry",ghPct(sc)<=60?"짝 20만 쌍 가운데 상위 "+ghPct(sc)+"%":"");askFx(el,{sumO:({ttl:"두 사람 한 장 요약",sub:"이 궁합의 무게중심",arch:grade,archd:SJ_TTI[A.y.b]+"띠 × "+SJ_TTI[B.y.b]+"띠 · "+sc+"점",
         chips:["나 "+SJ_S[A.d.s]+SJ_B[A.d.b]+"일주",(inv&&inv.n?inv.n:"상대")+" "+SJ_S[B.d.s]+SJ_B[B.d.b]+"일주",topAx[0]+"이 가장 강한 축"],axes:subs,pct:{v:ghPct(sc),t:"궁합 "+sc+"점",n:"1950~2009년생 두 사람 짝 20만 쌍(시각 모름)을 같은 계산으로 돌려, "+sc+"점 이상이 나온 짝의 비율입니다."},
         spoon:"네 축은 끌림·안정·소통·생활일세. 점수가 낮은 축은 안 맞는다는 뜻이 아니라, 둘이 약속으로 채워 갈 자리라는 뜻이네."}),toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤네. 큰 그림부터 보세."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 보세. 모자란 쪽을 서로 채워 주면 되네."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었네."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법일세."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
@@ -4651,7 +4714,7 @@
       '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       nyLast={me:me,YR:YR,YW:YW};fillNy();
       bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");
-      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{sum:sumCard({ttl:YR+"년 한 장 요약",sub:"이 해의 무게중심",arch:Y.ko+"년 · "+rel+"의 해",archd:score+"점 · "+SJ_TTI[yb]+"띠 · "+SJ_S[me.d.s]+"일간",
+      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,plainTxt(rel)+"의 해",plainTxt(Y.ko+"년, 자네에게 "+rel+"의 해일세"),T[1],score>=60?"newyear":"worry",nyPct(score,YS,YB)<=60?YR+"년 운 상위 "+nyPct(score,YS,YB)+"%":"");askFx(el,{sumO:({ttl:YR+"년 한 장 요약",sub:"이 해의 무게중심",arch:Y.ko+"년 · "+rel+"의 해",archd:score+"점 · "+SJ_TTI[yb]+"띠 · "+SJ_S[me.d.s]+"일간",
         chips:[rel+"의 해",SJ_TTI[yb]+"띠"],axes:sub,pct:{v:nyPct(score,YS,YB),t:YR+"년 운 "+score+"점",n:"60갑자 일주와 12띠를 짝지은 720가지를 같은 계산으로 돌려, "+YR+"년 점수가 "+score+"점 이상인 비율입니다."},
         spoon:"네 칸은 그 해 하늘 글자가 자네를 뜻하는 글자와 맺는 관계로 매긴 점수일세. 낮은 칸은 막히는 곳이 아니라 미리 챙겨 두면 좋은 곳이네."}),toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
     askWire(el,go,["그 해 글자를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},

@@ -434,6 +434,55 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
   /* 사주 결과 맨 위 '한 장 요약' — 일주 별명(sj/ilju.json 의 t, 결과가 뜬 뒤 채운다)·큰 일간 글자·칩·오행 칸·십성 별 그림·상위 N%·풀이 한 스푼.
      o: {p, cnt(오행 5), G(십성 무리 {비겁..}), strong, yEl, nm(호칭, 없으면 ""), hasH}. 문장은 보살 말투, 근거 주석만 존댓말 */
+  // 칸이 하나 이상인 무리 가운데 드문 순서로 셋. 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
+  function sjPcList(G,hasH){
+    return SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;})
+      .filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);}
+  /* 한 장 요약을 그림 한 장(1080 폭)으로 — 화면 카드와 같은 어두운 금빛. 생년월일은 싣지 않는다(공유 카드 규칙)
+     d={ttl,sub,arch,archd,glyph:{ch,el},chips:[],five:[[목..수 개수]],radar:{lab:[],val:[],top},pcts:[[v,설명]],line} */
+  function sumCanvas(d){
+    if(typeof document==="undefined")return null;
+    var W=1080,F='"Noto Sans KR","Malgun Gothic",sans-serif',EH={목:"#5fbe84",화:"#e57468",토:"#d9a648",금:"#a9b0ba",수:"#5f9de0"},HJ={목:"木",화:"火",토:"土",금:"金",수:"水"};
+    var H=570+(d.five?290:0)+610+(d.line?100:0)+(d.pcts&&d.pcts.length?190:0)+170,c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");
+    var g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#2a2219");g.addColorStop(1,"#17120d");x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.strokeStyle="rgba(230,178,90,.45)";x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
+    function rr(px,py,w,h,r){x.beginPath();if(x.roundRect)x.roundRect(px,py,w,h,r);else x.rect(px,py,w,h);}
+    x.textAlign="left";x.fillStyle="#e6b25a";x.font="800 30px "+F;x.fillText("한눈에",90,120);
+    x.fillStyle="#fff";x.font="900 58px "+F;x.fillText(d.ttl,90,192);
+    x.fillStyle="#bba98a";x.font="500 30px "+F;x.fillText(d.sub,90,240);
+    var y=280;rr(90,y,W-180,170,24);x.fillStyle="rgba(230,178,90,.10)";x.fill();x.strokeStyle="rgba(230,178,90,.45)";x.stroke();
+    var gx=120;if(d.glyph){rr(120,y+25,120,120,18);x.strokeStyle="#e6b25a";x.lineWidth=3;x.stroke();x.lineWidth=2;x.textAlign="center";x.fillStyle=EH[d.glyph.el]||"#f0c46e";x.font="900 84px "+F;x.fillText(d.glyph.ch,180,y+116);gx=270;}
+    x.textAlign="left";x.fillStyle="#f0c46e";x.font="900 46px "+F;var at=wrapText(x,d.arch,W-90-gx-40);x.fillText(at[0],gx,y+(at.length>1?72:88));if(at[1])x.fillText(at[1],gx,y+124);
+    x.fillStyle="#efe3c9";x.font="500 27px "+F;if(at.length<2){var ad=wrapText(x,d.archd||"",W-90-gx-60);x.fillText((ad[0]||"")+(ad.length>1?"…":""),gx,y+136);}
+    y+=200;
+    // 칩
+    x.font="800 26px "+F;var cx0=90;(d.chips||[]).forEach(function(t,i){var w=x.measureText(t).width+44;if(cx0+w>W-90)return;rr(cx0,y,w,50,25);
+      x.fillStyle=i?"rgba(255,255,255,.04)":"rgba(230,178,90,.16)";x.fill();x.strokeStyle="rgba(230,178,90,.6)";x.stroke();x.fillStyle=i?"#efe3c9":"#f0c46e";x.fillText(t,cx0+22,y+34);cx0+=w+14;});
+    y+=90;
+    // 다섯 기운 칸
+    if(d.five){x.fillStyle="#e6b25a";x.font="900 30px "+F;x.fillText("五行",90,y+10);x.fillStyle="#fff";x.font="800 30px "+F;x.fillText("타고난 다섯 기운",170,y+10);
+      var mx=Math.max.apply(null,d.five)||1,tw=(W-180-4*24)/5;["목","화","토","금","수"].forEach(function(e,i){var tx=90+i*(tw+24),ty=y+36,th=110;
+        rr(tx,ty,tw,th,18);x.fillStyle="rgba(255,255,255,.06)";x.fill();var fh=th*d.five[i]/mx;
+        if(fh>0){x.save();rr(tx,ty,tw,th,18);x.clip();x.fillStyle=EH[e];x.fillRect(tx,ty+th-fh,tw,fh);x.restore();}
+        x.textAlign="center";x.fillStyle=EH[e];x.font="900 40px "+F;x.fillText(HJ[e],tx+tw/2,ty+th+48);x.fillStyle="#efe3c9";x.font="800 26px "+F;x.fillText(String(d.five[i]),tx+tw/2,ty+th+82);x.textAlign="left";});
+      y+=290;}
+    // 별 그림
+    var R=d.radar,N=R.lab.length,ccx=W/2,ccy=y+312,rad=200,top=R.top||Math.max.apply(null,R.val)||1;
+    x.fillStyle="#e6b25a";x.font="900 30px "+F;x.fillText(d.five?"十星":"四軸",90,y+10);x.fillStyle="#fff";x.font="800 30px "+F;x.fillText(d.five?"무엇에 무게가 실렸나":"어디에 힘이 실렸나",170,y+10);
+    function P(k,r){var a=(-90+360/N*k)*Math.PI/180;return [ccx+r*Math.cos(a),ccy+r*Math.sin(a)];}
+    x.strokeStyle="#4a3d29";x.lineWidth=2;[1,2/3,1/3].forEach(function(f){x.beginPath();for(var k=0;k<N;k++){var q=P(k,rad*f);k?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]);}x.closePath();x.stroke();});
+    for(var k=0;k<N;k++){var q=P(k,rad);x.beginPath();x.moveTo(ccx,ccy);x.lineTo(q[0],q[1]);x.stroke();}
+    x.beginPath();for(k=0;k<N;k++){q=P(k,rad*R.val[k]/top);k?x.lineTo(q[0],q[1]):x.moveTo(q[0],q[1]);}x.closePath();x.fillStyle="rgba(230,178,90,.28)";x.fill();x.strokeStyle="#e6b25a";x.lineWidth=4;x.stroke();
+    var vmax=Math.max.apply(null,R.val);x.textAlign="center";
+    for(k=0;k<N;k++){q=P(k,rad*R.val[k]/top);x.beginPath();x.arc(q[0],q[1],10,0,6.283);x.fillStyle=R.val[k]===vmax&&vmax?"#f08a7c":"#e6b25a";x.fill();
+      var l=P(k,rad+52);x.fillStyle="#efe3c9";x.font="800 30px "+F;x.fillText(R.lab[k]+" "+R.val[k],l[0],l[1]+10);}
+    y+=610;
+    if(d.line){x.fillStyle="#fff";x.font="700 30px "+F;wrapText(x,d.line,W-200).slice(0,2).forEach(function(t,i){x.fillText(t,W/2,y+40+i*44);});y+=100;}
+    // 상위 %
+    if(d.pcts&&d.pcts.length){var pw=(W-180-(d.pcts.length-1)*24)/d.pcts.length;d.pcts.forEach(function(p,i){var px=90+i*(pw+24);rr(px,y,pw,150,22);x.fillStyle="rgba(230,178,90,.10)";x.fill();x.strokeStyle="rgba(230,178,90,.45)";x.stroke();
+        x.fillStyle="#efe3c9";x.font="800 26px "+F;x.fillText("상위",px+pw/2,y+42);x.fillStyle="#f08a7c";x.font="900 56px "+F;x.fillText(p[0]+"%",px+pw/2,y+102);x.fillStyle="#bba98a";x.font="600 22px "+F;x.fillText(p[1],px+pw/2,y+136);});y+=190;}
+    x.fillStyle="#e6b25a";x.font="800 40px "+F;x.fillText("동네보살",W/2,H-110);x.fillStyle="#bba98a";x.font="600 28px "+F;x.fillText(BRAND_URL,W/2,H-68);
+    return c;}
   function sjSumHtml(o){
     var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
     var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
@@ -452,9 +501,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+LBL[k]+' '+vals[k]+'</text>';}).join("")+'</svg>';
     // 상위 N%: 칸이 하나 이상인 무리 가운데 드문 순서로 셋
     var PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"};
-    var pc=SJ_GRP5.map(function(k,i){return {k:k,c:o.G[k],v:sjPct(i,o.G[k],o.hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;});
-    // 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
-    pc=pc.filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);
+    var pc=sjPcList(o.G,o.hasH);
     var pcts=pc.map(function(x){return '<div class="ss-pc"><b>상위 <em>'+x.v+'</em>%</b><span>'+PL[x.k]+' 기운 '+x.c+'칸</span></div>';}).join("");
     var who=o.nm?o.nm.replace(/[&<>"']/g,""):"";
     return '<div class="sj-sum">'+
@@ -466,6 +513,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-mo"></div>'+
+      '<button type="button" class="ss-save">이 요약 이미지로 저장</button>'+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
   /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
@@ -506,7 +554,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       (o.pct&&o.pct.v<=60?'<div class="ss-pcs"><div class="ss-pc"><b>상위 <em>'+o.pct.v+'</em>%</b><span>'+escH(o.pct.t)+'</span></div></div><p class="ss-note">'+escH(o.pct.n)+'</p>':'')+
       '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
       '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
-      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div></div>';}
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div><button type="button" class="ss-save">이 요약 이미지로 저장</button></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
@@ -927,7 +975,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function askFx(el,o){
     var out=el.querySelector("#out");if(!out)return;o=o||{};
     if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
-    if(o.sum)out.insertAdjacentHTML("afterbegin",o.sum);
+    if(o.sumO){out.insertAdjacentHTML("afterbegin",sumCard(o.sumO));var so=o.sumO,mx=so.axes.reduce(function(m,a){return a[1]>m[1]?a:m;});
+      bindSave(el,{btn:".sj-sum .ss-save",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
+        cb(sumCanvas({ttl:so.ttl,sub:so.sub,arch:tx(".ss-arch-t")||so.arch,archd:tx(".ss-arch-d")||so.archd,chips:bx?[].map.call(bx.querySelectorAll(".ss-chips span"),function(n){return n.textContent;}):so.chips,
+        radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)일세.",
+        pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});}
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
       var sb=out.querySelector(".share-btn");
@@ -1042,6 +1094,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
   var PLAIN_SKIP="a,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  function plainTxt(t){if(typeof document==="undefined")return t;var d=document.createElement("div");d.textContent=t;plainWords(d);return d.textContent;}
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
     var seen={},w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),tn,nodes=[];
@@ -1498,12 +1551,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     }else{
       if(o.score!=null){
         x.fillStyle="#fff";x.font="900 210px "+F;x.fillText(String(o.score),W/2,470+oy);
-        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
+        x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);
+        // 상위 % 띠(사주 카드와 같은 모양) — 등급과 핵심 문장 사이
+        if(o.badge){x.font="800 28px "+F;var sbw=x.measureText(o.badge).width+60,sbx=(W-sbw)/2,sby=590+oy;
+          x.fillStyle="rgba(230,178,90,.16)";x.beginPath();if(x.roundRect)x.roundRect(sbx,sby,sbw,48,24);else x.rect(sbx,sby,sbw,48);x.fill();
+          x.strokeStyle="rgba(230,178,90,.7)";x.lineWidth=2;x.stroke();x.fillStyle="#f0c46e";x.fillText(o.badge,W/2,sby+34);}}
       else if(o.big){ // 점수 없는 카드(내 일주): 큰 이름 + 한자
         x.fillStyle="#fff";x.font="900 168px "+F;x.fillText(o.big,W/2,470+oy);
         x.fillStyle="#d4af6e";x.font="700 60px "+F;x.fillText(o.grade||"",W/2,556+oy);}
       x.fillStyle="#fff";x.font="800 54px "+F;
-      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy,endY=hy2+(Math.min(hl2.length,3)-1)*74;
+      var hl2=wrapText(x,o.headline||"",W-200),hy2=(o.score!=null||o.big?700:520)+oy+(o.badge&&o.score!=null?40:0),endY=hy2+(Math.min(hl2.length,3)-1)*74;
       for(var j2=0;j2<hl2.length&&j2<3;j2++){x.fillText(hl2[j2],W/2,hy2+j2*74);}
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 38px "+F;
@@ -1524,11 +1581,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-76);
     return c;}
   function bindSave(el,opts){
-    var b=el.querySelector(".save-btn");if(!b)return;
+    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
     b.addEventListener("click",function(){
       track("image_save",{tool:location.pathname});
       var name=(opts&&opts.file||"dongnebosal")+".png";
-      function reset(){b.textContent="이미지로 저장";}
+      function reset(){b.textContent=lab;}
       function finish(c){
         if(!c){reset();return;}
         try{c.toBlob(function(blob){
@@ -1618,8 +1675,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
-  function saveScore(el,file,tool,ident,score,grade,headline,body,pose){
-    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose});}
+  function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){
+    bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose,badge:badge||""});}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){
     function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
