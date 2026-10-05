@@ -13,7 +13,7 @@
     "binding": "ASSETS",
     // 404-page 설정이 있으면 없는 주소는 Worker 대신 404 페이지로 갈 수 있어, 통계 경로만 Worker 가 먼저 받게 못 박는다
     // /namematch.html 은 ?a=&b= 공유 링크의 미리보기 글을 바꾸려고 Worker 가 먼저 받는다(그 쿼리가 없으면 정적 자산 그대로 돌려준다)
-    "run_worker_first": ["/api/*", "/admin", "/namematch.html"],
+    "run_worker_first": ["/api/*", "/admin", "/namematch.html", "/gunghap.html"],
     // 기본값(auto-trailing-slash)은 /saju.html 을 /saju 로 돌려보낸다. 캐노니컬이 전부 .html 이라 끈다.
     "html_handling": "none",
     // 없는 주소는 site/404.html 을 404 상태로 보여준다

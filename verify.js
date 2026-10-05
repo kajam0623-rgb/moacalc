@@ -1061,13 +1061,13 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   // 미리보기(워커): 같은 점수 함수를 쓰는 nm_core.js 가 hub.html 의 NM 블록과 같고, ogName 이 한글만 받아 제목을 만든다
   { const hubNM = src.slice(src.indexOf("/*NM-BEGIN*/"), src.indexOf("/*NM-END*/") + "/*NM-END*/".length).replace(/\r\n/g, "\n"), coreTxt = fs.readFileSync("nm_core.js", "utf8").replace(/\r\n/g, "\n"), ogTxt = fs.readFileSync("worker_og.js", "utf8");
     t("이름궁합 미리보기: nm_core.js 가 hub.html 의 NM 블록 그대로다(오래됐으면 node build_site.js 로 다시 만든다)", coreTxt.includes(hubNM) && coreTxt.trimEnd().endsWith("export { nmCalc, nmBand };"), true);
-    const ogName = new Function(coreTxt.replace(/^export \{[^}]*\};?\s*$/m, "") + "\n" + ogTxt.replace(/^import .*$/m, "").replace("export function ogName", "function ogName") + "\nreturn ogName;")();
+    const ogName = new Function(coreTxt.replace(/^export \{[^}]*\};?\s*$/m, "") + "\n" + ogTxt.replace(/^import .*$/m, "").replace(/^export function /gm, "function ") + "\nreturn ogName;")();
     const og1 = ogName("김철수", "이영희"), og2 = ogName("김철수", ""), og3 = ogName("김철민", "");
     t("이름궁합 미리보기: 김철수♥이영희 = '57점 · 성장형' 제목(화면과 같은 점수)이고 설명에 내 이름 안내가 있다", [og1 && og1.title, og1 && og1.desc.endsWith("내 이름으로도 해 보세요 — 동네보살"), og1 && og1.title.includes(nmCalc("김철수", "이영희").score + "점")].join("|"), "김철수 ♥ 이영희 이름궁합 57점 · 성장형|true|true");
     t("이름궁합 미리보기: 초대 링크 제목은 조사가 맞다(김철수가·김철민이)", [og2 && og2.title, og3 && og3.title].join("|"), "김철수가 이름궁합을 보냈어요|김철민이 이름궁합을 보냈어요");
     t("이름궁합 미리보기: 한글이 아니거나 비었거나 너무 긴 값은 null(원래 페이지 그대로)", [ogName("", "이영희"), ogName("Kim", "이영희"), ogName("김철수", "Lee"), ogName("<b>", ""), ogName("김철수철수철수철수철수", "이영희"), ogName("김철수", "이영희이영희이영희이영희")].map(x => x === null).join(","), "true,true,true,true,true,true");
     const wk2 = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
-    t("이름궁합 미리보기: 워커가 /namematch.html 만 받아 title·description·og 를 바꾸고 noindex 를 붙이며 wrangler 가 그 경로를 먼저 워커로 보낸다", [wk2.includes('import { ogName } from "./worker_og.js"'), wk2.includes('pathname === "/namematch.html"'), wk2.includes("new HTMLRewriter()"), wk2.includes('.on(\'meta[property="og:title"]\'') && wk2.includes('.on(\'meta[property="og:description"]\'') && wk2.includes('.on(\'meta[name="description"]\''), wk2.includes("noindex,follow"), /"run_worker_first": \["\/api\/\*", "\/admin", "\/namematch\.html"\]/.test(wr)].join(","), "true,true,true,true,true,true");
+    t("이름궁합 미리보기: 워커가 /namematch.html 만 받아 title·description·og 를 바꾸고 noindex 를 붙이며 wrangler 가 그 경로를 먼저 워커로 보낸다", [wk2.includes('import { ogName, ogInvite } from "./worker_og.js"'), wk2.includes('pathname === "/namematch.html"'), wk2.includes("new HTMLRewriter()"), wk2.includes('.on(\'meta[property="og:title"]\'') && wk2.includes('.on(\'meta[property="og:description"]\'') && wk2.includes('.on(\'meta[name="description"]\''), wk2.includes("noindex,follow"), /"run_worker_first": \["\/api\/\*", "\/admin", "\/namematch\.html", "\/gunghap\.html"\]/.test(wr)].join(","), "true,true,true,true,true,true");
     t("이름궁합 링크: 개인정보처리방침에 이름이 링크에 담긴다는 것과 서버가 저장하지 않는다는 것이 적혀 있다", /넣은 이름\(초대 링크는 내 이름만\)이 담깁니다/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("서버가 이름을 읽지만 저장하지 않습니다"), true); } }
 // ── 띠 궁합(content_ttigunghap.js): 관계표를 독립 표와 대조 · 원고 78쌍·12띠 · 문체·중복 · 빌드 배선 ──
 { const TT = require("./content_ttigunghap.js"), NAMES = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
@@ -1343,6 +1343,13 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   { const M = [3,1,-1,4,0,2,5,-2,1,0,3,1].map((v, i) => ({ y: 2026, m: (i + 9) % 12 + 1, sc: v })), mv = sjMonthSvg(M);
     t("사주 열두 달 그래프: 점 12개·힘 실리는 달(3점↑) 금색 4·아낄 달(0점 아래) 붉은 2, 결과 뒤 MSC 로 채운다", [(mv.match(/<circle/g) || []).length, (mv.match(/class="mg"/g) || []).length, (mv.match(/class="mb"/g) || []).length, !/NaN|undefined/.test(mv), src.includes("mo.innerHTML=sjMonthSvg(MSC)")].join(","), "12,4,2,true,true"); }
   t("궁합·신년 한 장 요약: 상위 % 카드와 별 그림 4축이 그려지고 undefined/NaN 없음", [sc.includes('class="ss-pc"'), (sc.match(/<circle/g) || []).length === 4, !/undefined|NaN/.test(sc)].join(","), "true,true,true");
+}
+// ── 궁합 초대 링크 미리보기(워커) — 보낸 사람 이름만 쓰고, 이상한 이름은 '친구'로, 초대 없으면 null ──
+{ const ogTxt = fs.readFileSync("worker_og.js", "utf8"), coreTxt = fs.readFileSync("nm_core.js", "utf8");
+  const ogInvite = new Function(coreTxt.replace(/^export \{[^}]*\};?\s*$/m, "") + "\n" + ogTxt.replace(/^import .*$/m, "").replace(/^export function /gm, "function ") + "\nreturn ogInvite;")();
+  const a = ogInvite({ p: [0, 0, 0, 0, 0, 0], g: "m", n: "민지" }), b = ogInvite({ n: "<b>" }), w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
+  t("궁합 초대 미리보기: '민지님이…' / 이상한 이름은 '친구가…' / 초대 없으면 null, 워커가 /gunghap.html 을 먼저 받고 noindex", [a.title, b.title, ogInvite(null), w.includes('if (pathname === "/gunghap.html") return gunghapInvite(req, env);'), wr.includes('"/gunghap.html"]'), /gunghapInvite[\s\S]{0,1200}noindex/.test(w)].join("|"),
+    "민지님이 사주 궁합 보자고 보냈어요|친구가 사주 궁합 보자고 보냈어요||true|true|true");
 }
 // ── 오늘의 운세 상위 N% — TF_PCT(60일주×필요한 기운)는 엔진으로 다시 잰 표본과 맞고, 점수는 tfScore 하나로 셈한다 ──
 { const R = require("./tools/sajupct/make_tf_pct.js").make(7), tot = A => A.flat().reduce((a, b) => a + b, 0), T1 = tot(TF_PCT), T2 = tot(R);

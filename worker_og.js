@@ -16,3 +16,11 @@ export function ogName(a, b) {
   const band = nmBand(r.score);
   return { title: `${a} ♥ ${b} 이름궁합 ${r.score}점 · ${band.type}`, desc: `${band.msg} 내 이름으로도 해 보세요 — 동네보살` };
 }
+
+// 궁합 초대 링크(gunghap.html?i=)의 미리보기 글. data 는 /api/invite 가 저장한 {p,g,n}. 보낸 사람 이름만 쓰고 사주 글자는 싣지 않는다
+const NICK = /^[가-힣A-Za-z0-9 ]{1,10}$/;
+export function ogInvite(data) {
+  if (!data || typeof data !== "object") return null;
+  const n = typeof data.n === "string" && NICK.test(data.n.trim()) ? data.n.trim() : "";
+  return { title: `${n ? n + "님이" : "친구가"} 사주 궁합 보자고 보냈어요`, desc: "내 생일만 넣으면 우리 둘의 궁합 점수(끌림·안정·소통·생활)가 바로 나와요. 생년월일은 서버로 가지 않아요." };
+}
