@@ -6,7 +6,7 @@
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 경로만 여기로 보낸다. */
 import { ogName } from "./worker_og.js";
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
-const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit", "person_save", "person_use"]);
+const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit", "person_save", "person_use", "wz_2", "wz_3", "wz_4", "wz_5", "wz_all", "saju_go", "sum_img", "topic_in", "chap_2", "chap_3", "chap_4", "chap_all"]);
 const BOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly/i;
 const SELF = /(^|\.)dongnebosal\.com$/;
 const kstDay = (off = 0) => new Date(Date.now() + 9 * 3600e3 - off * 86400e3).toISOString().slice(0, 10);
@@ -141,7 +141,7 @@ async function admin(req, env) {
   const rows = Object.entries(byDay);
   const sumV = rows.reduce((a, [, x]) => a + x.v, 0), sumP = rows.reduce((a, [, x]) => a + x.p, 0), sumM = rows.reduce((a, [, x]) => a + x.m, 0);
   const maxP = Math.max(1, ...rows.map(([, x]) => x.p));
-  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", share_visit: "공유 링크로 들어옴", person_save: "홈에서 생일 저장", person_use: "저장한 생일로 보기", image_save: "이미지 저장", js_error: "스크립트 오류" };
+  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", share_visit: "공유 링크로 들어옴", wz_2: "사주 입력 2단계(생일)까지", wz_3: "사주 입력 3단계(시각)까지", wz_4: "사주 입력 4단계(성별)까지", wz_5: "사주 입력 5단계(질문)까지", wz_all: "사주 '한 번에 입력' 누름", saju_go: "사주 보기 누름", sum_img: "한 장 요약 이미지 저장", chap_2: "사주 결과 2장 펼침", chap_3: "사주 결과 3장 펼침", chap_4: "사주 결과 4장 펼침", chap_all: "사주 결과 '한 번에 다 보기'", topic_in: "주제 입구(?q=)로 들어옴", person_save: "홈에서 생일 저장", person_use: "저장한 생일로 보기", image_save: "이미지 저장", js_error: "스크립트 오류" };
   const table = (head, list) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${list.join("") || `<tr><td colspan="${head.length}" class="mu">아직 기록 없음</td></tr>`}</table>`;
   const kpi = (label, v, unit = "") => `<div class="k"><span>${label}</span><b>${v.toLocaleString("ko-KR")}${unit}</b></div>`;
 

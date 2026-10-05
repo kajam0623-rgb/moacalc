@@ -564,13 +564,34 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       ["달마다 흐름","diary","이제 시간 순서로 보세. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 물결일세."],
       ["맺는 말","bow","끝까지 읽어 줬구먼. 마지막으로 한마디만 더 하지."]];}
   // P: [[라벨 첫머리, 포즈, 대사]] — 라벨은 접힌 칸(.fold-lab)이나 덩어리 제목(h3)에서 찾는다
+  /* 결과를 장으로 나눈다 — 첫 장만 보이고, 버튼을 눌러야 다음 장이 열린다. C=[[경계 웹툰 칸 이름, 장 제목, 버튼 글]]
+     경계는 sjToon 이 단 data-k. 못 찾은 경계는 건너뛴다. 다음 장 버튼은 앞 장 끝에 둬서 앞 장이 닫혀 있으면 같이 숨는다 */
+  function sjChapters(out,C){
+    if(!out||typeof document==="undefined")return;
+    var M=[];C.forEach(function(c){var t=out.querySelector('.sj-toon[data-k="'+c[0]+'"]');if(!t)return;while(t.parentNode&&t.parentNode!==out)t=t.parentNode;if(t.parentNode)M.push({n:t,c:c});});
+    var total=M.length+1,wraps=[];
+    M.forEach(function(m,i){
+      var w=document.createElement("div");w.className="sj-chap";w.hidden=true;out.insertBefore(w,m.n);
+      var stop=M[i+1]?M[i+1].n:null,n=m.n;while(n&&n!==stop){var nx=n.nextSibling;w.appendChild(n);n=nx;}
+      var b=document.createElement("div");b.className="sj-next";
+      b.innerHTML='<button type="button" class="sj-next-b"><small>'+(i+2)+' / '+total+'</small><b>'+escH(m.c[1])+'</b><span>'+escH(m.c[2])+'</span></button>'+
+        (i<M.length-1?'<button type="button" class="sj-next-all">남은 이야기 한 번에 다 보기</button>':'');
+      if(i)wraps[i-1].appendChild(b);else out.insertBefore(b,w);
+      wraps.push(w);
+      b.querySelector(".sj-next-b").addEventListener("click",function(){w.hidden=false;b.remove();track("chap_"+(i+2));
+        try{w.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});
+      var all=b.querySelector(".sj-next-all");
+      if(all)all.addEventListener("click",function(){track("chap_all");[].forEach.call(out.querySelectorAll(".sj-chap"),function(x){x.hidden=false;});
+        [].forEach.call(out.querySelectorAll(".sj-next"),function(x){x.remove();});try{w.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});});
+    // 공유·저장 버튼은 장 밖 맨 끝에 둬서 첫 장만 보고도 쓸 수 있게 한다
+    wraps.forEach(function(w){[].slice.call(w.children).forEach(function(n){if(n.matches(".share-btn,.save-btn"))out.appendChild(n);});});}
   function sjToon(out,P){
     if(!out||!P||typeof document==="undefined")return;
     var labs=[].slice.call(out.querySelectorAll(".fold-lab,h3"));
     P.forEach(function(x){
       for(var i=0;i<labs.length;i++){if(labs[i].textContent.trim().indexOf(x[0])!==0)continue;
         var box=labs[i].closest("details.fold,div.fold,.sj-sec")||labs[i];if(!box.parentNode)return;
-        var d=document.createElement("div");d.className="sj-toon";d.innerHTML=bosalSay(x[1],escH(x[2]));
+        var d=document.createElement("div");d.className="sj-toon";d.setAttribute("data-k",x[0]);d.innerHTML=bosalSay(x[1],escH(x[2]));
         box.parentNode.insertBefore(d,box);return;}});
   }
   // ---------- shared: 소득세(간이 연 결정세액 근사) ----------
@@ -976,7 +997,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var out=el.querySelector("#out");if(!out)return;o=o||{};
     if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
     if(o.sumO){out.insertAdjacentHTML("afterbegin",sumCard(o.sumO));var so=o.sumO,mx=so.axes.reduce(function(m,a){return a[1]>m[1]?a:m;});
-      bindSave(el,{btn:".sj-sum .ss-save",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
+      bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
         cb(sumCanvas({ttl:so.ttl,sub:so.sub,arch:tx(".ss-arch-t")||so.arch,archd:tx(".ss-arch-d")||so.archd,chips:bx?[].map.call(bx.querySelectorAll(".ss-chips span"),function(n){return n.textContent;}):so.chips,
         radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)일세.",
         pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});}
@@ -1583,7 +1604,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function bindSave(el,opts){
     var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
     b.addEventListener("click",function(){
-      track("image_save",{tool:location.pathname});
+      track(opts&&opts.ev||"image_save",{tool:location.pathname});
       var name=(opts&&opts.file||"dongnebosal")+".png";
       function reset(){b.textContent=lab;}
       function finish(c){

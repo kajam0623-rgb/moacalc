@@ -414,6 +414,17 @@
   .ss-mchart .rg{stroke:#4a3d29;stroke-width:1;stroke-dasharray:3 3;}.ss-mchart .rl{fill:#efe3c9;font-size:11.5px;font-weight:800;}
   .ss-mchart .ml{fill:none;stroke:#E6B25A;stroke-width:2.5;stroke-linejoin:round;}.ss-mchart .ma{fill:rgba(230,178,90,.16);}
   .ss-mchart .mg{fill:#f0c46e;}.ss-mchart .mb{fill:#e07a6a;}.ss-mchart .mn{fill:#bba98a;}.ss-mchart .rl.now{fill:#f0c46e;font-weight:900;}
+  .sj-next{margin:22px 0 8px;text-align:center;}
+  .sj-next-b{display:block;width:100%;padding:16px 14px;border:0;border-radius:16px;background:linear-gradient(160deg,#2a2219,#17120d);color:#efe3c9;font:inherit;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18);}
+  .sj-next-b small{display:block;color:#e6b25a;font-weight:800;font-size:12.5px;}.sj-next-b b{display:block;font-size:19px;color:#f0c46e;margin:2px 0;}.sj-next-b span{font-size:13.5px;}
+  .sj-next-b b::after{content:" ▼";font-size:14px;}
+  .sj-next-all{margin-top:8px;background:none;border:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;padding:6px;}
+  /* .tool button 의 금색 바탕(!important)을 이 버튼들만 되돌린다 */
+  .tool .sj-next-b{background:linear-gradient(160deg,#2a2219,#17120d) !important;color:#efe3c9 !important;}
+  .tool .sj-next-all{background:none !important;color:var(--muted) !important;}
+  .tool .wz-prev{background:none !important;color:var(--ink) !important;}.tool .wz-all{background:none !important;color:var(--accent) !important;}
+  .tool .ss-save{background:rgba(230,178,90,.12) !important;color:#f0c46e !important;}
+  @media print{.sj-chap[hidden]{display:block!important;}.sj-next{display:none!important;}}
   .sj-toon{margin:22px 0 10px;padding:8px 12px 10px;border:2.5px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 var(--ink);
     background:radial-gradient(circle,rgba(230,178,90,.28) 1.2px,transparent 1.4px) 0 0/9px 9px,var(--surface);}
   .sj-toon .bosal-say{margin:0;}.sj-toon .bs-b{border-width:2px;}

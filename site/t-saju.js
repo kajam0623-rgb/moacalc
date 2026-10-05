@@ -69,15 +69,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         W.querySelector(".wz-q").textContent=S[i].getAttribute("data-q");W.querySelector(".wz-n").textContent=(i+1)+" / "+S.length;
         W.querySelector(".wz-bar i").style.width=((i+1)/S.length*100)+"%";W.querySelector(".wz-prev").style.visibility=i&&!all?"visible":"hidden";
         W.querySelector(".wz-next").style.display=i<S.length-1&&!all?"":"none";W.querySelector(".wz-all").textContent=all?"한 단계씩 입력":"한 번에 입력";}
-      W.querySelector(".wz-next").addEventListener("click",function(){i=Math.min(S.length-1,i+1);show();var f=S[i].querySelector("input,select");if(f&&f.type!=="date")try{f.focus({preventScroll:true});}catch(e){}});
+      var seenStep={};
+      W.querySelector(".wz-next").addEventListener("click",function(){i=Math.min(S.length-1,i+1);if(!seenStep[i]){seenStep[i]=1;track("wz_"+(i+1));}show();var f=S[i].querySelector("input,select");if(f&&f.type!=="date")try{f.focus({preventScroll:true});}catch(e){}});
       W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
-      W.querySelector(".wz-all").addEventListener("click",function(){all=!all;show();});
+      W.querySelector(".wz-all").addEventListener("click",function(){all=!all;if(all)track("wz_all");show();});
       W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
       // 주제 입구(saju.html?q=money 등): 그 물음을 미리 골라 두고, 맨 위에 무엇을 풀어 줄지 한 줄로 약속한다(계산은 같다)
       var TQ={money:["재물 풀이","언제 큰돈이 붙고, 어디서 새는지 자네 사주로 짚어 주지."],job:["일·이직 풀이","지금 일을 언제까지, 언제 움직이면 좋은지 짚어 주지."],
         love:["인연 풀이","언제, 어떤 사람과 인연이 닿는지 짚어 주지."],health:["건강 풀이","타고난 기운으로 어디를 먼저 살피면 좋은지 짚어 주지."]},
         qm=(typeof location!=="undefined"&&/[?&]q=(money|job|love|health)\b/.exec(location.search||""));
-      if(qm){W.querySelector("#q").value=qm[1];var tp=document.createElement("div");tp.className="wz-topic";
+      if(qm){track("topic_in");W.querySelector("#q").value=qm[1];var tp=document.createElement("div");tp.className="wz-topic";
         tp.innerHTML="<b>"+TQ[qm[1]][0]+"</b><span>"+TQ[qm[1]][1]+"</span>";W.insertBefore(tp,W.firstChild);}
       el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
       show();})();
@@ -106,7 +107,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
       syncT();
-      track("fortune_view",{tool:"saju"});
+      track("fortune_view",{tool:"saju"});track("saju_go");
       var B=birthIn(),h=B.h,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
@@ -644,7 +645,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
-      bindSave(el,{btn:".sj-sum .ss-save",file:"사주_한장요약",draw:function(cb){var bx=el.querySelector(".sj-sum"),PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"},myE=SJ_EL[SJ_ES[ds]],vals=SJ_GRP5.map(function(k){return G[k];});
+      bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"사주_한장요약",draw:function(cb){var bx=el.querySelector(".sj-sum"),PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"},myE=SJ_EL[SJ_ES[ds]],vals=SJ_GRP5.map(function(k){return G[k];});
         cb(sumCanvas({ttl:(nmHon(nm)?nmHon(nm)+" ":"")+"한 장 요약",sub:"타고난 기운의 무게중심",arch:bx.querySelector(".ss-arch-t").textContent,archd:bx.querySelector(".ss-arch-d").textContent,
           glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,
           radar:{lab:["자아","표현","재물","명예","학문"],val:vals,top:Math.max(3,Math.max.apply(null,vals))},
@@ -682,7 +683,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:4});sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:4});sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));
+      sjChapters(outEl,[["종합","타고난 성격과 돈·일·인연·몸","자네가 어떤 사람인지부터 들어 보게"],["나를 뜻하는 글자","보살의 셈법","왜 그렇게 읽었는지 글자로 짚어 주지"],["달마다 흐름","앞으로의 흐름","열두 달·올해·10년씩 바뀌는 물결"]]);[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 해의 자리로 재는 중","나를 뜻하는 글자의 힘을 재어 보는 중","나를 받쳐 줄 기운을 고르는 중","타고난 그릇과 눈에 띄는 기운을 짚는 중","10년마다 바뀌는 흐름 여덟 구간을 펼치는 중","올해 흐름을 겹쳐 보는 중","맺음말을 고르는 중"],
       "사주를 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");
