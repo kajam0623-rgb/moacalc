@@ -467,6 +467,25 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
+  /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
+     o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
+  function sumCard(o){
+    var A=o.axes,N=A.length,cx=130,cy=116,R=78,mx=A.reduce(function(m,x){return x[1]>m[1]?x:m;}),mn=A.reduce(function(m,x){return x[1]<m[1]?x:m;});
+    var pt=function(k,r){var a=(-90+360/N*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+    var poly=function(f){return A.map(function(x,k){var q=pt(k,R*f(k));return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");};
+    var svg='<svg class="ss-radar" viewBox="0 0 260 240" role="img" aria-label="'+escH(A.map(function(x){return x[0]+" "+x[1]+"점";}).join(", "))+'">'+
+      [1,2/3,1/3].map(function(s){return '<polygon points="'+poly(function(){return s;})+'" class="rg"/>';}).join("")+
+      A.map(function(x,k){var q=pt(k,R);return '<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" class="rg"/>';}).join("")+
+      '<polygon points="'+poly(function(k){return A[k][1]/100;})+'" class="rv"/>'+
+      A.map(function(x,k){var q=pt(k,R*x[1]/100),l=pt(k,R+20);return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4.5" class="rd'+(x===mx?' on':'')+'"/>'+
+        '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+escH(x[0])+' '+x[1]+'</text>';}).join("")+'</svg>';
+    return '<div class="sj-sum">'+
+      '<div class="ss-k">한눈에</div><div class="ss-ttl">'+escH(o.ttl)+'</div><div class="ss-sub">'+escH(o.sub)+'</div>'+
+      '<div class="ss-arch"><b class="ss-arch-t">'+escH(o.arch)+'</b><span class="ss-arch-d">'+escH(o.archd)+'</span></div>'+
+      (o.chips&&o.chips.length?'<div class="ss-chips">'+o.chips.map(function(c,i){return '<span'+(i?'':' class="on"')+'>'+escH(c)+'</span>';}).join("")+'</div>':'')+
+      '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
+      '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
@@ -887,6 +906,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function askFx(el,o){
     var out=el.querySelector("#out");if(!out)return;o=o||{};
     if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
+    if(o.sum)out.insertAdjacentHTML("afterbegin",o.sum);
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
       var sb=out.querySelector(".share-btn");

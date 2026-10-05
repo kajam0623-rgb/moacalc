@@ -74,7 +74,9 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
       '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       nyLast={me:me,YR:YR,YW:YW};fillNy();
       bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");
-      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
+      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{sum:sumCard({ttl:YR+"년 한 장 요약",sub:"이 해의 무게중심",arch:Y.ko+"년 · "+rel+"의 해",archd:score+"점 · "+SJ_TTI[yb]+"띠 · "+SJ_S[me.d.s]+"일간",
+        chips:[rel+"의 해",SJ_TTI[yb]+"띠"],axes:sub,
+        spoon:"네 칸은 그 해 하늘 글자가 자네를 뜻하는 글자와 맺는 관계로 매긴 점수일세. 낮은 칸은 막히는 곳이 아니라 미리 챙겨 두면 좋은 곳이네."}),toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
     askWire(el,go,["그 해 글자를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   /* 토정비결 — 음력 생일과 볼 해의 음력 달력으로 상·중·하괘를 세워 144괘 가운데 하나를 뽑는다.

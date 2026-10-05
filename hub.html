@@ -1224,6 +1224,25 @@
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
+  /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
+     o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
+  function sumCard(o){
+    var A=o.axes,N=A.length,cx=130,cy=116,R=78,mx=A.reduce(function(m,x){return x[1]>m[1]?x:m;}),mn=A.reduce(function(m,x){return x[1]<m[1]?x:m;});
+    var pt=function(k,r){var a=(-90+360/N*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+    var poly=function(f){return A.map(function(x,k){var q=pt(k,R*f(k));return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");};
+    var svg='<svg class="ss-radar" viewBox="0 0 260 240" role="img" aria-label="'+escH(A.map(function(x){return x[0]+" "+x[1]+"점";}).join(", "))+'">'+
+      [1,2/3,1/3].map(function(s){return '<polygon points="'+poly(function(){return s;})+'" class="rg"/>';}).join("")+
+      A.map(function(x,k){var q=pt(k,R);return '<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" class="rg"/>';}).join("")+
+      '<polygon points="'+poly(function(k){return A[k][1]/100;})+'" class="rv"/>'+
+      A.map(function(x,k){var q=pt(k,R*x[1]/100),l=pt(k,R+20);return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4.5" class="rd'+(x===mx?' on':'')+'"/>'+
+        '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+escH(x[0])+' '+x[1]+'</text>';}).join("")+'</svg>';
+    return '<div class="sj-sum">'+
+      '<div class="ss-k">한눈에</div><div class="ss-ttl">'+escH(o.ttl)+'</div><div class="ss-sub">'+escH(o.sub)+'</div>'+
+      '<div class="ss-arch"><b class="ss-arch-t">'+escH(o.arch)+'</b><span class="ss-arch-d">'+escH(o.archd)+'</span></div>'+
+      (o.chips&&o.chips.length?'<div class="ss-chips">'+o.chips.map(function(c,i){return '<span'+(i?'':' class="on"')+'>'+escH(c)+'</span>';}).join("")+'</div>':'')+
+      '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
+      '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
@@ -1644,6 +1663,7 @@
   function askFx(el,o){
     var out=el.querySelector("#out");if(!out)return;o=o||{};
     if(o.streak)out.insertAdjacentHTML("afterbegin",streakHtml(bumpStreak()));
+    if(o.sum)out.insertAdjacentHTML("afterbegin",o.sum);
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
       var sb=out.querySelector(".share-btn");
@@ -4501,7 +4521,9 @@
       ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
-      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤네. 큰 그림부터 보세."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 보세. 모자란 쪽을 서로 채워 주면 되네."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었네."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법일세."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
+      saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{sum:sumCard({ttl:"두 사람 한 장 요약",sub:"이 궁합의 무게중심",arch:grade,archd:SJ_TTI[A.y.b]+"띠 × "+SJ_TTI[B.y.b]+"띠 · "+sc+"점",
+        chips:["나 "+SJ_S[A.d.s]+SJ_B[A.d.b]+"일주",(inv&&inv.n?inv.n:"상대")+" "+SJ_S[B.d.s]+SJ_B[B.d.b]+"일주",topAx[0]+"이 가장 강한 축"],axes:subs,
+        spoon:"네 축은 끌림·안정·소통·생활일세. 점수가 낮은 축은 안 맞는다는 뜻이 아니라, 둘이 약속으로 채워 갈 자리라는 뜻이네."}),toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤네. 큰 그림부터 보세."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 보세. 모자란 쪽을 서로 채워 주면 되네."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었네."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법일세."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
     if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
@@ -4589,7 +4611,9 @@
       '<p class="note">그 해 하늘 글자('+SJ_SH[YS]+')와 나를 뜻하는 글자가 맺는 관계, 그 해 아래 글자('+SJ_BH[YB]+')가 내 띠·태어난 날 글자와 붙는지 부딪히는지, 기운의 단계를 함께 보는 전통 신년운세입니다. 사주에서 새해는 1월 1일이 아니라 입춘(2월 4일경)에 시작합니다. 참고용.</p>';
       nyLast={me:me,YR:YR,YW:YW};fillNy();
       bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");
-      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
+      saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{sum:sumCard({ttl:YR+"년 한 장 요약",sub:"이 해의 무게중심",arch:Y.ko+"년 · "+rel+"의 해",archd:score+"점 · "+SJ_TTI[yb]+"띠 · "+SJ_S[me.d.s]+"일간",
+        chips:[rel+"의 해",SJ_TTI[yb]+"띠"],axes:sub,
+        spoon:"네 칸은 그 해 하늘 글자가 자네를 뜻하는 글자와 맺는 관계로 매긴 점수일세. 낮은 칸은 막히는 곳이 아니라 미리 챙겨 두면 좋은 곳이네."}),toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
     askWire(el,go,["그 해 글자를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
   /* 토정비결 — 음력 생일과 볼 해의 음력 달력으로 상·중·하괘를 세워 144괘 가운데 하나를 뽑는다.
