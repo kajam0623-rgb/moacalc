@@ -119,7 +119,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       bindInvite(el,A,ga);
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
       saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry");askFx(el,{sum:sumCard({ttl:"두 사람 한 장 요약",sub:"이 궁합의 무게중심",arch:grade,archd:SJ_TTI[A.y.b]+"띠 × "+SJ_TTI[B.y.b]+"띠 · "+sc+"점",
-        chips:["나 "+SJ_S[A.d.s]+SJ_B[A.d.b]+"일주",(inv&&inv.n?inv.n:"상대")+" "+SJ_S[B.d.s]+SJ_B[B.d.b]+"일주",topAx[0]+"이 가장 강한 축"],axes:subs,
+        chips:["나 "+SJ_S[A.d.s]+SJ_B[A.d.b]+"일주",(inv&&inv.n?inv.n:"상대")+" "+SJ_S[B.d.s]+SJ_B[B.d.b]+"일주",topAx[0]+"이 가장 강한 축"],axes:subs,pct:{v:ghPct(sc),t:"궁합 "+sc+"점",n:"1950~2009년생 두 사람 짝 20만 쌍(시각 모름)을 같은 계산으로 돌려, "+sc+"점 이상이 나온 짝의 비율입니다."},
         spoon:"네 축은 끌림·안정·소통·생활일세. 점수가 낮은 축은 안 맞는다는 뜻이 아니라, 둘이 약속으로 채워 갈 자리라는 뜻이네."}),toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤네. 큰 그림부터 보세."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 보세. 모자란 쪽을 서로 채워 주면 되네."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었네."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법일세."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];

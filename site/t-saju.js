@@ -643,6 +643,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
+      (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
       (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
         if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");

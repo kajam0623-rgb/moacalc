@@ -465,10 +465,29 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-h"><b>五行</b> 타고난 다섯 기운</div><div class="ss-five">'+tiles+'</div><p class="ss-line">'+line+'</p>'+
       '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
+      '<div class="ss-mo"></div>'+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
+  /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
+  function sjMonthSvg(M){
+    if(!M||M.length<2)return "";
+    var W=300,H=130,L=12,Rr=12,T=18,B=28,vs=M.map(function(x){return x.sc;}),hi=Math.max(4,Math.max.apply(null,vs)),lo=Math.min(-2,Math.min.apply(null,vs));
+    var X=function(i){return L+(W-L-Rr)*i/(M.length-1);},Y=function(v){return T+(H-T-B)*(hi-v)/(hi-lo);};
+    var line=M.map(function(x,i){return X(i).toFixed(1)+","+Y(x.sc).toFixed(1);}).join(" ");
+    var best=M.filter(function(x){return x.sc>=3;}).map(function(x){return x.m+"월";}),bad=M.filter(function(x){return x.sc<0;}).map(function(x){return x.m+"월";});
+    return '<div class="ss-h"><b>月運</b> 앞으로 열두 달</div>'+
+      '<svg class="ss-mchart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="앞으로 열두 달 흐름: '+M.map(function(x){return x.m+"월 "+x.sc;}).join(", ")+'">'+
+      '<line x1="'+L+'" x2="'+(W-Rr)+'" y1="'+Y(0).toFixed(1)+'" y2="'+Y(0).toFixed(1)+'" class="rg"/>'+
+      '<polygon points="'+X(0).toFixed(1)+','+Y(lo).toFixed(1)+' '+line+' '+X(M.length-1).toFixed(1)+','+Y(lo).toFixed(1)+'" class="ma"/>'+
+      '<polyline points="'+line+'" class="ml"/>'+
+      M.map(function(x,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x.sc).toFixed(1)+'" r="'+(x.sc>=3||x.sc<0?4.5:2.5)+'" class="'+(x.sc>=3?"mg":x.sc<0?"mb":"mn")+'"/>'+
+        '<text x="'+X(i).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" class="rl'+(i===0?" now":"")+'">'+x.m+'</text>';}).join("")+'</svg>'+
+      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가네')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>일세.':best.length?'일세.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있네.</p>';}
   /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
      o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
+  // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
+  var GH_PCT=[0,0,0,0,0,0,0,0,227,0,0,142,0,200,0,244,767,0,137,1155,2993,638,0,1865,1137,2806,355,2208,7071,1180,1881,9940,11236,5851,767,5895,9585,10310,3961,3874,8049,11389,7415,6244,4925,6630,7618,2893,5936,9139,2851,4699,2301,5319,6481,1486,1381,2029,2099,4092,965,1938,1146,1106,5444];
+  function ghPct(sc){var t=0,c=0;for(var i=0;i<GH_PCT.length;i++){t+=GH_PCT[i];if(i+35>=sc)c+=GH_PCT[i];}return Math.max(1,Math.round(c/t*100));}
   function sumCard(o){
     var A=o.axes,N=A.length,cx=130,cy=116,R=78,mx=A.reduce(function(m,x){return x[1]>m[1]?x:m;}),mn=A.reduce(function(m,x){return x[1]<m[1]?x:m;});
     var pt=function(k,r){var a=(-90+360/N*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
@@ -483,6 +502,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-k">한눈에</div><div class="ss-ttl">'+escH(o.ttl)+'</div><div class="ss-sub">'+escH(o.sub)+'</div>'+
       '<div class="ss-arch"><b class="ss-arch-t">'+escH(o.arch)+'</b><span class="ss-arch-d">'+escH(o.archd)+'</span></div>'+
       (o.chips&&o.chips.length?'<div class="ss-chips">'+o.chips.map(function(c,i){return '<span'+(i?'':' class="on"')+'>'+escH(c)+'</span>';}).join("")+'</div>':'')+
+      // 상위 %는 자랑할 만할 때만(60% 안). 평범한 값은 사주 한 장 요약처럼 싣지 않는다
+      (o.pct&&o.pct.v<=60?'<div class="ss-pcs"><div class="ss-pc"><b>상위 <em>'+o.pct.v+'</em>%</b><span>'+escH(o.pct.t)+'</span></div></div><p class="ss-note">'+escH(o.pct.n)+'</p>':'')+
       '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
       '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div></div>';}

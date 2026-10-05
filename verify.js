@@ -547,9 +547,9 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   t("궁합 깊은 풀이: 무작위 3000쌍 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·같은 문장 되풀이가 모두 0" + (cnt.dup ? " — 예: " + Object.keys(dupG).slice(0, 4).join(" | ") : ""), JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, dup: 0 }));
   t("궁합 깊은 풀이: 어느 쌍이든 글자 수(공백 제외)가 1700자 이상 (최소 " + minLen + ")", minLen >= 1700, true);
   // 해별 점수는 신년운세 도구와 같은 식이다(십성 기본점수 표가 같고 삼합·육합 +5 / 충 -6)
-  { const nyb = toolBlock("newyear"), m1 = /var score=\{([^}]*)\}\[rel\]/.exec(nyb), m2 = /var GH_YB=\{([^}]*)\}/.exec(inner);
+  { const nyb = toolBlock("newyear"), m1 = /var sc=\{([^}]*)\}\[sjTenGod\(ds,YS\)\]/.exec(nyb), m2 = /var GH_YB=\{([^}]*)\}/.exec(inner);
     t("궁합 해별 점수표(GH_YB)가 신년운세 점수표와 같다", m1 && m2 && m1[1] === m2[1], true);
-    t("궁합 해별 점수는 신년운세와 같은 합충 가감(삼합·육합 +5, 충 -6)", inner.includes("if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;") && nyb.includes("if(n.indexOf(\"충\")>=0)score-=6;else score+=5;"), true); }
+    t("궁합 해별 점수는 신년운세와 같은 합충 가감(삼합·육합 +5, 충 -6)", inner.includes("if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;") && nyb.includes("if(b%4===YB%4&&b!==YB||sjYukhap(b)===YB)sc+=5;else if(Math.abs(b-YB)===6)sc-=6;"), true); }
   // 점수 기준선: 합이 하나도 없는 평범한 조합이 노력형 인연에 몰리지 않는다(무작위 3000쌍: 중앙값 74~82, 노력형 35% 이하, 신중 10% 이하)
   { const gb = toolBlock("gunghap"), ps = gb.slice(gb.indexOf("function pts(a,b){"), gb.indexOf("function go(){")), pts = new Function("sjTenGod", "sjYukhap", "SJ_S", "SJ_B", "SJ_ES", "SJ_EB", "SJ_TTI", ps + "\nreturn pts;")(sjTenGod, sjYukhap, SJ_S, SJ_B, SJ_ES, SJ_EB, SJ_TTI);
     const sc = []; for (let i = 0; i < 3000; i++) { const a = RG(), b = RG(); sc.push(pts(sjPillars(a[0], a[1], a[2], null, 30, true), sjPillars(b[0], b[1], b[2], null, 30, true))[0]); }
@@ -818,7 +818,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -1329,5 +1329,20 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("한 장 요약: 사람을 약하다고 부르지 않는다(신약 대신 채워 가며 크는 편)", !/신약|약한|약해/.test(sjSumHtml({ p, cnt, G, strong: false, yEl: "목", nm: "", hasH: true })), true);
   t("한 장 요약: 사주 결과 맨 위에 '이 정보로 풀었습니다' 확인 카드와 함께 붙고, 일주 별명은 sj/ilju.json 으로 채운다",
     [src.includes("'<div class=\"sj-confirm\"><div class=\"k\">이 정보로 풀었습니다</div>"), src.includes("sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h})+\n        sjGridHtml("), src.includes('box.querySelector(".ss-arch-t").textContent=o.t')].join(","), "true,true,true"); }
+// ── 궁합·신년 상위 N% — 궁합 표(GH_PCT)는 다른 시드로 다시 재어 맞추고, 신년은 점수 함수 하나를 go 와 상위 %가 같이 쓴다 ──
+{ const GM = require("./tools/sajupct/make_gh_pct.js"), R = GM.make(40000, 777), sh = (A, sc) => A.slice(sc - 35).reduce((a, b) => a + b, 0) / A.reduce((a, b) => a + b, 0) * 100;
+  const worst = Math.max(...[50, 60, 67, 75, 85, 95].map(sc => Math.abs(sh(GH_PCT, sc) - sh(R, sc))));
+  t("궁합 상위 N%: GH_PCT 가 궁합 점수 함수로 다시 잰 표본(4만 쌍·다른 시드)과 2%p 안에서 맞는다", worst < 2, true);
+  t("궁합 상위 N%: 표본 20만 쌍 · 점수가 높을수록 상위 %가 작아진다", GH_PCT.reduce((a, b) => a + b, 0) === 200000 && ghPct(90) < ghPct(70) && ghPct(70) < ghPct(50), true);
+  const a = src.indexOf("    function nyScore("), b = src.indexOf("    if(typeof fetch===\"function\")fetch(\"ny/deep.json\")");
+  const NY = new Function("sjTenGod", "sjYukhap", src.slice(a, b) + "\nreturn {nyScore,nyPct};")(sjTenGod, sjYukhap);
+  t("신년 상위 N%: go 가 nyScore 를 쓰고(옛 셈 없음), 2027(丁未) 상위 %는 점수가 높을수록 작고 1~100 사이", [src.includes("var score=nyScore(me.d.s,yb,db,YS,YB);"), !src.includes('notes.forEach(function(n){if(n.indexOf("충")>=0)score-=6;'),
+    NY.nyPct(90, 3, 7) < NY.nyPct(70, 3, 7), NY.nyPct(40, 3, 7) === 100, NY.nyPct(97, 3, 7) >= 1].join(","), "true,true,true,true,true");
+  const sc = sumCard({ ttl: "두 사람 한 장 요약", sub: "s", arch: "a", archd: "d", chips: ["x"], axes: [["끌림", 73], ["안정", 65], ["소통", 76], ["생활", 54]], pct: { v: ghPct(90), t: "궁합 90점", n: "n" }, spoon: "s" }), sc2 = sumCard({ ttl: "t", sub: "s", arch: "a", archd: "d", axes: [["끌림", 50], ["안정", 50], ["소통", 50], ["생활", 50]], pct: { v: ghPct(55), t: "궁합 55점", n: "n" }, spoon: "s" });
+  t("궁합·신년 한 장 요약: 상위 %는 60% 안일 때만 싣는다(90점 "+ghPct(90)+"% 보임 · 55점 "+ghPct(55)+"% 숨김)", [sc.includes('class="ss-pc"'), !sc2.includes('class="ss-pc"')].join(","), "true,true");
+  { const M = [3,1,-1,4,0,2,5,-2,1,0,3,1].map((v, i) => ({ y: 2026, m: (i + 9) % 12 + 1, sc: v })), mv = sjMonthSvg(M);
+    t("사주 열두 달 그래프: 점 12개·힘 실리는 달(3점↑) 금색 4·아낄 달(0점 아래) 붉은 2, 결과 뒤 MSC 로 채운다", [(mv.match(/<circle/g) || []).length, (mv.match(/class="mg"/g) || []).length, (mv.match(/class="mb"/g) || []).length, !/NaN|undefined/.test(mv), src.includes("mo.innerHTML=sjMonthSvg(MSC)")].join(","), "12,4,2,true,true"); }
+  t("궁합·신년 한 장 요약: 상위 % 카드와 별 그림 4축이 그려지고 undefined/NaN 없음", [sc.includes('class="ss-pc"'), (sc.match(/<circle/g) || []).length === 4, !/undefined|NaN/.test(sc)].join(","), "true,true,true");
+}
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

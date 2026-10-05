@@ -21,6 +21,13 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
     // 깊이 있는 풀이 원고(ny/deep.json) — 결과가 그려진 뒤에 도착해도 자리(#nydeep)에 채운다
     var NYD=null,nyLast=null,nyDone=false;
     function fillNy(){var h=el.querySelector("#nydeep");if(!h||!NYD||!nyLast)return;h.innerHTML=nyDeep(nyLast.me,nyLast.YR,nyLast.YW,NYD).secs.map(nySecHtml).join("");if(nyDone)plainWords(h);}
+    /* 신년운세 점수 — 그 해 하늘 글자와 나(일간)의 관계 + 내 띠·일지가 그 해 땅 글자와 삼합·육합(+5)·충(-6). go 와 상위 %가 같이 쓴다 */
+    function nyScore(ds,yb,db,YS,YB){
+      var sc={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[sjTenGod(ds,YS)];
+      [yb,db].forEach(function(b){if(b%4===YB%4&&b!==YB||sjYukhap(b)===YB)sc+=5;else if(Math.abs(b-YB)===6)sc-=6;});
+      return Math.max(40,Math.min(97,sc));}
+    // 상위 N%: 60갑자 일주 × 12띠(720가지, 같은 무게) 가운데 이 해 점수가 내 점수 이상인 비율
+    function nyPct(score,YS,YB){var t=0,c=0;for(var d=0;d<60;d++)for(var y=0;y<12;y++){t++;if(nyScore(d%10,y,d%12,YS,YB)>=score)c++;}return Math.max(1,Math.round(c/t*100));}
     if(typeof fetch==="function")fetch("ny/deep.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){NYD=j;fillNy();}}).catch(function(){});
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
@@ -37,9 +44,7 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
         else if(k==="육합")notes.push(label+"가 그 해 글자와 육합일세. 사람 사이가 유난히 부드러운 해야.");
         else notes.push(label+"가 그 해 글자와 충일세. 움직임이 생기는 해라 이사든 이직이든 자네가 먼저 계획 안으로 끌어들이면 든든하네.");}
       relB(yb,"내 띠(연지)");relB(db,"내 일지");
-      var score={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[rel];
-      notes.forEach(function(n){if(n.indexOf("충")>=0)score-=6;else score+=5;});
-      score=Math.max(40,Math.min(97,score));
+      var score=nyScore(me.d.s,yb,db,YS,YB);
       // 십성별 항목 보정 [재물·직장·애정·건강] + 상·하반기 흐름 + 올해 주의
       var EXT={
       "비견":[[-4,6,0,6],"상반기엔 사람이 모이네. 제안이 늘고 동업 이야기가 오가는 구간일세.","하반기엔 역할을 정리해 두면 좋네. 흐지부지 둔 몫을 이때 분명히 해 두면 한결 개운해.","친구·동료와의 돈거래는 금액과 기한을 글로 남겨 두면 좋네. 정으로 시작한 돈일수록 마음 편하게 적어 두는 것이 관계를 지켜 주지."],
@@ -75,7 +80,7 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
       nyLast={me:me,YR:YR,YW:YW};fillNy();
       bindShare(el,YR+" 신년운세",YR+" "+Y.ko+"년 내 운세 "+score+"점 — "+T[0]+" ("+rel+"의 해). 동네보살에서 확인:");
       saveScore(el,YR+"신년운세",YR+" 신년운세",SJ_ILGAN_ID[me.d.s],score,rel+"의 해",Y.ko+"년, 자네에게 "+rel+"의 해일세",T[1],score>=60?"newyear":"worry");askFx(el,{sum:sumCard({ttl:YR+"년 한 장 요약",sub:"이 해의 무게중심",arch:Y.ko+"년 · "+rel+"의 해",archd:score+"점 · "+SJ_TTI[yb]+"띠 · "+SJ_S[me.d.s]+"일간",
-        chips:[rel+"의 해",SJ_TTI[yb]+"띠"],axes:sub,
+        chips:[rel+"의 해",SJ_TTI[yb]+"띠"],axes:sub,pct:{v:nyPct(score,YS,YB),t:YR+"년 운 "+score+"점",n:"60갑자 일주와 12띠를 짝지은 720가지를 같은 계산으로 돌려, "+YR+"년 점수가 "+score+"점 이상인 비율입니다."},
         spoon:"네 칸은 그 해 하늘 글자가 자네를 뜻하는 글자와 맺는 관계로 매긴 점수일세. 낮은 칸은 막히는 곳이 아니라 미리 챙겨 두면 좋은 곳이네."}),toon:[["상반기","diary",YR+"년을 반으로 나눠 보세. 먼저 입춘부터 여름 문턱까지일세."],[YR+"년 미리 챙겨","talisman","미리 챙겨 두면 한 해가 훨씬 수월하네. 하나만 골라 지켜 보게."],["잘 맞는 자리","point","끝으로 이 해와 자네가 잘 맞는 자리, 맞춰 갈 자리일세."]],score:score,pose:score>=60?"newyear":"worry",say:score>=80?YR+"년은 자네 편일세! 복주머니 단단히 매 두게.":score>=60?YR+"년, 자네 걸음대로 가면 되네. 상·하반기 흐름부터 보게.":YR+"년은 차분히 다지는 해일세. 아래 '미리 챙겨 두면 좋은 것'부터 챙기게."});nyDone=true;}
     askWire(el,go,["그 해 글자를 세운다","자네 글자와 견주어 본다","띠와 날 글자의 관계를 짚는다"],"올해 것을 아직 안 물어봤네.");birthDial(el,"#d");}},
 
