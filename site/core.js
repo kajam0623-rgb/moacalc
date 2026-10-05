@@ -468,18 +468,20 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
-  function sjToon(out,o){
-    if(!out||typeof document==="undefined")return;
+  function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
-    var P=[["종합","magnifier",nm+" 사주를 펼쳐 봤네. 먼저 큰 그림부터 짚어 주지."],
+    return [["종합","magnifier",nm+" 사주를 펼쳐 봤네. 먼저 큰 그림부터 짚어 주지."],
       ["한눈에 보기","crystal",(QL[o.q]?QL[o.q]+" 얘기가 제일 궁금하다 했지? ":"")+"이제 돈·일·인연·몸, 네 갈래로 나눠 보세."],
       ["나를 뜻하는 글자","scroll","여기서부터는 왜 그렇게 읽었는지, 보살의 셈법일세. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠야."],
       ["달마다 흐름","diary","이제 시간 순서로 보세. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 물결일세."],
-      ["맺는 말","bow","끝까지 읽어 줬구먼. 마지막으로 한마디만 더 하지."]];
-    var labs=[].slice.call(out.querySelectorAll(".fold-lab,.sj-sec>h3"));
+      ["맺는 말","bow","끝까지 읽어 줬구먼. 마지막으로 한마디만 더 하지."]];}
+  // P: [[라벨 첫머리, 포즈, 대사]] — 라벨은 접힌 칸(.fold-lab)이나 덩어리 제목(h3)에서 찾는다
+  function sjToon(out,P){
+    if(!out||!P||typeof document==="undefined")return;
+    var labs=[].slice.call(out.querySelectorAll(".fold-lab,h3"));
     P.forEach(function(x){
       for(var i=0;i<labs.length;i++){if(labs[i].textContent.trim().indexOf(x[0])!==0)continue;
-        var box=labs[i].closest("details.fold,.sj-sec");if(!box||!box.parentNode)return;
+        var box=labs[i].closest("details.fold,div.fold,.sj-sec")||labs[i];if(!box.parentNode)return;
         var d=document.createElement("div");d.className="sj-toon";d.innerHTML=bosalSay(x[1],escH(x[2]));
         box.parentNode.insertBefore(d,box);return;}});
   }
@@ -893,7 +895,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     // 긴 풀이는 분류 + 핵심 한 문장으로 접는다. 첫 칸 하나만 펼쳐 둔다
     var pc=el.querySelectorAll(".ppl-c.on");
     if(pc.length===1&&el.querySelectorAll(".ppl").length===1&&!out.querySelector(".nm-done")){var pn=((pc[0].firstChild&&pc[0].firstChild.nodeValue)||"").trim();if(pn&&!/^(나|내|저|본인|자신)$/.test(pn))nmSwap(out,nmHon(pn));}
-    plainWords(out);foldAll(out,{open:o.open||1});
+    plainWords(out);foldAll(out,{open:o.open||1});sjToon(out,o.toon);
     gradeFx(out,o.score,o.grade);reveal(out);fillBars(out);
     var top=out.querySelector(".out");
     if(o.score!=null&&top&&!out.querySelector(".bosal-say")){
