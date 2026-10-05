@@ -406,6 +406,10 @@
   .wz-s{display:none;}.wz-s.cur{display:block;}.wz-flat .wz-s{display:block;margin-bottom:12px;}.wz-flat .wz-bar,.wz-flat .wz-q,.wz-flat .wz-n{display:none;}
   .wz-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px;}.wz-nav button{padding:12px 16px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;}
   .wz-next{background:#E6B25A;color:#1b1406;border:0;flex:1;}.wz-prev{background:none;border:1px solid var(--line-2);color:var(--ink);}
+  /* 웹툰 칸(sjToon): 굵은 테두리 컷 + 망점 바탕 위 아기보살 말풍선 */
+  .sj-toon{margin:22px 0 10px;padding:8px 12px 10px;border:2.5px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 var(--ink);
+    background:radial-gradient(circle,rgba(230,178,90,.28) 1.2px,transparent 1.4px) 0 0/9px 9px,var(--surface);}
+  .sj-toon .bosal-say{margin:0;}.sj-toon .bs-b{border-width:2px;}
   /* 사주 결과 맨 위: 이 정보로 풀었습니다 + 한 장 요약(어두운 바탕·금빛, 라이트/다크 같은 모양) */
   .sj-confirm{border:1px solid var(--line-2);border-radius:14px;padding:12px 14px;margin:4px 0 14px;background:var(--surface);}
   .sj-confirm .k{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.5px;margin-bottom:4px;}

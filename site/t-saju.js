@@ -666,7 +666,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:4});[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
+      var outEl=el.querySelector("#out");nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:4});sjToon(outEl,{nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl});[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 해의 자리로 재는 중","나를 뜻하는 글자의 힘을 재어 보는 중","나를 받쳐 줄 기운을 고르는 중","타고난 그릇과 눈에 띄는 기운을 짚는 중","10년마다 바뀌는 흐름 여덟 구간을 펼치는 중","올해 흐름을 겹쳐 보는 중","맺음말을 고르는 중"],
       "사주를 아직 안 뽑았네.",{min:4200,title:"보살이 자네 사주를 짚어 보는 중일세"});birthDial(el,"#d");

@@ -467,6 +467,22 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
       '</div>';}
+  /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
+  function sjToon(out,o){
+    if(!out||typeof document==="undefined")return;
+    var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
+    var P=[["종합","magnifier",nm+" 사주를 펼쳐 봤네. 먼저 큰 그림부터 짚어 주지."],
+      ["한눈에 보기","crystal",(QL[o.q]?QL[o.q]+" 얘기가 제일 궁금하다 했지? ":"")+"이제 돈·일·인연·몸, 네 갈래로 나눠 보세."],
+      ["나를 뜻하는 글자","scroll","여기서부터는 왜 그렇게 읽었는지, 보살의 셈법일세. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠야."],
+      ["달마다 흐름","diary","이제 시간 순서로 보세. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 물결일세."],
+      ["맺는 말","bow","끝까지 읽어 줬구먼. 마지막으로 한마디만 더 하지."]];
+    var labs=[].slice.call(out.querySelectorAll(".fold-lab,.sj-sec>h3"));
+    P.forEach(function(x){
+      for(var i=0;i<labs.length;i++){if(labs[i].textContent.trim().indexOf(x[0])!==0)continue;
+        var box=labs[i].closest("details.fold,.sj-sec");if(!box||!box.parentNode)return;
+        var d=document.createElement("div");d.className="sj-toon";d.innerHTML=bosalSay(x[1],escH(x[2]));
+        box.parentNode.insertBefore(d,box);return;}});
+  }
   // ---------- shared: 소득세(간이 연 결정세액 근사) ----------
   function earnedDed(g){if(g<=5e6)return g*0.7;if(g<=15e6)return 3.5e6+(g-5e6)*0.4;if(g<=45e6)return 7.5e6+(g-15e6)*0.15;if(g<=1e8)return 12e6+(g-45e6)*0.05;return 14.75e6+(g-1e8)*0.02;}
   function progressive(b){if(b<=14e6)return b*0.06;if(b<=50e6)return .84e6+(b-14e6)*.15;if(b<=88e6)return 6.24e6+(b-50e6)*.24;if(b<=15e7)return 15.36e6+(b-88e6)*.35;if(b<=3e8)return 37.06e6+(b-15e7)*.38;if(b<=5e8)return 94.06e6+(b-3e8)*.4;if(b<=1e9)return 174.06e6+(b-5e8)*.42;return 384.06e6+(b-1e9)*.45;}
