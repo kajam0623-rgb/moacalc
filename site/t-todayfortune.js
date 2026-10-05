@@ -31,7 +31,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       track("fortune_view",{tool:"todayfortune"});
       // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
       var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
-      var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade;
+      var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade,tfP=tfPct(score,today);
       var myB=me.d.b,tB=today.d.b,bonusArt=tf.art,bonus="",hlSuf="";
       if(bonusArt==="삼합"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 삼합일세. 사람이 나서서 자네를 돕는 흐름이 하나 더 얹혔네.";hlSuf=" 사람이 힘을 보탠다.";}
       else if(bonusArt==="충"){bonus="자네 태어난 날 글자와 오늘 날짜 글자가 서로 마주 서는 관계, 곧 충(沖)이야. 계획이 조금 흔들릴 수 있으니 변수 하나를 위한 여유를 미리 비워 두면 든든하네.";hlSuf=" 여유 시간 하나만 비워 두면 든든.";}
@@ -77,7 +77,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
       '<div class="tf-hl">'+T[9]+hlSuf+'</div>'+
       '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div><div class="s">자네를 뜻하는 글자 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div>'+(tfP<=60?'<div class="tf-pct">오늘 1950~2009년생 가운데 <b>상위 '+tfP+'%</b></div>':'')+'<div class="s">자네를 뜻하는 글자 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
       '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
       '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"자네 태어난 날 글자와 오늘 날짜 글자는 조용하네. 삼합도 충도 육합도 없어. 오늘 벌어지는 일은 남이 흔들어서가 아니라 자네가 고른 결과라는 뜻일세.")+'</p></div>'+
@@ -103,7 +103,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       tailAsk(el.querySelector("#tailbox"),tfTail);
       var sbx=el.querySelector("#out .share-btn");if(sbx)sbx.insertAdjacentHTML("beforebegin",diaryNote());
       bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
-        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1]});
+        ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1],badge:tfP<=60?"오늘 운 상위 "+tfP+"%":""});
       askFx(el,{score:score,grade:grade,streak:true,bujeok:true,open:5});}
     bdBind(el,"#d","#derr");
     askWire(el,go,["오늘 날짜의 글자부터 짚는다","자네 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤네.");}});

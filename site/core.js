@@ -634,17 +634,24 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
   var TF_LINE={"비견":"내 걸음대로 가도 좋은 날. 돈은 각자 계산.","겁재":"마음 넉넉한 날. 쓸 한도만 정해 둘 것.","식신":"말도 복도 술술 풀리는 날. 담아 둔 말은 꺼낼 것.","상관":"아이디어 번뜩이는 날. 입만 한 박자 늦출 것.","편재":"큰돈과 기회가 오가는 날. 계산기부터 두드릴 것.","정재":"성실함이 돈이 되는 날. 확실한 쪽을 잡을 것.","편관":"도전이 오는 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 원칙대로 가는 게 지름길.","편인":"생각이 깊어지는 날. 결정은 내일로.","정인":"도움이 찾아오는 날. 혼자 애쓰지 말 것."};
   function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
+  /* 오늘 점수 — (내 일간 ds, 내 일지 db, 필요한 기운 yong)과 오늘 일진 today 로 정해진다. tfToday 와 상위 %(tfPct)가 같이 쓴다 */
+  function tfScore(ds,db,yong,today){
+    var score=TF_BASE[sjTenGod(ds,today.d.s)],tB=today.d.b,art="";
+    if(db%4===tB%4&&db!==tB){score+=8;art="삼합";}
+    else if(Math.abs(db-tB)===6){score-=10;art="충";}
+    else if(sjYukhap(db)===tB){score+=6;art="육합";}
+    var todayEl=SJ_ES[today.d.s],yongHit=todayEl===yong,yongClash=(todayEl+2)%5===yong;
+    if(yongHit)score+=5;else if(yongClash)score-=3;
+    return {score:Math.max(35,Math.min(98,score)),art:art,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
   function tfToday(y,m,d,now){
     now=now||new Date();
     var me=sjPillars(y,m,d,null,0,false),today=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
-    var rel=sjTenGod(me.d.s,today.d.s),score=TF_BASE[rel],myB=me.d.b,tB=today.d.b,art="";
-    if(myB%4===tB%4&&myB!==tB){score+=8;art="삼합";}
-    else if(Math.abs(myB-tB)===6){score-=10;art="충";}
-    else if(sjYukhap(myB)===tB){score+=6;art="육합";}
-    var st=sjStrength(me),todayEl=SJ_ES[today.d.s],yongHit=todayEl===st.yong,yongClash=(todayEl+2)%5===st.yong;
-    if(yongHit)score+=5;else if(yongClash)score-=3;
-    score=Math.max(35,Math.min(98,score));
-    return {me:me,today:today,rel:rel,score:score,grade:tfGrade(score),art:art,st:st,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
+    var st=sjStrength(me),r=tfScore(me.d.s,me.d.b,st.yong,today);
+    return {me:me,today:today,rel:sjTenGod(me.d.s,today.d.s),score:r.score,grade:tfGrade(r.score),art:r.art,st:st,todayEl:r.todayEl,yongHit:r.yongHit,yongClash:r.yongClash};}
+  // 1950~2009년생(시각 모름) 60일주 × 필요한 기운(목화토금수) 칸별 사람 수 — tools/sajupct/make_tf_pct.js 로 잰 값
+  var TF_PCT=[[0,178,0,0,187],[0,56,0,0,309],[184,0,181,0,0],[186,0,179,0,0],[0,131,0,234,0],[0,132,0,233,0],[0,0,269,0,96],[0,0,128,0,237],[183,0,0,182,0],[182,0,0,183,0],[0,55,0,0,310],[0,178,0,0,187],[303,0,62,0,0],[305,0,60,0,0],[0,269,0,96,0],[0,269,0,96,0],[0,0,130,0,235],[0,0,269,0,96],[58,0,0,307,0],[59,0,0,306,0],[0,56,0,0,309],[0,55,0,0,310],[305,0,60,0,0],[305,0,60,0,0],[0,268,0,97,0],[0,133,0,232,0],[0,0,269,0,96],[0,0,269,0,96],[59,0,0,306,0],[59,0,0,306,0],[0,56,0,0,309],[0,56,0,0,309],[307,0,59,0,0],[306,0,60,0,0],[0,135,0,231,0],[0,271,0,95,0],[0,0,274,0,92],[0,0,131,0,235],[57,0,0,309,0],[59,0,0,307,0],[0,56,0,0,310],[0,55,0,0,311],[183,0,183,0,0],[307,0,59,0,0],[0,270,0,96,0],[0,271,0,95,0],[0,0,129,0,237],[0,0,268,0,97],[180,0,0,185,0],[58,0,0,307,0],[0,174,0,0,191],[0,174,0,0,191],[305,0,60,0,0],[186,0,179,0,0],[0,132,0,233,0],[0,133,0,232,0],[0,0,127,0,238],[0,0,129,0,236],[58,0,0,307,0],[180,0,0,185,0]];
+  // 오늘 이 점수 이상인 사람의 비율(상위 N%) — 같은 날 모든 1950~2009년생을 같은 식으로 매긴 것
+  function tfPct(score,today){var t=0,c=0;for(var i=0;i<60;i++)for(var e=0;e<5;e++){var n=TF_PCT[i][e];if(!n)continue;t+=n;if(tfScore(i%10,i%12,e,today).score>=score)c+=n;}return Math.max(1,Math.round(c/t*100));}
   /* 출생 당시 한국 시계가 지금 표준시(UTC+9)와 몇 분 달랐나.
      IANA tzdb Asia/Seoul·Rule ROK 기준: 1954-03-21~1961-08-10 표준시 UTC+8:30, 서머타임 +1시간.
      1987·88년 기간은 tzdb·국가기록원·언론 기록이 같다. 1948~60년 기간은 tzdb 날짜를 쓰되
