@@ -353,7 +353,8 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("생년월일·시각·성별·이름을 저장하지도 읽지도 않는다", !/loadPrefs\(\)\.(birth|partnerBirth|gender|partnerGender|name|birthHour|birthTime)\b/.test(src) && !/savePrefs\(\{[^}]*\b(birth|gender|name|partner)/.test(src) && !/c\.birth=|\.birth;\}catch/.test(bs), true);
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
-  t("명식 표가 결과 맨 위에 나온다(풀이보다 먼저)", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+synth+charSec+hourSec()"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
+  // 2026-10: 맨 위는 '이 정보로 풀었습니다' 확인 카드와 '한 장 요약'(sjSumHtml), 그 바로 아래가 명식 표다 — 명식 표는 여전히 풀이보다 먼저
+  t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+synth+charSec+hourSec()"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
   t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+synth+charSec+hourSec()+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
@@ -817,7 +818,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
@@ -1313,5 +1314,20 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
      fs.readFileSync("columns/zodiac-2027.js", "utf8").includes('link("samjae.html"')].join(","), "true,true,true,true,true,true,true,true,true");
   t("2027 시즌 배선: 원고가 없으면 빌드가 멈추고, 위젯은 content_samjae.js 의 것을 쓴다", [bs.includes('throw new Error("년생별 2027 원고 없음: "'), bs.includes("const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);")].join(","), "true,true");
   t("2027 시즌: 원고 파이프라인(tools/newyear2027)이 리포에 있다", ["make_inputs.js", "STYLE_NY.md", "ny_check.js", "merge_ny.js", "README.md"].every(f => fs.existsSync("tools/newyear2027/" + f)), true); }
+// ── 사주 결과 '한 장 요약'(sjSumHtml) · 상위 N%(SJ_PCT) — 표는 실제 분포여야 하고, 카드는 그려져야 한다 ──
+{ const MP = require("./tools/sajupct/make_pct.js"), S30 = MP.make(7);   // 7일 간격: 60일 주기(일진)와 서로소라 일간이 고루 뽑힌다(30일 간격은 일간 두 개만 뽑혀 7%p 어긋났다)
+  const share = (A, gi, c) => { const a = A[gi], t = a.reduce((x, y) => x + y, 0); return a.slice(c).reduce((x, y) => x + y, 0) / t * 100; };
+  let worst = 0; ["h", "n"].forEach(k => [0, 1, 2, 3, 4].forEach(gi => [1, 2, 3, 4].forEach(c => { worst = Math.max(worst, Math.abs(share(SJ_PCT[k], gi, c) - share(S30[k], gi, c))); })));
+  t("상위 N%: hub.html 의 SJ_PCT 가 엔진으로 다시 잰 분포(7일 간격 표본)와 2%p 안에서 맞는다(지어낸 숫자가 아니다)", worst < 2, true);
+  t("상위 N%: 표본 수 — 시각 있음 262,980 · 시각 모름 21,915", [SJ_PCT.h[0].reduce((a, b) => a + b, 0), SJ_PCT.n[0].reduce((a, b) => a + b, 0)].join(","), "262980,21915");
+  t("상위 N%: 칸이 많을수록 상위 %가 작아진다(재물 1→4칸)", [1, 2, 3, 4].map(c => sjPct(2, c, true)).every((v, i, a) => i === 0 || v < a[i - 1]), true);
+  const p = sjPillars(1990, 3, 15, 14, 30, true), cnt = [0, 0, 0, 0, 0], G = { 비겁: 0, 식상: 0, 재성: 0, 관성: 0, 인성: 0 }, GR = { 비견: "비겁", 겁재: "비겁", 식신: "식상", 상관: "식상", 편재: "재성", 정재: "재성", 편관: "관성", 정관: "관성", 편인: "인성", 정인: "인성" };
+  [p.y, p.m, p.d, p.h].forEach((c, ci) => { cnt[SJ_ES[c.s]]++; cnt[SJ_EB[c.b]]++; if (ci !== 2) G[GR[sjTenGod(p.d.s, c.s)]]++; G[GR[sjTenGod(p.d.s, SJ_BMAIN[c.b])]]++; });
+  const hz = sjSumHtml({ p, cnt, G, strong: true, yEl: "수", nm: "민지 님", hasH: true });
+  t("한 장 요약: 그려진다 — 제목·일간 글자·오행 다섯 칸·별 그림·상위 % 카드·풀이 한 스푼, undefined/NaN 없음",
+    [hz.includes("민지 님 한 장 요약"), hz.includes('class="ss-glyph'), (hz.match(/class="ss-t5"/g) || []).length === 5, hz.includes('<svg class="ss-radar"'), (hz.match(/class="ss-pc"/g) || []).length >= 1, hz.includes("풀이 한 스푼"), !/undefined|NaN/.test(hz)].join(","), "true,true,true,true,true,true,true");
+  t("한 장 요약: 사람을 약하다고 부르지 않는다(신약 대신 채워 가며 크는 편)", !/신약|약한|약해/.test(sjSumHtml({ p, cnt, G, strong: false, yEl: "목", nm: "", hasH: true })), true);
+  t("한 장 요약: 사주 결과 맨 위에 '이 정보로 풀었습니다' 확인 카드와 함께 붙고, 일주 별명은 sj/ilju.json 으로 채운다",
+    [src.includes("'<div class=\"sj-confirm\"><div class=\"k\">이 정보로 풀었습니다</div>"), src.includes("sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h})+\n        sjGridHtml("), src.includes('box.querySelector(".ss-arch-t").textContent=o.t')].join(","), "true,true,true"); }
 console.log("\n결과: " + pass + " 통과 / " + fail + " 실패");
 process.exit(fail ? 1 : 0);

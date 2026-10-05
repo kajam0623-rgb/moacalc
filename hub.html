@@ -399,6 +399,48 @@
   /* 밝은 배경에서는 글자 대비 4.5:1 을 넘도록 한 단계 진하게(어두운 모드는 위 색 그대로) */
   :root:not([data-theme="dark"]) .el-목{color:#2b7a48;} :root:not([data-theme="dark"]) .el-화{color:#b8402f;} :root:not([data-theme="dark"]) .el-토{color:#8f6415;} :root:not([data-theme="dark"]) .el-금{color:#626771;} :root:not([data-theme="dark"]) .el-수{color:#2f6aa8;}
   :root[data-theme="dark"] .el-금{color:#aab1bb;}
+  /* 사주 입력: 한 화면 한 질문(.wz) — '한 번에 입력'(.wz-flat)이면 예전처럼 다 펼친다 */
+  .wz-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);font-weight:800;}
+  .wz-all{background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:4px 0;}
+  .wz-bar{height:6px;border-radius:99px;background:var(--surface-2);margin:6px 0 12px;overflow:hidden;}.wz-bar i{display:block;height:100%;background:#E6B25A;border-radius:99px;transition:width .25s;}
+  .wz-q{font-size:19px;font-weight:900;margin:2px 0 12px;line-height:1.45;word-break:keep-all;}
+  .wz-s{display:none;}.wz-s.cur{display:block;}.wz-flat .wz-s{display:block;margin-bottom:12px;}.wz-flat .wz-bar,.wz-flat .wz-q,.wz-flat .wz-n{display:none;}
+  .wz-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px;}.wz-nav button{padding:12px 16px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;}
+  .wz-next{background:#E6B25A;color:#1b1406;border:0;flex:1;}.wz-prev{background:none;border:1px solid var(--line-2);color:var(--ink);}
+  /* 사주 결과 맨 위: 이 정보로 풀었습니다 + 한 장 요약(어두운 바탕·금빛, 라이트/다크 같은 모양) */
+  .sj-confirm{border:1px solid var(--line-2);border-radius:14px;padding:12px 14px;margin:4px 0 14px;background:var(--surface);}
+  .sj-confirm .k{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.5px;margin-bottom:4px;}
+  .sj-confirm b{font-size:15px;}.sj-confirm p{font-size:12.5px;color:var(--muted);margin:6px 0 0;line-height:1.6;}
+  .sj-sum{background:linear-gradient(160deg,#2a2219,#17120d);color:#f3ead8;border:1px solid #6b5631;border-radius:20px;padding:20px 18px 18px;margin:0 0 18px;box-shadow:0 16px 36px -20px rgba(0,0,0,.7);}
+  .sj-sum .ss-k{color:#e6b25a;font-size:12px;font-weight:800;letter-spacing:1px;}
+  .sj-sum .ss-ttl{font-size:23px;font-weight:900;letter-spacing:-.5px;margin-top:2px;}
+  .sj-sum .ss-sub{color:#b9ab92;font-size:13px;margin-bottom:14px;}
+  .ss-arch{border:1px solid #5b4a2c;background:rgba(230,178,90,.07);border-radius:14px;padding:14px 16px;margin-bottom:16px;}
+  .ss-arch-t{display:block;color:#f0c46e;font-size:21px;font-weight:900;line-height:1.35;word-break:keep-all;}
+  .ss-arch-d{display:block;color:#d6c9b0;font-size:13px;margin-top:6px;line-height:1.6;}
+  .ss-id{display:flex;gap:14px;align-items:center;padding-bottom:16px;border-bottom:1px solid #3d3222;margin-bottom:14px;}
+  .ss-glyph{flex:none;width:76px;height:76px;border:2px solid #e6b25a;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;font-family:"Noto Serif KR",serif;background:#211a12;}
+  .ss-ilju{font-size:20px;font-weight:900;font-family:"Noto Serif KR",serif;}.ss-ilju small{font-size:13px;color:#b9ab92;font-weight:700;margin-left:4px;font-family:inherit;}
+  .ss-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}.ss-chips span{border:1px solid #6b5631;border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:700;color:#efe3c9;}
+  .ss-chips span.on{background:rgba(230,178,90,.18);border-color:#e6b25a;}
+  .ss-h{font-size:14px;font-weight:800;margin:6px 0 10px;}.ss-h b{color:#e6b25a;font-family:"Noto Serif KR",serif;margin-right:6px;}
+  .ss-five{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;}
+  .ss-t5{text-align:center;}.ss-box{height:62px;border-radius:12px;background:#3a3125;position:relative;overflow:hidden;}
+  .ss-box i{position:absolute;left:0;right:0;bottom:0;border-radius:0;opacity:.92;}
+  .ss-t5 b{display:block;font-size:20px;margin-top:5px;font-family:"Noto Serif KR",serif;}.ss-t5 span{font-size:12.5px;color:#b9ab92;font-weight:700;}
+  .sj-sum .el-목{color:#7fd39f!important;}.sj-sum .el-화{color:#f08a7c!important;}.sj-sum .el-토{color:#e8be6a!important;}.sj-sum .el-금{color:#d4d9e0!important;}.sj-sum .el-수{color:#86b9f0!important;}
+  .ss-line{font-size:14.5px;margin:12px 0 16px;line-height:1.6;}
+  .ss-radar{display:block;width:100%;max-width:340px;margin:0 auto 6px;}
+  .ss-radar .rg{fill:none;stroke:#4a3d29;stroke-width:1;}.ss-radar .rv{fill:rgba(230,178,90,.28);stroke:#e6b25a;stroke-width:2.2;}
+  .ss-radar .rd{fill:#e6b25a;}.ss-radar .rd.on{fill:#f08a7c;}.ss-radar .rl{fill:#efe3c9;font-size:12.5px;font-weight:800;}
+  .ss-pcs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+  .ss-pc{border:1px solid #4a3d29;border-radius:14px;padding:12px 6px;text-align:center;background:#211a12;}
+  .ss-pc b{display:block;font-size:14px;color:#efe3c9;}.ss-pc em{font-style:normal;font-size:30px;font-weight:900;color:#f08a7c;font-family:"Noto Serif KR",serif;letter-spacing:-1px;}
+  .ss-pc span{display:block;font-size:12px;color:#b9ab92;margin-top:4px;line-height:1.4;}
+  .ss-note{font-size:11.5px;color:#9b8e76;margin:8px 0 12px;line-height:1.6;}
+  .ss-spoon{background:#f6efe0;color:#2a2219;border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.7;}
+  .ss-spoon b{display:block;color:#a8402f;font-size:12.5px;font-weight:900;margin-bottom:2px;}
+  @media (max-width:380px){.ss-pc em{font-size:24px;}.ss-glyph{width:64px;height:64px;font-size:36px;}}
   .sj-bars{margin-top:18px;}
   .sj-bar{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px;}
   .sj-bar .n{width:44px;font-weight:700;}
@@ -1133,6 +1175,49 @@
     if((de+2)%5===oe)return same?"편재":"정재";
     if((oe+2)%5===de)return same?"편관":"정관";
     return same?"편인":"정인";}
+  /* 사주 결과 '상위 N%' — 1950~2009년생 모든 날짜 × 12시진(262,980건; 시각 모름은 날짜 21,915건)을 이 엔진으로 돌려 센
+     십성 무리(비겁·식상·재성·관성·인성)별 칸 수 분포(h: 시각 있음 7칸, n: 시각 모름 5칸). 지어낸 순위가 아니다.
+     tools/sajupct/make_pct.js 가 만들고 verify.js 가 표본으로 다시 재서 맞춰 본다 */
+  var SJ_PCT={h:[[57009,95468,70369,30390,8131,1435,167,11],[58711,93694,69691,30357,8735,1601,181,10],[57355,94854,70340,30761,8187,1335,142,6],[55827,96037,71867,30102,7775,1262,106,4],[57820,94638,70081,30290,8436,1540,166,9]],
+    n:[[7334,8778,4449,1185,157,12,0,0],[7324,8790,4451,1176,163,11,0,0],[7335,8786,4451,1168,165,10,0,0],[7325,8801,4439,1169,171,10,0,0],[7328,8787,4465,1161,163,11,0,0]]};
+  var SJ_GRP5=["비겁","식상","재성","관성","인성"];
+  // 칸 수가 c 이상인 사람의 비율(%) = "상위 N%". 1 아래는 1로 둔다
+  function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
+  /* 사주 결과 맨 위 '한 장 요약' — 일주 별명(sj/ilju.json 의 t, 결과가 뜬 뒤 채운다)·큰 일간 글자·칩·오행 칸·십성 별 그림·상위 N%·풀이 한 스푼.
+     o: {p, cnt(오행 5), G(십성 무리 {비겁..}), strong, yEl, nm(호칭, 없으면 ""), hasH}. 문장은 보살 말투, 근거 주석만 존댓말 */
+  function sjSumHtml(o){
+    var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
+    var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
+    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있네.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두껍네("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리일세.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편일세.");
+    var tiles=SJ_EL.map(function(e,i){var f=mxV?Math.round(cnt[i]/mxV*100):0;
+      return '<div class="ss-t5"><div class="ss-box"><i class="bg-'+e+'" style="height:'+f+'%"></i></div><b class="el-'+e+'">'+H[e]+'</b><span>'+cnt[i]+'</span></div>';}).join("");
+    // 십성 별 그림: 위부터 시계 방향 자아(비겁)·표현(식상)·재물(재성)·명예(관성)·학문(인성)
+    var LBL=["자아","표현","재물","명예","학문"],cx=130,cy=116,R=78,vals=SJ_GRP5.map(function(k){return o.G[k];}),top=Math.max(3,Math.max.apply(null,vals));
+    var pt=function(k,r){var a=(-90+72*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+    var poly=function(f){return [0,1,2,3,4].map(function(k){var q=pt(k,R*f(k));return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");};
+    var svg='<svg class="ss-radar" viewBox="0 0 260 240" role="img" aria-label="십성 분포: '+LBL.map(function(l,k){return l+" "+vals[k];}).join(", ")+'">'+
+      [1,2/3,1/3].map(function(s){return '<polygon points="'+poly(function(){return s;})+'" class="rg"/>';}).join("")+
+      [0,1,2,3,4].map(function(k){var q=pt(k,R);return '<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" class="rg"/>';}).join("")+
+      '<polygon points="'+poly(function(k){return vals[k]/top;})+'" class="rv"/>'+
+      [0,1,2,3,4].map(function(k){var q=pt(k,R*vals[k]/top),l=pt(k,R+20);return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="'+(vals[k]?4.5:2.5)+'" class="rd'+(vals[k]===Math.max.apply(null,vals)&&vals[k]?' on':'')+'"/>'+
+        '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+LBL[k]+' '+vals[k]+'</text>';}).join("")+'</svg>';
+    // 상위 N%: 칸이 하나 이상인 무리 가운데 드문 순서로 셋
+    var PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"};
+    var pc=SJ_GRP5.map(function(k,i){return {k:k,c:o.G[k],v:sjPct(i,o.G[k],o.hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;});
+    // 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
+    pc=pc.filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);
+    var pcts=pc.map(function(x){return '<div class="ss-pc"><b>상위 <em>'+x.v+'</em>%</b><span>'+PL[x.k]+' 기운 '+x.c+'칸</span></div>';}).join("");
+    var who=o.nm?o.nm.replace(/[&<>"']/g,""):"";
+    return '<div class="sj-sum">'+
+      '<div class="ss-k">한눈에</div><div class="ss-ttl">'+(who?who+' 한 장 요약':'한 장 요약')+'</div><div class="ss-sub">타고난 기운의 무게중심</div>'+
+      '<div class="ss-arch"><b class="ss-arch-t">'+SJ_S[ds]+SJ_B[p.d.b]+'일주</b><span class="ss-arch-d"></span></div>'+
+      '<div class="ss-id"><div class="ss-glyph el-'+myEl+'">'+SJ_SH[ds]+'</div><div><div class="ss-ilju">'+SJ_SH[ds]+SJ_BH[p.d.b]+' 일주 <small>'+SJ_S[ds]+SJ_B[p.d.b]+'</small></div>'+
+      '<div class="ss-chips"><span class="on">'+H[myEl]+' · '+(o.strong?'힘이 넉넉한 편':'채워 가며 크는 편')+'</span><span>필요한 기운 '+H[o.yEl]+'</span><span>'+SJ_TTI[p.y.b]+'띠</span></div></div></div>'+
+      '<div class="ss-h"><b>五行</b> 타고난 다섯 기운</div><div class="ss-five">'+tiles+'</div><p class="ss-line">'+line+'</p>'+
+      '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
+      (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
+      '</div>';}
   // ---------- shared: 소득세(간이 연 결정세액 근사) ----------
   function earnedDed(g){if(g<=5e6)return g*0.7;if(g<=15e6)return 3.5e6+(g-5e6)*0.4;if(g<=45e6)return 7.5e6+(g-15e6)*0.15;if(g<=1e8)return 12e6+(g-45e6)*0.05;return 14.75e6+(g-1e8)*0.02;}
   function progressive(b){if(b<=14e6)return b*0.06;if(b<=50e6)return .84e6+(b-14e6)*.15;if(b<=88e6)return 6.24e6+(b-50e6)*.24;if(b<=15e7)return 15.36e6+(b-88e6)*.35;if(b<=3e8)return 37.06e6+(b-15e7)*.38;if(b<=5e8)return 94.06e6+(b-3e8)*.4;if(b<=1e9)return 174.06e6+(b-5e8)*.42;return 384.06e6+(b-1e9)*.45;}
@@ -2788,25 +2873,41 @@
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
-    '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
-    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
-    sjHourOpts(-1)+'</select></div></div>'+
-    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
-    '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
+    /* 입력은 한 화면에 질문 하나(보살이 묻는다) — 진행 막대와 이전·다음, '한 번에 입력'으로 예전처럼 다 펼칠 수도 있다.
+       입력칸(#d·#t·#c·#tm·#nm·#g·#q)과 #go 는 그대로라 계산·자동 실행(#go)·생일 불러오기는 바뀌지 않는다 */
+    el.innerHTML='<div class="wz"><div class="wz-top"><span class="wz-n"></span><button type="button" class="wz-all">한 번에 입력</button></div><div class="wz-bar"><i></i></div><p class="wz-q"></p>'+
+    '<div class="wz-s" data-q="자네를 뭐라고 불러 줄까? 비워 둬도 되네.">'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
-    '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
+    '<label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
+    '<div class="wz-s" data-q="언제 태어났나? 양력 생일을 넣게."><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    '<div class="wz-s" data-q="몇 시쯤 태어났나? 모르면 그냥 넘어가도 되네."><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
+    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
+    sjHourOpts(-1)+'</select>'+
+    '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
+    '<div style="margin-top:10px"><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    '<div class="wz-s" data-q="10년 흐름의 방향을 보려면 성별이 필요하네."><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
+    '<div class="wz-s" data-q="마지막일세. 제일 궁금한 게 뭔가?"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
       '<option value="job">일·사업 — 지금 하는 일을 언제까지</option>'+
       '<option value="love">인연 — 언제 만나나</option>'+
       '<option value="health">건강 — 어디를 살피면 좋나</option>'+
-    '</select></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
+    '</select>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button></div>'+
+    '<div class="wz-nav"><button type="button" class="wz-prev">← 이전</button><button type="button" class="wz-next">다음 →</button></div></div>'+
     '<div id="out"></div>';
+    (function(){var W=el.querySelector(".wz"),S=[].slice.call(W.querySelectorAll(".wz-s")),i=0,all=false;
+      function show(){W.classList.toggle("wz-flat",all);S.forEach(function(s,k){s.classList.toggle("cur",k===i);});
+        W.querySelector(".wz-q").textContent=S[i].getAttribute("data-q");W.querySelector(".wz-n").textContent=(i+1)+" / "+S.length;
+        W.querySelector(".wz-bar i").style.width=((i+1)/S.length*100)+"%";W.querySelector(".wz-prev").style.visibility=i&&!all?"visible":"hidden";
+        W.querySelector(".wz-next").style.display=i<S.length-1&&!all?"":"none";W.querySelector(".wz-all").textContent=all?"한 단계씩 입력":"한 번에 입력";}
+      W.querySelector(".wz-next").addEventListener("click",function(){i=Math.min(S.length-1,i+1);show();var f=S[i].querySelector("input,select");if(f&&f.type!=="date")try{f.focus({preventScroll:true});}catch(e){}});
+      W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
+      W.querySelector(".wz-all").addEventListener("click",function(){all=!all;show();});
+      W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
+      el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
+      show();})();
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
     // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
@@ -3293,7 +3394,12 @@
         people:["startup","quit","love"],startup:["money","quit","people"],month:["money","health","move"]};
       var tailPool={};Object.keys(TL).forEach(function(k){tailPool[k]={label:TL[k],next:TN[k],ans:QMETA[k]?function(){return focusBlock(k);}:function(){return tqAns(k);}};});
       var tailCfg={tool:"saju",intro:"여기까지 읽고 더 궁금한 게 있나?<br>어떤 내용이야?",first:["money","quit","marry","month"],skip:QMETA[Q]?[Q]:[],load:tqLoad,pool:tailPool};
+      var tSel=el.querySelector("#t"),tLab=tSel&&tSel.selectedOptions&&tSel.selectedOptions[0]?tSel.selectedOptions[0].textContent:"";
       el.querySelector("#out").innerHTML=
+        // 이 정보로 풀었다 — 넣은 값을 먼저 되보여 준다(잘못 넣었으면 바로 알 수 있게). 생일은 서버로 가지 않는다
+        '<div class="sj-confirm"><div class="k">이 정보로 풀었습니다</div><b>양력 '+y+'년 '+mo+'월 '+d+'일 · '+(B.exact?B.exact+' (적어 주신 시각)':h==null?'태어난 시각 모름':escH(tLab))+' · '+(male?'남':'여')+'</b>'+
+        '<p>넣어 주신 생년월일은 이 기기 안에서만 계산했고 서버로 보내지 않았습니다. 잘못 넣었다면 위 칸을 고쳐 다시 보세요.</p></div>'+
+        sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h})+
         sjGridHtml(p,"날 자리(나)")+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
@@ -3363,6 +3469,9 @@
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
+      // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
+      (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
+        if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
       // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
       // 본문은 결과에 이미 있는 글(일간 성격·적성 두 문단 + 맺는 말 첫머리)을 이어 붙인다
@@ -3402,7 +3511,7 @@
     tmEl.addEventListener("input",function(){var dg=this.value.replace(/[^0-9]/g,"");
       if(/^[0-9:]*$/.test(this.value)&&dg.length===4&&this.value.indexOf(":")<0&&this.selectionStart===this.value.length)this.value=dg.slice(0,2)+":"+dg.slice(2);
       tmErr.textContent="";tmSay.textContent="";if(/^\d\d:\d\d$/.test(this.value)&&tmCheck(true).ok){syncT();prefetch();}});
-    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go"))return;if(tmCheck(true).ok)return;e.stopImmediatePropagation();e.preventDefault();tmEl.focus();},true);
+    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go"))return;if(tmCheck(true).ok)return;e.stopImmediatePropagation();e.preventDefault();if(el._wz)el._wz(tmEl);tmEl.focus();},true);
     prefetch();}},
 
   {id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"보살에게 묻고 뽑는 타로",render:function(el){

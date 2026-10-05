@@ -40,25 +40,41 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
     var today=new Date();
-    el.innerHTML='<div class="r2"><div><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
-    '<div><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
-    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
-    sjHourOpts(-1)+'</select></div></div>'+
-    '<div class="r2"><div><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
-    '<div><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
-    '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
+    /* 입력은 한 화면에 질문 하나(보살이 묻는다) — 진행 막대와 이전·다음, '한 번에 입력'으로 예전처럼 다 펼칠 수도 있다.
+       입력칸(#d·#t·#c·#tm·#nm·#g·#q)과 #go 는 그대로라 계산·자동 실행(#go)·생일 불러오기는 바뀌지 않는다 */
+    el.innerHTML='<div class="wz"><div class="wz-top"><span class="wz-n"></span><button type="button" class="wz-all">한 번에 입력</button></div><div class="wz-bar"><i></i></div><p class="wz-q"></p>'+
+    '<div class="wz-s" data-q="자네를 뭐라고 불러 줄까? 비워 둬도 되네.">'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
     // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<div style="margin-top:10px"><label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
-    '<div style="margin-top:10px"><label>제일 궁금한 것</label><select id="q">'+
+    '<label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
+    '<div class="wz-s" data-q="언제 태어났나? 양력 생일을 넣게."><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
+    '<div class="wz-s" data-q="몇 시쯤 태어났나? 모르면 그냥 넘어가도 되네."><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
+    // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
+    sjHourOpts(-1)+'</select>'+
+    '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
+    '<div style="margin-top:10px"><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    '<div class="wz-s" data-q="10년 흐름의 방향을 보려면 성별이 필요하네."><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
+    '<div class="wz-s" data-q="마지막일세. 제일 궁금한 게 뭔가?"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
       '<option value="job">일·사업 — 지금 하는 일을 언제까지</option>'+
       '<option value="love">인연 — 언제 만나나</option>'+
       '<option value="health">건강 — 어디를 살피면 좋나</option>'+
-    '</select></div>'+
-    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
+    '</select>'+
+    '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button></div>'+
+    '<div class="wz-nav"><button type="button" class="wz-prev">← 이전</button><button type="button" class="wz-next">다음 →</button></div></div>'+
     '<div id="out"></div>';
+    (function(){var W=el.querySelector(".wz"),S=[].slice.call(W.querySelectorAll(".wz-s")),i=0,all=false;
+      function show(){W.classList.toggle("wz-flat",all);S.forEach(function(s,k){s.classList.toggle("cur",k===i);});
+        W.querySelector(".wz-q").textContent=S[i].getAttribute("data-q");W.querySelector(".wz-n").textContent=(i+1)+" / "+S.length;
+        W.querySelector(".wz-bar i").style.width=((i+1)/S.length*100)+"%";W.querySelector(".wz-prev").style.visibility=i&&!all?"visible":"hidden";
+        W.querySelector(".wz-next").style.display=i<S.length-1&&!all?"":"none";W.querySelector(".wz-all").textContent=all?"한 단계씩 입력":"한 번에 입력";}
+      W.querySelector(".wz-next").addEventListener("click",function(){i=Math.min(S.length-1,i+1);show();var f=S[i].querySelector("input,select");if(f&&f.type!=="date")try{f.focus({preventScroll:true});}catch(e){}});
+      W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
+      W.querySelector(".wz-all").addEventListener("click",function(){all=!all;show();});
+      W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
+      el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
+      show();})();
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
     // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
     // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
@@ -545,7 +561,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         people:["startup","quit","love"],startup:["money","quit","people"],month:["money","health","move"]};
       var tailPool={};Object.keys(TL).forEach(function(k){tailPool[k]={label:TL[k],next:TN[k],ans:QMETA[k]?function(){return focusBlock(k);}:function(){return tqAns(k);}};});
       var tailCfg={tool:"saju",intro:"여기까지 읽고 더 궁금한 게 있나?<br>어떤 내용이야?",first:["money","quit","marry","month"],skip:QMETA[Q]?[Q]:[],load:tqLoad,pool:tailPool};
+      var tSel=el.querySelector("#t"),tLab=tSel&&tSel.selectedOptions&&tSel.selectedOptions[0]?tSel.selectedOptions[0].textContent:"";
       el.querySelector("#out").innerHTML=
+        // 이 정보로 풀었다 — 넣은 값을 먼저 되보여 준다(잘못 넣었으면 바로 알 수 있게). 생일은 서버로 가지 않는다
+        '<div class="sj-confirm"><div class="k">이 정보로 풀었습니다</div><b>양력 '+y+'년 '+mo+'월 '+d+'일 · '+(B.exact?B.exact+' (적어 주신 시각)':h==null?'태어난 시각 모름':escH(tLab))+' · '+(male?'남':'여')+'</b>'+
+        '<p>넣어 주신 생년월일은 이 기기 안에서만 계산했고 서버로 보내지 않았습니다. 잘못 넣었다면 위 칸을 고쳐 다시 보세요.</p></div>'+
+        sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h})+
         sjGridHtml(p,"날 자리(나)")+
         '<div class="sj-bars">'+SJ_EL.map(function(e,i){return '<div class="sj-bar"><span class="n el-'+e+'">'+e+'</span><span class="t"><i class="bg-'+e+'" style="width:'+(tot?cnt[i]/tot*100:0)+'%"></i></span><span class="c">'+cnt[i]+'</span></div>';}).join("")+'</div>'+
         '<div class="out" style="margin-top:18px"><div class="k">일간의 힘</div><div class="v" style="font-size:26px">'+(st.strong?"신강":"신약")+'<small> · 용신 '+yEl+'</small></div>'+
@@ -615,6 +636,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
+      // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
+      (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
+        if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
       // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
       // 본문은 결과에 이미 있는 글(일간 성격·적성 두 문단 + 맺는 말 첫머리)을 이어 붙인다
@@ -654,5 +678,5 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     tmEl.addEventListener("input",function(){var dg=this.value.replace(/[^0-9]/g,"");
       if(/^[0-9:]*$/.test(this.value)&&dg.length===4&&this.value.indexOf(":")<0&&this.selectionStart===this.value.length)this.value=dg.slice(0,2)+":"+dg.slice(2);
       tmErr.textContent="";tmSay.textContent="";if(/^\d\d:\d\d$/.test(this.value)&&tmCheck(true).ok){syncT();prefetch();}});
-    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go"))return;if(tmCheck(true).ok)return;e.stopImmediatePropagation();e.preventDefault();tmEl.focus();},true);
+    el.addEventListener("click",function(e){var t=e.target;if(!t||!t.closest||!t.closest("#go"))return;if(tmCheck(true).ok)return;e.stopImmediatePropagation();e.preventDefault();if(el._wz)el._wz(tmEl);tmEl.focus();},true);
     prefetch();}});

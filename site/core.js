@@ -424,6 +424,49 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if((de+2)%5===oe)return same?"편재":"정재";
     if((oe+2)%5===de)return same?"편관":"정관";
     return same?"편인":"정인";}
+  /* 사주 결과 '상위 N%' — 1950~2009년생 모든 날짜 × 12시진(262,980건; 시각 모름은 날짜 21,915건)을 이 엔진으로 돌려 센
+     십성 무리(비겁·식상·재성·관성·인성)별 칸 수 분포(h: 시각 있음 7칸, n: 시각 모름 5칸). 지어낸 순위가 아니다.
+     tools/sajupct/make_pct.js 가 만들고 verify.js 가 표본으로 다시 재서 맞춰 본다 */
+  var SJ_PCT={h:[[57009,95468,70369,30390,8131,1435,167,11],[58711,93694,69691,30357,8735,1601,181,10],[57355,94854,70340,30761,8187,1335,142,6],[55827,96037,71867,30102,7775,1262,106,4],[57820,94638,70081,30290,8436,1540,166,9]],
+    n:[[7334,8778,4449,1185,157,12,0,0],[7324,8790,4451,1176,163,11,0,0],[7335,8786,4451,1168,165,10,0,0],[7325,8801,4439,1169,171,10,0,0],[7328,8787,4465,1161,163,11,0,0]]};
+  var SJ_GRP5=["비겁","식상","재성","관성","인성"];
+  // 칸 수가 c 이상인 사람의 비율(%) = "상위 N%". 1 아래는 1로 둔다
+  function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
+  /* 사주 결과 맨 위 '한 장 요약' — 일주 별명(sj/ilju.json 의 t, 결과가 뜬 뒤 채운다)·큰 일간 글자·칩·오행 칸·십성 별 그림·상위 N%·풀이 한 스푼.
+     o: {p, cnt(오행 5), G(십성 무리 {비겁..}), strong, yEl, nm(호칭, 없으면 ""), hasH}. 문장은 보살 말투, 근거 주석만 존댓말 */
+  function sjSumHtml(o){
+    var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
+    var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
+    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있네.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두껍네("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리일세.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편일세.");
+    var tiles=SJ_EL.map(function(e,i){var f=mxV?Math.round(cnt[i]/mxV*100):0;
+      return '<div class="ss-t5"><div class="ss-box"><i class="bg-'+e+'" style="height:'+f+'%"></i></div><b class="el-'+e+'">'+H[e]+'</b><span>'+cnt[i]+'</span></div>';}).join("");
+    // 십성 별 그림: 위부터 시계 방향 자아(비겁)·표현(식상)·재물(재성)·명예(관성)·학문(인성)
+    var LBL=["자아","표현","재물","명예","학문"],cx=130,cy=116,R=78,vals=SJ_GRP5.map(function(k){return o.G[k];}),top=Math.max(3,Math.max.apply(null,vals));
+    var pt=function(k,r){var a=(-90+72*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
+    var poly=function(f){return [0,1,2,3,4].map(function(k){var q=pt(k,R*f(k));return q[0].toFixed(1)+","+q[1].toFixed(1);}).join(" ");};
+    var svg='<svg class="ss-radar" viewBox="0 0 260 240" role="img" aria-label="십성 분포: '+LBL.map(function(l,k){return l+" "+vals[k];}).join(", ")+'">'+
+      [1,2/3,1/3].map(function(s){return '<polygon points="'+poly(function(){return s;})+'" class="rg"/>';}).join("")+
+      [0,1,2,3,4].map(function(k){var q=pt(k,R);return '<line x1="'+cx+'" y1="'+cy+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" class="rg"/>';}).join("")+
+      '<polygon points="'+poly(function(k){return vals[k]/top;})+'" class="rv"/>'+
+      [0,1,2,3,4].map(function(k){var q=pt(k,R*vals[k]/top),l=pt(k,R+20);return '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="'+(vals[k]?4.5:2.5)+'" class="rd'+(vals[k]===Math.max.apply(null,vals)&&vals[k]?' on':'')+'"/>'+
+        '<text x="'+l[0].toFixed(1)+'" y="'+(l[1]+4).toFixed(1)+'" text-anchor="middle" class="rl">'+LBL[k]+' '+vals[k]+'</text>';}).join("")+'</svg>';
+    // 상위 N%: 칸이 하나 이상인 무리 가운데 드문 순서로 셋
+    var PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"};
+    var pc=SJ_GRP5.map(function(k,i){return {k:k,c:o.G[k],v:sjPct(i,o.G[k],o.hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;});
+    // 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
+    pc=pc.filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);
+    var pcts=pc.map(function(x){return '<div class="ss-pc"><b>상위 <em>'+x.v+'</em>%</b><span>'+PL[x.k]+' 기운 '+x.c+'칸</span></div>';}).join("");
+    var who=o.nm?o.nm.replace(/[&<>"']/g,""):"";
+    return '<div class="sj-sum">'+
+      '<div class="ss-k">한눈에</div><div class="ss-ttl">'+(who?who+' 한 장 요약':'한 장 요약')+'</div><div class="ss-sub">타고난 기운의 무게중심</div>'+
+      '<div class="ss-arch"><b class="ss-arch-t">'+SJ_S[ds]+SJ_B[p.d.b]+'일주</b><span class="ss-arch-d"></span></div>'+
+      '<div class="ss-id"><div class="ss-glyph el-'+myEl+'">'+SJ_SH[ds]+'</div><div><div class="ss-ilju">'+SJ_SH[ds]+SJ_BH[p.d.b]+' 일주 <small>'+SJ_S[ds]+SJ_B[p.d.b]+'</small></div>'+
+      '<div class="ss-chips"><span class="on">'+H[myEl]+' · '+(o.strong?'힘이 넉넉한 편':'채워 가며 크는 편')+'</span><span>필요한 기운 '+H[o.yEl]+'</span><span>'+SJ_TTI[p.y.b]+'띠</span></div></div></div>'+
+      '<div class="ss-h"><b>五行</b> 타고난 다섯 기운</div><div class="ss-five">'+tiles+'</div><p class="ss-line">'+line+'</p>'+
+      '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
+      (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
+      '</div>';}
   // ---------- shared: 소득세(간이 연 결정세액 근사) ----------
   function earnedDed(g){if(g<=5e6)return g*0.7;if(g<=15e6)return 3.5e6+(g-5e6)*0.4;if(g<=45e6)return 7.5e6+(g-15e6)*0.15;if(g<=1e8)return 12e6+(g-45e6)*0.05;return 14.75e6+(g-1e8)*0.02;}
   function progressive(b){if(b<=14e6)return b*0.06;if(b<=50e6)return .84e6+(b-14e6)*.15;if(b<=88e6)return 6.24e6+(b-50e6)*.24;if(b<=15e7)return 15.36e6+(b-88e6)*.35;if(b<=3e8)return 37.06e6+(b-15e7)*.38;if(b<=5e8)return 94.06e6+(b-3e8)*.4;if(b<=1e9)return 174.06e6+(b-5e8)*.42;return 384.06e6+(b-1e9)*.45;}
