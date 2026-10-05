@@ -73,6 +73,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
       W.querySelector(".wz-all").addEventListener("click",function(){all=!all;show();});
       W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
+      // 주제 입구(saju.html?q=money 등): 그 물음을 미리 골라 두고, 맨 위에 무엇을 풀어 줄지 한 줄로 약속한다(계산은 같다)
+      var TQ={money:["재물 풀이","언제 큰돈이 붙고, 어디서 새는지 자네 사주로 짚어 주지."],job:["일·이직 풀이","지금 일을 언제까지, 언제 움직이면 좋은지 짚어 주지."],
+        love:["인연 풀이","언제, 어떤 사람과 인연이 닿는지 짚어 주지."],health:["건강 풀이","타고난 기운으로 어디를 먼저 살피면 좋은지 짚어 주지."]},
+        qm=(typeof location!=="undefined"&&/[?&]q=(money|job|love|health)\b/.exec(location.search||""));
+      if(qm){W.querySelector("#q").value=qm[1];var tp=document.createElement("div");tp.className="wz-topic";
+        tp.innerHTML="<b>"+TQ[qm[1]][0]+"</b><span>"+TQ[qm[1]][1]+"</span>";W.insertBefore(tp,W.firstChild);}
       el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
       show();})();
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}

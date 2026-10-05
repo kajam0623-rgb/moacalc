@@ -404,6 +404,8 @@
   .wz-all{background:none;border:0;color:var(--accent);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;padding:4px 0;}
   .wz-bar{height:6px;border-radius:99px;background:var(--surface-2);margin:6px 0 12px;overflow:hidden;}.wz-bar i{display:block;height:100%;background:#E6B25A;border-radius:99px;transition:width .25s;}
   .wz-q{font-size:19px;font-weight:900;margin:2px 0 12px;line-height:1.45;word-break:keep-all;}
+  .wz-topic{margin:0 0 12px;padding:12px 14px;border-radius:12px;background:linear-gradient(160deg,#2a2219,#17120d);color:#f3e6c8;}
+  .wz-topic b{display:block;font-size:18px;color:#E6B25A;margin-bottom:2px;}.wz-topic span{font-size:13.5px;line-height:1.55;}
   .wz-s{display:none;}.wz-s.cur{display:block;}.wz-flat .wz-s{display:block;margin-bottom:12px;}.wz-flat .wz-bar,.wz-flat .wz-q,.wz-flat .wz-n{display:none;}
   .wz-nav{display:flex;justify-content:space-between;gap:8px;margin-top:12px;}.wz-nav button{padding:12px 16px;border-radius:12px;font:inherit;font-weight:800;cursor:pointer;}
   .wz-next{background:#E6B25A;color:#1b1406;border:0;flex:1;}.wz-prev{background:none;border:1px solid var(--line-2);color:var(--ink);}
@@ -2926,6 +2928,12 @@
       W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
       W.querySelector(".wz-all").addEventListener("click",function(){all=!all;show();});
       W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
+      // 주제 입구(saju.html?q=money 등): 그 물음을 미리 골라 두고, 맨 위에 무엇을 풀어 줄지 한 줄로 약속한다(계산은 같다)
+      var TQ={money:["재물 풀이","언제 큰돈이 붙고, 어디서 새는지 자네 사주로 짚어 주지."],job:["일·이직 풀이","지금 일을 언제까지, 언제 움직이면 좋은지 짚어 주지."],
+        love:["인연 풀이","언제, 어떤 사람과 인연이 닿는지 짚어 주지."],health:["건강 풀이","타고난 기운으로 어디를 먼저 살피면 좋은지 짚어 주지."]},
+        qm=(typeof location!=="undefined"&&/[?&]q=(money|job|love|health)\b/.exec(location.search||""));
+      if(qm){W.querySelector("#q").value=qm[1];var tp=document.createElement("div");tp.className="wz-topic";
+        tp.innerHTML="<b>"+TQ[qm[1]][0]+"</b><span>"+TQ[qm[1]][1]+"</span>";W.insertBefore(tp,W.firstChild);}
       el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
       show();})();
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
