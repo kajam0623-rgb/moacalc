@@ -1475,19 +1475,24 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
           x.textAlign="right";x.fillStyle=e[2]||"#8b95a6";x.font="700 30px "+F;x.fillText(e[0],ex-4,byy);
           x.textAlign="left";x.fillStyle="#fff";x.font="800 34px "+F;x.fillText(String(e[1]),ex+6,byy);}
         x.textAlign="center";}
+      // 상위 % 띠(사주 한 장 요약과 같은 값) — 있으면 그 높이만큼 아래 글을 내린다
+      var bo=0;
+      if(o.badge){x.font="800 30px "+F;var bwd=x.measureText(o.badge).width+64,bx0=(W-bwd)/2,by0=top+side+104;
+        x.fillStyle="rgba(230,178,90,.16)";x.beginPath();if(x.roundRect)x.roundRect(bx0,by0,bwd,54,27);else x.rect(bx0,by0,bwd,54);x.fill();
+        x.strokeStyle="rgba(230,178,90,.7)";x.lineWidth=2;x.stroke();x.fillStyle="#f0c46e";x.fillText(o.badge,W/2,by0+38);bo=74;}
       x.strokeStyle="rgba(212,175,110,.25)";x.lineWidth=1;
-      x.beginPath();x.moveTo(140,top+side+104);x.lineTo(W-140,top+side+104);x.stroke();
+      x.beginPath();x.moveTo(140,top+side+104+bo);x.lineTo(W-140,top+side+104+bo);x.stroke();
       // 핵심 문장 — 결과 맨 위 한 줄. 원문의 줄 나눔(<br>)을 그대로 살린다
       x.fillStyle="#fff";x.font="800 46px "+F;
       var hs=String(o.headline||"").split("\n"),hl=[];
       for(var h=0;h<hs.length;h++)hl=hl.concat(wrapText(x,hs[h],W-200));
       hl=hl.slice(0,3);
-      var hy=top+side+176;
+      var hy=top+side+176+bo;
       for(var j=0;j<hl.length;j++)x.fillText(hl[j],W/2,hy+j*60);
       // 본문 200자 내외 — 줄 수를 넘기면 마지막 줄을 말줄임한다
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 30px "+F;
-        var bl=wrapText(x,o.body,W-220),by=hy+hl.length*60+34,cap=9;
+        var bl=wrapText(x,o.body,W-220),by=hy+hl.length*60+34,cap=o.badge?7:9;
         if(bl.length>cap){bl=bl.slice(0,cap);bl[cap-1]=bl[cap-1].replace(/.$/,"…");}
         for(var k=0;k<bl.length;k++)x.fillText(bl[k],W/2,by+k*45);}
     }else{

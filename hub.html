@@ -2236,19 +2236,24 @@
           x.textAlign="right";x.fillStyle=e[2]||"#8b95a6";x.font="700 30px "+F;x.fillText(e[0],ex-4,byy);
           x.textAlign="left";x.fillStyle="#fff";x.font="800 34px "+F;x.fillText(String(e[1]),ex+6,byy);}
         x.textAlign="center";}
+      // 상위 % 띠(사주 한 장 요약과 같은 값) — 있으면 그 높이만큼 아래 글을 내린다
+      var bo=0;
+      if(o.badge){x.font="800 30px "+F;var bwd=x.measureText(o.badge).width+64,bx0=(W-bwd)/2,by0=top+side+104;
+        x.fillStyle="rgba(230,178,90,.16)";x.beginPath();if(x.roundRect)x.roundRect(bx0,by0,bwd,54,27);else x.rect(bx0,by0,bwd,54);x.fill();
+        x.strokeStyle="rgba(230,178,90,.7)";x.lineWidth=2;x.stroke();x.fillStyle="#f0c46e";x.fillText(o.badge,W/2,by0+38);bo=74;}
       x.strokeStyle="rgba(212,175,110,.25)";x.lineWidth=1;
-      x.beginPath();x.moveTo(140,top+side+104);x.lineTo(W-140,top+side+104);x.stroke();
+      x.beginPath();x.moveTo(140,top+side+104+bo);x.lineTo(W-140,top+side+104+bo);x.stroke();
       // 핵심 문장 — 결과 맨 위 한 줄. 원문의 줄 나눔(<br>)을 그대로 살린다
       x.fillStyle="#fff";x.font="800 46px "+F;
       var hs=String(o.headline||"").split("\n"),hl=[];
       for(var h=0;h<hs.length;h++)hl=hl.concat(wrapText(x,hs[h],W-200));
       hl=hl.slice(0,3);
-      var hy=top+side+176;
+      var hy=top+side+176+bo;
       for(var j=0;j<hl.length;j++)x.fillText(hl[j],W/2,hy+j*60);
       // 본문 200자 내외 — 줄 수를 넘기면 마지막 줄을 말줄임한다
       if(o.body){
         x.fillStyle="#c3ccd9";x.font="400 30px "+F;
-        var bl=wrapText(x,o.body,W-220),by=hy+hl.length*60+34,cap=9;
+        var bl=wrapText(x,o.body,W-220),by=hy+hl.length*60+34,cap=o.badge?7:9;
         if(bl.length>cap){bl=bl.slice(0,cap);bl[cap-1]=bl[cap-1].replace(/.$/,"…");}
         for(var k=0;k<bl.length;k++)x.fillText(bl[k],W/2,by+k*45);}
     }else{
@@ -3564,7 +3569,11 @@
                  ["일주(나)",SJ_SH[p.d.s],SJ_BH[p.d.b],elHexS(p.d.s),elHexB(p.d.b)],
                  ["월주",SJ_SH[p.m.s],SJ_BH[p.m.b],elHexS(p.m.s),elHexB(p.m.b)],
                  ["연주",SJ_SH[p.y.s],SJ_BH[p.y.b],elHexS(p.y.s),elHexB(p.y.b)]],
-        bars:SJ_EL.map(function(e,i){return [e,cnt[i],EL_HEX[e]];})};
+        bars:SJ_EL.map(function(e,i){return [e,cnt[i],EL_HEX[e]];}),
+        // 한 장 요약의 상위 %(60% 안) 가운데 가장 드문 둘
+        badge:(function(){var PL={비겁:"자아",식상:"재주",재성:"재물",관성:"명예",인성:"학문"};
+          var a=SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],!!p.h)};}).filter(function(x){return x.c>0&&x.v<=60;}).sort(function(a,b){return a.v-b.v;}).slice(0,2);
+          return a.map(function(x){return PL[x.k]+" 기운 상위 "+x.v+"%";}).join(" · ");})()};
       // 그림은 결과가 뜰 때 미리 불러 둔다(결과 화면도 같은 그림을 쓴다). 저장을 누를 때 다 불렀으면 싣고,
       // 아직이거나 실패했으면 그림 없이 만든다. cardData 를 그대로 넘기므로 onload 로 채운 art 가 그 순간 반영된다
       var cardArt=new Image();

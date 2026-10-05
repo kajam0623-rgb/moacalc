@@ -662,7 +662,11 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
                  ["일주(나)",SJ_SH[p.d.s],SJ_BH[p.d.b],elHexS(p.d.s),elHexB(p.d.b)],
                  ["월주",SJ_SH[p.m.s],SJ_BH[p.m.b],elHexS(p.m.s),elHexB(p.m.b)],
                  ["연주",SJ_SH[p.y.s],SJ_BH[p.y.b],elHexS(p.y.s),elHexB(p.y.b)]],
-        bars:SJ_EL.map(function(e,i){return [e,cnt[i],EL_HEX[e]];})};
+        bars:SJ_EL.map(function(e,i){return [e,cnt[i],EL_HEX[e]];}),
+        // 한 장 요약의 상위 %(60% 안) 가운데 가장 드문 둘
+        badge:(function(){var PL={비겁:"자아",식상:"재주",재성:"재물",관성:"명예",인성:"학문"};
+          var a=SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],!!p.h)};}).filter(function(x){return x.c>0&&x.v<=60;}).sort(function(a,b){return a.v-b.v;}).slice(0,2);
+          return a.map(function(x){return PL[x.k]+" 기운 상위 "+x.v+"%";}).join(" · ");})()};
       // 그림은 결과가 뜰 때 미리 불러 둔다(결과 화면도 같은 그림을 쓴다). 저장을 누를 때 다 불렀으면 싣고,
       // 아직이거나 실패했으면 그림 없이 만든다. cardData 를 그대로 넘기므로 onload 로 채운 art 가 그 순간 반영된다
       var cardArt=new Image();
