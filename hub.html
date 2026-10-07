@@ -1905,7 +1905,14 @@
       var s=t.nodeValue;
       if(!s||!/[가-힣]/.test(s))return;
       if(t.parentElement&&t.parentElement.closest(PLAIN_SKIP))return;
-      PLAIN_WORDS.forEach(function(pair){
+      s=plainStr(s,seen);
+      if(s!==t.nodeValue)t.nodeValue=s;
+    });
+  }
+  /* 글 한 토막의 용어를 쉬운 말로. seen 은 한 화면 안에서 처음 나온 용어에만 괄호를 달려고 이어 쓴다.
+     빌드도 이걸 쓴다 — 서버가 끼우는 오늘의 운세 글(today/*.json)이 화면과 같은 말이 되게 */
+  function plainStr(s,seen){
+    PLAIN_WORDS.forEach(function(pair){
         var term=pair[0],plain=pair[1];
         /* 앞에 한글이 붙지 않은 자리에서만 바꾼다("편관격"은 건드리지 않는다).
            뒤에 붙은 조사는 함께 붙잡아 바꿔 넣을 말에 맞게 다시 고른다
@@ -1922,10 +1929,8 @@
           // 조사는 괄호 앞의 말(쉬운 말)에 맞춘다 — "느긋한 재주(식신)를", "나를 뜻하는 글자(일간)는"
           var base=plain;
           return pre+word+(jo?(PLAIN_JOSA[jo]?josa(base,PLAIN_JOSA[jo]):jo):"")+(jo2||"");});
-      });
-      if(s!==t.nodeValue)t.nodeValue=s;
     });
-  }
+    return s;}
   /* 그려진 결과의 .sj-sec 단락들을 [분류] + 핵심 한 문장 + 펼쳐보기로 바꾼다.
      제목(h3)이 분류가 되고 본문 첫 문장이 핵심으로 올라간다. 도구마다 원고를 고칠 필요 없이
      렌더 끝에서 한 번만 부르면 된다. opts.open = 처음부터 펼쳐 둘 앞쪽 개수. */

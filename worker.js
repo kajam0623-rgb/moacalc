@@ -4,6 +4,7 @@
    GET  /admin    대시보드. ADMIN_PASS 비밀값을 정하면 비밀번호가 걸린다
    GET  /gunghap.html  ?i= 초대 링크만 미리보기 제목·설명을 '누가 궁합 보자고 보냈다'로 바꾼다(없으면 정적 자산 그대로)
    GET  /namematch.html  ?a=&b= 가 붙은 공유·초대 링크만 미리보기 제목·설명을 결과로 바꿔 돌려준다(없으면 정적 자산 그대로)
+   GET  /star-*.html · /zodiac-*.html · /horoscope.html · /zodiacfortune.html  그날(한국 시각) 오늘의 운세 글을 #today-sv 에 끼운다
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 경로만 여기로 보낸다. */
 import { ogName, ogInvite } from "./worker_og.js";
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
@@ -20,6 +21,8 @@ export default {
     if (pathname === "/admin") return admin(req, env);
     if (pathname === "/namematch.html") return namematch(req, env);
     if (pathname === "/gunghap.html") return gunghapInvite(req, env);
+    const tf = pathname.match(TODAY_RE);
+    if (tf) return todayFortune(req, env, tf[1]);
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
@@ -62,6 +65,22 @@ async function gunghapInvite(req, env) {
     .on('meta[property="og:description"]', content("desc"))
     .on("head", { element(e) { e.append('<meta name="robots" content="noindex,follow">', { html: true }); } })
     .transform(res);
+}
+
+// 오늘의 운세: 별자리·띠 운세는 버튼을 눌러야 화면에서 계산되어, 스크립트를 돌리지 않는 네이버 수집기는 날마다 같은 글만 본다.
+// 빌드가 날짜별로 만든 today/YYYY-MM-DD.json 에서 그날 글을 골라 #today-sv 자리에 끼운다. 그날 파일이 없으면 정적 자산 그대로
+const TODAY_RE = /^\/(star-[a-z]+|zodiac-[a-z]+|horoscope|zodiacfortune)\.html$/;
+let todayCache = { day: "", j: null };
+async function todayFortune(req, env, key) {
+  const res = await env.ASSETS.fetch(req), day = kstDay();
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  if (todayCache.day !== day) {
+    const r = await env.ASSETS.fetch(new URL(`/today/${day}.json`, req.url));
+    if (r.ok) todayCache = { day, j: await r.json() };
+  }
+  const html = todayCache.day === day && todayCache.j[key];
+  if (!html) return res;
+  return new HTMLRewriter().on("#today-sv", { element(e) { e.setInnerContent(html, { html: true }); } }).transform(res);
 }
 
 async function hit(req, env) {

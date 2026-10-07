@@ -1067,7 +1067,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     t("이름궁합 미리보기: 초대 링크 제목은 조사가 맞다(김철수가·김철민이)", [og2 && og2.title, og3 && og3.title].join("|"), "김철수가 이름궁합을 보냈어요|김철민이 이름궁합을 보냈어요");
     t("이름궁합 미리보기: 한글이 아니거나 비었거나 너무 긴 값은 null(원래 페이지 그대로)", [ogName("", "이영희"), ogName("Kim", "이영희"), ogName("김철수", "Lee"), ogName("<b>", ""), ogName("김철수철수철수철수철수", "이영희"), ogName("김철수", "이영희이영희이영희이영희")].map(x => x === null).join(","), "true,true,true,true,true,true");
     const wk2 = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
-    t("이름궁합 미리보기: 워커가 /namematch.html 만 받아 title·description·og 를 바꾸고 noindex 를 붙이며 wrangler 가 그 경로를 먼저 워커로 보낸다", [wk2.includes('import { ogName, ogInvite } from "./worker_og.js"'), wk2.includes('pathname === "/namematch.html"'), wk2.includes("new HTMLRewriter()"), wk2.includes('.on(\'meta[property="og:title"]\'') && wk2.includes('.on(\'meta[property="og:description"]\'') && wk2.includes('.on(\'meta[name="description"]\''), wk2.includes("noindex,follow"), /"run_worker_first": \["\/api\/\*", "\/admin", "\/namematch\.html", "\/gunghap\.html"\]/.test(wr)].join(","), "true,true,true,true,true,true");
+    t("이름궁합 미리보기: 워커가 /namematch.html 만 받아 title·description·og 를 바꾸고 noindex 를 붙이며 wrangler 가 그 경로를 먼저 워커로 보낸다", [wk2.includes('import { ogName, ogInvite } from "./worker_og.js"'), wk2.includes('pathname === "/namematch.html"'), wk2.includes("new HTMLRewriter()"), wk2.includes('.on(\'meta[property="og:title"]\'') && wk2.includes('.on(\'meta[property="og:description"]\'') && wk2.includes('.on(\'meta[name="description"]\''), wk2.includes("noindex,follow"), /"run_worker_first": \["\/api\/\*", "\/admin", "\/namematch\.html", "\/gunghap\.html"[,\]]/.test(wr)].join(","), "true,true,true,true,true,true");
     t("이름궁합 링크: 개인정보처리방침에 이름이 링크에 담긴다는 것과 서버가 저장하지 않는다는 것이 적혀 있다", /넣은 이름\(초대 링크는 내 이름만\)이 담깁니다/.test(fs.readFileSync("content_site.js", "utf8")) && fs.readFileSync("content_site.js", "utf8").includes("서버가 이름을 읽지만 저장하지 않습니다"), true); } }
 // ── 띠 궁합(content_ttigunghap.js): 관계표를 독립 표와 대조 · 원고 78쌍·12띠 · 문체·중복 · 빌드 배선 ──
 { const TT = require("./content_ttigunghap.js"), NAMES = ["자","축","인","묘","진","사","오","미","신","유","술","해"];
@@ -1348,8 +1348,14 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
 { const ogTxt = fs.readFileSync("worker_og.js", "utf8"), coreTxt = fs.readFileSync("nm_core.js", "utf8");
   const ogInvite = new Function(coreTxt.replace(/^export \{[^}]*\};?\s*$/m, "") + "\n" + ogTxt.replace(/^import .*$/m, "").replace(/^export function /gm, "function ") + "\nreturn ogInvite;")();
   const a = ogInvite({ p: [0, 0, 0, 0, 0, 0], g: "m", n: "민지" }), b = ogInvite({ n: "<b>" }), w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
-  t("궁합 초대 미리보기: '민지님이…' / 이상한 이름은 '친구가…' / 초대 없으면 null, 워커가 /gunghap.html 을 먼저 받고 noindex", [a.title, b.title, ogInvite(null), w.includes('if (pathname === "/gunghap.html") return gunghapInvite(req, env);'), wr.includes('"/gunghap.html"]'), /gunghapInvite[\s\S]{0,1200}noindex/.test(w)].join("|"),
+  t("궁합 초대 미리보기: '민지님이…' / 이상한 이름은 '친구가…' / 초대 없으면 null, 워커가 /gunghap.html 을 먼저 받고 noindex", [a.title, b.title, ogInvite(null), w.includes('if (pathname === "/gunghap.html") return gunghapInvite(req, env);'), /"\/gunghap\.html"[,\]]/.test(wr), /gunghapInvite[\s\S]{0,1200}noindex/.test(w)].join("|"),
     "민지님이 사주 궁합 보자고 보냈어요|친구가 사주 궁합 보자고 보냈어요||true|true|true");
+}
+// ── 오늘의 운세(서버가 끼우는 글): 글을 받는 26쪽이 wrangler(먼저 Worker로)·worker 정규식·빌드의 빈 자리에 모두 있어야 한다.
+//    하나라도 빠지면 그 쪽만 조용히 글이 안 붙는다 ──
+{ const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8"), re = new RegExp(w.match(/const TODAY_RE = \/(.+)\/;/)[1]),
+    pages = ["horoscope", "zodiacfortune", ...require("./content_star.js").map(s => "star-" + s.en), ...require("./content_zodiac.js").map(z => "zodiac-" + z.en)];
+  t("오늘의 운세: 26쪽 모두 wrangler·worker 정규식이 받고, 빌드가 빈 자리(#today-sv)를 4곳에 둔다", [pages.length, pages.filter(p => !wr.includes(`"/${p}.html"`) || !re.test(`/${p}.html`)).join(","), bs.split('<div id="today-sv"></div>').length - 1].join("|"), "26||4");
 }
 // ── 오늘의 운세 상위 N% — TF_PCT(60일주×필요한 기운)는 엔진으로 다시 잰 표본과 맞고, 점수는 tfScore 하나로 셈한다 ──
 { const R = require("./tools/sajupct/make_tf_pct.js").make(7), tot = A => A.flat().reduce((a, b) => a + b, 0), T1 = tot(TF_PCT), T2 = tot(R);

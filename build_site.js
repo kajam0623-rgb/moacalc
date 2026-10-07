@@ -1105,8 +1105,8 @@ ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` 
 <div class="card tool" id="tool"></div>
 ${tagHtml}
 ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
- : t.id==="horoscope" ? '<section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
- : t.id==="zodiacfortune" ? '<section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
+ : t.id==="horoscope" ? '<div id="today-sv"></div><section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'</section>'
+ : t.id==="zodiacfortune" ? '<div id="today-sv"></div><section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
  : t.id==="newyear" ? '<section class="guide" id="by-year"><h2>태어난 해로 보는 2027년 운세</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">1950년생부터 2009년생까지 60갑자 한 바퀴를 한 해씩 풀었습니다. 태어난 해만으로 보는 큰 흐름이고, 위에 생년월일을 넣으면 내 사주로 본 2027년이 나옵니다. 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서 확인하세요.</p>'+nybGrid()+'</section>'
  : t.id==="tojeong" ? '<section class="guide"><h2>2027 정미년 함께 보기</h2>'+SEASON_LINKS+'</section>'
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
@@ -1192,6 +1192,49 @@ function starMonthSection(s, myIdx){
   return `<section class="guide"><h2>${s.ko} 이달의 운세 — ${months[0].y}년 ${months[0].m}월</h2>` +
     months.map(o => `<div class="intro" style="margin-top:0"><p><b>${o.y}년 ${o.m}월</b> — 태양은 ${o.sunSym} ${o.sunKo} 구간을 지납니다. ${s.ko} 기준 <b>${o.aspect}</b> 관계, ${o.score}점.<br>${o.text}</p></div>`).join("") +
     `<p style="color:var(--muted);font-size:12.5px;margin-top:6px">월 중순(15일) 태양 황경으로 판정한 그 달의 흐름입니다. 날짜별 운세는 <a href="horoscope.html">별자리 운세</a>에서 생년월일로 보세요.</p></section>`;
+}
+/* 오늘의 운세 — 서버가 끼우는 글.
+   별자리·띠 운세는 '물어보기'를 눌러야 화면에서 계산되어, 스크립트를 돌리지 않는 네이버 수집기는 날마다 같은 글만 본다.
+   그래서 날짜마다 별자리 12·띠 12 페이지와 두 허브에 들어갈 글을 today/YYYY-MM-DD.json 으로 미리 만들고,
+   worker.js 가 그날(한국 시각) 파일을 읽어 #today-sv 자리에 끼운다.
+   점수·원고·쉬운 말 바꾸기는 도구와 같은 함수다 — verify.js 처럼 엔진과 공용 구간을 그대로 불러 쓴다. */
+const FORT = new Function(
+  inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")) + "\n" +
+  inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS")) + "\n" +
+  "return {hsDeep,hsGrade,zfDeep,zfScore,plainStr,sjPillars,HS_LINE,ZF_LINE,ST_KO,ST_SYM,SJ_S,SJ_B,SJ_SH,SJ_BH,WD_KO};")();
+const TODAY_DAYS = 90; // 빌드한 날부터 90일 치. 그 안에 다시 배포하지 않으면 자리가 빌 뿐 페이지는 그대로다
+function todayFortune(dt){
+  const F = FORT, day = `${dt.getMonth()+1}월 ${dt.getDate()}일 ${F.WD_KO[dt.getDay()]}요일`, out = {};
+  const NOTE = t => `<p style="color:var(--muted);font-size:12.5px;margin-top:6px">${t}</p>`;
+  // 화면처럼 한 사람 몫(페이지 하나) 안에서 처음 나온 용어에만 괄호를 단다
+  const secs = (list, keys) => { const seen = {};
+    return keys.map(k => list.find(s => s.k === k)).map(s => `<p style="margin-bottom:10px"><b>${s.h}</b> — ${s.p.map(x => F.plainStr(x, seen)).join(" ")}</p>`).join(""); };
+  const stars = STAR_PAGES.map((s, i) => { const o = F.hsDeep(i, dt, HS_DEEP); return { s, i, o, hs: o.hs, grade: F.hsGrade(o.hs.score) }; });
+  const moon = stars[0].hs.moon.sign, moonTxt = `오늘 낮 12시(한국 시각) 달은 ${F.ST_SYM[moon]} ${F.ST_KO[moon]}에 있습니다.`;
+  stars.forEach(x => {
+    out["star-" + x.s.en] = `<section class="guide"><h2>오늘의 ${x.s.ko} 운세 — ${day}</h2><div class="intro" style="margin-top:0">` +
+      `<p style="margin-bottom:10px"><b>${x.hs.score}점 · ${x.grade}</b> — ${F.HS_LINE[x.hs.md]}. ${moonTxt}</p>` +
+      secs(x.o.secs, ["gen", "love", "work", "tip"]) + `</div>` +
+      NOTE(`${x.s.ko} 공통 흐름이며 날마다 한국 시각 0시에 바뀝니다. 경계일에 태어났다면 위 ‘동네보살에게 물어보기’에서 생년월일로 별자리를 판정해 보세요.`) + `</section>`;
+  });
+  const top = stars.slice().sort((a, b) => b.hs.score - a.hs.score || a.i - b.i)[0];
+  out.horoscope = `<section class="guide"><h2>오늘의 별자리 운세 — ${day}</h2>` +
+    NOTE(`${moonTxt} 오늘 점수가 가장 높은 별자리는 ${top.s.ko}(${top.hs.score}점)입니다. 별자리를 누르면 오늘 풀이가 이어집니다.`) +
+    `<ul>${stars.map(x => `<li><a href="star-${x.s.en}.html">${F.ST_SYM[x.i]} ${x.s.ko}</a> · <b>${x.hs.score}점 ${x.grade}</b> · ${F.HS_LINE[x.hs.md]}</li>`).join("")}</ul></section>`;
+  const today = F.sjPillars(dt.getFullYear(), dt.getMonth()+1, dt.getDate(), null, 0, false),
+    ilTxt = `오늘 일진은 ${F.SJ_S[today.d.s]}${F.SJ_B[today.d.b]}(${F.SJ_SH[today.d.s]}${F.SJ_BH[today.d.b]})일입니다.`;
+  const ttis = ZODIAC_PAGES.map((z, b) => { const sc = F.zfScore(b, today).score; return { z, b, sc, grade: F.hsGrade(sc), o: F.zfDeep(b, today, ZF_DEEP, "") }; });
+  ttis.forEach(x => {
+    out["zodiac-" + x.z.en] = `<section class="guide"><h2>오늘의 ${x.z.ko}띠 운세 — ${day}</h2><div class="intro" style="margin-top:0">` +
+      `<p style="margin-bottom:10px"><b>${x.sc}점 · ${x.grade}</b> — ${F.ZF_LINE[x.o.rel]}. ${ilTxt}</p>` +
+      secs(x.o.secs, ["gen", "money", "love", "tip"]) + `</div>` +
+      NOTE(`${x.z.ko}띠 공통 흐름입니다. 오늘 일진과 띠가 맺는 관계로 보며 날마다 한국 시각 0시에 바뀝니다.`) + `</section>`;
+  });
+  const topT = ttis.slice().sort((a, b) => b.sc - a.sc || a.b - b.b)[0];
+  out.zodiacfortune = `<section class="guide"><h2>오늘의 띠별 운세 — ${day}</h2>` +
+    NOTE(`${ilTxt} 오늘 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다. 띠를 누르면 오늘 풀이가 이어집니다.`) +
+    `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}</li>`).join("")}</ul></section>`;
+  return out;
 }
 const IL_D0 = new Date(2026, 8, 3); // 기준일 — 이 날의 일진 인덱스로 60갑자 순환을 센다
 const ilIdxOf = p => { for (let k = 0; k < 60; k++) if (k % 10 === p.s && k % 12 === p.b) return k; return 0; };
@@ -1487,7 +1530,7 @@ function starPage(s, i){
     parent:"horoscope.html", parentName:"별자리 운세",
     tool:"horoscope", preset:String(i),
     tags:[`${s.ko} 성격`,`${s.ko} 궁합`,`오늘의 ${s.ko} 운세`,`2027 ${s.ko} 운세`,`${s.ko} 연애`,`${s.ko} 기간`],
-    body:`<div class="exbox"><h2>${s.ko} 한눈에 보기</h2>`+
+    body:`<div id="today-sv"></div><div class="exbox"><h2>${s.ko} 한눈에 보기</h2>`+
       [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>어려운 별자리</span><b>${esc(s.match.hard.join(" · "))}</b></div></div>`+
@@ -1521,7 +1564,7 @@ function zodiacPage(z, i){
     parent:"zodiacfortune.html", parentName:"띠별 운세",
     tool:"zodiacfortune", preset:String(i),
     tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2027 ${z.ko}띠`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
-    body:`<div class="exbox"><h2>${z.ko}띠 한눈에 보기</h2>`+
+    body:`<div id="today-sv"></div><div class="exbox"><h2>${z.ko}띠 한눈에 보기</h2>`+
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
@@ -3423,6 +3466,10 @@ DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCat
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
+// 오늘의 운세 글 — worker.js 가 그날(한국 시각) 파일을 #today-sv 에 끼운다. 빌드 PC 시계(한국 시각) 기준 오늘부터
+fs.mkdirSync(path.join(OUT,"today"));
+for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + k);
+  fs.writeFileSync(path.join(OUT,"today",ymd(dt)+".json"), JSON.stringify(todayFortune(dt))); }
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));
 fs.writeFileSync(path.join(OUT,"tti-gunghap.html"), ttiMainPage());
