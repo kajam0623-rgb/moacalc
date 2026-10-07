@@ -1,5 +1,5 @@
 """로고·파비콘 만들기 — 아기보살(art/bosal-mascot-a.png) 머리를 원 안에 넣는다.
-실행: py -3 tools/make_logo.py  → img/ 의 logo·icon·favicon 8개를 덮어쓴다(빌드가 site/img 로 복사)."""
+실행: py -3 tools/make_logo.py  → img/v2/ 의 logo·icon·favicon 8개를 덮어쓴다(빌드가 site/img 로 복사)."""
 from PIL import Image, ImageDraw
 import os
 
@@ -32,7 +32,7 @@ def mark(size, crop, ring=True, round_=True):
 HEAD = (310, 100, 930, 720)  # 모자 위 조금~턱 아래, 얼굴이 가운데
 TIGHT = (390, 230, 870, 710)  # 작은 파비콘: 얼굴을 더 크게
 
-out = lambda n: os.path.join(ROOT, "img", n)
+out = lambda n: os.path.join(ROOT, "img", "v2", n)  # 같은 이름으로 덮으면 Cloudflare 30일 캐시가 옛 그림을 낸다
 mark(240, HEAD).save(out("logo.png"))
 mark(120, HEAD).save(out("logo@1x.png"))
 mark(68, HEAD).save(out("logo-68.webp"), quality=90)

@@ -421,7 +421,7 @@ t("일간·십성 앵커에 검색어", /\$\{g\.ko\}\$\{g\.el\} 일간<\/a>/.tes
 // 계산기 시절 '=' 아이콘이 남아 있으면 브랜드가 갈린다
 t("파비콘은 보살 마크(= 아이콘 잔재 없음)", !/%3D<\/text>/.test(bs) && /favicon\.ico/.test(bs), true);
 t("파비콘 규격 파일 존재", ["favicon.ico","favicon-32.png","icon-192.png","icon-512.png","apple-touch-icon.png"]
-  .every(f=>fs.existsSync("img/"+f)), true);
+  .every(f=>fs.existsSync("img/v2/"+f)), true);
 t("웹매니페스트 출력", /site\.webmanifest/.test(bs), true);
 t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp-row 는 음력 선택기 것)", ["lmark", "lp-row"].map(n => (bs.slice(bs.indexOf(".lbar{border:1px"), bs.indexOf(".tabbar{display:none;}", bs.indexOf(".lbar{border:1px"))).match(new RegExp("\\." + n + "[{\\[:, ]", "g")) || []).length).join(","), "0,0");
 // 스크립트 오류 기록: 내용은 서버 표(errors)에도 남고, 실패해도 조회·이벤트 기록에 영향이 없으며, 같은 오류를 두 번 세지 않는다
@@ -769,8 +769,8 @@ t("생일 넘기기(sessionStorage)를 쓰는 만큼 개인정보 문구 네 곳
   t("접이식: 첫 문장을 뽑고 남은 글이 70자 미만이면 접지 않고 펼쳐 둔다", fa.includes("body.textContent.trim().length<70") && fa.includes("fold=has&&!flat"), true); }
 t("히어로: 캐릭터가 있는 히어로는 캡션 오른쪽 자리를 비우고(제목이 캐릭터 밑에 깔리지 않게), 모바일에서 제목이 14자를 넘으면 캐릭터를 숨긴다", /\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:104px/.test(bs) && /\(min-width:760px\)\{\.toolhero:has\(>img\.th-bosal\)>\.cap\{padding-right:196px/.test(bs) && /\.toolhero\.longh:has\(>img\.th-bosal\)>\.cap\{padding-right:22px/.test(bs) && /o\.h1\.length > 14 \? " longh"/.test(bs), true);
 t("값이 긴 표(26자 이상)는 좁은 화면에서 라벨 위·값 아래로 쌓는다(칼럼·배우기 표 생성기 둘 다 + CSS)", (bs.match(/tb\.rows\.some\(x => x\[1\]\.length >= 26\) \? " stack"/g) || []).length + "|" + /\.exbox \.row\.stack\{flex-direction:column/.test(src), "2|true");
-t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/logo-68\.webp"/.test(bs) && fs.existsSync("img/logo-68.webp") && fs.statSync("img/logo-68.webp").size < 12000, true);
-t("로고 파일 존재·정사각", fs.existsSync("img/logo.png") && fs.statSync("img/logo.png").size > 5000, true);
+t("헤더 로고는 이미지(화면 크기에 맞춘 68px webp)", /class="lmark" src="img\/v2\/logo-68\.webp"/.test(bs) && fs.existsSync("img/v2/logo-68.webp") && fs.statSync("img/v2/logo-68.webp").size < 12000, true);
+t("로고 파일 존재·정사각", fs.existsSync("img/v2/logo.png") && fs.statSync("img/v2/logo.png").size > 5000, true);
 // 승인 전 빈 광고 자리는 완성도만 깎는다
 t("광고 자리 플레이스홀더 제거", !/배너 자리/.test(bs) && !/배너 자리/.test(src), true);
 // 파일이 없으면 onerror로 조용히 사라져 티가 안 난다. 원본 24장이 규격(webp·10KB 이상)인지 본다

@@ -921,10 +921,10 @@ const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;
 
 // 계산기 시절의 '=' 아이콘을 보살 마크로 교체.
 // .ico는 구글 검색결과·구형 브라우저가 아직 우선으로 찾는다.
-const FAVICON = `<link rel="icon" href="/img/favicon.ico" sizes="any">`+
-  `<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">`+
-  `<link rel="icon" type="image/png" sizes="192x192" href="/img/icon-192.png">`+
-  `<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">`+
+const FAVICON = `<link rel="icon" href="/img/v2/favicon.ico" sizes="any">`+
+  `<link rel="icon" type="image/png" sizes="32x32" href="/img/v2/favicon-32.png">`+
+  `<link rel="icon" type="image/png" sizes="192x192" href="/img/v2/icon-192.png">`+
+  `<link rel="apple-touch-icon" href="/img/v2/apple-touch-icon.png">`+
   `<link rel="manifest" href="/site.webmanifest">`+
   `<meta name="theme-color" content="#101b3d">`;
 /* og:site_name 은 구글이 검색결과 사이트 이름을 정할 때 보는 두 번째 신호다
@@ -2903,7 +2903,7 @@ function indexPage(){
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/logo-68.webp" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
+<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/v2/logo-68.webp" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
 <img class="hero-bosal" id="heroBosal" src="img/mascot-460.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
 <h1 class="hero-h"><span class="hh-sp" aria-hidden="true"></span>무료사주 사이트 동네보살<br><b>사주풀이·<span class="nw">오늘의 운세</span>·<span class="nw">궁합·타로</span></b></h1>
 <div class="hero-sub">가입 없이 생일 하나로 끝까지 무료. 결과마다 어떻게 계산했는지 근거를 함께 보여 줍니다.</div>
@@ -3606,8 +3606,8 @@ fs.writeFileSync(path.join(OUT,"BingSiteAuth.xml"),
 // 홈 화면에 추가했을 때 쓰이는 아이콘·이름
 fs.writeFileSync(path.join(OUT,"site.webmanifest"), JSON.stringify({
   name:"동네보살", short_name:"동네보살",
-  icons:[{src:"/img/icon-192.png",sizes:"192x192",type:"image/png"},
-         {src:"/img/icon-512.png",sizes:"512x512",type:"image/png"}],
+  icons:[{src:"/img/v2/icon-192.png",sizes:"192x192",type:"image/png"},
+         {src:"/img/v2/icon-512.png",sizes:"512x512",type:"image/png"}],
   theme_color:"#101b3d", background_color:"#101b3d", display:"standalone", start_url:"/"
 }, null, 1));
 fs.writeFileSync(path.join(OUT,"ads.txt"), ADSENSE_CLIENT ? `google.com, ${ADSENSE_CLIENT.replace("ca-","")}, DIRECT, f08c47fec0942fa0` : "# 애드센스 승인 후 build_site.js의 ADSENSE_CLIENT를 채우면 자동 생성됩니다");
