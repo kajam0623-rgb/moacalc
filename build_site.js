@@ -8,6 +8,7 @@ if (fs.existsSync(OUT)) fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
 const DOMAIN = "https://dongnebosal.com"; // 배포 도메인(브랜드명과 일치). 구 gyesangi는 canonical로 통합
+const CONTACT_EMAIL = "kajam0623@gmail.com";  // 바닥글 문의(2026-10-07 사용자 승인). 소개·처리방침 원고에도 같은 주소
 // ↓ 승인/발급 후 값만 채우고 `node build_site.js` 재실행하면 전 페이지에 자동 적용됩니다.
 const GSC_VERIFY = "RIS-m_ipKnwt5ve7kht--_MhedXjirSLqlv-JQ0Qvos";      // 구글 서치콘솔 'HTML 태그' 인증코드의 content 값
 const NAVER_VERIFY = "839a2a3a55c3cfa5392e350cbdc1be1a66be45ac";    // 네이버 서치어드바이저 소유확인 메타의 content 값 (dongnebosal.com 등록분)
@@ -983,7 +984,7 @@ const footer = `<footer class="sfoot">
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
-<div class="foot">© 2026 동네보살</div>
+<div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
 ${tabbar}`;
 
@@ -2984,7 +2985,8 @@ const BUILD_DAY = KST_NOW.toISOString().slice(0,10);
 // 전 페이지 공통 문구의 "자동 검증 N개"는 테스트가 늘 때마다 바뀌므로 해시에서 뺀다.
 const LASTMOD_FILE = path.join(__dirname, "lastmod.json");
 const pageText = html => html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
-  .replace(/<[^>]+>/g, " ").replace(/자동 검증 \d+개/g, "자동 검증 N개").replace(/\s+/g, " ").trim();
+  .replace(/<[^>]+>/g, " ").replace(/자동 검증 \d+개/g, "자동 검증 N개").replace(/\s+/g, " ")
+  .replace(" · 문의 " + CONTACT_EMAIL, "").trim();   // 바닥글 문의 줄은 전 페이지 공통이라 lastmod 해시에서 뺀다
 const smUrl = p => `<url><loc>${DOMAIN}/${p}</loc><lastmod>@@LASTMOD:${p}@@</lastmod></url>`;
 let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`+
   smUrl("")+"\n"+pubMeta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
