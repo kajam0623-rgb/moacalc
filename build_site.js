@@ -941,7 +941,8 @@ const headExtra = THEME_JS+FAVICON+`<meta property="og:site_name" content="${SIT
   (ANALYTICS_ID?`<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${ANALYTICS_ID}');addEventListener('load',function(){var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=${ANALYTICS_ID}';document.head.appendChild(s);});</script>`:"")+
   // 자체 통계(worker.js /api/hit). 쿠키 없이 주소와 들어온 곳만 보낸다
   `<script>addEventListener("load",function(){try{navigator.sendBeacon("/api/hit",JSON.stringify({p:location.pathname,r:document.referrer}));if(/[?&]from=share(&|$)/.test(location.search))navigator.sendBeacon("/api/hit",JSON.stringify({e:"share_visit"}))}catch(e){}});</script>`+
-  (ADSENSE_CLIENT?`<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>`:"");
+  // 광고 로더는 placeAds() 가 페이지마다 정한다(@@ADS@@). 소유 확인 메타는 전 페이지에
+  (ADSENSE_CLIENT?`<meta name="google-adsense-account" content="${ADSENSE_CLIENT}">@@ADS@@`:"");
 // 이미지: 리포 루트 img/ → site/img/ 복사. 파일 없으면 onerror로 조용히 숨김.
 const IMG_SRC = path.join(DIR,"img");
 const CAT_IMG = {"급여·노동":"cat-pay","금융":"cat-fin","부동산·세금":"cat-estate","생활":"cat-life","변환·기타":"cat-conv","재미·운세":"cat-fortune"};
@@ -3472,6 +3473,25 @@ function polishLandmarks() {
   console.log("   접근성 뼈대: main " + n.main + " · 뒤로가기 nav " + n.back + " · 바로가기 링크 " + n.skip);
 }
 polishLandmarks();
+/* 광고 위치 — 2026-10-07 애드센스 사전 점검(심사 중). noindex 페이지는 심사에서 숨겨지지 않는다(링크로 들어온다).
+   일진·월력처럼 찍어 낸 검색 제외 페이지, 사전·꿈해몽 목록(본문 글자의 90%가 링크), 처음 보면 61자뿐인 운세 일기,
+   약관·처리방침에는 광고 로더를 싣지 않는다. 게시자 정책: 이동용·내용 없는 화면, 부가 가치 없는 자동 생성 화면 광고 금지 */
+// iljin.html 은 정적 글이 933자뿐이다(오늘 일진은 화면에서 계산) — 얇은 화면으로 잡힐 수 있어 같이 뺀다
+const NO_AD = new Set(["dict.html", "dream.html", "diary.html", "terms.html", "privacy.html", "404.html", "iljin.html"]);
+function placeAds() {
+  const AD = ADSENSE_CLIENT ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : "";
+  let on = 0, off = 0;
+  for (const f of fs.readdirSync(OUT)) {
+    if (!f.endsWith(".html")) continue;
+    const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
+    if (!h.includes("@@ADS@@")) continue;
+    const skip = NO_AD.has(f) || /<meta name="robots" content="noindex/.test(h.slice(0, h.indexOf("</head>")));
+    fs.writeFileSync(p, h.replace("@@ADS@@", skip ? "" : AD));
+    skip ? off++ : on++;
+  }
+  console.log("   광고 로더: " + on + "쪽에 싣고 " + off + "쪽은 뺌(검색 제외·목록·일기·약관)");
+}
+placeAds();
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 /* RSS 2.0 — 네이버 서치어드바이저가 사이트맵과 별개로 받는 수집 경로.
    전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
