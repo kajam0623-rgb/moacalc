@@ -1309,9 +1309,25 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   t("2027 날짜: 옛 어림값 '입춘 10시 40분경'이 사이트 원고에 남아 있지 않다(한 페이지에서 시각이 둘로 갈리지 않게)", bs.includes("10시 40분"), false);
   t("2027 시즌 배선: 삼재·년생별 페이지를 쓰고 사이트맵·llms·RSS·띠 페이지·신년운세·토정비결·칼럼에 잇는다",
     [bs.includes('fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());'), bs.includes("NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));"),
-     bs.includes('smUrl("samjae.html")+"\\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y)))'), bs.includes("## 2027 정미년 — 삼재와 년생별 운세 (61)"), bs.includes('[DOMAIN + "/samjae.html", "삼재 계산기'),
+     bs.includes('smUrl("samjae.html")+"\\n"+smUrl("tti.html")+"\\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y)))'), bs.includes("## 2027 정미년 — 띠 계산기·삼재·년생별 운세 (62)"), bs.includes('[DOMAIN + "/samjae.html", "삼재 계산기'),
      bs.includes("${z.ko}띠 년생별 2027년 운세"), bs.includes('<section class="guide" id="by-year">'), bs.includes('t.id==="tojeong" ? \'<section class="guide"><h2>2027 정미년 함께 보기</h2>\'+SEASON_LINKS'),
      fs.readFileSync("columns/zodiac-2027.js", "utf8").includes('link("samjae.html"')].join(","), "true,true,true,true,true,true,true,true,true");
+  { // 띠 순서·띠 계산기(tti.html, 2026-10-08): 위젯 계산 = content_tti.js yearInfo, 원고 존댓말·금지어, 배선
+    const TT = require("./content_tti.js"), w = TT.widgetScript(2026, 1950, 2009), win = {}, doc = { getElementById: () => null };
+    new Function("window", "document", w.replace(/^<script>|<\/script>$/g, ""))(win, doc);
+    const bad = []; for (let y = 1900; y <= 2100; y++) { const a = win.ttiCalc(y), b = TT.yearInfo(y); if (a.tti !== b.tti || a.gz !== b.gz || a.color !== b.color || a.age !== 2026 - y) bad.push(y); }
+    t("띠 계산기: 위젯 계산이 content_tti.js yearInfo 와 1900~2100년 모두 같다", bad.slice(0, 5).join(","), "");
+    t("띠 계산기: 2026 병오 말띠 · 2027 정미 양띠 · 2028 무신 원숭이띠 · 1990 경오 말띠", [2026, 2027, 2028, 1990].map(y => TT.yearInfo(y).gz + TT.yearInfo(y).tti).join(","), "병오말띠,정미양띠,무신원숭이띠,경오말띠");
+    const TX = TT.TEXT, all = [TX.intro, TX.order, TX.color, TX.when, TX.age, TX.note].concat(TX.faq.map(q => q[1]));
+    t("띠 계산기 원고: 금지어 없음 · 모든 문장이 존댓말로 끝난다", NC.SENT(all.join(" ")).filter(x => NC.BAN.test(x) || !NC.END.test(x)).slice(0, 3).join(" | "), "");
+    const fb = []; TX.faq.filter(f => /띠는 몇 년생/.test(f[0])).forEach(f => { const n = f[0].match(/(\S+띠)는/)[1]; (f[1].match(/\d{4}/g) || []).forEach(y => { if (TT.yearInfo(+y).tti !== n) fb.push(n + y); }); });
+    t("띠 계산기 원고: 'OO띠는 몇 년생' 답의 연도가 모두 그 띠다", fb.join(","), "");
+    t("띠 계산기 배선: 페이지를 쓰고 RSS·SEASON_LINKS·띠별 운세·띠 페이지에 잇는다",
+      [bs.includes('fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());'), bs.includes('[DOMAIN + "/tti.html"'), bs.includes('<a href="tti.html">띠 순서·띠 계산기</a><a href="newyear.html">'), bs.includes('<a href="tti.html">띠 계산기</a>'), bs.includes('<a href="tti.html">띠 순서·나이표</a>')].join(","), "true,true,true,true,true");
+  }
+  { const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
+    t("내일의 운세: 워커가 /tomorrow.html 을 다음 날 파일(off -1)로 #tomorrow-sv 에 끼우고, wrangler 가 먼저 워커로 보내며, 빌드가 날짜 파일에 tomorrow 묶음과 페이지를 만든다",
+      [w.includes('pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv")'), wr.includes('"/tomorrow.html"'), bs.includes("out.tomorrow = "), bs.includes('fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());'), bs.includes('<div id="tomorrow-sv">')].join(","), "true,true,true,true,true"); }
   t("2027 시즌 배선: 원고가 없으면 빌드가 멈추고, 위젯은 content_samjae.js 의 것을 쓴다", [bs.includes('throw new Error("년생별 2027 원고 없음: "'), bs.includes("const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);")].join(","), "true,true");
   t("2027 시즌: 원고 파이프라인(tools/newyear2027)이 리포에 있다", ["make_inputs.js", "STYLE_NY.md", "ny_check.js", "merge_ny.js", "README.md"].every(f => fs.existsSync("tools/newyear2027/" + f)), true); }
 // ── 사주 결과 '한 장 요약'(sjSumHtml) · 상위 N%(SJ_PCT) — 표는 실제 분포여야 하고, 카드는 그려져야 한다 ──
