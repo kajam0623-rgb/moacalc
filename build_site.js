@@ -980,7 +980,7 @@ const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfor
 const footer = `<footer class="sfoot">
 <div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
-<div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a></div>
+<div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
@@ -1836,6 +1836,49 @@ function ttiPage() {
     related: ["zodiacfortune", "newyear", "saju", "tojeong"] });
 }
 
+// ── 손 없는 날 달력(sonless.html, 2026-10-09) — 네이버 '손없는날' 월 9.3만·'11월손없는날' 5천. 음력 끝자리 9·0 을 빌드 달부터 14달 표로.
+function sonlessDays(y, m) {
+  const out = [];
+  for (let d = 1; d <= new Date(y, m, 0).getDate(); d++) { MANSE_CAL.setSolarDate(y, m, d); const L = MANSE_CAL.getLunarCalendar();
+    if (L.day % 10 === 9 || L.day % 10 === 0) out.push({ d, wd: new Date(y, m - 1, d).getDay(), lm: L.month, ld: L.day, leap: !!L.intercalation }); }
+  return out;
+}
+function sonlessPage() {
+  const WD = "일월화수목금토", Y0 = KST_NOW.getUTCFullYear(), M0 = KST_NOW.getUTCMonth() + 1;
+  const months = Array.from({ length: 14 }, (_, i) => { const t = new Date(Y0, M0 - 1 + i, 1); return [t.getFullYear(), t.getMonth() + 1]; });
+  const cur = sonlessDays(Y0, M0), nxt = sonlessDays(...months[1]);
+  const chip = (y, m, s) => `<span class="${s.wd === 0 || s.wd === 6 ? "sl-we" : ""}">${m}/${s.d}(${WD[s.wd]})<small>음 ${s.leap ? "윤" : ""}${s.lm}.${s.ld}</small></span>`;
+  const table = months.map(([y, m]) => { const ds = sonlessDays(y, m), we = ds.filter(s => s.wd === 0 || s.wd === 6).length;
+    return `<tr><th scope="row"><a href="manse-${y}-${String(m).padStart(2, "0")}.html">${y}년 ${m}월</a><small>주말 ${we}일</small></th><td class="sl-days">${ds.map(s => chip(y, m, s)).join("")}</td></tr>`; }).join("");
+  const sum = (y, m, ds) => `${y}년 ${m}월 손 없는 날은 ${ds.map(s => s.d + "일(" + WD[s.wd] + ")").join(", ")}입니다.`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "손 없는 날 달력", date: "2026-10-09",
+    title: `손 없는 날 ${Y0}·${Y0 + 1} — 이번 달 이사 손없는날 달력 | 동네보살`,
+    desc: `${sum(Y0, M0, cur)} 음력 끝자리가 9·0인 날을 ${Y0}년 ${M0}월부터 14달 치 달력으로 정리했습니다. 이사·결혼·개업 날짜 고를 때 주말 손 없는 날을 한눈에 보세요.`,
+    url: `${DOMAIN}/sonless.html`, img: "img/tool/h-lunar.webp", hero: "img/tool/h-lunar.webp",
+    h1: `손 없는 날 달력 — ${M0}월·${months[1][1]}월 이사 날짜`, sub: "음력 9·10, 19·20, 29·30일 · 양력 날짜와 요일로",
+    parent: "manse.html", parentName: "무료 만세력", tool: "manse", noTool: true,
+    tags: ["손없는날", `${M0}월 손없는날`, `${months[1][1]}월 손없는날`, "이사 손없는날", `${Y0 + 1} 손없는날`, "이사 날짜", "결혼 날짜"],
+    body: `<style>.sl-days{display:flex;flex-wrap:wrap;gap:6px}.sl-days span{display:inline-flex;flex-direction:column;align-items:center;padding:6px 9px;border:1px solid var(--line);border-radius:10px;font-weight:600;line-height:1.25}.sl-days small{font-weight:400;font-size:11px;color:var(--muted)}.sl-days .sl-we{border-color:var(--accent);color:var(--accent)}.sjt th small{display:block;font-weight:400;font-size:11px;color:var(--muted)}</style>` +
+      `<div class="exbox"><h2>이번 달 손 없는 날 — ${Y0}년 ${M0}월</h2><div class="sl-days">${cur.map(s => chip(Y0, M0, s)).join("")}</div>` +
+      `<h2 style="margin-top:14px">다음 달 — ${months[1][0]}년 ${months[1][1]}월</h2><div class="sl-days">${nxt.map(s => chip(...months[1], s)).join("")}</div>` +
+      `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">색이 들어간 날은 토·일요일입니다. 날짜 아래 작은 글씨는 음력 날짜입니다.</p></div>` +
+      `<section class="guide"><h2>손 없는 날 달력 — ${months[0][0]}년 ${months[0][1]}월부터 14달</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">달</th><th scope="col">손 없는 날(양력·요일·음력)</th></tr></thead><tbody>${table}</tbody></table></div>` +
+        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">달 이름을 누르면 그달 날짜별 일진·음력·절기가 있는 만세력 월력으로 갑니다. 휴대폰 달력에 넣고 싶다면 <a href="calendar-sonless.ics">손 없는 날 달력 구독(.ics)</a>을 누르세요.</p></section>` +
+      sec("손 없는 날이란", para(`'손'은 날짜에 따라 동서남북을 옮겨 다니며 사람이 하는 일을 훼방 놓는다고 믿던 민간의 귀신입니다. 음력 1·2일은 동쪽, 3·4일은 남쪽, 5·6일은 서쪽, 7·8일은 북쪽에 있다가 끝자리가 9와 0인 날에는 하늘로 올라가 어느 방향에도 없다고 여겼습니다.\n그래서 음력 9·10일, 19·20일, 29·30일을 '손 없는 날'이라 부르고, 이삿날이나 혼삿날, 가게 여는 날로 즐겨 골랐습니다. 한 달에 대개 여섯 번 있고, 음력 달이 29일로 끝나는 달은 다섯 번입니다.`)) +
+      sec("이사 날짜 고를 때 알아 두면 좋은 것", para(`손 없는 날, 그중에서도 주말과 월말은 이사 수요가 몰려 이삿짐 업체 예약이 빨리 차고 요금도 올라가는 일이 많습니다. 날짜를 정했다면 한 달쯤 앞서 견적을 받아 두는 편이 마음이 편합니다.\n손 없는 날을 꼭 맞추기 어렵다면 평일 손 없는 날이나, 업체와 짐 옮기는 날만 조율하는 방법도 있습니다. 손 없는 날은 오래된 민간 풍습이라 지키면 마음이 든든하고, 형편에 맞춰 고르셔도 괜찮습니다.`)) +
+      sec("날짜로 이어 보기", `<p style="margin-bottom:10px">그날의 일진(간지)은 <a href="iljin.html">오늘 일진</a>, 음력 생일을 양력으로 바꾸려면 <a href="lunar.html">음력 양력 변환</a>, 달마다 날짜별 음력·절기는 <a href="manse-${months[0][0]}-${String(months[0][1]).padStart(2, "0")}.html">이번 달 만세력</a>, 그날 내 운세는 <a href="todayfortune.html">오늘의 운세</a>에서 볼 수 있습니다.</p>`),
+    faq: [
+      [`${M0}월 손 없는 날은 언제인가요?`, sum(Y0, M0, cur)],
+      [`${months[1][1]}월 손 없는 날은 언제인가요?`, sum(...months[1], nxt)],
+      ["손 없는 날은 어떻게 정하나요?", "음력 날짜의 끝자리가 9나 0인 날, 곧 음력 9·10일, 19·20일, 29·30일입니다. 양력 날짜로는 달마다 바뀌어서 달력으로 확인해야 합니다."],
+      ["윤달에도 손 없는 날이 있나요?", "네, 윤달에도 음력 끝자리가 9·0인 날은 손 없는 날로 봅니다. 윤달은 예부터 이사나 수의 준비처럼 미뤄 둔 일을 하기 좋은 달로도 여겨졌습니다."],
+      ["손 없는 날이 아니면 이사하면 안 되나요?", "그렇지 않습니다. 손 없는 날은 민간 풍습이고, 요즘은 비용과 일정에 맞춰 평일이나 다른 날에 이사하는 집도 많습니다. 마음이 쓰인다면 손 없는 날을 고르고, 형편이 안 되면 편한 날을 고르셔도 됩니다."]],
+    sibTitle: "날짜·만세력 함께 보기", sibs: `<div class="sibs"><a href="manse.html">무료 만세력</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a><a href="manse-${months[0][0]}-${String(months[0][1]).padStart(2, "0")}.html">이번 달 만세력</a><a href="todayfortune.html">오늘의 운세</a></div>`,
+    related: ["manse", "lunar", "iljin", "todayfortune"] });
+}
+
 // ── 띠 궁합: 허브 1 + 띠별 12 + 짝 78 (content_ttigunghap.js 의 관계표와 원고) ──
 // 관계 이름(삼합·육합·충·원진·형)은 content_ttigunghap.js 의 표가 정한다. 짝마다 다른 말은 원고(TEXT)에 있다.
 const TTI = require("./content_ttigunghap.js");
@@ -2353,7 +2396,7 @@ function manseHubPage(){
       ["음력 생일로도 만세력을 볼 수 있나요?","음력 변환 도구에서 양력 날짜로 바꾼 뒤 넣으면 됩니다. 만세력 계산은 양력 날짜와 절기를 기준으로 합니다."],
       ["사이트마다 만세력 결과가 다른 이유는 무엇인가요?","대부분 절기 경계와 시각 보정에서 갈립니다. 절기가 드는 날이나 자시·오시 같은 경계 시각에 태어났다면 절입 시각을 분 단위로 계산하는지, 진태양시를 보정하는지에 따라 월주나 시주가 달라질 수 있습니다."]],
     sibTitle:"만세력 함께 보기",
-    sibs:'<div class="sibs"><a href="manse-howto.html">만세력 보는법</a><a href="saju.html">무료 사주풀이</a><a href="lunar.html">음력 변환</a><a href="iljin.html">오늘 일진</a><a href="manse-'+cur.en+'.html">이번 달 만세력</a></div>',
+    sibs:'<div class="sibs"><a href="manse-howto.html">만세력 보는법</a><a href="saju.html">무료 사주풀이</a><a href="lunar.html">음력 변환</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a><a href="manse-'+cur.en+'.html">이번 달 만세력</a></div>',
     related:["saju","lunar","todayfortune","gunghap"]});
 }
 
@@ -3219,7 +3262,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3315,6 +3358,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [손 없는 날 달력](${DOMAIN}/sonless.html): 음력 끝자리 9·0(음력 9·10·19·20·29·30일)인 손 없는 날을 이번 달부터 14달 치 양력 날짜·요일로 정리. 이사·결혼·개업 날짜 고르기용, 휴대폰 달력 구독(.ics) 제공.
 - [만세력 보는법](${DOMAIN}/manse-howto.html): 원국표는 오른쪽이 연주, 왼쪽이 시주. 일주의 천간(일간)이 나 자신. 오행 세기 → 십성 → 절기 경계 확인 → 대운 순서로 읽는다. 대운수는 절기까지 날수 ÷ 3.
 
 ## 만세력 월력 (${MANSE_PAGES.length}) — 날짜별 일진·음력·절기
@@ -3705,6 +3749,7 @@ for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.g
   fs.writeFileSync(path.join(OUT,"today",ymd(dt)+".json"), JSON.stringify({ ...todayFortune(dt), week: periodBlock("week", dt), month: periodBlock("month", dt) })); }
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
+fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
@@ -3850,6 +3895,7 @@ const rssRows = [
   [DOMAIN + "/weekly.html", "주간 운세 — 이번 주 띠별·별자리 운세", "이번 주 12띠·12별자리의 평균 점수와 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀝니다."],
   [DOMAIN + "/monthly.html", "이달의 운세 — 이번 달 띠별·별자리 운세", "이번 달 12띠·12별자리의 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀝니다."],
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
+  [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
   [DOMAIN + "/samjae.html", "삼재 계산기 — 2027 삼재띠·2028 삼재띠", "2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년은 호랑이띠·말띠·개띠(들삼재). 태어난 해로 삼재 연도를 계산합니다."],
   ...NYB.YEARS.map(y => { const f = NYB.facts(y); return [`${DOMAIN}/${nybUrl(y)}`, `${y}년생 2027년 운세`, `${f.ko}년생 ${f.animal}, 2027년 만 ${f.age[1]}세. ${(NYB.TEXT[String(y)] || {}).sum || ""}`]; }),
@@ -3872,7 +3918,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 65);
+].slice(0, 120 + 66);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
