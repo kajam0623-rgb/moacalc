@@ -769,6 +769,9 @@
 .cpb{margin:36px 0 8px;text-align:center;}
 .cpb.cpt{margin:0 0 20px;}
 .cpb.cpmid{margin:28px 0;}
+.cpe img{width:300px;}
+.cpr div{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:396px;margin:0 auto;}
+.cpr img{width:100%;border-radius:8px;}
 .cpl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
 .cpb img{display:block;max-width:100%;height:auto;margin:0 auto;}
 .cpm{display:none;}

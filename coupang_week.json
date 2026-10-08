@@ -1,0 +1,63 @@
+{
+ "week": "2026-10-08",
+ "note": "매주 갈아 끼우는 쿠팡 파트너스 '이번 주 인기 상품'. 링크·그림은 파트너스 화면 상품 링크 > 블로그용 태그, 행사는 이벤트/프로모션 링크(그림은 행사 카드 그림). 끝나는 날짜가 다음 갈기 전이면 넣지 않는다",
+ "events": [
+  {
+   "name": "아이폰 18 Pro 기획전",
+   "link": "https://link.coupang.com/a/hF36uGoYrk",
+   "img": "https://img5a.coupangcdn.com/image/affiliate/event/promotion/2026/09/21/c614205ff3bc00b401c33d1ee0698f59.png"
+  },
+  {
+   "name": "로봇청소기 셀렉트샵",
+   "link": "https://link.coupang.com/a/hF37noiskm",
+   "img": "https://img3c.coupangcdn.com/image/affiliate/event/promotion/2025/08/04/7fbb1b424c71003901a02a7c09d8c77c.png"
+  },
+  {
+   "name": "AI가전 모음전",
+   "link": "https://link.coupang.com/a/hF37OI2Lls",
+   "img": "https://image2.coupangcdn.com/image/affiliate/event/promotion/2025/03/17/6b10aac631da006a01f61f5917b59714.png"
+  }
+ ],
+ "products": [
+  {
+   "name": "Apple 아이폰 18 Pro 자급제, 실버, 512GB",
+   "link": "https://link.coupang.com/a/hF4gosY3pY",
+   "img": "https://img2a.coupangcdn.com/image/affiliate/banner/7fdf732e525c9dd7eb540bb7e053146e@2x.jpg"
+  },
+  {
+   "name": "Apple 아이폰 18 Pro Max 자급제, 글레이셔, 256GB",
+   "link": "https://link.coupang.com/a/hF4gKK2kvY",
+   "img": "https://image14.coupangcdn.com/image/affiliate/banner/83ff4dcd5631d308160954cbd262be47@2x.jpg"
+  },
+  {
+   "name": "Apple 맥북 프로 14 M5칩, 스페이스 블랙, 24GB, 1TB",
+   "link": "https://link.coupang.com/a/hF4hzb7QRw",
+   "img": "https://image8.coupangcdn.com/image/affiliate/banner/8c3ac2ac21222dfd319bfc93250ff5c7@2x.jpg"
+  },
+  {
+   "name": "Apple 맥북 에어 13 M5칩, 실버, 16GB, 512GB",
+   "link": "https://link.coupang.com/a/hF4paFqAEM",
+   "img": "https://image13.coupangcdn.com/image/affiliate/banner/25c4d9ef8646b008b5c561d55079836a@2x.jpg"
+  },
+  {
+   "name": "삼성전자 갤럭시 탭 S12 Ultra, 256GB, Wi-Fi",
+   "link": "https://link.coupang.com/a/hF4ijapnAy",
+   "img": "https://img3c.coupangcdn.com/image/affiliate/banner/17fe0af128ff768c4b7ad60678375255@2x.jpg"
+  },
+  {
+   "name": "삼성전자 Galaxy Z Fold8 자급제, 그라파이트, 256GB",
+   "link": "https://link.coupang.com/a/hF4iFWRmPA",
+   "img": "https://image4.coupangcdn.com/image/affiliate/banner/a10b2664e7ec4aec867fde17d6bbea2e@2x.jpg"
+  },
+  {
+   "name": "Apple 2026 애플워치 시리즈 12, 42mm, GPS",
+   "link": "https://link.coupang.com/a/hF4i2Hkaaa",
+   "img": "https://image13.coupangcdn.com/image/affiliate/banner/0cf94ee4a2ff32a2d67ec6a0e5c404d5@2x.jpg"
+  },
+  {
+   "name": "Apple 2025 에어팟 프로 3 USB-C",
+   "link": "https://link.coupang.com/a/hF4jpCA1p7",
+   "img": "https://image10.coupangcdn.com/image/affiliate/banner/1179e73b72f528fac055b995144bf5b5@2x.jpg"
+  }
+ ]
+}
