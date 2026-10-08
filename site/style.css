@@ -779,6 +779,37 @@
 .cpm{display:none;}
 @media (max-width:760px){.cpw{display:none;}.cpm{display:block;}}
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
+/* 홈 첫 화면 '밤의 연등'(2026-10-08 사용자 A안) — 마스코트 모자 남색 밤하늘·초롱 불빛·주사 도장으로 오늘 일진. 라이트·다크 모두 같은 밤 화면 */
+.hero2.nite{--n-ink:#fbf6ea;--n-mute:#aab2d4;--n-gold:#f3c94a;--n-seal:#c2361f;color:var(--n-ink);border-bottom:0;
+  /* 오늘 카드 등 안쪽 요소는 밝은 테마에서도 밤 화면에 맞게 다크 색을 쓴다(흰 카드에 흰 글씨가 되던 것) */
+  --surface:#161b33;--surface-2:#1d2440;--ink:#eff2f7;--muted:#aab2d4;--line:#2a3256;--line-2:#3a4370;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;--calm:#7fd6c0;color-scheme:dark;margin:-30px calc(50% - 50vw) 0;padding:18px max(22px,calc(50vw - 568px)) 30px;overflow:hidden;
+  background:radial-gradient(90% 55% at 78% 34%,rgba(240,138,43,.36),rgba(240,138,43,.07) 42%,transparent 66%),
+    radial-gradient(1.6px 1.6px at 18% 16%,#fff9 50%,transparent 52%),radial-gradient(1.4px 1.4px at 46% 8%,#fff8 50%,transparent 52%),radial-gradient(1.4px 1.4px at 88% 12%,#fff8 50%,transparent 52%),radial-gradient(1.8px 1.8px at 9% 47%,#fff6 50%,transparent 52%),radial-gradient(1.2px 1.2px at 62% 22%,#fff7 50%,transparent 52%),
+    linear-gradient(180deg,#121735,#1b2250 72%,#141a3e);}
+body:has(.hero2.nite){overflow-x:clip;}
+.nite .brand{color:var(--n-ink);font-family:"Song Myung",serif;font-weight:400;font-size:22px;}
+.nite .hn-date{display:flex;align-items:center;gap:12px;margin-top:22px;position:relative;z-index:2;}
+.nite .hn-seal{flex:none;width:56px;height:56px;border:2.5px solid var(--n-seal);color:var(--n-seal);background:#fbf6ea;border-radius:6px;transform:rotate(-6deg);display:grid;place-items:center;font-family:"Song Myung",serif;font-size:20px;line-height:1.05;text-align:center;}
+.nite .hn-date p{font-size:13.5px;color:var(--n-mute);line-height:1.5;}.nite .hn-date p b{color:var(--n-ink);font-weight:700;font-size:15px;}
+.nite .hero-h{position:relative;z-index:2;margin-top:20px;}
+.nite .hn-big{display:block;font-family:"Song Myung",serif;font-weight:400;font-size:clamp(42px,12vw,64px);line-height:1.12;letter-spacing:-.02em;color:var(--n-ink);}
+.nite .hn-big em{font-style:normal;color:var(--n-gold);}
+.nite .hn-kw{display:block;margin-top:12px;font-size:13.5px;font-weight:500;color:var(--n-mute);letter-spacing:0;line-height:1.5;}
+.nite .hero-sub{position:relative;z-index:2;color:var(--n-mute);font-size:13.5px;margin-top:6px;max-width:30em;}
+.nite .hero-bosal{top:124px;right:-14px;width:156px;filter:drop-shadow(0 16px 36px rgba(240,138,43,.42));}
+.nite .today{position:relative;z-index:2;margin-top:26px;}
+.nite .today-in{background:rgba(251,246,234,.07);border:1px solid rgba(251,246,234,.18);border-radius:18px;padding:16px;}
+.nite .today-in label{color:var(--n-mute);}
+.nite .today-in input{background:#0d112a;color:var(--n-ink);border-color:rgba(251,246,234,.3);}
+.nite .today-in input::placeholder{color:#7f88ad;}
+.nite .today-in button{background:var(--n-gold);color:#2a1d00;}
+.nite .today-note,.nite .today-err{color:var(--n-mute);}
+.nite .hn-chips{position:relative;z-index:2;display:flex;gap:8px;overflow-x:auto;margin-top:16px;padding-bottom:2px;scrollbar-width:none;}
+.nite .hn-chips a{flex:none;padding:9px 13px;border-radius:999px;border:1px solid rgba(251,246,234,.26);color:var(--n-ink);text-decoration:none;font-size:13.5px;white-space:nowrap;}
+.nite .hn-chips a b{color:var(--n-gold);font-weight:700;}
+.nite .hn-chips a:focus-visible,.nite .today-in button:focus-visible{outline:2px solid var(--n-gold);outline-offset:2px;}
+.nite .theme-tg{background:rgba(251,246,234,.1);color:var(--n-ink);border-color:rgba(251,246,234,.28);}
+@media (min-width:760px){.nite .hero-bosal{width:250px;top:40px;right:max(10px,calc(50vw - 560px));}.nite .hero-h,.nite .hero-sub,.nite .hn-date{padding-right:0;}.nite .hero-sub{max-width:36em;}.nite .today{max-width:620px;}}
 .hero2{position:relative;}
 /* 캐릭터는 로고 줄(브랜드·다크 모드 버튼) 바로 아래 제목 옆에 앉힌다. 맨 위(top:0)에 걸어 두면 폰 폭에서 다크 모드 버튼과 겹쳤다.
    제목 글은 h1 안의 빈 float(.hh-sp)이 캐릭터 자리를 비켜 가므로, 캐릭터 아래 줄은 전체 폭을 쓴다(히어로가 flex 라 캐릭터 자체를 float 하면 소용없다) */

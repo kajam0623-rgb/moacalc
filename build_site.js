@@ -3077,13 +3077,17 @@ function indexPage(){
 <link rel="canonical" href="${DOMAIN}/">
 <meta property="og:title" content="무료 사주는 동네보살">
 <meta property="og:description" content="${esc(desc)}">${OG_IMG_TAG}
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Song+Myung&display=swap&text=%EB%8F%99%EB%84%A4%EB%B3%B4%EC%82%B4%EC%98%A4%EB%8A%98%EC%9A%B4%EC%84%B8%2C%EB%B3%B4%EC%82%B4%EC%9D%B4%EB%B4%90%EB%93%9C%EB%A6%BC%E6%97%A5%E8%BE%B0%E7%94%B2%E4%B9%99%E4%B8%99%E4%B8%81%E6%88%8A%E5%B7%B1%E5%BA%9A%E8%BE%9B%E5%A3%AC%E7%99%B8%E5%AD%90%E4%B8%91%E5%AF%85%E5%8D%AF%E8%BE%B0%E5%B7%B3%E5%8D%88%E6%9C%AA%E7%94%B3%E9%85%89%E6%88%8C%E4%BA%A5">
 <link rel="stylesheet" href="style.css?v=${styleV}">${headExtra}
 </head><body><div class="wrap">
-<header class="hero hero2"><div class="logo-row"><img class="lmark" src="img/v2/logo-68.webp" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
-<img class="hero-bosal" id="heroBosal" src="img/mascot-460.webp" width="230" height="236" alt="손 흔들며 반기는 아기보살" fetchpriority="high" onerror="this.remove()">
-<h1 class="hero-h"><span class="hh-sp" aria-hidden="true"></span>무료사주 사이트 동네보살<br><b>사주풀이·<span class="nw">오늘의 운세</span>·<span class="nw">궁합·타로</span></b></h1>
-<div class="hero-sub">가입 없이 생일 하나로 끝까지 무료. 결과마다 어떻게 계산했는지 근거를 함께 보여 줍니다.</div>
+<header class="hero hero2 nite"><div class="logo-row"><img class="lmark" src="img/v2/logo-68.webp" width="34" height="34" alt="동네보살 로고" fetchpriority="high"><span class="brand">동네보살</span>${THEME_BTN}</div>
+<div class="hn-date"><div class="hn-seal" id="hnSeal" aria-hidden="true">日<br>辰</div><p id="hnDay"><b>오늘의 일진</b><br>날마다 바뀌는 하루의 간지</p></div>
+<img class="hero-bosal" id="heroBosal" src="img/bosal/lantern.webp" width="300" height="440" alt="초롱을 들고 반기는 아기보살" fetchpriority="high" onerror="this.src='img/mascot-460.webp'">
+<h1 class="hero-h"><span class="hn-big">오늘 운세,<br><em>보살</em>이<br>봐 드림</span><span class="hn-kw">무료사주 · 사주풀이 · 오늘의 운세 · 궁합 · 타로</span></h1>
+<div class="hero-sub">가입·결제 없이 생일 하나로 끝까지. 결과마다 계산 근거를 함께 보여 줍니다.</div>
 <div class="today" id="today"><div class="today-in"><label for="hb">생년월일 (양력)</label><div class="today-row"><input type="text" id="hb" inputmode="numeric" maxlength="10" placeholder="예) 19950101" aria-describedby="hberr"><button id="hgo" type="button">오늘 운세 보기</button></div><p class="today-err" id="hberr" role="alert"></p><p class="today-note">생일은 서버로 보내지 않습니다. 직접 저장하지 않으면 이 탭을 닫을 때 지워집니다.</p></div></div>
+<nav class="hn-chips" aria-label="바로 가기"><a id="hnTop" href="zodiacfortune.html">오늘의 띠 순위</a><a href="tomorrow.html">내일의 운세</a><a href="tti.html">띠 계산기</a><a href="dream.html">꿈해몽</a></nav>
 </header>
 <nav class="tgrid" aria-label="도구"><a href="todayfortune.html"><img class="tile-bosal" src="img/bosal/s/crystal.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>오늘의 운세</b><span>나에게 오늘은 어떤 날</span></a><a href="saju.html"><img class="tile-bosal" src="img/bosal/s/magnifier.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>사주팔자</b><span>여덟 글자와 10년 흐름</span></a><a href="gunghap.html"><img class="tile-bosal" src="img/bosal/s/heart.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>궁합</b><span>두 사람의 네 가지 축</span></a><a href="tarot.html"><img class="tile-bosal" src="img/bosal/s/tarot.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>타로</b><span>고민 하나에 카드 세 장</span></a><a href="newyear.html"><img class="tile-bosal" src="img/bosal/s/newyear.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>신년운세</b><span>한 해의 흐름과 달마다</span></a><a href="horoscope.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 운세</b><span>12별자리 오늘</span></a><a href="zodiacfortune.html"><img class="tile-bosal" src="img/bosal/s/trophy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>띠별 운세</b><span>12띠 오늘</span></a><a href="stargunghap.html"><img class="tile-bosal" src="img/bosal/s/phone.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>별자리 궁합</b><span>두 별자리의 각도</span></a><a href="namematch.html"><img class="tile-bosal" src="img/bosal/s/diary.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>이름 궁합</b><span>획수로 보는 두 이름</span></a><a href="manse.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>만세력</b><span>날짜별 간지·절기</span></a><a href="tojeong.html"><img class="tile-bosal" src="img/bosal/s/scroll.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>토정비결</b><span>음력 생일로 뽑는 144괘</span></a><a href="dream.html"><img class="tile-bosal" src="img/bosal/s/sleepy.webp" alt="" aria-hidden="true" decoding="async" onerror="this.remove()"><b>꿈해몽</b><span>간밤 꿈 241가지 풀이</span></a></nav>
 <a class="dictcta seasoncta" href="column-zodiac-2027.html"><b>2027 정미년 운세</b><span>띠·일간·별자리별로 2027년 운세를 표 하나에 담았습니다</span><i>→</i></a>
@@ -3153,6 +3157,9 @@ hb.onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();g.click();}};
 g.onclick=function(){var v=bdParse(hb.value);if(!v){er.textContent=hb.value.replace(/[^0-9]/g,"").length===8?"없는 날짜예요. 다시 확인해 주세요.":"생년월일 8자리를 숫자로 입력해 주세요. 예) 19950101";hb.focus();return;}er.textContent="";
 try{sessionStorage.setItem("dnbs_hb",JSON.stringify({v:v,t:Date.now()}));}catch(e){}
 show(v);};chips();}
+load(function(){try{var n=new Date(),t=sjPillars(n.getFullYear(),n.getMonth()+1,n.getDate(),null,0,false),se=document.getElementById("hnSeal"),dy=document.getElementById("hnDay"),tp=document.getElementById("hnTop");
+if(se)se.innerHTML=SJ_SH[t.d.s]+"<br>"+SJ_BH[t.d.b];if(dy)dy.innerHTML="<b>"+(n.getMonth()+1)+"월 "+n.getDate()+"일 "+"일월화수목금토"[n.getDay()]+"요일</b><br>오늘 일진은 "+SJ_S[t.d.s]+SJ_B[t.d.b]+"("+SJ_SH[t.d.s]+SJ_BH[t.d.b]+")일";
+if(tp&&window.zfRank){var z=zfRank()[0];tp.href="zodiacfortune.html?b="+z.b+"#go";tp.innerHTML="오늘 1등 <b>"+SJ_TTI[z.b]+"띠 "+z.score+"점</b>";}}catch(e){}});
 load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)return;
 var sl=document.getElementById("srank");if(sl&&window.hsRank)sl.innerHTML=hsRank().map(function(z,i){return '<li><a href="horoscope.html?s='+z.i+'#go"><em>'+(i+1)+'</em><b>'+ST_KO[z.i]+'</b><span>'+HS_LINE[z.md]+(z.rk===2?' · 수호성의 요일':'')+'</span><i>'+z.score+'</i></a></li>';}).join("");
 ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
@@ -3346,6 +3353,37 @@ const extraCss = `
 .cpm{display:none;}
 @media (max-width:760px){.cpw{display:none;}.cpm{display:block;}}
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
+/* 홈 첫 화면 '밤의 연등'(2026-10-08 사용자 A안) — 마스코트 모자 남색 밤하늘·초롱 불빛·주사 도장으로 오늘 일진. 라이트·다크 모두 같은 밤 화면 */
+.hero2.nite{--n-ink:#fbf6ea;--n-mute:#aab2d4;--n-gold:#f3c94a;--n-seal:#c2361f;color:var(--n-ink);border-bottom:0;
+  /* 오늘 카드 등 안쪽 요소는 밝은 테마에서도 밤 화면에 맞게 다크 색을 쓴다(흰 카드에 흰 글씨가 되던 것) */
+  --surface:#161b33;--surface-2:#1d2440;--ink:#eff2f7;--muted:#aab2d4;--line:#2a3256;--line-2:#3a4370;--accent:#93a4ff;--accent-weak:#161d30;--accent-ink:#b6bfff;--deduct:#ef8b7d;--fun:#e6b25a;--fun-ink:#f0c987;--on-accent:#0f1218;--calm:#7fd6c0;color-scheme:dark;margin:-30px calc(50% - 50vw) 0;padding:18px max(22px,calc(50vw - 568px)) 30px;overflow:hidden;
+  background:radial-gradient(90% 55% at 78% 34%,rgba(240,138,43,.36),rgba(240,138,43,.07) 42%,transparent 66%),
+    radial-gradient(1.6px 1.6px at 18% 16%,#fff9 50%,transparent 52%),radial-gradient(1.4px 1.4px at 46% 8%,#fff8 50%,transparent 52%),radial-gradient(1.4px 1.4px at 88% 12%,#fff8 50%,transparent 52%),radial-gradient(1.8px 1.8px at 9% 47%,#fff6 50%,transparent 52%),radial-gradient(1.2px 1.2px at 62% 22%,#fff7 50%,transparent 52%),
+    linear-gradient(180deg,#121735,#1b2250 72%,#141a3e);}
+body:has(.hero2.nite){overflow-x:clip;}
+.nite .brand{color:var(--n-ink);font-family:"Song Myung",serif;font-weight:400;font-size:22px;}
+.nite .hn-date{display:flex;align-items:center;gap:12px;margin-top:22px;position:relative;z-index:2;}
+.nite .hn-seal{flex:none;width:56px;height:56px;border:2.5px solid var(--n-seal);color:var(--n-seal);background:#fbf6ea;border-radius:6px;transform:rotate(-6deg);display:grid;place-items:center;font-family:"Song Myung",serif;font-size:20px;line-height:1.05;text-align:center;}
+.nite .hn-date p{font-size:13.5px;color:var(--n-mute);line-height:1.5;}.nite .hn-date p b{color:var(--n-ink);font-weight:700;font-size:15px;}
+.nite .hero-h{position:relative;z-index:2;margin-top:20px;}
+.nite .hn-big{display:block;font-family:"Song Myung",serif;font-weight:400;font-size:clamp(42px,12vw,64px);line-height:1.12;letter-spacing:-.02em;color:var(--n-ink);}
+.nite .hn-big em{font-style:normal;color:var(--n-gold);}
+.nite .hn-kw{display:block;margin-top:12px;font-size:13.5px;font-weight:500;color:var(--n-mute);letter-spacing:0;line-height:1.5;}
+.nite .hero-sub{position:relative;z-index:2;color:var(--n-mute);font-size:13.5px;margin-top:6px;max-width:30em;}
+.nite .hero-bosal{top:124px;right:-14px;width:156px;filter:drop-shadow(0 16px 36px rgba(240,138,43,.42));}
+.nite .today{position:relative;z-index:2;margin-top:26px;}
+.nite .today-in{background:rgba(251,246,234,.07);border:1px solid rgba(251,246,234,.18);border-radius:18px;padding:16px;}
+.nite .today-in label{color:var(--n-mute);}
+.nite .today-in input{background:#0d112a;color:var(--n-ink);border-color:rgba(251,246,234,.3);}
+.nite .today-in input::placeholder{color:#7f88ad;}
+.nite .today-in button{background:var(--n-gold);color:#2a1d00;}
+.nite .today-note,.nite .today-err{color:var(--n-mute);}
+.nite .hn-chips{position:relative;z-index:2;display:flex;gap:8px;overflow-x:auto;margin-top:16px;padding-bottom:2px;scrollbar-width:none;}
+.nite .hn-chips a{flex:none;padding:9px 13px;border-radius:999px;border:1px solid rgba(251,246,234,.26);color:var(--n-ink);text-decoration:none;font-size:13.5px;white-space:nowrap;}
+.nite .hn-chips a b{color:var(--n-gold);font-weight:700;}
+.nite .hn-chips a:focus-visible,.nite .today-in button:focus-visible{outline:2px solid var(--n-gold);outline-offset:2px;}
+.nite .theme-tg{background:rgba(251,246,234,.1);color:var(--n-ink);border-color:rgba(251,246,234,.28);}
+@media (min-width:760px){.nite .hero-bosal{width:250px;top:40px;right:max(10px,calc(50vw - 560px));}.nite .hero-h,.nite .hero-sub,.nite .hn-date{padding-right:0;}.nite .hero-sub{max-width:36em;}.nite .today{max-width:620px;}}
 .hero2{position:relative;}
 /* 캐릭터는 로고 줄(브랜드·다크 모드 버튼) 바로 아래 제목 옆에 앉힌다. 맨 위(top:0)에 걸어 두면 폰 폭에서 다크 모드 버튼과 겹쳤다.
    제목 글은 h1 안의 빈 float(.hh-sp)이 캐릭터 자리를 비켜 가므로, 캐릭터 아래 줄은 전체 폭을 쓴다(히어로가 flex 라 캐릭터 자체를 float 하면 소용없다) */
