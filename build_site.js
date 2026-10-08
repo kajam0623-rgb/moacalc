@@ -3153,6 +3153,7 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 const extraCss = `
 .cpx{font-size:14px;font-weight:700;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;margin:0 0 14px;}
 .cpb{margin:36px 0 8px;text-align:center;}
+.cpb.cpt{margin:0 0 20px;}
 .cpl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
 .cpb img{display:block;max-width:100%;height:auto;margin:0 auto;}
 .cpm{display:none;}
@@ -3553,7 +3554,8 @@ function placeAds() {
     let out = h.replace("@@ADS@@", skip ? "" : AD);
     if (!skip && AD) {
       if ((out.match(/<main id="main">/g) || []).length !== 1 || (out.match(/<\/main>/g) || []).length !== 1) throw new Error("쿠팡 배너: main 이 하나가 아님 " + f);
-      out = out.replace('<main id="main">', '<main id="main">' + CP_TOP).replace("</main>", CP_BANNER + "</main>");
+      // 위에도 하나(사용자 2026-10-08 "상단에도 배너 하나") — 문구 바로 밑. 한 쪽에 위·아래 두 개까지
+      out = out.replace('<main id="main">', '<main id="main">' + CP_TOP + CP_BANNER.replace('class="cpb"', 'class="cpb cpt"')).replace("</main>", CP_BANNER + "</main>");
     }
     fs.writeFileSync(p, out);
     skip ? off++ : on++;
