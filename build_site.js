@@ -1235,6 +1235,8 @@ function todayFortune(dt){
   out.zodiacfortune = `<section class="guide"><h2>오늘의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt} 오늘 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다. 띠를 누르면 오늘 풀이가 이어집니다.`) +
     `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}</li>`).join("")}</ul></section>`;
+  // 오늘 음력 날짜(lunar.html 제목용, 2026-10-09) — worker 가 '오늘 음력 8월 29일 · ' 을 제목 앞에 붙인다
+  { MANSE_CAL.setSolarDate(dt.getFullYear(), dt.getMonth() + 1, dt.getDate()); const L = MANSE_CAL.getLunarCalendar(); out.lunar = `${L.intercalation ? "윤" : ""}${L.month}월 ${L.day}일`; }
   // 오늘의 연애운(love.html, 2026-10-09) — 띠·별자리 풀이의 애정운(love) 첫 문장을 한 쪽에 모은다. worker 가 #love-sv 에 끼운다
   const loveLine = o => { const g = o.secs.find(s => s.k === "love"); return g ? `<br><span style="color:var(--muted);font-size:13.5px">${F.plainStr(g.p[0], {})}</span>` : ""; };
   out.love = `<section class="guide"><h2>오늘의 띠별 연애운 — ${day}</h2>` + NOTE(`${ilTxt} 띠를 누르면 오늘 총운·재물운까지 이어집니다.`) +
@@ -3924,8 +3926,8 @@ function cpMid(m, f) {
     if (before.trim() && !CP_BLOCK_END.test(before.slice(-300))) continue;
     at.push(i);
   }
-  // 사용자 2026-10-08 "광고를 중간중간 넣어줘" — 후보 2개마다 하나, 최대 4개를 고르게 벌려 넣는다(2~3→1, 4~5→2, 6~7→3, 8+→4)
-  const n = at.length, k = Math.min(4, Math.floor(n / 2));
+  // 사용자 2026-10-08 "광고를 중간중간 넣어줘" + 2026-10-09 "중간에 하나 더" — 후보 2개마다 하나에 하나 더, 최대 5개(1→1, 2~3→2, 4~5→3, 6~7→4, 8+→5)
+  const n = at.length, k = Math.min(5, Math.floor(n / 2) + 1, n);
   const picks = new Set(Array.from({ length: k }, (_, j) => at[Math.floor((j + 1) * n / (k + 1))]));
   const h = parseInt(hash8(f), 16), at2 = [...picks].sort((x, y) => x - y);
   // 하나면 상품 줄, 여럿이면 기획전·상품 줄을 번갈아 — 같은 쪽에서 겹치지 않게 시작 위치를 민다

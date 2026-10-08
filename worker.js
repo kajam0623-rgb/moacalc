@@ -26,6 +26,7 @@ export default {
     if (tf) return todayFortune(req, env, tf[1]);
     if (pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv");
     if (pathname === "/todayfortune.html") return datedTitle(req, env);
+    if (pathname === "/lunar.html") return lunarTitle(req, env);
     if (pathname === "/love.html") return todayFortune(req, env, "love", 0, "#love-sv");
     if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
     if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
@@ -84,6 +85,14 @@ async function datedTitle(req, env) {
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
   const [, m, d] = kstDay().split("-").map(Number);
   return new HTMLRewriter().on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } }).transform(res);
+}
+// 음력 계산기는 제목 앞에 오늘 음력 날짜('오늘 음력 8월 29일 · ') — 날짜 파일의 lunar 값, 없으면 그대로
+async function lunarTitle(req, env) {
+  const res = await env.ASSETS.fetch(req), day = kstDay();
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  if (!todayCache[day]) { const r = await env.ASSETS.fetch(new URL(`/today/${day}.json`, req.url)); if (r.ok) todayCache = { ...Object.fromEntries(Object.entries(todayCache).filter(([d]) => d >= kstDay())), [day]: await r.json() }; }
+  const lun = todayCache[day] && todayCache[day].lunar;
+  return lun ? new HTMLRewriter().on("title", { element(e) { e.prepend(`오늘 음력 ${lun} · `); } }).transform(res) : res;
 }
 async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
   const res = await env.ASSETS.fetch(req), day = kstDay(off);
