@@ -3370,7 +3370,7 @@ body:has(.hero2.nite){overflow-x:clip;}
 .nite .hn-big em{font-style:normal;color:var(--n-gold);}
 .nite .hn-kw{display:block;margin-top:12px;font-size:13.5px;font-weight:500;color:var(--n-mute);letter-spacing:0;line-height:1.5;}
 .nite .hero-sub{position:relative;z-index:2;color:var(--n-mute);font-size:13.5px;margin-top:6px;max-width:30em;}
-.nite .hero-bosal{top:124px;right:-14px;width:156px;filter:drop-shadow(0 16px 36px rgba(240,138,43,.42));}
+.nite .hero-bosal{top:128px;right:max(6px,calc(50vw - 568px));width:clamp(124px,38vw,150px);filter:drop-shadow(0 16px 36px rgba(240,138,43,.42));}
 .nite .today{position:relative;z-index:2;margin-top:26px;}
 .nite .today-in{background:rgba(251,246,234,.07);border:1px solid rgba(251,246,234,.18);border-radius:18px;padding:16px;}
 .nite .today-in label{color:var(--n-mute);}
