@@ -1012,8 +1012,8 @@ function siteNav(currentId){
 // 운세 페이지는 "계산기" 대신 검색어에 맞는 타이틀을 쓴다
 const h1Override = { namematch: "이름 궁합 테스트" }; // 메뉴·카드 이름과 달리 이 검색어로 제목을 맞춘다
 const titleOverride = {
-todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
-horoscope:"별자리 운세 — 오늘·이번주 12별자리 무료",
+todayfortune:"오늘의 운세 — 생년월일로 보는 무료 운세·오늘 운세",
+horoscope:"별자리 운세 — 오늘의 별자리 운세·12별자리 날짜 무료",
 zodiacfortune:"띠별 운세 — 오늘의 띠별 운세·12띠 오늘 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
 saju:"무료 사주풀이 — 인터넷 사주·사주 만세력",

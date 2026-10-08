@@ -25,6 +25,7 @@ export default {
     const tf = pathname.match(TODAY_RE);
     if (tf) return todayFortune(req, env, tf[1]);
     if (pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv");
+    if (pathname === "/todayfortune.html") return datedTitle(req, env);
     if (pathname === "/love.html") return todayFortune(req, env, "love", 0, "#love-sv");
     if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
     if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
@@ -77,6 +78,13 @@ async function gunghapInvite(req, env) {
 const TODAY_RE = /^\/(star-[a-z]+|zodiac-[a-z]+|horoscope|zodiacfortune)\.html$/;
 // /tomorrow.html 은 다음 날(off=-1) 파일의 tomorrow 묶음을 #tomorrow-sv 에 끼운다. 날짜가 다르니 캐시도 날짜별로 둔다
 let todayCache = {};
+// 오늘의 운세(생년월일 도구)는 끼울 글이 없어 제목 앞에 그날 날짜만 붙인다('10월 9일 오늘의 운세 …')
+async function datedTitle(req, env) {
+  const res = await env.ASSETS.fetch(req);
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  const [, m, d] = kstDay().split("-").map(Number);
+  return new HTMLRewriter().on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } }).transform(res);
+}
 async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
   const res = await env.ASSETS.fetch(req), day = kstDay(off);
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
