@@ -1331,6 +1331,17 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   { const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
     t("주간·이달의 운세: 워커가 weekly·monthly 를 그날 파일의 week·month 묶음으로 끼우고, wrangler 가 먼저 받고, 빌드가 날짜 파일에 묶음과 두 페이지를 만든다",
       [w.includes('pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv")'), w.includes('pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv")'), wr.includes('"/weekly.html", "/monthly.html"'), bs.includes('week: periodBlock("week", dt), month: periodBlock("month", dt)'), bs.includes('fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));'), bs.includes('fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));')].join(","), "true,true,true,true,true,true"); }
+  { // 꿈해몽 깊이 페이지 10(2026-10-08): 존댓말·겁주는 말 0, 항목 키·함께 볼 꿈 키가 content_dream.js 에 있다, 분량, 배선
+    const DD = require("./content_dream_deep.js"), DR = require("./content_dream.js"), keys = new Set(); DR.forEach(c => c.items.forEach(e => keys.add(e.k)));
+    const bad = [], short = [];
+    DD.forEach(d => { const txt = [d.lead, d.mind, ...d.cases.map(c => c[1]), ...d.tips, ...d.faq.map(f => f[1])].join(" ");
+      NC.SENT(txt).forEach(s => { if (NC.BAN.test(s) || !NC.END.test(s)) bad.push(d.k + ":" + s.slice(0, 20)); });
+      if (txt.replace(/\s/g, "").length < 700 || d.cases.length < 6 || d.faq.length < 4) short.push(d.k); });
+    t("꿈 깊이 원고: 모든 문장이 존댓말로 끝나고 겁주는 말이 없다", bad.slice(0, 3).join(" | "), "");
+    t("꿈 깊이 원고: 꿈마다 본문 700자·장면 6개·질문 4개 이상", short.join(","), "");
+    t("꿈 깊이 원고: 항목 키와 함께 볼 꿈 키가 모두 꿈해몽 사전에 있다", DD.flatMap(d => [d.k, ...d.rel]).filter(k => !keys.has(k)).join(","), "");
+    t("꿈 깊이 배선: 페이지를 쓰고 사이트맵·허브 목록·분류 페이지에서 잇는다", [bs.includes('DREAM_DEEP.forEach(d=>fs.writeFileSync(path.join(OUT,"dream-"+d.k+".html"), dreamDeepPage(d)));'), bs.includes('DREAM_DEEP.map(d=>smUrl("dream-"+d.k+".html"))'), bs.includes('<a href="${dreamItemUrl(e.k)}" data-t='), bs.includes('장면별 풀이 자세히 →')].join(","), "true,true,true,true");
+  }
   t("2027 시즌 배선: 원고가 없으면 빌드가 멈추고, 위젯은 content_samjae.js 의 것을 쓴다", [bs.includes('throw new Error("년생별 2027 원고 없음: "'), bs.includes("const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);")].join(","), "true,true");
   t("2027 시즌: 원고 파이프라인(tools/newyear2027)이 리포에 있다", ["make_inputs.js", "STYLE_NY.md", "ny_check.js", "merge_ny.js", "README.md"].every(f => fs.existsSync("tools/newyear2027/" + f)), true); }
 // ── 사주 결과 '한 장 요약'(sjSumHtml) · 상위 N%(SJ_PCT) — 표는 실제 분포여야 하고, 카드는 그려져야 한다 ──

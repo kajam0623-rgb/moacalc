@@ -1808,20 +1808,20 @@
   "d": "2026-09-30"
  },
  "dream-animal.html": {
-  "h": "28b64e61",
-  "d": "2026-09-30"
+  "h": "b671b9b2",
+  "d": "2026-10-08"
  },
  "dream-people.html": {
-  "h": "c5d67ee9",
-  "d": "2026-09-30"
+  "h": "1a90e648",
+  "d": "2026-10-08"
  },
  "dream-body.html": {
-  "h": "d362333a",
-  "d": "2026-10-01"
+  "h": "0abcd688",
+  "d": "2026-10-08"
  },
  "dream-action.html": {
-  "h": "e4e9cdf6",
-  "d": "2026-10-01"
+  "h": "37702cb4",
+  "d": "2026-10-08"
  },
  "dream-nature.html": {
   "h": "292e3e0d",
@@ -1832,8 +1832,8 @@
   "d": "2026-10-01"
  },
  "dream-house.html": {
-  "h": "76fbff4c",
-  "d": "2026-10-01"
+  "h": "fd5e117a",
+  "d": "2026-10-08"
  },
  "dream-money.html": {
   "h": "2d0068e8",
@@ -2549,6 +2549,46 @@
  },
  "monthly.html": {
   "h": "2b14c76f",
+  "d": "2026-10-08"
+ },
+ "dream-body-teeth.html": {
+  "h": "ce7bdfc9",
+  "d": "2026-10-08"
+ },
+ "dream-animal-snake.html": {
+  "h": "909b90ca",
+  "d": "2026-10-08"
+ },
+ "dream-body-poop.html": {
+  "h": "e77e9c9c",
+  "d": "2026-10-08"
+ },
+ "dream-animal-tiger.html": {
+  "h": "3f2b2e37",
+  "d": "2026-10-08"
+ },
+ "dream-animal-cat.html": {
+  "h": "c2b61ae2",
+  "d": "2026-10-08"
+ },
+ "dream-body-haircut.html": {
+  "h": "e4ee33a5",
+  "d": "2026-10-08"
+ },
+ "dream-action-chased.html": {
+  "h": "3a2444f5",
+  "d": "2026-10-08"
+ },
+ "dream-animal-pig.html": {
+  "h": "1856f5cf",
+  "d": "2026-10-08"
+ },
+ "dream-house-move.html": {
+  "h": "25cd07a2",
+  "d": "2026-10-08"
+ },
+ "dream-people-my-wedding.html": {
+  "h": "256d37f9",
   "d": "2026-10-08"
  }
 }

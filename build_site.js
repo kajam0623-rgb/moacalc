@@ -2754,7 +2754,7 @@ function dreamHubPage(){
 <p style="color:var(--muted);font-size:14px;margin-bottom:14px">간밤에 본 것을 적어 보세요. ${DREAM_N}가지 꿈 가운데 맞는 풀이를 찾아 드립니다.</p>
 <input type="search" id="dq" placeholder="예: 돼지, 이빨, 물, 돌아가신 할머니" aria-label="꿈 검색" style="width:100%;padding:14px 16px;font-size:16px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);color:inherit;margin-bottom:6px">
 <p id="dqn" style="font-size:13px;color:var(--muted);margin:0 0 14px"></p>
-<div id="dlist">${DREAM.map(c=>`<section class="guide dm-g"><h2><a href="dream-${c.id}.html">${c.ko}</a> <small style="color:var(--muted);font-weight:600">${c.items.length}가지</small></h2><div class="sibs">${c.items.map(e=>`<a href="dream-${c.id}.html#${e.k}" data-t="${esc(e.title.replace(/ ?꿈$/,""))}">${esc(e.title)} ${dreamBadge(e.kind)}</a>`).join("")}</div></section>`).join("")}</div>
+<div id="dlist">${DREAM.map(c=>`<section class="guide dm-g"><h2><a href="dream-${c.id}.html">${c.ko}</a> <small style="color:var(--muted);font-weight:600">${c.items.length}가지</small></h2><div class="sibs">${c.items.map(e=>`<a href="${dreamItemUrl(e.k)}" data-t="${esc(e.title.replace(/ ?꿈$/,""))}">${esc(e.title)} ${dreamBadge(e.kind)}</a>`).join("")}</div></section>`).join("")}</div>
 ${DREAM_NOTE}
 ${footer}
 </div>
@@ -2763,6 +2763,30 @@ function run(){var v=q.value.replace(/\\s|꿈/g,""),c=0;gs.forEach(function(g){v
 n.textContent=v?(c?c+"가지 꿈이 맞습니다. 눌러서 풀이를 보세요.":"맞는 꿈이 없네요. 짧게 한 낱말로 찾아보세요."):"";}
 q.addEventListener("input",run);})();</script>
 </body></html>`;
+}
+/* 꿈해몽 깊이 페이지 10(dream-<항목키>.html, 2026-10-08) — 원고 content_dream_deep.js. 분류 페이지의 짧은 풀이(보살 한마디)는 그대로 상자에 싣는다 */
+const DREAM_DEEP = require("./content_dream_deep.js");
+const DREAM_ITEM = {}; DREAM.forEach(c => c.items.forEach(e => { DREAM_ITEM[e.k] = { ...e, cat: c }; }));
+const DREAM_DEEP_K = new Set(DREAM_DEEP.map(d => d.k));
+const dreamItemUrl = k => DREAM_DEEP_K.has(k) ? `dream-${k}.html` : `dream-${DREAM_ITEM[k].cat.id}.html#${k}`;
+function dreamDeepPage(d) {
+  const e = DREAM_ITEM[d.k]; if (!e) throw new Error("꿈 항목 없음: " + d.k);
+  const url = `${DOMAIN}/dream-${d.k}.html`;
+  const faqLd = `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) })}</script>`;
+  return dreamHead(url, d.title, d.desc, [["홈", DOMAIN + "/"], ["꿈해몽", DOMAIN + "/dream.html"], [e.cat.ko, `${DOMAIN}/dream-${e.cat.id}.html`], [d.kw, url]]).replace("</head>", faqLd + "</head>") + `
+<a class="back" href="dream-${e.cat.id}.html">← ${e.cat.ko} 해몽</a>
+<h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${esc(d.kw)} 해몽 ${dreamBadge(e.kind)}</h1>
+<div class="intro" style="margin:0 0 18px">${para(d.lead)}</div>
+<section class="guide dm-e"><h2>동네보살 한마디</h2><p>${esc(e.text)}</p></section>
+<section class="guide"><h2>${esc(d.kw)}, 장면별 풀이</h2>${d.cases.map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")}</section>
+<section class="guide"><h2>마음 쪽에서 보면</h2><div class="intro" style="margin-top:0">${para(d.mind)}</div></section>
+<section class="guide"><h2>이 꿈을 꾼 날 해 볼 일</h2><ul>${d.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></section>
+<section class="faq"><h2>자주 묻는 질문</h2>${d.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>
+<section class="guide"><h2>함께 보는 꿈</h2><div class="sibs">${d.rel.map(k => `<a href="${dreamItemUrl(k)}">${esc(DREAM_ITEM[k].title)}</a>`).join("")}${DREAM_DEEP.filter(x => x.k !== d.k && !d.rel.includes(x.k)).slice(0, 4).map(x => `<a href="dream-${x.k}.html">${esc(x.kw)}</a>`).join("")}</div></section>
+${DREAM_NOTE}
+<section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs"><a href="dream.html">꿈해몽 찾기</a>${DREAM.map(x => `<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
+${footer}
+</div></body></html>`;
 }
 function dreamCatPage(c){
   const url = `${DOMAIN}/dream-${c.id}.html`, names = c.items.slice(0,5).map(e=>e.title.replace(/ ?꿈$/,"")).join("·");
@@ -2773,7 +2797,7 @@ function dreamCatPage(c){
 <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${c.ko} 해몽</h1>
 <div class="intro" style="margin:0 0 18px">${para(c.intro)}</div>
 <div class="sibs" style="margin-bottom:18px">${c.items.map(e=>`<a href="#${e.k}">${esc(e.title)}</a>`).join("")}</div>
-${c.items.map(e=>`<section class="guide dm-e" id="${e.k}"><h2>${esc(e.title)} ${dreamBadge(e.kind)}</h2><p>${esc(e.text)}</p></section>`).join("")}
+${c.items.map(e=>`<section class="guide dm-e" id="${e.k}"><h2>${esc(e.title)} ${dreamBadge(e.kind)}</h2><p>${esc(e.text)}</p>${DREAM_DEEP_K.has(e.k)?`<p style="margin-top:8px"><a href="dream-${e.k}.html">${esc(e.title)} 장면별 풀이 자세히 →</a></p>`:""}</section>`).join("")}
 ${DREAM_NOTE}
 <section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs">${DREAM.map(x=>x.id===c.id?`<span class="cur">${x.ko}</span>`:`<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
 ${footer}
@@ -3186,7 +3210,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   smUrl("learn.html")+"\n"+LEARN.LECTURES.filter(c=>c.en).map(c=>smUrl(c.page)).join("\n")+"\n"+
   smUrl("iljin.html")+"\n"+
   ILJU_PAGES.map(p=>smUrl("ilju-"+p.en+".html")).join("\n")+"\n"+
-  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+smUrl("dream.html")+"\n"+DREAM.map(c=>smUrl("dream-"+c.id+".html")).join("\n")+"\n"+
+  smUrl("manse.html")+"\n"+smUrl("manse-howto.html")+"\n"+smUrl("dict.html")+"\n"+smUrl("dream.html")+"\n"+DREAM.map(c=>smUrl("dream-"+c.id+".html")).join("\n")+"\n"+DREAM_DEEP.map(d=>smUrl("dream-"+d.k+".html")).join("\n")+"\n"+
   MANSE_PAGES.filter(MANSE_KEEP).map(p=>smUrl("manse-"+p.en+".html")).join("\n")+"\n"+
   (COLUMN_PAGES.length ? smUrl("column.html")+"\n"+COLUMN_PAGES.map(c=>smUrl("column-"+c.en+".html")).join("\n")+"\n" : "")+
   SITE_PAGES.map(p=>smUrl(p.id+".html")).join("\n")+`\n</urlset>`;
@@ -3621,6 +3645,7 @@ fs.writeFileSync(path.join(OUT,"ny","deep.json"), JSON.stringify(NY_DEEP));
 fs.mkdirSync(path.join(OUT,"tj"),{recursive:true});
 Object.keys(TOJEONG).forEach(k=>fs.writeFileSync(path.join(OUT,"tj",k+".json"), JSON.stringify(TOJEONG[k])));
 DREAM.forEach(c=>fs.writeFileSync(path.join(OUT,"dream-"+c.id+".html"), dreamCatPage(c)));
+DREAM_DEEP.forEach(d=>fs.writeFileSync(path.join(OUT,"dream-"+d.k+".html"), dreamDeepPage(d)));
 pubMeta.forEach(t=>fs.writeFileSync(path.join(OUT,t.id+".html"), toolPage(t)));
 STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), starPage(s,i)));
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
