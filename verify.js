@@ -1328,6 +1328,9 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   { const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
     t("내일의 운세: 워커가 /tomorrow.html 을 다음 날 파일(off -1)로 #tomorrow-sv 에 끼우고, wrangler 가 먼저 워커로 보내며, 빌드가 날짜 파일에 tomorrow 묶음과 페이지를 만든다",
       [w.includes('pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv")'), wr.includes('"/tomorrow.html"'), bs.includes("out.tomorrow = "), bs.includes('fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());'), bs.includes('<div id="tomorrow-sv">')].join(","), "true,true,true,true,true"); }
+  { const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8");
+    t("주간·이달의 운세: 워커가 weekly·monthly 를 그날 파일의 week·month 묶음으로 끼우고, wrangler 가 먼저 받고, 빌드가 날짜 파일에 묶음과 두 페이지를 만든다",
+      [w.includes('pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv")'), w.includes('pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv")'), wr.includes('"/weekly.html", "/monthly.html"'), bs.includes('week: periodBlock("week", dt), month: periodBlock("month", dt)'), bs.includes('fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));'), bs.includes('fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));')].join(","), "true,true,true,true,true,true"); }
   t("2027 시즌 배선: 원고가 없으면 빌드가 멈추고, 위젯은 content_samjae.js 의 것을 쓴다", [bs.includes('throw new Error("년생별 2027 원고 없음: "'), bs.includes("const SAMJAE_JS = SAMJAE.widgetScript(NYB.Y0, NYB.Y1);")].join(","), "true,true");
   t("2027 시즌: 원고 파이프라인(tools/newyear2027)이 리포에 있다", ["make_inputs.js", "STYLE_NY.md", "ny_check.js", "merge_ny.js", "README.md"].every(f => fs.existsSync("tools/newyear2027/" + f)), true); }
 // ── 사주 결과 '한 장 요약'(sjSumHtml) · 상위 N%(SJ_PCT) — 표는 실제 분포여야 하고, 카드는 그려져야 한다 ──

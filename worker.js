@@ -25,6 +25,8 @@ export default {
     const tf = pathname.match(TODAY_RE);
     if (tf) return todayFortune(req, env, tf[1]);
     if (pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv");
+    if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
+    if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
