@@ -2252,8 +2252,8 @@ function mansePage(p){
     noindex: !MANSE_KEEP(p),
     crumb:`${p.y}년 ${p.mo}월 만세력`,
     learn: learnMore(`${p.y}년 ${p.mo}월의 연주와 월주를 읽는 순서는 1강, 달이 절기(${jeol.name})에서 바뀌는 이유는 4강, 해마다 바뀌는 큰 흐름과 월운은 15강에서 배웁니다.`, [1, 4, 15]),
-    title:`${p.y}년 ${p.mo}월 만세력 — 일진·음력·절기 | 동네보살`,
-    desc:`${p.y}년 ${p.mo}월 ${M.dim}일 전체의 일진과 음력 날짜. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
+    title:`${p.y}년 ${p.mo}월 음력 달력·만세력 — 일진·절기·손 없는 날 | 동네보살`,
+    desc:`${p.y}년 ${p.mo}월 음력 달력 — ${M.dim}일 전체의 음력 날짜와 일진, 손 없는 날. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${p.y}년 ${p.mo}월 만세력 — ${T.season}, ${T.ji}월`,
     sub:`${jeol.name} ${termAt(jeol)} · ${jung.name} ${termAt(jung)} · ${lunSpan}`,
@@ -2321,7 +2321,7 @@ function mansePage(p){
         `<p style="margin:0 0 10px">이 달의 손 없는 날은 <b>${S.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ")}</b>입니다.${wk.length ? " 그중 주말은 " + wk.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ") + "이라 이사 날짜로 먼저 찾는 사람이 많습니다." : " 이 달에는 주말에 드는 손 없는 날이 없습니다."}</p>`+
         `<div class="exbox" style="margin-top:0">`+S.map(x => `<div class="row"><span>${p.mo}월 ${x.d}일 (${WDAY[x.w]})</span><b>${lunOf(x.lun)} · ${x.ko}일</b></div>`).join("")+`</div>`+
         `<p style="color:var(--muted);font-size:13px;line-height:1.75;margin:10px 0 0">'손'은 날마다 방위를 옮겨 다니며 사람의 일을 방해한다고 여겨진 존재입니다. 민간에서는 음력 날짜 끝자리가 9와 0인 날에는 손이 하늘로 올라가 어느 방위에도 없다고 보아, 이사·개업·혼례 날짜를 이 날로 잡아 왔습니다. 풍습이니 참고로만 보세요. 수요가 몰려 이삿짐 비용이 오르는 날이기도 합니다.</p>`+
-        `<p style="margin:12px 0 0">휴대폰 달력에 넣어 두면 손 없는 날이 해마다 저절로 보입니다 — <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 구독</a> · <a href="${ICS_TERMS.replace("https://", "webcal://")}">절기·명절 구독</a></p></section>`; })()+
+        `<p style="margin:12px 0 0">휴대폰 달력에 넣어 두면 손 없는 날이 해마다 저절로 보입니다 — <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 구독</a> · <a href="${ICS_TERMS.replace("https://", "webcal://")}">절기·명절 구독</a> · 여러 달을 한 번에 보려면 <a href="sonless.html">손 없는 날 달력</a></p></section>`; })()+
       `<section class="guide"><h2>${p.mo}월은 사주에서 ${T.ji}월 — 이 달에 태어난 사람</h2>`+
       `<div class="intro" style="margin-top:0">${para(T.body)}</div></section>`+
 
