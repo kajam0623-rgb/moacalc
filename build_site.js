@@ -1595,14 +1595,22 @@ function starPage(s, i){
     related:["horoscope","stargunghap","todayfortune","saju"]});
 }
 
+// 띠 페이지 나이·년생(2026-10-08) — 네이버 'OO띠 년생' 띠마다 월 4천~1만 5천, 'OO띠 나이' 4천~1만 5천. 계산은 띠 계산기(content_tti.js)와 같다
+const zoYears = i => { const a = []; for (let y = 1936; y <= TTI_NOW; y++) if (((y - 4) % 12 + 12) % 12 === i) a.push(y); return a; };
+function zoAgeTable(z, i) {
+  const rows = zoYears(i).reverse().map(y => { const f = TTIO.yearInfo(y);
+    return `<tr><th scope="row">${y}년생</th><td>${f.gz}년(${f.han}) · ${f.color} ${f.animal}</td><td>만 ${TTI_NOW - y}세</td><td>${y >= NYB.Y0 && y <= NYB.Y1 ? `<a href="${nybUrl(y)}">2027년 운세</a>` : ""}</td></tr>`; }).join("");
+  return `<section class="guide"><h2>${z.ko}띠 나이·년생표 (${TTI_NOW}년 기준)</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">년생</th><th scope="col">간지</th><th scope="col">${TTI_NOW}년 나이</th><th scope="col">년생별</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+    `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">나이는 생일이 지난 뒤의 만 나이입니다. 생일 전이면 한 살을 빼세요. 1월~2월 초(입춘 전)에 태어났다면 앞 해의 띠입니다. 다른 띠까지 한 표로 보려면 <a href="tti.html">띠 순서·띠 계산기</a>를 보세요.</p></section>`;
+}
 function zodiacPage(z, i){
   return seoPage({
     crumb:`${z.ko}띠`,
     learn: learnMore(`${z.ko}띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
-    title:`${z.ko}띠 운세·성격·궁합 — 2027 정미년 | 동네보살`,
-    desc:`${z.ko}띠(${z.ji}) 성격과 직업 적성, 삼합·육합·충으로 보는 띠 궁합. 오늘의 ${z.ko}띠 운세와 2027 정미년·2026 병오년 흐름.`,
+    title:`${z.ko}띠 운세·나이·년생·성격·궁합 — 2027 정미년 | 동네보살`,
+    desc:`${z.ko}띠는 ${zoYears(i).filter(y => y >= 1960).join("·")}년생입니다. 오늘의 ${z.ko}띠 운세와 년생별 2026년 나이표, ${z.ko}띠(${z.ji}) 성격, 삼합·육합·충으로 보는 궁합, 2027 정미년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
-    h1:`${z.ko}띠 — 성격·연애·궁합·오늘의 운세`,
+    h1:`${z.ko}띠 — 오늘의 운세·나이·성격·궁합`,
     sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
     parent:"zodiacfortune.html", parentName:"띠별 운세",
     tool:"zodiacfortune", preset:String(i),
@@ -1611,6 +1619,7 @@ function zodiacPage(z, i){
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
+      zoAgeTable(z, i)+
       `<div class="intro">${bodyCut("zoc-"+z.en, z.ko+"띠 상징")}${para(z.intro)}</div>`+
       `<section class="guide"><h2>${z.ko}띠의 연애</h2><div class="intro" style="margin-top:0">${para(z.love)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 일과 적성</h2><div class="intro" style="margin-top:0">${para(z.work)}</div></section>`+
@@ -1622,6 +1631,7 @@ function zodiacPage(z, i){
       `<p style="margin:10px 0 0"><b>${z.ko}띠 년생별 2027년 운세</b> — ${NYB.YEARS.filter(y => ((y - 4) % 12 + 12) % 12 === i).map(y => `<a href="${nybUrl(y)}">${y}년생</a>`).join(" · ")} · <a href="samjae.html">삼재 계산기</a> · <a href="tti.html">띠 순서·나이표</a></p></div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 2026 병오년</h2><div class="intro" style="margin-top:0">${para(z.y2026)}</div></section>`,
     faq:[
+      [`${z.ko}띠는 몇 년생인가요?`,`${zoYears(i).filter(y => y >= 1948).map(y => `${y}년생(2026년 만 ${TTI_NOW - y}세)`).join(", ")}이 ${z.ko}띠입니다. 1월이나 2월 초(입춘 전)에 태어났다면 앞 해의 띠일 수 있습니다.`],
       [`${z.ko}띠와 잘 맞는 띠는?`,`삼합인 ${z.match.best.join("와 ")}, 육합인 ${z.match.hap}가 대표적입니다. ${z.match.why}`],
       [`${z.ko}띠가 조심할 띠는?`,`충 관계인 ${z.match.hard.join("와 ")}입니다. ${z.match.hardWhy}`],
       [`${z.ko}띠에게 2027년은 어떤 해인가요?`,z.y2027.split("\n")[0].trim()],
@@ -3326,6 +3336,8 @@ const extraCss = `
 .cpb{margin:36px 0 8px;text-align:center;}
 .cpb.cpt{margin:0 0 20px;}
 .cpb.cpmid{margin:28px 0;}
+.sect{flex-wrap:wrap;}
+.sect p{flex:1 1 200px;min-width:0;}
 .cpe img{width:300px;}
 .cpr div{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:396px;margin:0 auto;}
 .cpr img{width:100%;border-radius:8px;}
@@ -3750,10 +3762,12 @@ function cpMid(m, f) {
     if (before.trim() && !CP_BLOCK_END.test(before.slice(-300))) continue;
     at.push(i);
   }
-  const n = at.length;
-  const picks = new Set(n >= 4 ? [at[Math.floor(n / 3)], at[Math.floor(2 * n / 3)]] : n >= 2 ? [at[Math.floor(n / 2)]] : []);
+  // 사용자 2026-10-08 "광고를 중간중간 넣어줘" — 후보 2개마다 하나, 최대 4개를 고르게 벌려 넣는다(2~3→1, 4~5→2, 6~7→3, 8+→4)
+  const n = at.length, k = Math.min(4, Math.floor(n / 2));
+  const picks = new Set(Array.from({ length: k }, (_, j) => at[Math.floor((j + 1) * n / (k + 1))]));
   const h = parseInt(hash8(f), 16), at2 = [...picks].sort((x, y) => x - y);
-  const blocks = at2.length === 2 ? [cpEvent(h), cpRow(h)] : [cpRow(h)];
+  // 하나면 상품 줄, 여럿이면 기획전·상품 줄을 번갈아 — 같은 쪽에서 겹치지 않게 시작 위치를 민다
+  const blocks = at2.length === 1 ? [cpRow(h)] : at2.map((_, j) => j % 2 === 0 ? cpEvent(h + j / 2) : cpRow(h + 3 * ((j - 1) / 2)));
   for (let k = at2.length - 1; k >= 0; k--) m = m.slice(0, at2[k]) + blocks[k] + m.slice(at2[k]);
   return m;
 }
