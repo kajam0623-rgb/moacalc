@@ -1108,6 +1108,7 @@ ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보
  : t.id==="horoscope" ? '<div id="today-sv"></div><section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 별자리 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>에서 미리 볼 수 있습니다.</p></section>'
  : t.id==="zodiacfortune" ? '<div id="today-sv"></div><section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 띠별 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>, 띠 순서와 나이표는 <a href="tti.html">띠 계산기</a>, 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
  : t.id==="newyear" ? '<section class="guide" id="by-year"><h2>태어난 해로 보는 2027년 운세</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">1950년생부터 2009년생까지 60갑자 한 바퀴를 한 해씩 풀었습니다. 태어난 해만으로 보는 큰 흐름이고, 위에 생년월일을 넣으면 내 사주로 본 2027년이 나옵니다. 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서 확인하세요.</p>'+nybGrid()+'</section>'
+ : t.id==="gunghap" ? '<section class="guide"><h2>다른 방법으로 보는 궁합</h2><div class="sibs"><a href="mbti.html">MBTI 궁합</a><a href="tti-gunghap.html">띠 궁합</a><a href="namematch.html">이름 궁합</a><a href="stargunghap.html">별자리 궁합</a></div></section>'
  : t.id==="tojeong" ? '<section class="guide"><h2>2027 정미년 함께 보기</h2>'+SEASON_LINKS+'</section>'
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
@@ -1877,6 +1878,47 @@ function sonlessPage() {
       ["손 없는 날이 아니면 이사하면 안 되나요?", "그렇지 않습니다. 손 없는 날은 민간 풍습이고, 요즘은 비용과 일정에 맞춰 평일이나 다른 날에 이사하는 집도 많습니다. 마음이 쓰인다면 손 없는 날을 고르고, 형편이 안 되면 편한 날을 고르셔도 됩니다."]],
     sibTitle: "날짜·만세력 함께 보기", sibs: `<div class="sibs"><a href="manse.html">무료 만세력</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a><a href="manse-${months[0][0]}-${String(months[0][1]).padStart(2, "0")}.html">이번 달 만세력</a><a href="todayfortune.html">오늘의 운세</a></div>`,
     related: ["manse", "lunar", "iljin", "todayfortune"] });
+}
+
+// ── MBTI 궁합(mbti.html, 2026-10-09) — 네이버 'MBTI궁합' 2.3만 + 'MBTI궁합표' 2천 + 유형별 'ISFJ궁합' 등 1~2천씩. 256쌍을 한 쪽 도구·표로.
+const MBTI = require("./content_mbti.js");
+function mbtiPage() {
+  const K = Object.keys(MBTI.TYPES);
+  const opts = K.map(k => `<option value="${k}">${k}</option>`).join("");
+  const cls = s => s >= 93 ? "mb4" : s >= 88 ? "mb3" : s >= 83 ? "mb2" : "mb1";
+  const grid = `<div class="sjt-wrap"><table class="sjt mbgrid"><thead><tr><th scope="col"></th>${K.map(k => `<th scope="col">${k}</th>`).join("")}</tr></thead><tbody>` +
+    K.map(a => `<tr><th scope="row">${a}</th>${K.map(b => { const s = MBTI.score(a, b); return `<td class="${cls(s)}">${s}</td>`; }).join("")}</tr>`).join("") + `</tbody></table></div>`;
+  const perType = K.map(a => { const sc = K.map(b => [b, MBTI.score(a, b)]).sort((x, y) => y[1] - x[1]);
+    const top = sc.filter(x => x[1] === sc[0][1]).map(x => x[0]), grow = sc.filter(x => x[1] === sc[sc.length - 1][1]).map(x => x[0]);
+    return `<details id="${a.toLowerCase()}"><summary><b>${a} 궁합</b> — ${MBTI.TYPES[a]}</summary><p>${a}와 가장 잘 통하는 유형은 <b>${top.join(", ")}</b>(${sc[0][1]}점)입니다. 보는 세상(${a[1]})이 같고 나머지 성향은 서로 채워 주는 짝입니다. 서로 다른 점이 많아 맞춰 가며 크는 유형은 ${grow.join(", ")}(${sc[sc.length - 1][1]}점)입니다. 같은 ${a}끼리는 ${MBTI.score(a, a)}점으로 말하지 않아도 통하는 부분이 많습니다.</p></details>`; }).join("");
+  const data = JSON.stringify({ T: MBTI.TYPES, D: MBTI.DIM, B: MBTI.BANDS });
+  const js = `<script>(function(){var M=${data};${MBTI.score.toString()}function band(s){for(var i=0;i<M.B.length;i++)if(s>=M.B[i][0])return M.B[i]}` +
+    `var A=document.getElementById("mba"),B=document.getElementById("mbb"),O=document.getElementById("mbout");function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}` +
+    `function show(push){var a=A.value,b=B.value;if(!M.T[a]||!M.T[b])return;var s=score(a,b),bd=band(s),h='<div class="res"><span>'+a+' × '+b+'</span><b>'+s+'점 · '+bd[1]+'</b></div><p style="margin:10px 0">'+bd[2]+'</p>';` +
+    `for(var i=0;i<4;i++){var d=M.D[i],same=a[i]===b[i];h+='<div class="exbox" style="margin-top:8px"><b>'+d.name+' — '+(same?'같은 '+a[i]:a[i]+' · '+b[i])+'</b><p style="margin:6px 0 0">'+esc(same?d.same[a[i]]:d.diff)+'</p></div>'}` +
+    `var url=location.origin+location.pathname+"?a="+a+"&b="+b;h+='<button type="button" class="ttibtn" id="mbshare">이 궁합 친구에게 보내기</button>';O.innerHTML=h;` +
+    `document.getElementById("mbshare").onclick=function(){var t=a+" × "+b+" MBTI 궁합 "+s+"점("+bd[1]+") — 동네보살",bt=this;try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"share_click"}))}catch(e){}if(navigator.share)navigator.share({title:"MBTI 궁합",text:t,url:url}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(t+" "+url).then(function(){bt.textContent="복사됨! 카톡에 붙여넣으세요"})};` +
+    `if(push&&history.replaceState)history.replaceState(null,"","?a="+a+"&b="+b);try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"mbti"}))}catch(e){}}` +
+    `document.getElementById("mbgo").onclick=function(){show(1)};var q=new URLSearchParams(location.search),qa=(q.get("a")||"").toUpperCase(),qb=(q.get("b")||"").toUpperCase();if(M.T[qa]&&M.T[qb]){A.value=qa;B.value=qb;show(0)}})();</script>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "MBTI 궁합", date: "2026-10-09",
+    title: "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI | 동네보살",
+    desc: "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자(E·I, S·N, T·F, J·P)씩 풀어 드립니다. 16×16 MBTI 궁합표와 INFP·ISFJ·ENFP 등 유형별 잘 맞는 MBTI도 한눈에.",
+    url: `${DOMAIN}/mbti.html`, img: "img/tool/h-gunghap.webp", hero: "img/tool/h-gunghap.webp",
+    h1: "MBTI 궁합 — 우리 둘은 몇 점일까", sub: "16유형 × 16유형 · 네 글자씩 비교 · 공유 링크로 친구와 같이",
+    parent: "gunghap.html", parentName: "궁합", tool: "gunghap", noTool: true,
+    tags: ["MBTI 궁합", "MBTI 궁합표", "INFP 궁합", "ISFJ 궁합", "ENFP 궁합", "INFJ 궁합", "ISTJ 궁합", "커플 궁합"],
+    body: `<style>.mbgrid th,.mbgrid td{padding:4px 5px;font-size:11.5px;text-align:center}.mbgrid .mb4{background:#dbe5ff;font-weight:700}.mbgrid .mb3{background:#e8efff}.mbgrid .mb2{background:#f4f6fb}#mbw select{flex:1;min-width:0;height:48px;font-size:17px;border:1px solid var(--line);border-radius:10px;padding:0 8px;background:var(--card,#fff);color:inherit}.mbper details{border-bottom:1px solid var(--line);padding:8px 0}.mbper p{margin:8px 0 0}@media (prefers-color-scheme:dark){.mbgrid .mb4{background:#23305a}.mbgrid .mb3{background:#1c2644}.mbgrid .mb2{background:#171d30}}</style>` +
+      `<div class="sjw" id="mbw"><h2>MBTI 궁합 보기</h2><label for="mba">나와 상대의 MBTI</label><div class="sjw-row"><select id="mba" aria-label="나의 MBTI">${opts.replace('value="INFP"', 'value="INFP" selected')}</select><select id="mbb" aria-label="상대의 MBTI">${opts.replace('value="ENFJ"', 'value="ENFJ" selected')}</select><button type="button" id="mbgo">궁합 보기</button></div>` +
+      `<p class="sjw-note">고른 값은 이 화면에서만 계산하고 서버로 보내지 않습니다.</p><div id="mbout" aria-live="polite"></div></div>` + js +
+      sec("MBTI 궁합 보는 법 — 네 글자 비교", para(`MBTI 궁합은 두 사람의 네 글자를 하나씩 맞대어 봅니다. 가장 크게 보는 건 둘째 글자(S·N)입니다. 같은 세상을 보는 두 사람은 대화가 쉽게 통하기 때문입니다.\n나머지 세 글자(E·I, T·F, J·P)는 같으면 편하고, 다르면 서로 채워 준다고 봅니다. 그래서 둘째 글자가 같고 나머지가 다른 짝이 가장 높은 점수(97점)를 받습니다.\n점수는 79점에서 97점 사이로만 나옵니다. 낮은 점수는 안 맞는다는 뜻이 아니라, 서로 다른 점이 많아 배울 게 많다는 뜻입니다.`)) +
+      `<section class="guide"><h2>MBTI 궁합표 — 16×16 점수</h2>${grid}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">진한 칸일수록 잘 통하는 짝입니다(93점 이상 천생연분 결, 88점 이상 척척 맞는 사이, 83점 이상 배워 가며 크는 사이).</p></section>` +
+      `<section class="guide mbper"><h2>유형별 MBTI 궁합 — 잘 맞는 유형</h2>${perType}</section>` +
+      sec("생년월일로도 궁합 보기", `<p style="margin-bottom:10px">MBTI는 성격 선호로, 사주 궁합은 두 사람의 생년월일로 봅니다. <a href="gunghap.html">사주 궁합</a>, 태어난 해로 보는 <a href="tti-gunghap.html">띠 궁합</a>, 이름 획수로 보는 <a href="namematch.html">이름 궁합</a>, <a href="stargunghap.html">별자리 궁합</a>도 함께 보면 이야깃거리가 많아집니다.</p>`),
+    faq: MBTI.FAQ,
+    sibTitle: "궁합 함께 보기", sibs: `<div class="sibs"><a href="gunghap.html">사주 궁합</a><a href="tti-gunghap.html">띠 궁합</a><a href="namematch.html">이름 궁합</a><a href="stargunghap.html">별자리 궁합</a></div>`,
+    related: ["gunghap", "namematch", "stargunghap", "saju"] });
 }
 
 // ── 띠 궁합: 허브 1 + 띠별 12 + 짝 78 (content_ttigunghap.js 의 관계표와 원고) ──
@@ -3262,7 +3304,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3316,6 +3358,10 @@ ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z
 - [삼재 계산기 — 2027·2028 삼재띠](${DOMAIN}/samjae.html): 2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재, 2025~2027의 마지막 해), 2028년은 호랑이띠·말띠·개띠(들삼재, 2028~2030). 띠 셋씩 네 무리마다 12년에 3년씩 든다. 해의 경계는 입춘.
 - 년생별 2027년 운세(60): 1950~2009년생을 한 해씩 풀었다. 주소는 ${DOMAIN}/newyear-출생연도.html 형식이다(예: newyear-1990.html). 페이지마다 그해 간지·띠·2027년 만 나이·정미년과 띠의 관계·삼재 여부·띠가 바뀌는 입춘 시각이 계산되어 있다. 태어난 해만으로 본 큰 흐름이며, 개인 풀이는 생년월일로 보는 신년운세가 따로 있다.
 ${NYB.YEARS.map(y=>{const f=NYB.facts(y);return `- [${y}년생 2027년 운세](${DOMAIN}/${nybUrl(y)}): ${f.ko}(${f.han})년생 ${f.animal} · 2027년 만 ${f.age[1]}세 · ${f.stem[1]}${f.samjae?" · "+f.samjae:""}`;}).join("\n")}
+
+## MBTI 궁합
+
+- [MBTI 궁합 — 16유형 궁합표](${DOMAIN}/mbti.html): 두 사람의 MBTI 네 글자를 하나씩 비교해 점수(79~97)와 잘 통하는 점·맞춰 갈 점을 보여 준다. 둘째 글자(S·N)가 같으면 +20, 다르면 +8, 나머지 셋은 다르면 +9·같으면 +7. 16×16 궁합표와 유형별 잘 맞는 MBTI. 재미용이며 과학적 예측이 아니다.
 
 ## 띠별 궁합 (13) — 열두 띠 궁합표와 띠마다 짝별 풀이(짝 78편은 각 띠 페이지에서 이어진다)
 
@@ -3750,6 +3796,7 @@ for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.g
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
+fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
@@ -3895,6 +3942,7 @@ const rssRows = [
   [DOMAIN + "/weekly.html", "주간 운세 — 이번 주 띠별·별자리 운세", "이번 주 12띠·12별자리의 평균 점수와 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀝니다."],
   [DOMAIN + "/monthly.html", "이달의 운세 — 이번 달 띠별·별자리 운세", "이번 달 12띠·12별자리의 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀝니다."],
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
+  [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
   [DOMAIN + "/samjae.html", "삼재 계산기 — 2027 삼재띠·2028 삼재띠", "2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년은 호랑이띠·말띠·개띠(들삼재). 태어난 해로 삼재 연도를 계산합니다."],
@@ -3918,7 +3966,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 66);
+].slice(0, 120 + 67);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
