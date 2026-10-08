@@ -4078,6 +4078,16 @@ if (fs.existsSync(IMG_SRC)) {
   })(IMG_SRC, path.join(OUT,"img"));
   console.log("   이미지 복사:", n, "개");
 }
+{ // 공유 미리보기: 카카오톡 스크랩은 JPG·PNG만 읽는다 → og:image 의 webp 를 img/ogj/ 의 같은 경로 JPG 로(없으면 node tools/og_jpg.js)
+  let n = 0, miss = 0;
+  for (const f of fs.readdirSync(OUT)) if (f.endsWith(".html")) {
+    const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
+    const h2 = h.replace(/(property="og:image" content="https:\/\/dongnebosal\.com\/img\/)([^"]+)\.webp"/, (m, a, rel) =>
+      fs.existsSync(path.join(IMG_SRC, "ogj", rel + ".jpg")) ? (n++, `${a}ogj/${rel}.jpg"`) : (miss++, m));
+    if (h2 !== h) fs.writeFileSync(p, h2);
+  }
+  console.log("   공유 그림 JPG:", n, "쪽", miss ? `· JPG 없음 ${miss}쪽(node tools/og_jpg.js)` : "");
+}
 
 console.log("   SEO 개별 페이지:", STAR_PAGES.length, "별자리 +", ZODIAC_PAGES.length, "띠 +", ILGAN_PAGES.length, "일간 +", SIPSEONG_PAGES.length, "십성 +", TAROT_PAGES.length, "타로 +", ILJIN_PAGES.length, "일진(+달력 1) +", ILJU_PAGES.length, "일주 +", MANSE_PAGES.length, "월력");
 console.log("   띠 궁합: 허브 1 + 띠별", TTI.JI.length, "+ 짝", TTI.PAIR_LIST.length);
