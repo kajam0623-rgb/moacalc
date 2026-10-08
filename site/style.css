@@ -764,6 +764,12 @@
     .share-btn,.save-btn,.invite-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
     @page{margin:14mm}
   }
+.cpx{font-size:14px;font-weight:700;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;margin:0 0 14px;}
+.cpb{margin:36px 0 8px;text-align:center;}
+.cpl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
+.cpb img{display:block;max-width:100%;height:auto;margin:0 auto;}
+.cpm{display:none;}
+@media (max-width:760px){.cpw{display:none;}.cpm{display:block;}}
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
 .hero2{position:relative;}
 /* 캐릭터는 로고 줄(브랜드·다크 모드 버튼) 바로 아래 제목 옆에 앉힌다. 맨 위(top:0)에 걸어 두면 폰 폭에서 다크 모드 버튼과 겹쳤다.

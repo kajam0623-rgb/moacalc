@@ -3027,7 +3027,7 @@ const BUILD_DAY = KST_NOW.toISOString().slice(0,10);
 // 해시와 날짜는 lastmod.json 에 남긴다. 사이트맵 문자열은 페이지를 다 쓴 뒤 채운다.
 // 전 페이지 공통 문구의 "자동 검증 N개"는 테스트가 늘 때마다 바뀌므로 해시에서 뺀다.
 const LASTMOD_FILE = path.join(__dirname, "lastmod.json");
-const pageText = html => html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
+const pageText = html => html.replace(/<!--cp-->[\s\S]*?<!--\/cp-->/g, " ").replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ")
   .replace(/<[^>]+>/g, " ").replace(/자동 검증 \d+개/g, "자동 검증 N개").replace(/\s+/g, " ")
   .replace(" · 문의 " + CONTACT_EMAIL, "").trim();   // 바닥글 문의 줄은 전 페이지 공통이라 lastmod 해시에서 뺀다
 const smUrl = p => `<url><loc>${DOMAIN}/${p}</loc><lastmod>@@LASTMOD:${p}@@</lastmod></url>`;
@@ -3151,6 +3151,12 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `
+.cpx{font-size:14px;font-weight:700;color:#9a3412;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 12px;margin:0 0 14px;}
+.cpb{margin:36px 0 8px;text-align:center;}
+.cpl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
+.cpb img{display:block;max-width:100%;height:auto;margin:0 auto;}
+.cpm{display:none;}
+@media (max-width:760px){.cpw{display:none;}.cpm{display:block;}}
 .hero2 .hero-h{margin-top:14px;word-break:keep-all;}
 .hero2{position:relative;}
 /* 캐릭터는 로고 줄(브랜드·다크 모드 버튼) 바로 아래 제목 옆에 앉힌다. 맨 위(top:0)에 걸어 두면 폰 폭에서 다크 모드 버튼과 겹쳤다.
@@ -3527,6 +3533,15 @@ polishLandmarks();
    약관·처리방침에는 광고 로더를 싣지 않는다. 게시자 정책: 이동용·내용 없는 화면, 부가 가치 없는 자동 생성 화면 광고 금지 */
 // iljin.html 은 정적 글이 933자뿐이다(오늘 일진은 화면에서 계산) — 얇은 화면으로 잡힐 수 있어 같이 뺀다
 const NO_AD = new Set(["dict.html", "dream.html", "diary.html", "terms.html", "privacy.html", "404.html", "iljin.html"]);
+/* 쿠팡 파트너스 카테고리 배너(로켓 가전/디지털, 2026-10-08) — 애드센스를 싣는 쪽에만, 한 쪽에 하나(본문 끝).
+   쿠팡 '경제적 이해관계 표시 가이드'(공지 160): 본문 첫 부분에 확정 문구, 배너 아래 표기는 위반. 스크립트·iframe 없는 HTML 태그판.
+   폰 320x100·넓은 화면 728x90, 숨긴 쪽은 loading=lazy 라 받지 않는다. <!--cp--> 구간은 lastmod 해시에서 뺀다 */
+const CP_TOP = `<!--cp--><p class="cpx">이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p><!--/cp-->`;
+const CP_BANNER = `<!--cp--><aside class="cpb" aria-label="광고"><span class="cpl">광고 · 쿠팡 파트너스</span>`
+  + `<a class="cpw" href="https://link.coupang.com/a/hFE5DWGG1k" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
+  + `<img src="https://ads-partners.coupang.com/banners/1036898?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1036898&amp;w=728&amp;h=90" width="728" height="90" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a>`
+  + `<a class="cpm" href="https://link.coupang.com/a/hFFbBDIsJF" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
+  + `<img src="https://ads-partners.coupang.com/banners/1036987?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1036987&amp;w=320&amp;h=100" width="320" height="100" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a></aside><!--/cp-->`;
 function placeAds() {
   const AD = ADSENSE_CLIENT ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : "";
   let on = 0, off = 0;
@@ -3535,7 +3550,12 @@ function placeAds() {
     const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
     if (!h.includes("@@ADS@@")) continue;
     const skip = NO_AD.has(f) || /<meta name="robots" content="noindex/.test(h.slice(0, h.indexOf("</head>")));
-    fs.writeFileSync(p, h.replace("@@ADS@@", skip ? "" : AD));
+    let out = h.replace("@@ADS@@", skip ? "" : AD);
+    if (!skip && AD) {
+      if ((out.match(/<main id="main">/g) || []).length !== 1 || (out.match(/<\/main>/g) || []).length !== 1) throw new Error("쿠팡 배너: main 이 하나가 아님 " + f);
+      out = out.replace('<main id="main">', '<main id="main">' + CP_TOP).replace("</main>", CP_BANNER + "</main>");
+    }
+    fs.writeFileSync(p, out);
     skip ? off++ : on++;
   }
   console.log("   광고 로더: " + on + "쪽에 싣고 " + off + "쪽은 뺌(검색 제외·목록·일기·약관)");
