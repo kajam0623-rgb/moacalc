@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1108,7 +1108,7 @@ ${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보
  : t.id==="horoscope" ? '<div id="today-sv"></div><section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 별자리 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>에서 미리 볼 수 있습니다.</p></section>'
  : t.id==="zodiacfortune" ? '<div id="today-sv"></div><section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 띠별 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>, 띠 순서와 나이표는 <a href="tti.html">띠 계산기</a>, 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
  : t.id==="newyear" ? '<section class="guide" id="by-year"><h2>태어난 해로 보는 2027년 운세</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">1950년생부터 2009년생까지 60갑자 한 바퀴를 한 해씩 풀었습니다. 태어난 해만으로 보는 큰 흐름이고, 위에 생년월일을 넣으면 내 사주로 본 2027년이 나옵니다. 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서 확인하세요.</p>'+nybGrid()+'</section>'
- : t.id==="gunghap" ? '<section class="guide"><h2>다른 방법으로 보는 궁합</h2><div class="sibs"><a href="mbti.html">MBTI 궁합</a><a href="tti-gunghap.html">띠 궁합</a><a href="namematch.html">이름 궁합</a><a href="stargunghap.html">별자리 궁합</a></div></section>'
+ : t.id==="gunghap" ? '<section class="guide"><h2>다른 방법으로 보는 궁합</h2><div class="sibs"><a href="love.html">오늘의 연애운</a><a href="mbti.html">MBTI 궁합</a><a href="tti-gunghap.html">띠 궁합</a><a href="namematch.html">이름 궁합</a><a href="stargunghap.html">별자리 궁합</a></div></section>'
  : t.id==="tojeong" ? '<section class="guide"><h2>2027 정미년 함께 보기</h2>'+SEASON_LINKS+'</section>'
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
@@ -1235,6 +1235,12 @@ function todayFortune(dt){
   out.zodiacfortune = `<section class="guide"><h2>오늘의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt} 오늘 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다. 띠를 누르면 오늘 풀이가 이어집니다.`) +
     `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}</li>`).join("")}</ul></section>`;
+  // 오늘의 연애운(love.html, 2026-10-09) — 띠·별자리 풀이의 애정운(love) 첫 문장을 한 쪽에 모은다. worker 가 #love-sv 에 끼운다
+  const loveLine = o => { const g = o.secs.find(s => s.k === "love"); return g ? `<br><span style="color:var(--muted);font-size:13.5px">${F.plainStr(g.p[0], {})}</span>` : ""; };
+  out.love = `<section class="guide"><h2>오늘의 띠별 연애운 — ${day}</h2>` + NOTE(`${ilTxt} 띠를 누르면 오늘 총운·재물운까지 이어집니다.`) +
+    `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b>${loveLine(x.o)}</li>`).join("")}</ul></section>` +
+    `<section class="guide"><h2>오늘의 별자리 연애운 — ${day}</h2>` + NOTE(moonTxt) +
+    `<ul>${stars.map(x => `<li><a href="star-${x.s.en}.html">${F.ST_SYM[x.i]} ${x.s.ko}</a> · <b>${x.hs.score}점 ${x.grade}</b>${loveLine(x.o)}</li>`).join("")}</ul></section>`;
   // 내일의 운세(tomorrow.html, 2026-10-08) — 이 날짜 파일을 하루 전날 worker 가 '내일'로 끼운다. 띠는 한 줄씩 풀이까지
   out.tomorrow = `<section class="guide"><h2>내일의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt.replace("오늘 일진은", "내일 일진은")} 내일 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다.`) +
@@ -1766,6 +1772,30 @@ function tomorrowPage() {
     faq: TOMORROW_FAQ,
     sibTitle: "운세 더 보기", sibs: SEASON_LINKS,
     related: ["todayfortune", "zodiacfortune", "horoscope", "saju"] });
+}
+
+// 오늘의 연애운(love.html, 2026-10-09) — 네이버 연애운 1.15만·재회운 1,750·애정운 1,680·연애운세 1,170. 글은 worker 가 날짜 파일 love 묶음을 #love-sv 에 끼운다
+function lovePage() {
+  return seoPage({
+    crumb: "오늘의 연애운", date: "2026-10-09",
+    title: "연애운 — 오늘의 연애운, 띠별·별자리별 애정운 무료 | 동네보살",
+    desc: "오늘 내 띠와 별자리의 연애운을 점수와 한 줄 풀이로 봅니다. 썸·연애·재회까지, 오늘 일진과 달의 자리로 계산해 매일 한국 시각 0시에 바뀝니다. 가입 없이 무료.",
+    url: `${DOMAIN}/love.html`, img: "img/tool/h-gunghap.webp", hero: "img/tool/h-gunghap.webp",
+    h1: "오늘의 연애운 — 띠별·별자리별", sub: "오늘 일진과 달의 자리로 보는 애정운 · 매일 0시에 바뀝니다",
+    parent: "todayfortune.html", parentName: "오늘의 운세", tool: "todayfortune", noTool: true,
+    tags: ["연애운", "오늘의 연애운", "애정운", "띠별 연애운", "별자리 연애운", "재회운", "연애운세"],
+    body: `<div class="intro">${para(`오늘 연락해도 될지, 고백이나 화해를 꺼내도 될지 궁금한 날 보는 페이지입니다. 띠별 연애운은 오늘 날짜의 일진과 띠가 맺는 관계로, 별자리 연애운은 오늘 낮 12시 달의 자리로 계산해 점수와 한 줄 풀이를 붙였습니다.
+점수는 그날 하루의 총운 점수이고, 아래 한 줄이 그중 연애 쪽 풀이입니다. 생년월일로 보는 내 몫의 애정운은 <a href="todayfortune.html">오늘의 운세</a>, 두 사람이 잘 맞는지는 <a href="gunghap.html">사주 궁합</a>과 <a href="mbti.html">MBTI 궁합</a>에서 볼 수 있습니다.`)}</div>` +
+      `<div id="love-sv"><section class="guide"><h2>오늘의 띠별·별자리 연애운</h2><p>오늘 연애운을 불러오지 못했습니다. <a href="zodiacfortune.html">띠별 운세</a>나 <a href="horoscope.html">별자리 운세</a>에서 오늘 풀이를 먼저 보세요.</p></section></div>` +
+      `<section class="guide"><h2>연애운 보는 법</h2><div class="intro" style="margin-top:0">${para(`점수가 높은 날은 먼저 연락하거나 약속을 잡기 좋은 날로, 점수가 낮은 날은 말을 아끼고 상대 이야기를 더 들어 주기 좋은 날로 읽으면 됩니다. 운세는 그날의 분위기를 짚어 주는 참고이고, 관계를 정하는 건 두 사람의 대화입니다.
+연락이 끊긴 사람과 다시 이어질지 궁금하다면 <a href="tarot.html">타로</a>에서 재회 질문으로 한 장을 뽑아 보세요. 카드마다 연애·재회에서의 뜻이 따로 풀려 있습니다.`)}</div></section>` +
+      `<section class="guide"><h2>함께 보기</h2><div class="sibs"><a href="todayfortune.html">오늘의 운세</a><a href="gunghap.html">사주 궁합</a><a href="mbti.html">MBTI 궁합</a><a href="tti-gunghap.html">띠 궁합</a><a href="tarot.html">타로</a><a href="tomorrow.html">내일의 운세</a></div></section>`,
+    faq: [["연애운은 매일 바뀌나요?", "네, 띠별 연애운은 그날의 일진이, 별자리 연애운은 그날 달의 자리가 바뀌므로 매일 한국 시각 0시에 새로 바뀝니다."],
+      ["띠 연애운과 별자리 연애운이 다르게 나와요.", "띠는 동양의 일진으로, 별자리는 서양 점성술의 달의 자리로 계산해서 서로 다르게 나올 수 있습니다. 둘 다 그날 분위기를 보는 참고이니 마음에 와닿는 쪽을 보시면 됩니다."],
+      ["내 생년월일로 연애운을 볼 수 있나요?", "네, 오늘의 운세에 생년월일을 넣으면 내 일간과 오늘 일진의 관계로 애정운을 따로 풀어 드립니다. 띠·별자리보다 한 사람 몫에 가깝습니다."],
+      ["재회운도 볼 수 있나요?", "타로에서 재회 질문으로 카드를 뽑으면 카드마다 재회에서의 뜻을 볼 수 있습니다. 두 사람이 잘 맞는지는 사주 궁합이나 띠 궁합으로 함께 보세요."]],
+    sibTitle: "운세 더 보기", sibs: SEASON_LINKS,
+    related: ["todayfortune", "gunghap", "tarot", "zodiacfortune"] });
 }
 
 // 주간·이달의 운세 페이지 — 글은 worker.js 가 그날 파일의 week·month 묶음을 #week-sv·#month-sv 에 끼운다(periodBlock)
@@ -3304,7 +3334,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3351,6 +3381,7 @@ ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z
 
 2027년은 정미(丁未)년, 붉은 양의 해다. 사주 달력으로는 2027년 입춘(2월 4일 오전 10시 46분)부터이고, 설날(음력 1월 1일)은 2월 7일이다.
 
+- [오늘의 연애운 — 띠별·별자리별](${DOMAIN}/love.html): 오늘 일진으로 본 12띠, 오늘 낮 12시 달의 자리로 본 12별자리의 총운 점수와 애정운 한 줄 풀이. 매일 한국 시각 0시에 바뀐다.
 - [주간 운세](${DOMAIN}/weekly.html): 이번 주(월~일) 12띠·12별자리 평균 점수와 가장 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀐다.
 - [이달의 운세](${DOMAIN}/monthly.html): 이번 달 12띠·12별자리 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀐다.
 - [내일의 운세 — 띠별·별자리별](${DOMAIN}/tomorrow.html): 내일 날짜의 일진으로 본 12띠 운세와 내일 낮 12시 달의 자리로 본 12별자리 운세, 점수와 한 줄 풀이. 매일 한국 시각 0시에 다음 날로 바뀐다.
@@ -3797,6 +3828,7 @@ fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
+fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
@@ -3942,6 +3974,7 @@ const rssRows = [
   [DOMAIN + "/weekly.html", "주간 운세 — 이번 주 띠별·별자리 운세", "이번 주 12띠·12별자리의 평균 점수와 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀝니다."],
   [DOMAIN + "/monthly.html", "이달의 운세 — 이번 달 띠별·별자리 운세", "이번 달 12띠·12별자리의 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀝니다."],
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
+  [DOMAIN + "/love.html", "오늘의 연애운 — 띠별·별자리별 애정운", "오늘 내 띠와 별자리의 연애운을 점수와 한 줄 풀이로 봅니다. 매일 한국 시각 0시에 바뀝니다."],
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
@@ -3966,7 +3999,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 67);
+].slice(0, 120 + 68);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
