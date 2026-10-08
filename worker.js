@@ -85,7 +85,11 @@ async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
   }
   const html = todayCache[day] && todayCache[day][key];
   if (!html) return res;
-  return new HTMLRewriter().on(sel, { element(e) { e.setInnerContent(html, { html: true }); } }).transform(res);
+  const rw = new HTMLRewriter().on(sel, { element(e) { e.setInnerContent(html, { html: true }); } });
+  // 오늘 글을 끼운 허브 두 쪽은 제목 앞에 날짜를 붙인다('10월 9일 띠별 운세 …') — 날짜로 찾는 검색과 결과 화면의 신선도
+  if (key === "zodiacfortune" || key === "horoscope") { const [, m, d] = day.split("-").map(Number);
+    rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } }); }
+  return rw.transform(res);
 }
 
 async function hit(req, env) {

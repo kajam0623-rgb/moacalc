@@ -1014,7 +1014,7 @@ const h1Override = { namematch: "이름 궁합 테스트" }; // 메뉴·카드 �
 const titleOverride = {
 todayfortune:"오늘의 운세 — 생년월일로 보는 오늘 운세 무료",
 horoscope:"별자리 운세 — 오늘·이번주 12별자리 무료",
-zodiacfortune:"띠별 운세 — 오늘의 12띠 운세 무료",
+zodiacfortune:"띠별 운세 — 오늘의 띠별 운세·12띠 오늘 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
 saju:"무료 사주풀이 — 인터넷 사주·사주 만세력",
 gunghap:"무료 사주궁합 — 사주 궁합·띠 궁합 보기",
