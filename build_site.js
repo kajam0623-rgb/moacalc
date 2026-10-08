@@ -3155,6 +3155,7 @@ const extraCss = `
 :root[data-theme="dark"] .cpx{color:#fdba74;}
 .cpb{margin:36px 0 8px;text-align:center;}
 .cpb.cpt{margin:0 0 20px;}
+.cpb.cpmid{margin:28px 0;}
 .cpl{display:block;font-size:11.5px;color:var(--muted);margin-bottom:4px;}
 .cpb img{display:block;max-width:100%;height:auto;margin:0 auto;}
 .cpm{display:none;}
@@ -3544,6 +3545,30 @@ const CP_BANNER = `<!--cp--><aside class="cpb" aria-label="광고"><span class="
   + `<img src="https://ads-partners.coupang.com/banners/1036898?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1036898&amp;w=728&amp;h=90" width="728" height="90" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a>`
   + `<a class="cpm" href="https://link.coupang.com/a/hFFbBDIsJF" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
   + `<img src="https://ads-partners.coupang.com/banners/1036987?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1036987&amp;w=320&amp;h=100" width="320" height="100" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a></aside><!--/cp-->`;
+/* 본문 중간에도(사용자 "동네보살도 배너 3~4개") — 300x250 네모를 소제목 카드 앞에.
+   h2 4개 이상이면 1/3·2/3 지점 2개, 2~3개면 가운데 1개 → 위·아래 포함 한 쪽 3~4개. h2 가 <section>/<div> 맨 앞이면 그 상자 앞에 넣는다 */
+const CP_MID = `<!--cp--><aside class="cpb cpmid" aria-label="광고"><span class="cpl">광고 · 쿠팡 파트너스</span>`
+  + `<a href="https://link.coupang.com/a/hFQaiVqSyq" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
+  + `<img src="https://ads-partners.coupang.com/banners/1037063?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1037063&amp;w=300&amp;h=250" width="300" height="250" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a></aside><!--/cp-->`;
+// 넣을 자리: h2(감싼 <section>/<div> 가 있으면 그 앞) 바로 앞이 블록 끝이어야 한다. 접힌 <details> 안·
+// 그림 옆 가로 줄(홈 소제목 줄) 안은 건너뛴다 — 안 보이거나 찌그러진다(2026-10-08 홈에서 확인)
+const CP_BLOCK_END = /<\/(?:p|ul|ol|table|div|section|figure|details|nav|h1|h3|blockquote|aside|dl|header)>\s*(?:<!--\/cp-->)?\s*$/;
+const CP_WRAP_OPEN = /<(?:section|div)\b[^>]*>\s*$/;
+function cpMid(m) {
+  const at = [];
+  for (const x of m.matchAll(/<h2[ >]/g)) {
+    let i = x.index, w;
+    while ((w = m.slice(Math.max(0, i - 300), i).match(CP_WRAP_OPEN))) i = Math.max(0, i - 300) + w.index;
+    const before = m.slice(0, i);
+    if ((before.match(/<details/g) || []).length > (before.match(/<\/details>/g) || []).length) continue;
+    if (before.trim() && !CP_BLOCK_END.test(before.slice(-300))) continue;
+    at.push(i);
+  }
+  const n = at.length;
+  const picks = new Set(n >= 4 ? [at[Math.floor(n / 3)], at[Math.floor(2 * n / 3)]] : n >= 2 ? [at[Math.floor(n / 2)]] : []);
+  for (const i of [...picks].sort((x, y) => y - x)) m = m.slice(0, i) + CP_MID + m.slice(i);
+  return m;
+}
 function placeAds() {
   const AD = ADSENSE_CLIENT ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : "";
   let on = 0, off = 0;
@@ -3556,7 +3581,8 @@ function placeAds() {
     if (!skip && AD) {
       if ((out.match(/<main id="main">/g) || []).length !== 1 || (out.match(/<\/main>/g) || []).length !== 1) throw new Error("쿠팡 배너: main 이 하나가 아님 " + f);
       // 위에도 하나(사용자 2026-10-08 "상단에도 배너 하나") — 문구 바로 밑. 한 쪽에 위·아래 두 개까지
-      out = out.replace('<main id="main">', '<main id="main">' + CP_TOP + CP_BANNER.replace('class="cpb"', 'class="cpb cpt"')).replace("</main>", CP_BANNER + "</main>");
+      const a = out.indexOf('<main id="main">') + 16, z = out.indexOf("</main>");
+      out = out.slice(0, a) + CP_TOP + CP_BANNER.replace('class="cpb"', 'class="cpb cpt"') + cpMid(out.slice(a, z)) + CP_BANNER + out.slice(z);
     }
     fs.writeFileSync(p, out);
     skip ? off++ : on++;
