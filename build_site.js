@@ -3338,7 +3338,7 @@ ${SITE_PAGES.map(p=>`- [${p.h1}](${DOMAIN}/${p.id}.html): ${p.desc.slice(0,90)}`
 
 // CSS + 페이지 전용 추가 스타일
 const extraCss = `
-.cpx{font-size:12px;color:#c2410c;margin:0 0 6px;}
+.cpx{font-size:12px;color:#c2410c;margin:0 0 6px;text-align:center;}
 :root[data-theme="dark"] .cpx{color:#fdba74;}
 .cpb{margin:36px 0 8px;text-align:center;}
 .cpb.cpt{margin:0 0 20px;}
@@ -3768,7 +3768,7 @@ const NO_AD = new Set(["dict.html", "dream.html", "diary.html", "terms.html", "p
    쿠팡 '경제적 이해관계 표시 가이드'(공지 160): 본문 첫 부분에 확정 문구, 배너 아래 표기는 위반. 스크립트·iframe 없는 HTML 태그판.
    폰 320x100·넓은 화면 728x90, 숨긴 쪽은 loading=lazy 라 받지 않는다. <!--cp--> 구간은 lastmod 해시에서 뺀다 */
 const CP_TOP = `<!--cp--><p class="cpx">이 게시물은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p><!--/cp-->`;
-const CP_BANNER = `<!--cp--><aside class="cpb" aria-label="광고"><span class="cpl">광고 · 쿠팡 파트너스</span>`
+const CP_BANNER = `<!--cp--><aside class="cpb" aria-label="광고">`
   + `<a class="cpw" href="https://link.coupang.com/a/hFE5DWGG1k" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
   + `<img src="https://ads-partners.coupang.com/banners/1036898?trackingCode=AF7904756&amp;subId=&amp;traceId=V0-301-5f9bd61900e673c0-I1036898&amp;w=728&amp;h=90" width="728" height="90" alt="쿠팡 로켓 가전/디지털" loading="lazy"></a>`
   + `<a class="cpm" href="https://link.coupang.com/a/hFFbBDIsJF" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`
@@ -3781,9 +3781,9 @@ for (const x of [...CP_WEEK.events, ...CP_WEEK.products])
   if (!x.link.startsWith("https://link.coupang.com/a/") || !/^https:\/\/\w+\.coupangcdn\.com\/image\/affiliate\//.test(x.img)) throw new Error("coupang_week.json: " + x.name);
 const cpA = x => `<a href="${esc(x.link)}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url">`;
 const cpEvent = h => { const x = CP_WEEK.events[h % CP_WEEK.events.length];
-  return `<!--cp--><aside class="cpb cpmid cpe" aria-label="광고"><span class="cpl">광고 · 쿠팡 파트너스 · 이번 주 기획전</span>${cpA(x)}<img src="${esc(x.img)}" width="300" height="300" alt="${esc(x.name)}" loading="lazy"></a></aside><!--/cp-->`; };
+  return `<!--cp--><aside class="cpb cpmid cpe" aria-label="광고"><span class="cpl">쿠팡 이번 주 기획전</span>${cpA(x)}<img src="${esc(x.img)}" width="300" height="300" alt="${esc(x.name)}" loading="lazy"></a></aside><!--/cp-->`; };
 const cpRow = h => { const ps = CP_WEEK.products;
-  return `<!--cp--><aside class="cpb cpmid cpr" aria-label="광고"><span class="cpl">광고 · 쿠팡 파트너스 · 이번 주 인기 상품</span><div>`
+  return `<!--cp--><aside class="cpb cpmid cpr" aria-label="광고"><span class="cpl">쿠팡 이번 주 인기 상품</span><div>`
     + [0, 1, 2].map(k => ps[(h + k) % ps.length]).map(x => `${cpA(x)}<img src="${esc(x.img)}" width="120" height="240" alt="${esc(x.name)}" loading="lazy"></a>`).join("")
     + `</div></aside><!--/cp-->`; };
 // 넣을 자리: h2(감싼 <section>/<div> 가 있으면 그 앞) 바로 앞이 블록 끝이어야 한다. 접힌 <details> 안·

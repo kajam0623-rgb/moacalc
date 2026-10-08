@@ -764,7 +764,7 @@
     .share-btn,.save-btn,.invite-btn,.tail-wrap,.yr-fb,.fold>summary::after{display:none!important}
     @page{margin:14mm}
   }
-.cpx{font-size:12px;color:#c2410c;margin:0 0 6px;}
+.cpx{font-size:12px;color:#c2410c;margin:0 0 6px;text-align:center;}
 :root[data-theme="dark"] .cpx{color:#fdba74;}
 .cpb{margin:36px 0 8px;text-align:center;}
 .cpb.cpt{margin:0 0 20px;}
