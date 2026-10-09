@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1965,6 +1965,61 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 신살(sinsal.html 모음 + sinsal-<en>.html 8, 2026-10-09) — 원고 content_sinsal.js. 계산은 쪽에 붙인 사주 도구(t-saju.js 의 sjSinsal)가 한다.
+// 원고의 기준표가 도구 엔진(hub.html)의 표와 어긋나면 빌드를 멈춘다(페이지 설명과 도구 결과가 달라지는 것을 막는다)
+const SINSAL = require("./content_sinsal.js");
+{ const H = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8"), grab = re => { const m = H.match(re); if (!m) throw new Error("신살 엔진 표 못 찾음 " + re); return m[1]; };
+  const norm = s => s.replace(/\s|"/g, "");
+  const eng = { cheoneul: grab(/var SJ_CHEONEUL=(\{[^;]*\});/), munchang: grab(/var SJ_MUNCHANG=(\[[^;]*\]);/), dohwa: grab(/SJ_DOHWA=(\{[^}]*\})/), yeokma: grab(/SJ_YEOKMA=(\{[^}]*\})/),
+    hwagae: grab(/SJ_HWAGAE=(\{[^}]*\})/), yangin: grab(/var SJ_YANGIN=(\{[^;]*\});/), baekho: grab(/SJ_BAEKHO=(\[[^\]]*\])/), gwaegang: grab(/SJ_GWAEGANG=(\[[^\]]*\])/) };
+  for (const k of Object.keys(eng)) { const mine = Array.isArray(SINSAL.T[k]) ? JSON.stringify(SINSAL.T[k]) : JSON.stringify(Object.fromEntries(Object.entries(SINSAL.T[k]).sort((a, b) => a[0] - b[0])));
+    const theirs = eng[k].startsWith("[") ? JSON.stringify(JSON.parse(eng[k])) : JSON.stringify(Object.fromEntries(Object.entries(Function("return " + eng[k])()).sort((a, b) => a[0] - b[0])));
+    if (norm(mine) !== norm(theirs)) throw new Error(`신살 기준표 ${k} 가 사주 도구와 다름: ${mine} vs ${theirs}`); } }
+const sinsalHref = en => SINSAL.PAGES.some(p => p.en === en) ? `sinsal-${en}.html` : `sinsal.html#${en}`;
+const sinsalName = en => (SINSAL.PAGES.find(p => p.en === en) || SINSAL.EXTRA.find(p => p.en === en)).ko;
+const SINSAL_SIBS = `<div class="sibs"><a href="sinsal.html">신살 모음</a>${SINSAL.PAGES.map(p => `<a href="sinsal-${p.en}.html">${p.ko}</a>`).join("")}</div>`;
+function sinsalPage(p) {
+  const tbl = `<div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">${p.tableHead[0]}</th><th scope="col">${p.tableHead[1]}</th></tr></thead><tbody>${p.table().map(r => `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td></tr>`).join("")}</tbody></table></div>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: p.ko, date: "2026-10-09",
+    title: p.title + " | 동네보살", desc: p.desc,
+    url: `${DOMAIN}/sinsal-${p.en}.html`, img: `img/char/sinsal-${p.en}.webp`, hero: `img/char/sinsal-${p.en}.webp`,
+    h1: `${p.ko} 뜻과 찾는 법`, sub: `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
+    parent: "sinsal.html", parentName: "신살 모음", tool: "saju",
+    tags: [p.kw, `${p.kw} 뜻`, `${p.kw} 있는 사람`, `${p.kw} 찾는 법`, "신살", "사주 신살"],
+    body: `<div class="intro">${para(p.lead)}</div>` +
+      sec(`${p.ko} 찾는 법`, `<p style="margin-bottom:10px">${p.rule}</p>${tbl}`) +
+      sec(`${p.ko} 있는 사람의 특징`, para(p.mean)) +
+      sec(`${p.ko}과 연애`, para(p.love)) + sec(`${p.ko}과 어울리는 일`, para(p.work)) +
+      sec("이렇게 써 보세요", `<ul>${p.tips.map(t => `<li>${t}</li>`).join("")}</ul>`) +
+      sec("함께 보는 신살", `<div class="sibs">${p.rel.map(en => `<a href="${sinsalHref(en)}">${sinsalName(en)}</a>`).join("")}</div><p style="color:var(--muted);font-size:13px;margin:10px 0 0">신살은 사주를 읽는 여러 관점 가운데 하나입니다. 같은 신살도 사주 전체의 흐름에 따라 다르게 드러나니 한 가지로 단정하지 마세요. 신살이 무엇인지는 <a href="learn-sinsal.html">명리학 신살 강의</a>에서 차근차근 볼 수 있습니다.</p>`),
+    faq: p.faq,
+    sibTitle: "신살 더 보기", sibs: SINSAL_SIBS,
+    related: ["saju", "gunghap", "newyear", "todayfortune"] });
+}
+function sinsalHubPage() {
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "신살 모음", date: "2026-10-09",
+    title: "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인·괴강살·백호살·홍염살 | 동네보살",
+    desc: "사주 신살 뜻을 한곳에 모았습니다. 도화살·화개살·역마살·천을귀인·문창귀인·양인살·백호살·괴강살 찾는 법과 홍염살·현침살·귀문관살·원진살까지, 생년월일로 내 신살을 바로 확인하세요.",
+    url: `${DOMAIN}/sinsal.html`, img: "img/char/sinsal-cheoneul.webp", hero: "img/char/sinsal-cheoneul.webp",
+    h1: "신살 뜻 모음 — 내 사주의 신살 찾기", sub: "생년월일을 넣으면 사주 도구가 신살 8가지를 찾아 줍니다",
+    parent: "saju.html", parentName: "사주팔자", tool: "saju",
+    tags: ["신살", "신살 뜻", "도화살", "화개살", "역마살", "천을귀인", "괴강살", "백호살", "홍염살", "현침살"],
+    body: `<div class="intro">${para(`신살(神煞)은 사주 여덟 글자 사이의 특정한 짝을 보고 붙이는 이름입니다. 도화·역마처럼 '살'이 붙은 이름이 많아 무섭게 들리지만, 요즘 명리학에서는 대부분 그 사람의 재능과 성향, 쓰임새를 짚는 말로 읽습니다.\n위 칸에 생년월일을 넣으면 동네보살 사주 도구가 천을귀인·문창귀인·도화살·역마살·화개살·양인살·백호살·괴강살 여덟 가지를 찾아 줍니다. 아래에서 신살마다 뜻과 찾는 법을 볼 수 있습니다.`)}</div>` +
+      `<section class="guide"><h2>신살 8가지 — 뜻과 찾는 법</h2>${SINSAL.PAGES.map(p => `<div class="exbox" style="margin-top:8px"><b><a href="sinsal-${p.en}.html">${p.ko}(${p.han})</a></b><p style="margin:6px 0 0">${esc(p.desc.split(". ")[0])}.</p></div>`).join("")}</section>` +
+      `<section class="guide"><h2>그 밖에 많이 찾는 신살</h2>${SINSAL.EXTRA.map(x => `<div class="exbox" id="${x.en}" style="margin-top:8px"><b>${x.ko}</b><p style="margin:6px 0 0">${x.text}</p></div>`).join("")}<p style="color:var(--muted);font-size:13px;margin:10px 0 0">이 네 가지는 유파마다 기준표가 조금씩 달라 사주 도구가 자동으로 찾지는 않습니다. 원진은 <a href="tti-gunghap.html">띠 궁합</a>에서 띠끼리의 관계로 볼 수 있습니다.</p></section>` +
+      sec("신살을 읽을 때 기억할 것", para(`신살은 사주를 읽는 여러 관점 가운데 하나일 뿐, 그 사람의 삶을 정하지 않습니다. 같은 도화도 어떤 사람에게는 인기로, 어떤 사람에게는 감성으로 드러나듯이 사주 전체의 흐름과 함께 읽어야 합니다.\n동네보살은 신살을 겁주는 말이 아니라 강점과 쓰는 법으로 풀어 드립니다. 내 사주 전체는 <a href="saju.html">무료 사주풀이</a>에서, 신살의 원리는 <a href="learn-sinsal.html">명리학 신살 강의</a>에서 볼 수 있습니다.`)),
+    faq: [["신살이란 무엇인가요?", "사주 여덟 글자 사이의 특정한 짝을 보고 붙이는 이름입니다. 요즘 명리학에서는 대부분 재능과 성향을 짚는 말로 읽습니다."],
+      ["내 사주의 신살은 어떻게 보나요?", "이 페이지 위 칸에 생년월일과 태어난 시각을 넣으면 사주 도구가 천을귀인·도화살·역마살 등 여덟 가지 신살을 찾아 보여 드립니다."],
+      ["살이 있으면 나쁜 건가요?", "그렇지 않습니다. 도화는 매력, 역마는 이동과 기회, 화개는 깊이, 괴강은 리더십처럼 대부분 강점으로 읽습니다."],
+      ["홍염살이나 현침살은 왜 자동으로 안 나오나요?", "유파마다 기준표가 달라 자동 계산에서 뺐습니다. 이 페이지에 널리 쓰는 기준을 적어 두었습니다."]],
+    sibTitle: "신살 더 보기", sibs: SINSAL_SIBS,
+    related: ["saju", "gunghap", "newyear", "todayfortune"] });
 }
 
 // ── MBTI 궁합(mbti.html, 2026-10-09) — 네이버 'MBTI궁합' 2.3만 + 'MBTI궁합표' 2천 + 유형별 'ISFJ궁합' 등 1~2천씩. 256쌍을 한 쪽 도구·표로.
@@ -3391,7 +3446,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3446,6 +3501,11 @@ ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z
 - [삼재 계산기 — 2027·2028 삼재띠](${DOMAIN}/samjae.html): 2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재, 2025~2027의 마지막 해), 2028년은 호랑이띠·말띠·개띠(들삼재, 2028~2030). 띠 셋씩 네 무리마다 12년에 3년씩 든다. 해의 경계는 입춘.
 - 년생별 2027년 운세(60): 1950~2009년생을 한 해씩 풀었다. 주소는 ${DOMAIN}/newyear-출생연도.html 형식이다(예: newyear-1990.html). 페이지마다 그해 간지·띠·2027년 만 나이·정미년과 띠의 관계·삼재 여부·띠가 바뀌는 입춘 시각이 계산되어 있다. 태어난 해만으로 본 큰 흐름이며, 개인 풀이는 생년월일로 보는 신년운세가 따로 있다.
 ${NYB.YEARS.map(y=>{const f=NYB.facts(y);return `- [${y}년생 2027년 운세](${DOMAIN}/${nybUrl(y)}): ${f.ko}(${f.han})년생 ${f.animal} · 2027년 만 ${f.age[1]}세 · ${f.stem[1]}${f.samjae?" · "+f.samjae:""}`;}).join("\n")}
+
+## 신살 (9) — 도화살·화개살·역마살·천을귀인 등
+
+- [신살 뜻 모음](${DOMAIN}/sinsal.html): 신살 8가지(사주 도구가 생년월일로 찾음)와 홍염살·현침살·귀문관살·원진살 기준표.
+${SINSAL.PAGES.map(p=>`- [${p.ko}](${DOMAIN}/sinsal-${p.en}.html): ${p.desc}`).join("\n")}
 
 ## MBTI 궁합
 
@@ -3887,6 +3947,8 @@ fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
+fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
+SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
 fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
@@ -4034,6 +4096,8 @@ const rssRows = [
   [DOMAIN + "/monthly.html", "이달의 운세 — 이번 달 띠별·별자리 운세", "이번 달 12띠·12별자리의 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀝니다."],
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
   [DOMAIN + "/love.html", "오늘의 연애운 — 띠별·별자리별 애정운", "오늘 내 띠와 별자리의 연애운을 점수와 한 줄 풀이로 봅니다. 매일 한국 시각 0시에 바뀝니다."],
+  [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
+  ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
   [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
@@ -4059,7 +4123,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 69);
+].slice(0, 120 + 78);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
