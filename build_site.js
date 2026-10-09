@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1965,6 +1965,42 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 탄생석(birthstone.html, 2026-10-09) — 네이버 탄생석 15,890. 미국 보석업계 표준 목록(1912 제정·이후 보완)을 따른다. 상징은 '전해지는 뜻'으로만 쓴다
+const BIRTHSTONE = [["가넷", "Garnet", "짙은 붉은색", "", "우정·진실·변하지 않는 마음"], ["자수정", "Amethyst", "보라색", "", "평화·성실·차분한 마음"],
+  ["아쿠아마린", "Aquamarine", "맑은 하늘색", "블러드스톤", "젊음·용기·평온"], ["다이아몬드", "Diamond", "투명", "", "사랑·순수·굳은 약속"],
+  ["에메랄드", "Emerald", "초록색", "", "행운·행복·새로운 시작"], ["진주", "Pearl", "우윳빛", "문스톤·알렉산드라이트", "건강·순수·오래가는 인연"],
+  ["루비", "Ruby", "붉은색", "", "사랑·열정·용기"], ["페리도트", "Peridot", "연두색", "스피넬·사드오닉스", "화합·부부의 행복·밝은 기운"],
+  ["사파이어", "Sapphire", "파란색", "", "지혜·성실·믿음"], ["오팔", "Opal", "무지갯빛", "투어멀린", "희망·순수·창의력"],
+  ["토파즈", "Topaz", "노란색·주황색", "시트린", "우정·희망·건강"], ["터키석", "Turquoise", "청록색", "탄자나이트·지르콘", "성공·행운·여행의 안전"]];
+function birthstonePage() {
+  const rows = BIRTHSTONE.map((b, i) => `<tr><th scope="row">${i + 1}월</th><td><b>${b[0]}</b><small>${b[1]}</small></td><td>${b[2]}</td><td>${b[4]}${b[3] ? `<br><small>함께 쓰는 돌: ${b[3]}</small>` : ""}</td></tr>`).join("");
+  const STARS = STAR_PAGES.map(s => ({ en: s.en, ko: s.ko }));
+  const js = `<script>(function(){var B=${JSON.stringify(BIRTHSTONE.map(b => [b[0], b[4], b[3]]))},S=${JSON.stringify(STARS)},R=[[1,20,10],[2,19,11],[3,21,0],[4,20,1],[5,21,2],[6,22,3],[7,23,4],[8,23,5],[9,23,6],[10,23,7],[11,22,8],[12,22,9]];` +
+    `function star(m,d){for(var i=0;i<R.length;i++){if(R[i][0]===m)return d>=R[i][1]?R[i][2]:R[(i+11)%12][2]}}var i=document.getElementById("bsd"),o=document.getElementById("bso");` +
+    `function go(){var v=(i.value||"").replace(/\\D/g,""),m,d;if(v.length===8){m=+v.slice(4,6);d=+v.slice(6,8)}else if(v.length===4){m=+v.slice(0,2);d=+v.slice(2,4)}if(!(m>=1&&m<=12&&d>=1&&d<=31)){o.innerHTML='<p class="sjw-note">생일을 0315 나 19900315 처럼 넣어 주세요.</p>';return}` +
+    `var b=B[m-1],s=S[star(m,d)];o.innerHTML='<div class="res"><span>'+m+'월 탄생석</span><b>'+b[0]+(b[2]?' (함께 쓰는 돌: '+b[2]+')':'')+'</b></div><div class="res"><span>전해지는 뜻</span><b>'+b[1]+'</b></div><div class="res"><span>내 별자리</span><b><a href="star-'+s.en+'.html">'+s.ko+'</a></b></div>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"birthstone"}))}catch(e){}}` +
+    `document.getElementById("bsgo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "탄생석", date: "2026-10-09",
+    title: "탄생석 — 1월~12월 탄생석 의미와 색, 내 생일 탄생석·별자리 | 동네보살",
+    desc: "1월 가넷, 2월 자수정, 3월 아쿠아마린, 4월 다이아몬드부터 12월 터키석까지 달마다 탄생석과 색, 전해지는 뜻을 정리했습니다. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다.",
+    url: `${DOMAIN}/birthstone.html`, img: "img/tool/h-horoscope.webp", hero: "img/tool/h-horoscope.webp",
+    h1: "탄생석 — 내 생일의 보석", sub: "1월부터 12월까지 · 색과 전해지는 뜻 · 별자리와 함께",
+    parent: "horoscope.html", parentName: "별자리 운세", tool: "horoscope", noTool: true,
+    tags: ["탄생석", "1월 탄생석", "4월 탄생석", "10월 탄생석", "12월 탄생석", "탄생석 의미", "생일 보석"],
+    body: `<div class="sjw" id="bsw"><h2>내 탄생석 찾기</h2><label for="bsd">생일</label><div class="sjw-row"><input id="bsd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 0315 또는 19900315" autocomplete="off"><button type="button" id="bsgo">탄생석 보기</button></div><p class="sjw-note">생일은 이 화면에서만 쓰고 서버로 보내지 않습니다.</p><div id="bso" aria-live="polite"></div></div>` + js +
+      `<section class="guide"><h2>1월부터 12월까지 탄생석</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">달</th><th scope="col">탄생석</th><th scope="col">색</th><th scope="col">전해지는 뜻</th></tr></thead><tbody>${rows}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">지금 널리 쓰는 목록은 1912년 미국 보석업계가 정하고 그 뒤 몇 번 보완한 표준입니다. 나라와 문화권에 따라 달마다 다른 돌을 함께 쓰기도 합니다.</p></section>` +
+      sec("탄생석은 어디서 왔나요", para(`달마다 보석을 하나씩 짝짓는 풍습은 오래전부터 이어져 왔고, 지금 우리가 쓰는 목록은 1912년 미국 보석업계가 정한 표준을 바탕으로 합니다. 그 뒤 6월 알렉산드라이트, 12월 탄자나이트처럼 함께 쓰는 돌이 더해졌습니다.\n탄생석의 뜻은 보석의 빛깔과 옛사람들의 믿음에서 나온 상징입니다. 선물을 고르거나 나를 표현하는 작은 의미로 즐기시면 좋습니다.`)) +
+      sec("생일로 더 보기", `<p style="margin-bottom:10px">태어난 날짜로 보는 성격과 오늘의 흐름은 <a href="horoscope.html">별자리 운세</a>, 태어난 해로는 <a href="tti.html">띠 계산기</a>, 생년월일 전체로는 <a href="saju.html">무료 사주풀이</a>에서 볼 수 있습니다.</p>`),
+    faq: [["4월 탄생석은 무엇인가요?", "4월 탄생석은 다이아몬드이고, 사랑과 순수, 굳은 약속을 뜻한다고 전해집니다."],
+      ["10월 탄생석은 무엇인가요?", "10월 탄생석은 오팔이며 투어멀린을 함께 씁니다. 희망과 순수, 창의력을 뜻한다고 전해집니다."],
+      ["12월 탄생석은 무엇인가요?", "12월 탄생석은 터키석이고 탄자나이트와 지르콘을 함께 씁니다. 성공과 행운, 여행의 안전을 뜻한다고 전해집니다."],
+      ["탄생석은 나라마다 다른가요?", "지금 널리 쓰는 목록은 미국 보석업계 표준을 바탕으로 하지만, 나라와 문화권에 따라 달마다 다른 돌을 함께 쓰기도 합니다."]],
+    sibTitle: "생일로 보는 운세", sibs: `<div class="sibs"><a href="horoscope.html">별자리 운세</a><a href="stargunghap.html">별자리 궁합</a><a href="tti.html">띠 계산기</a><a href="saju.html">무료 사주풀이</a><a href="todayfortune.html">오늘의 운세</a></div>`,
+    related: ["horoscope", "stargunghap", "todayfortune", "saju"] });
 }
 
 // ── 아홉수 계산기(ahopsu.html, 2026-10-09) — 네이버 아홉수 4,400. 세는 나이(한국식) 끝자리 9 가 전통 기준, 만 나이 기준도 함께 보여 준다
@@ -3480,7 +3516,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3586,6 +3622,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [탄생석](${DOMAIN}/birthstone.html): 1월 가넷·2월 자수정·3월 아쿠아마린·4월 다이아몬드·5월 에메랄드·6월 진주·7월 루비·8월 페리도트·9월 사파이어·10월 오팔·11월 토파즈·12월 터키석, 색과 전해지는 뜻, 생일로 탄생석·별자리 찾기.
 - [아홉수 계산기](${DOMAIN}/ahopsu.html): 태어난 해로 올해·내년이 아홉수(세는 나이 끝자리 9)인지, 만 나이 기준과 함께. 해마다 아홉수 년생 표.
 - [2027년 달력](${DOMAIN}/calendar-2027.html): 2027년 공휴일 76일(일요일 포함), 설 연휴 2월 6~9일(대체 9일), 추석 9월 14~16일, 노동절·제헌절 신설, 대체공휴일 7일(2/9·5/3·7/19·8/16·10/4·10/11·12/27). 12달 달력에 24절기·음력 1일·15일·손 없는 날 표시. 우주항공청 2027년도 월력요항 기준.
 - [손 없는 날 달력](${DOMAIN}/sonless.html): 음력 끝자리 9·0(음력 9·10·19·20·29·30일)인 손 없는 날을 이번 달부터 14달 치 양력 날짜·요일로 정리. 이사·결혼·개업 날짜 고르기용, 휴대폰 달력 구독(.ics) 제공.
@@ -3982,6 +4019,7 @@ fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
+fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4135,6 +4173,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/birthstone.html", "탄생석 — 1월~12월 탄생석 의미와 색", "달마다 탄생석과 색, 전해지는 뜻. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다."],
   [DOMAIN + "/ahopsu.html", "아홉수 계산기 — 올해·내년 아홉수 나이와 년생", "태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 알려 드립니다. 해마다 아홉수 년생 표도 함께."],
   [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
@@ -4160,7 +4199,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 83);
+].slice(0, 120 + 84);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
