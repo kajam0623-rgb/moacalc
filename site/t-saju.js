@@ -590,7 +590,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
                   :'자네는 힘을 채워 가며 크는 편이니 이 틀을 좁게 잡고 깊이 파는 편이 낫네. 넓히기보다 하나를 끝까지 밀게.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
-        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+s+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운 (신살)</h3><p>따로 튀는 기운이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
         '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 위 여덟 글자 표의 아래 글자마다 적어 두었습니다.</span></p></div>'+
         gungSec()+
