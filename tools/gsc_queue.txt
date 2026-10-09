@@ -1,5 +1,6 @@
 # 구글 서치콘솔 색인 요청 대기열 — 예약 작업 gsc-daily-index 가 위에서부터 요청하고, 끝난 줄은 '# 요청됨 YYYY-MM-DD ' 를 붙여 남긴다.
 # 새 페이지를 만들면 여기 맨 아래에 주소 한 줄을 더한다(https://dongnebosal.com/... 만).
+https://dongnebosal.com/calendar-2027.html
 https://dongnebosal.com/love.html
 https://dongnebosal.com/dream-animal-tiger.html
 https://dongnebosal.com/dream-waterfire-housefire.html
