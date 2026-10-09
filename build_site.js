@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="lucky.html">행운의 숫자</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="lucky.html">행운의 숫자</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a><a href="bed-direction.html">잘 때 머리 방향</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1995,6 +1995,48 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 잘 때 머리 방향·침대 방향(bed-direction.html, 2026-10-09) — 네이버 잘때머리방향 4,370·잠자는방향 1,930·침대방향 1,920·현관거울 1,930·침대위치 1,540·풍수인테리어 1,430.
+// 본명괘(팔택): 태어난 해(입춘 전이면 앞 해) 네 자리 합을 한 자리로 → 남 11-n, 여 n+4 (한 자리로), 5 는 남 2·여 8. 동사택 1·3·4·9 / 서사택 2·6·7·8. 끝 두 자리 방식과 결과가 같다(검산)
+const KUA_DIR = { 1: ["동남", "동", "남", "북"], 2: ["북동", "서", "북서", "남서"], 3: ["남", "북", "동남", "동"], 4: ["북", "남", "동", "동남"],
+  6: ["서", "북동", "남서", "북서"], 7: ["북서", "남서", "북동", "서"], 8: ["남서", "북서", "서", "북동"], 9: ["동", "동남", "북", "남"] };
+const KUA_NAME = { 1: "감괘(坎)", 2: "곤괘(坤)", 3: "진괘(震)", 4: "손괘(巽)", 6: "건괘(乾)", 7: "태괘(兌)", 8: "간괘(艮)", 9: "이괘(離)" };
+const kuaOf = (y, male) => { const red = n => { while (n > 9) n = String(n).split("").reduce((a, c) => a + +c, 0); return n; };
+  const s = red(String(y).split("").reduce((a, c) => a + +c, 0)); let k = male ? red(11 - s) : red(s + 4); if (k === 0) k = 9; if (k === 5) k = male ? 2 : 8; return k; };
+{ const red2 = n => { while (n > 9) n = String(n).split("").reduce((a, c) => a + +c, 0); return n; };   // 끝 두 자리 방식으로 교차 검산(1900~2099)
+  for (let y = 1920; y < 2030; y++) for (const male of [true, false]) { const n = red2(y % 100); let k = y < 2000 ? (male ? 10 - n : red2(n + 5)) : (male ? 9 - n : red2(n + 6)); if (k === 0) k = 9; if (k === 5) k = male ? 2 : 8;
+    if (k !== kuaOf(y, male)) throw new Error(`본명괘 공식 불일치 ${y} ${male ? "남" : "여"} ${k} vs ${kuaOf(y, male)}`); }
+  if (kuaOf(1975, true) !== 7 || kuaOf(1975, false) !== 8) throw new Error("본명괘 1975 예시"); }
+function bedDirPage() {
+  const js = `<script>(function(){var D=${JSON.stringify(KUA_DIR)},N=${JSON.stringify(KUA_NAME)},L=["생기(生氣) — 일·활력","천의(天醫) — 건강·회복","연년(延年) — 관계·화합","복위(伏位) — 안정·숙면"];` +
+    `function red(n){while(n>9)n=String(n).split("").reduce(function(a,c){return a+ +c},0);return n}function kua(y,m){var s=red(String(y).split("").reduce(function(a,c){return a+ +c},0)),k=m?red(11-s):red(s+4);if(k===0)k=9;if(k===5)k=m?2:8;return k}` +
+    `var i=document.getElementById("kd"),o=document.getElementById("ko");function go(){var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 넣어 주세요.</p>';return}var y=+v.slice(0,4),mo=+v.slice(4,6),d=+v.slice(6,8);if(mo<2||(mo===2&&d<4))y--;` +
+    `var m=document.querySelector('input[name="kg"]:checked').value==="m",k=kua(y,m),dir=D[k],east=[1,3,4,9].indexOf(k)>=0;o.innerHTML='<div class="res"><span>내 본명괘</span><b>'+k+' · '+N[k]+' — '+(east?'동사택':'서사택')+'</b></div>'+dir.map(function(x,j){return '<div class="res"><span>'+L[j]+'</span><b>'+x+'</b></div>'}).join("")+'<p class="sjw-note">잘 때는 머리를 <b>'+dir[1]+'</b>(건강) 또는 <b>'+dir[3]+'</b>(숙면) 쪽으로 두는 것을 권합니다.</p>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"beddir"}))}catch(e){}}` +
+    `document.getElementById("kgo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
+  const tbl = Object.keys(KUA_DIR).map(k => `<tr><th scope="row">${k} ${KUA_NAME[k]}</th><td>${[1, 3, 4, 9].includes(+k) ? "동사택" : "서사택"}</td><td>${KUA_DIR[k][1]}</td><td>${KUA_DIR[k][3]}</td><td>${KUA_DIR[k][0]}</td></tr>`).join("");
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "잘 때 머리 방향", date: "2026-10-09",
+    title: "잘 때 머리 방향·침대 방향 — 풍수로 보는 좋은 방향, 본명괘 계산기 | 동네보살",
+    desc: "잘 때 머리는 어느 쪽으로 두면 좋을까요? 생년월일로 내 본명괘를 계산해 건강·숙면에 좋은 머리 방향을 알려 드립니다. 침대 위치와 현관 거울 풍수, 북쪽 머리 이야기까지 정리했습니다.",
+    url: `${DOMAIN}/bed-direction.html`, img: "img/bosal/talisman.webp", hero: "img/tool/h-lunar.webp",
+    h1: "잘 때 머리 방향 — 내게 맞는 침대 방향", sub: "팔택풍수 본명괘 · 생년월일과 성별로 계산 · 침대 위치·현관 거울",
+    parent: "manse.html", parentName: "무료 만세력", tool: "manse", noTool: true,
+    tags: ["잘 때 머리 방향", "침대 방향", "잠자는 방향", "침대 위치", "풍수 인테리어", "현관 거울", "본명괘"],
+    body: `<div class="sjw" id="kw"><h2>내 좋은 머리 방향 찾기</h2><label for="kd">생년월일 (양력)</label><div class="sjw-row"><input id="kd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="kgo">방향 보기</button></div>` +
+      `<p class="sjw-note"><label><input type="radio" name="kg" value="m" checked> 남</label> <label style="margin-left:10px"><input type="radio" name="kg" value="f"> 여</label> · 생일은 이 화면에서만 쓰고 서버로 보내지 않습니다.</p><div id="ko" aria-live="polite"></div></div>` + js +
+      sec("잘 때 머리, 어느 쪽이 좋을까", para(`우리 옛 풍습에서는 해가 뜨는 동쪽으로 머리를 두면 새 기운을 받는다고 여겼고, 북쪽으로 머리를 두는 것은 돌아가신 분을 모시는 방향이라 하여 피하는 집이 많았습니다. 남쪽은 따뜻한 기운, 서쪽은 차분한 기운으로 보았습니다.\n풍수에서는 사람마다 맞는 방향이 다르다고 보아, 태어난 해와 성별로 본명괘를 정하고 그에 맞는 좋은 방향 네 가지를 씁니다. 잘 때는 건강을 뜻하는 천의 방향이나 안정을 뜻하는 복위 방향으로 머리를 두라고 권합니다. 위 계산기에 생년월일을 넣으면 바로 알려 드립니다.`)) +
+      `<section class="guide"><h2>본명괘별 좋은 방향 표</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">본명괘</th><th scope="col">무리</th><th scope="col">천의(건강)</th><th scope="col">복위(숙면)</th><th scope="col">생기(활력)</th></tr></thead><tbody>${tbl}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">본명괘는 태어난 해의 네 자리 숫자를 더해 한 자리로 줄인 뒤 남자는 11에서 빼고 여자는 4를 더해 정합니다(다시 한 자리로, 5가 나오면 남자 2·여자 8). 해의 경계는 입춘(2월 4일 무렵)이라 1월~2월 초에 태어났다면 앞 해로 셉니다.</p></section>` +
+      sec("침대 위치 풍수 — 이렇게 두면 편합니다", para(`침대 머리는 벽에 붙여 등 뒤가 든든하게 하고, 방문을 열었을 때 발이 문과 일직선이 되는 자리는 피하는 것이 좋다고 봅니다. 문이 보이되 문과 마주 보지 않는 대각선 자리가 가장 편안한 자리로 꼽힙니다.\n창문 바로 아래나 무거운 선반 아래는 피하고, 침대 밑은 비워 바람이 통하게 두면 좋습니다. 이런 배치는 풍수 전통이기도 하지만 바람과 소음을 줄여 실제로 잠자리를 편하게 해 줍니다.`)) +
+      sec("현관 거울은 어디에", para(`풍수에서는 현관문을 열었을 때 바로 정면에 거울이 있으면 들어오는 좋은 기운을 되돌려 보낸다고 보아 피합니다. 현관에 거울을 두고 싶다면 들어올 때 옆으로 보이는 벽에 거는 것이 좋다고 권합니다.\n현관은 집의 얼굴이라 밝고 깔끔하게 정리하는 것이 가장 좋은 풍수라고 말합니다. 신발을 정리하고 조명을 밝게 해 보세요.`)) +
+      sec("함께 보면 좋은 것", `<p style="margin-bottom:10px">이사 날짜는 <a href="sonless.html">손 없는 날 달력</a>, 집안 평안을 바라는 마음은 <a href="bujeok.html">부적</a>, 2027년 한 해 흐름은 <a href="newyear.html">2027 신년운세</a>에서 볼 수 있습니다. 풍수는 오래된 전통 지혜로, 편히 잘 자는 것이 언제나 가장 중요합니다.</p>`),
+    faq: [["잘 때 머리 방향은 어디가 좋나요?", "옛 풍습으로는 해가 뜨는 동쪽을 좋게 보았고, 풍수에서는 본명괘에 따라 사람마다 다르게 봅니다. 위 계산기로 내 천의·복위 방향을 확인해 보세요."],
+      ["북쪽으로 머리 두고 자면 안 되나요?", "돌아가신 분을 북쪽으로 모시던 풍습 때문에 피하는 집이 많았지만, 과학적인 근거가 있는 것은 아닙니다. 본명괘에서 북쪽이 좋은 방향인 사람도 있습니다."],
+      ["본명괘는 어떻게 계산하나요?", "태어난 해 네 자리를 더해 한 자리로 줄인 뒤 남자는 11에서 빼고 여자는 4를 더합니다. 다시 한 자리로 줄이고, 5가 나오면 남자는 2, 여자는 8로 봅니다. 입춘 전에 태어났다면 앞 해로 셉니다."],
+      ["부부의 방향이 다르면 어떻게 하나요?", "동사택·서사택이 다르면 좋은 방향이 겹치지 않을 수 있습니다. 이럴 때는 각자의 복위나 천의 쪽으로 베개 방향만 살짝 맞추거나, 함께 편한 방향을 고르면 됩니다."]],
+    sibTitle: "집·날짜 함께 보기", sibs: `<div class="sibs"><a href="sonless.html">손 없는 날</a><a href="calendar-2027.html">2027년 달력</a><a href="bujeok.html">부적</a><a href="manse.html">만세력</a><a href="todayfortune.html">오늘의 운세</a></div>`,
+    related: ["manse", "todayfortune", "newyear", "saju"] });
 }
 
 // ── 부적(bujeok.html, 2026-10-09) — 네이버 부적 9,210·합격부적 1,440·행운의부적 900·삼재부적 450·건강부적 410. 민속 문화로 소개하고 효과는 장담하지 않는다.
@@ -3585,7 +3627,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3692,6 +3734,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [잘 때 머리 방향·침대 방향](${DOMAIN}/bed-direction.html): 팔택풍수 본명괘(태어난 해 네 자리 합 → 남 11-n·여 n+4, 5는 남2·여8, 입춘 경계)로 천의·복위·생기·연년 방향 계산, 침대 위치·현관 거울 풍수, 북쪽 머리 풍습.
 - [부적](${DOMAIN}/bujeok.html): 부적 종류(합격·재물·삼재·건강·인연·안택)와 뜻, 전통적으로 지니던 방법, 화면에서 그리는 보살 부적 카드(카톡 공유). 효과를 장담하지 않는 민속 문화로 소개.
 - [탄생석](${DOMAIN}/birthstone.html): 1월 가넷·2월 자수정·3월 아쿠아마린·4월 다이아몬드·5월 에메랄드·6월 진주·7월 루비·8월 페리도트·9월 사파이어·10월 오팔·11월 토파즈·12월 터키석, 색과 전해지는 뜻, 생일로 탄생석·별자리 찾기.
 - [아홉수 계산기](${DOMAIN}/ahopsu.html): 태어난 해로 올해·내년이 아홉수(세는 나이 끝자리 9)인지, 만 나이 기준과 함께. 해마다 아홉수 년생 표.
@@ -4092,6 +4135,7 @@ fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
 fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
+fs.writeFileSync(path.join(OUT,"bed-direction.html"), bedDirPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4247,6 +4291,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/bed-direction.html", "잘 때 머리 방향·침대 방향 — 본명괘 계산기", "생년월일로 본명괘를 계산해 건강·숙면에 좋은 머리 방향을 알려 드립니다. 침대 위치와 현관 거울 풍수까지."],
   [DOMAIN + "/bujeok.html", "부적 — 합격·재물·삼재 부적 종류와 뜻", "부적의 뜻과 종류, 예부터 지니던 방법. 보살 부적 카드를 한 장 골라 카톡으로 보내 보세요."],
   [DOMAIN + "/birthstone.html", "탄생석 — 1월~12월 탄생석 의미와 색", "달마다 탄생석과 색, 전해지는 뜻. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다."],
   [DOMAIN + "/ahopsu.html", "아홉수 계산기 — 올해·내년 아홉수 나이와 년생", "태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 알려 드립니다. 해마다 아홉수 년생 표도 함께."],
@@ -4274,7 +4319,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 86);
+].slice(0, 120 + 87);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
