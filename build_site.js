@@ -980,7 +980,7 @@ const tabbar = `<nav class="tabbar" aria-label="주요 메뉴"><a href="todayfor
 const footer = `<footer class="sfoot">
 <div><img class="bosal foot-bosal" src="img/bosal/bow.webp" alt="합장하는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><div class="fbrand"><svg viewBox="0 0 36 36" width="22" height="22" aria-hidden="true"><defs><mask id="dnbsf"><rect width="36" height="36" fill="#fff"/><circle cx="24.5" cy="13" r="8.5" fill="#000"/></mask></defs><rect x="1.5" y="1.5" width="33" height="33" rx="9" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="19" cy="18.5" r="8.5" fill="#E6B25A" mask="url(#dnbsf)"/><circle cx="25.5" cy="24.5" r="1.7" fill="#2A44C6"/></svg>동네보살</div>
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
-<div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
+<div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
 <div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
@@ -1668,7 +1668,7 @@ const nybChips = y => '<div class="sibs">' + NYB.YEARS.filter(x => Math.floor(x 
   ? `<span class="cur">${x}년생</span>` : `<a href="${nybUrl(x)}">${x}년생</a>`).join("") + '</div>';
 const nybGrid = () => '<div class="nybg">' + [1950, 1960, 1970, 1980, 1990, 2000].map(d => `<div class="nybg-r"><b>${d}년대</b><div class="sibs">` +
   NYB.YEARS.filter(x => x >= d && x < d + 10).map(x => `<a href="${nybUrl(x)}">${String(x).slice(2)}년생</a>`).join("") + '</div></div>').join("") + '</div>';
-const SEASON_LINKS = `<div class="sibs"><a href="tti.html">띠 순서·띠 계산기</a><a href="newyear.html">2027 신년운세</a><a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="column-zodiac-2027.html">2027 정미년 한눈에</a><a href="zodiacfortune.html">띠별 운세</a></div>`;
+const SEASON_LINKS = `<div class="sibs"><a href="tti.html">띠 순서·띠 계산기</a><a href="newyear.html">2027 신년운세</a><a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="column-zodiac-2027.html">2027 정미년 한눈에</a><a href="zodiacfortune.html">띠별 운세</a><a href="calendar-2027.html">2027년 달력</a></div>`;
 
 function nybPage(y) {
   const f = NYB.facts(y), t = NYB.TEXT[String(y)];
@@ -1910,6 +1910,61 @@ function sonlessPage() {
       ["손 없는 날이 아니면 이사하면 안 되나요?", "그렇지 않습니다. 손 없는 날은 민간 풍습이고, 요즘은 비용과 일정에 맞춰 평일이나 다른 날에 이사하는 집도 많습니다. 마음이 쓰인다면 손 없는 날을 고르고, 형편이 안 되면 편한 날을 고르셔도 됩니다."]],
     sibTitle: "날짜·만세력 함께 보기", sibs: `<div class="sibs"><a href="manse.html">무료 만세력</a><a href="lunar.html">음력 양력 변환</a><a href="iljin.html">오늘 일진</a><a href="manse-${months[0][0]}-${String(months[0][1]).padStart(2, "0")}.html">이번 달 만세력</a><a href="todayfortune.html">오늘의 운세</a></div>`,
     related: ["manse", "lunar", "iljin", "todayfortune"] });
+}
+
+// ── 2027년 달력(calendar-2027.html, 2026-10-09) — 네이버 2027년달력 19.6만·대체공휴일 4.9만·2027달력 3.7만·2027설날 3.3만·2027추석 8천.
+// 공휴일은 우주항공청 2027년도 월력요항(2026-06-29 발표)·천문연 달력자료와 대조. 노동절(5/1)·제헌절(7/17)이 2027년부터 공휴일. 음력 명절 날짜는 아래에서 MANSE_CAL 로 검산한다.
+const HOL_2027 = [["1-1", "신정"], ["2-6", "설날 연휴"], ["2-7", "설날"], ["2-8", "설날 연휴"], ["2-9", "대체공휴일(설날)"], ["3-1", "삼일절"],
+  ["5-1", "노동절"], ["5-3", "대체공휴일(노동절)"], ["5-5", "어린이날"], ["5-13", "부처님오신날"], ["6-6", "현충일"], ["7-17", "제헌절"], ["7-19", "대체공휴일(제헌절)"],
+  ["8-15", "광복절"], ["8-16", "대체공휴일(광복절)"], ["9-14", "추석 연휴"], ["9-15", "추석"], ["9-16", "추석 연휴"], ["10-3", "개천절"], ["10-4", "대체공휴일(개천절)"],
+  ["10-9", "한글날"], ["10-11", "대체공휴일(한글날)"], ["12-25", "성탄절"], ["12-27", "대체공휴일(성탄절)"]];
+{ const lun = (m, d) => { MANSE_CAL.setLunarDate(m === 12 ? 2026 : 2027, m, d, false); const s = MANSE_CAL.getSolarCalendar(); return s.month + "-" + s.day; };
+  const H = Object.fromEntries(HOL_2027);
+  if (H[lun(1, 1)] !== "설날" || H[lun(12, 30)] !== "설날 연휴" || H[lun(4, 8)] !== "부처님오신날" || H[lun(8, 15)] !== "추석") throw new Error("2027 공휴일 음력 검산 실패"); }
+function cal2027Page() {
+  const Y = 2027, WD = "일월화수목금토", H = Object.fromEntries(HOL_2027);
+  const terms = {}; for (const [nm, deg] of ENGINE.SJ_TERM) { const t = jdToKst(ENGINE.sjTermJd(Y, deg)); if (t.y === Y) terms[t.mo + "-" + t.d] = nm; }
+  const month = m => {
+    const first = new Date(Y, m - 1, 1).getDay(), dim = new Date(Y, m, 0).getDate(), son = new Set(sonlessDays(Y, m).map(s => s.d));
+    let cells = "<tr>" + "<td></td>".repeat(first);
+    for (let d = 1; d <= dim; d++) {
+      const wd = (first + d - 1) % 7, k = m + "-" + d, hol = H[k];
+      MANSE_CAL.setSolarDate(Y, m, d); const L = MANSE_CAL.getLunarCalendar();
+      const note = hol ? hol.replace("대체공휴일", "대체") : terms[k] || (L.day === 1 || L.day === 15 ? `음 ${L.intercalation ? "윤" : ""}${L.month}.${L.day}` : "");
+      cells += `<td class="${hol || wd === 0 ? "c-h" : wd === 6 ? "c-s" : ""}${son.has(d) ? " c-son" : ""}"><b>${d}</b>${note ? `<small>${note}</small>` : ""}</td>`;
+      if (wd === 6 && d < dim) cells += "</tr><tr>";
+    }
+    return `<div class="c-m"><h3><a href="manse-${Y}-${String(m).padStart(2, "0")}.html">${m}월</a></h3><table class="c-t"><thead><tr>${[...WD].map(w => `<th>${w}</th>`).join("")}</tr></thead><tbody>${cells}</tr></tbody></table></div>`;
+  };
+  const holRows = HOL_2027.map(([k, nm]) => { const [m, d] = k.split("-").map(Number); return `<tr${nm.startsWith("대체") ? ' class="c-alt"' : ""}><td>${m}월 ${d}일 (${WD[new Date(Y, m - 1, d).getDay()]})</td><td>${nm}</td></tr>`; }).join("");
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "2027년 달력", date: "2026-10-09",
+    title: "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴, 음력·손 없는 날 | 동네보살",
+    desc: "2027년 공휴일은 일요일 포함 76일입니다. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에 담았습니다.",
+    url: `${DOMAIN}/calendar-2027.html`, img: "img/tool/h-lunar.webp", hero: "img/tool/h-lunar.webp",
+    h1: "2027년 달력 — 공휴일·연휴 한눈에", sub: "우주항공청 월력요항 기준 · 음력 1일·15일, 24절기, 손 없는 날 표시",
+    parent: "manse.html", parentName: "무료 만세력", tool: "manse", noTool: true,
+    tags: ["2027년 달력", "2027 공휴일", "2027 대체공휴일", "2027 설날", "2027 추석", "2027 음력 달력", "2027 연휴"],
+    body: `<style>.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.c-m h3{margin:0 0 6px;font-size:16px}.c-t{width:100%;border-collapse:collapse;table-layout:fixed}.c-t th{font-size:11px;color:var(--muted);font-weight:600;padding:2px 0}.c-t th:first-child,.c-t .c-h b{color:#d33}.c-t th:last-child,.c-t .c-s b{color:var(--accent)}.c-t td{vertical-align:top;text-align:center;padding:3px 0;height:38px;border-top:1px solid var(--line)}.c-t td b{display:block;font-size:13px;font-weight:600}.c-t td small{display:block;font-size:9.5px;line-height:1.15;color:var(--muted);word-break:keep-all}.c-t .c-h small{color:#d33}.c-t .c-son b{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}.c-hol td{padding:6px 8px;border-top:1px solid var(--line)}.c-hol .c-alt td{color:#d33}</style>` +
+      `<div class="exbox"><h2>2027년 연휴 한눈에</h2>` +
+      [["설날 연휴", "2월 6일(토) ~ 9일(화) · 4일 (설날 2월 7일 일요일 → 9일 대체공휴일)"], ["추석 연휴", "9월 14일(화) ~ 16일(목) · 추석 9월 15일"], ["3일 이상 연휴", "신정·설·삼일절·노동절·제헌절·광복절·추석·개천절·한글날·성탄절, 10번"],
+        ["공휴일 수", "일요일 52일 + 국경일·명절·대체공휴일 24일 = 76일 (겹치는 4일 빼면 72일)"], ["새로 쉬는 날", "노동절(5월 1일)·제헌절(7월 17일) — 2027년부터 공휴일"]]
+        .map(r => `<div class="row"><span>${r[0]}</span><b>${r[1]}</b></div>`).join("") +
+      `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">연차 이틀(9월 13일·17일)을 쓰면 9월 11일(토)부터 19일(일)까지 9일을 쉽니다.</p></div>` +
+      `<section class="guide"><h2>2027년 달력 — 1월부터 12월까지</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">빨간 날은 공휴일·일요일, 밑줄 친 날은 손 없는 날, 작은 글씨는 공휴일·24절기·음력 1일과 15일입니다. 달 이름을 누르면 그달 날짜별 일진·음력이 있는 만세력으로 갑니다.</p><div class="c-grid">${Array.from({ length: 12 }, (_, i) => month(i + 1)).join("")}</div></section>` +
+      `<section class="guide"><h2>2027년 공휴일·대체공휴일 날짜</h2><div class="sjt-wrap"><table class="c-hol" style="width:100%;border-collapse:collapse">${holRows}</table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">우주항공청이 2026년 6월 29일 발표한 2027년도 월력요항과 한국천문연구원 달력자료를 기준으로 했습니다. 현충일(6월 6일, 일요일)은 대체공휴일이 없습니다.</p></section>` +
+      sec("2027년 설날과 추석", para(`2027년 설날은 2월 7일 일요일입니다. 설 연휴가 일요일과 겹쳐 연휴 다음 날인 2월 9일 화요일이 대체공휴일이 되어, 2월 6일 토요일부터 9일까지 나흘을 쉽니다.\n2027년 추석은 9월 15일 수요일이고, 연휴는 9월 14일 화요일부터 16일 목요일까지입니다. 주말과 떨어져 있어 앞뒤 월요일·금요일에 연차를 붙이면 긴 연휴를 만들 수 있습니다.`)) +
+      sec("대체공휴일은 언제 생기나요", para(`설·추석 연휴가 일요일이나 다른 공휴일과 겹치면 연휴 다음 첫 평일이 대체공휴일이 됩니다. 삼일절·노동절·어린이날·제헌절·광복절·개천절·한글날·부처님오신날·성탄절은 토요일이나 일요일과 겹칠 때 다음 월요일이 대체공휴일입니다.\n2027년에는 설날·노동절·제헌절·광복절·개천절·한글날·성탄절에 대체공휴일이 붙어 모두 7일입니다. 신정과 현충일은 대체공휴일이 없습니다.`)) +
+      sec("날짜로 이어 보기", `<p style="margin-bottom:10px">이사·결혼 날짜는 <a href="sonless.html">손 없는 날 달력</a>, 음력 생일은 <a href="lunar.html">음력 계산기</a>, 2027년 띠와 나이는 <a href="tti.html">띠 계산기</a>, 새해 흐름은 <a href="newyear.html">2027 신년운세</a>와 <a href="tojeong.html">2027 토정비결</a>에서 볼 수 있습니다. 2027년은 정미년 양띠 해이고, 띠가 바뀌는 입춘은 2월 4일입니다.</p>`),
+    faq: [
+      ["2027년 공휴일은 며칠인가요?", "일요일 52일과 국경일·명절·대체공휴일 24일을 더해 76일입니다. 일요일과 겹치는 4일을 빼면 실제로 쉬는 날은 72일입니다."],
+      ["2027년 설날 연휴는 언제인가요?", "2월 6일 토요일부터 9일 화요일까지 4일입니다. 설날 2월 7일이 일요일이라 9일이 대체공휴일입니다."],
+      ["2027년 추석 연휴는 언제인가요?", "9월 14일 화요일부터 16일 목요일까지이고, 추석은 9월 15일 수요일입니다."],
+      ["2027년 대체공휴일은 언제인가요?", "2월 9일(설날), 5월 3일(노동절), 7월 19일(제헌절), 8월 16일(광복절), 10월 4일(개천절), 10월 11일(한글날), 12월 27일(성탄절) 모두 7일입니다."],
+      ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
+    sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
+    related: ["lunar", "newyear", "tojeong", "todayfortune"] });
 }
 
 // ── MBTI 궁합(mbti.html, 2026-10-09) — 네이버 'MBTI궁합' 2.3만 + 'MBTI궁합표' 2천 + 유형별 'ISFJ궁합' 등 1~2천씩. 256쌍을 한 쪽 도구·표로.
@@ -3336,7 +3391,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3437,6 +3492,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [2027년 달력](${DOMAIN}/calendar-2027.html): 2027년 공휴일 76일(일요일 포함), 설 연휴 2월 6~9일(대체 9일), 추석 9월 14~16일, 노동절·제헌절 신설, 대체공휴일 7일(2/9·5/3·7/19·8/16·10/4·10/11·12/27). 12달 달력에 24절기·음력 1일·15일·손 없는 날 표시. 우주항공청 2027년도 월력요항 기준.
 - [손 없는 날 달력](${DOMAIN}/sonless.html): 음력 끝자리 9·0(음력 9·10·19·20·29·30일)인 손 없는 날을 이번 달부터 14달 치 양력 날짜·요일로 정리. 이사·결혼·개업 날짜 고르기용, 휴대폰 달력 구독(.ics) 제공.
 - [만세력 보는법](${DOMAIN}/manse-howto.html): 원국표는 오른쪽이 연주, 왼쪽이 시주. 일주의 천간(일간)이 나 자신. 오행 세기 → 십성 → 절기 경계 확인 → 대운 순서로 읽는다. 대운수는 절기까지 날수 ÷ 3.
 
@@ -3829,6 +3885,7 @@ for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.g
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
+fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
@@ -3978,6 +4035,7 @@ const rssRows = [
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
   [DOMAIN + "/love.html", "오늘의 연애운 — 띠별·별자리별 애정운", "오늘 내 띠와 별자리의 연애운을 점수와 한 줄 풀이로 봅니다. 매일 한국 시각 0시에 바뀝니다."],
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
   [DOMAIN + "/samjae.html", "삼재 계산기 — 2027 삼재띠·2028 삼재띠", "2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년은 호랑이띠·말띠·개띠(들삼재). 태어난 해로 삼재 연도를 계산합니다."],
@@ -4001,7 +4059,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 68);
+].slice(0, 120 + 69);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
