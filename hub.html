@@ -1211,7 +1211,7 @@
       '.oh-c{stroke:#fff;stroke-width:3}.oh-c.me{stroke:#3b6fd8;stroke-width:4}.oh-n{font-size:12px;font-weight:800;fill:#fff}.oh-r{font-size:11px;fill:var(--muted)}.oh-y{fill:#2f8f5b;font-weight:800}.oh-lab{font-size:10px;fill:#5aa86a}</style>'+
       '<svg class="oh-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="오행 분포 오각형: '+SJ_EL.map(function(n,j){return n+" "+cnt[j]+"개";}).join(", ")+'">'+
       '<defs><marker id="oh-oh-s" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5aa86a"/></marker><marker id="oh-oh-k" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e06b62"/></marker></defs>'+
-      out+'</svg><p style="text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px">초록 화살표는 낳아 주는 관계(상생), 빨간 점선은 누르는 관계(상극)일세.</p>';}
+      out+'</svg><div class="oh-cap" style="text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px">초록 화살표는 낳아 주는 관계(상생), 빨간 점선은 누르는 관계(상극)일세.</div>';}   // <p> 로 두면 접는 칸이 이 줄을 제목으로 가져간다
   // 사주 특징 칩(2026-10-10, 경쟁 서비스 벤치마킹) — 있는 특징만 좋은 쪽으로. 판정 규칙은 각 설명에 밝힌다
   function sjTraits(o){var t=[],c=o.tgc,n=function(a,b){return (c[a]||0)+(c[b]||0);},gw=n("편관","정관"),gi=n("편인","정인"),gs=n("식신","상관"),gj=n("편재","정재");
     if(o.gyeok)t.push([o.gyeok,"태어난 달 글자가 이끄는 사주의 큰 틀일세. 아래 ‘타고난 그릇 모양’에서 자세히 풀었네."]);
