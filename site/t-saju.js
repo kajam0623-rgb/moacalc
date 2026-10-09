@@ -592,6 +592,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
         (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 (신살) — '+sinsal.length+'개</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운 (신살)</h3><p>따로 튀는 기운이 없는 담백한 구조일세. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나네.</p></div>')+
+        '<div class="sj-sec" id="sjceleb"></div>'+
         '<div class="sj-sec"><h3>기운의 단계 (십이운성) — '+ilUn+'</h3><p>자네 기운은 열두 단계 가운데 <b>'+ilUn+'</b> 자리에 앉아 있네.<br><br>'+SJ_UN_DESC[ilUn]+'<br><span style="color:var(--muted);font-size:12.5px">사람의 한살이에 빗대어, 기운이 각 자리에서 어느 단계에 있는지를 열둘로 나눈 것입니다. 위 여덟 글자 표의 아래 글자마다 적어 두었습니다.</span></p></div>'+
         gungSec()+
         '<div class="sj-sec"><h3>타고난 힘의 세기</h3><p>자네를 돕는 기운이 '+Math.round(st.ratio*100)+'%라 <b>'+(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편")+'</b>일세. '+
@@ -647,6 +648,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
+      sjCelebFill(el.querySelector("#sjceleb"),p);
       bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"사주_한장요약",draw:function(cb){var bx=el.querySelector(".sj-sum"),PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"},myE=SJ_EL[SJ_ES[ds]],vals=SJ_GRP5.map(function(k){return G[k];});
         cb(sumCanvas({ttl:(nmHon(nm)?nmHon(nm)+" ":"")+"한 장 요약",sub:"타고난 기운의 무게중심",arch:bx.querySelector(".ss-arch-t").textContent,archd:bx.querySelector(".ss-arch-d").textContent,
           glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,

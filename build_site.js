@@ -4142,6 +4142,14 @@ fs.mkdirSync(path.join(OUT,"zf"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"zf","deep.json"), JSON.stringify(ZF_DEEP));
 fs.mkdirSync(path.join(OUT,"sg"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"sg","deep.json"), JSON.stringify(SG_DEEP));
+{ // 사주가 닮은 유명인 데이터(2026-10-09) — content_celeb.json(위키데이터, tools/celeb_fetch.py) 을 연·월·일 기둥 특징으로 바꿔 sj/celeb.json. 오행 표는 hub.html 과 같아야 한다
+  const H = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8"), ES = JSON.parse(H.match(/var SJ_ES=(\[[^\]]*\])/)[1]), EB = JSON.parse(H.match(/var SJ_EB=(\[[^\]]*\])/)[1]);
+  const C = require("./content_celeb.json").rows.map(([ko, b, c]) => { const [y, m, d] = b.split("-").map(Number), p = FORT.sjPillars(y, m, d, null, 0, false), el = [0, 0, 0, 0, 0];
+    [p.y, p.m, p.d].forEach(x => { el[ES[x.s]]++; el[EB[x.b]]++; }); return [ko, b.replace(/-/g, "."), c, p.d.s, p.d.b, p.m.b, el]; });
+  if (C.length < 500) throw new Error("유명인 데이터가 너무 적음 " + C.length);
+  fs.writeFileSync(path.join(OUT, "sj", "celeb.json"), JSON.stringify(C));
+  console.log("   닮은 유명인:", C.length, "명");
+}
 fs.mkdirSync(path.join(OUT,"gm"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"gm","deep.json"), JSON.stringify(GM_DEEP));
 fs.mkdirSync(path.join(OUT,"tf"),{recursive:true});

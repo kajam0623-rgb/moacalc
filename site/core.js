@@ -368,6 +368,22 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var SJ_BAEKHO=["갑진","을미","병술","정축","무진","임술","계축"],SJ_GWAEGANG=["경진","경술","임진","무술"];
   // 결과의 신살 이름 → 신살 설명 쪽(sinsal-<en>.html, 2026-10-09)
   var SJ_SINSAL_EN={"천을귀인":"cheoneul","문창귀인":"munchang","도화살":"dohwa","역마살":"yeokma","화개살":"hwagae","양인살":"yangin","백호대살":"baekho","괴강살":"gwaegang","홍염살":"hongyeom","현침살":"hyeonchim","귀문관살":"gwimun","원진살":"wonjin"};
+  // 사주가 닮은 유명인(2026-10-09) — 연·월·일 세 기둥으로만 비교(유명인 태어난 시각을 모름). 데이터 sj/celeb.json = 위키데이터(CC0)
+  function sjSeason(b){return [3,3,0,0,0,1,1,1,2,2,2,3][b];}
+  function sjCelebFeat(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return {ds:p.d.s,db:p.d.b,mb:p.m.b,el:c};}
+  function sjCelebScore(a,b){var s=0,why=[],d=0,i;
+    if(a.ds===b.ds){s+=30;why.push("같은 일간("+SJ_S[a.ds]+")");if(a.db===b.db){s+=20;why.push("일주까지 같음("+SJ_S[a.ds]+SJ_B[a.db]+")");}}
+    else if(SJ_ES[a.ds]===SJ_ES[b.ds]){s+=15;why.push("같은 "+SJ_EL[SJ_ES[a.ds]]+" 일간");}
+    if(sjSeason(a.mb)===sjSeason(b.mb)){s+=20;why.push(["봄","여름","가을","겨울"][sjSeason(a.mb)]+"에 태어남");}
+    for(i=0;i<5;i++)d+=Math.abs(a.el[i]-b.el[i]);s+=Math.round(30*(1-d/12));if(d<=2)why.push("오행 구성이 비슷함");
+    return {s:s,why:why};}
+  var SJ_CELEB=null;
+  function sjCelebFill(box,p){if(!box)return;var me=sjCelebFeat(p);
+    function draw(){var rows=SJ_CELEB.map(function(r){var o=sjCelebScore(me,{ds:r[3],db:r[4],mb:r[5],el:r[6]});return {r:r,s:o.s,why:o.why};}).sort(function(a,b){return b.s-a.s;}).slice(0,3);
+      box.innerHTML='<h3>자네와 사주가 닮은 유명인</h3>'+rows.map(function(x){return '<div class="exbox" style="margin-top:8px"><b>'+x.r[0]+'</b> <span style="color:var(--muted);font-size:13px">'+x.r[2]+' · '+x.r[1]+'</span><span style="float:right;font-weight:700">닮은 정도 '+x.s+'점</span><p style="margin:6px 0 0;font-size:14px">'+(x.why.length?x.why.join(" · "):"전체 기운의 짜임이 비슷함")+'</p></div>';}).join("")+
+        '<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했네. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료일세. 재미로 보게.</p>';}
+    if(SJ_CELEB){draw();return;}
+    if(typeof fetch==="function")fetch("sj/celeb.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){SJ_CELEB=j;draw();}}).catch(function(){});}
   function sjSinLink(name,label){var en=SJ_SINSAL_EN[name];return en?'<a href="sinsal-'+en+'.html">'+label+'</a>':label;}
   // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
   var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)
