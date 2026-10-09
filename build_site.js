@@ -2262,7 +2262,8 @@ function ilganPage(g){
 function conceptPage(c){
   return seoPage({
     crumb:`${c.ko}`,
-    title:`${c.ko}${josa(c.ko,"이란/란")}? — 뜻과 보는 법 | 동네보살`,
+    // 2026-10-09 검색어 붙임: 사주오행 6,450·음양오행 6,150·오행 5,480 / 지지 4,290·천간 2,810·천간지지 1,820
+    title:`${({ "eumyang-ohaeng": "음양오행·오행 뜻 — 사주 오행 보는 법과 상생상극", "cheongan-jiji": "천간지지 뜻 — 천간 10글자·지지 12글자 읽는 법" })[c.en] || c.ko + josa(c.ko,"이란/란") + "? — 뜻과 보는 법"} | 동네보살`,
     desc:`${c.oneline}${/[.!?]$/.test(c.oneline)?"":"."} ${c.qa.length}개 질문으로 ${c.ko}${josa(c.ko,"을/를")} 설명하고, 한국학중앙연구원·한국천문연구원 자료를 출처로 밝혔습니다.`,
     url:`${DOMAIN}/concept-${c.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${c.han} ${c.ko} — ${c.keyword}`,
@@ -3178,7 +3179,7 @@ function lecturePage(c0) {
 }
 
 function learnHubPage() {
-  const url = `${DOMAIN}/learn.html`, title = "명리학 배우기 — 사주 기초부터 대운까지 16강";
+  const url = `${DOMAIN}/learn.html`, title = "명리학 배우기 — 사주 보는 법 기초부터 대운까지 16강";
   const cards = LEARN.PARTS.map(part => `<section class="guide lpart"><h2>${esc(part.title)} <small>${esc(part.sub)}</small></h2>` +
     LEARN.LECTURES.filter(c => c.part === part.no).map(c => `<a class="lcard" href="${c.page}" data-no="${c.no}"><span class="ln">${c.no}</span><span class="lt"><b>${esc(c.short)}</b><small>${esc(c.goal)}</small><em>${c.en ? "새 강의 · 내 사주 실습" : "기존 글 + 내 사주 실습"}</em></span><i class="ld" aria-hidden="true"></i></a>`).join("") + `</section>`).join("");
   const faq = [
@@ -4110,7 +4111,7 @@ const rssRows = [
   ...NYB.YEARS.map(y => { const f = NYB.facts(y); return [`${DOMAIN}/${nybUrl(y)}`, `${y}년생 2027년 운세`, `${f.ko}년생 ${f.animal}, 2027년 만 ${f.age[1]}세. ${(NYB.TEXT[String(y)] || {}).sum || ""}`]; }),
   ...TAROT_PAGES.map(c => [`${DOMAIN}/tarot-${c.en}.html`, `${c.ko} 카드 뜻`, `${c.keyword}. 정방향 ${c.upWords.join("·")}, 역방향 ${c.revWords.join("·")}.`]),
   ...COLUMN_PAGES.map(c => [`${DOMAIN}/column-${c.en}.html`, c.title, c.desc]),
-  [DOMAIN + "/learn.html", "명리학 배우기 — 사주 기초부터 대운까지 16강", LEARN_HUB_DESC],
+  [DOMAIN + "/learn.html", "명리학 배우기 — 사주 보는 법 기초부터 대운까지 16강", LEARN_HUB_DESC],
   ...LEARN.LECTURES.filter(c => c.en).map(c => [`${DOMAIN}/${c.page}`, c.title, c.desc]),
   // 지금 근처 24개월. slice(-24) 를 쓰면 배열 끝인 2029~2030 이 잡혀
   // 정작 사람들이 찾는 이번 달이 피드에서 빠진다.
