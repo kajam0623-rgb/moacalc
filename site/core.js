@@ -412,6 +412,27 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<svg class="du-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="분야별 대운 흐름">'+band+grid+lines+xl+'</svg></div>';}
   function sjDuTab(btn,k){var box=btn.closest(".du-wrap");[].forEach.call(box.querySelectorAll(".du-tabs button"),function(b){b.className=b===btn?"on":"";});
     [].forEach.call(box.querySelectorAll(".du-s"),function(g){g.classList.toggle("on",g.classList.contains("du-"+k));});}
+  // 오행 오각형(2026-10-10, 경쟁 서비스 벤치마킹) — 나(일간 오행)를 맨 위, 시계 방향으로 상생 순서(식상→재성→관성→인성).
+  // 바깥 초록 화살표 = 상생, 안쪽 빨간 점선 = 상극. 원 크기 = 개수, 용신에는 표시
+  function sjOhaengSvg(cnt,me,yong){
+    var W=340,H=320,cx=170,cy=168,R=112,HN=["木","火","土","金","水"],CO=["#4f9d62","#e0574f","#b08a5a","#8c939a","#4a8fd8"],REL=["나","식상","재성","관성","인성"],RD=["일간","내가 생함","내가 다룸","나를 다스림","나를 생함"];
+    var pos=[],i,k,out="";
+    for(k=0;k<5;k++){var a=(-90+72*k)*Math.PI/180;pos.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}
+    var el=function(k){return (me+k)%5;},rad=function(k){return 20+Math.min(cnt[el(k)],4)*5;};
+    var arrow=function(a,b,ra,rb,cls,lab){var dx=b[0]-a[0],dy=b[1]-a[1],L=Math.sqrt(dx*dx+dy*dy),ux=dx/L,uy=dy/L,x1=a[0]+ux*(ra+4),y1=a[1]+uy*(ra+4),x2=b[0]-ux*(rb+7),y2=b[1]-uy*(rb+7);
+      return '<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" class="'+cls+'" marker-end="url(#oh-'+cls+')"/>'+(lab?'<text x="'+((x1+x2)/2+uy*12).toFixed(1)+'" y="'+((y1+y2)/2-ux*12+4).toFixed(1)+'" text-anchor="middle" class="oh-lab">'+lab+'</text>':'');};
+    for(k=0;k<5;k++)out+=arrow(pos[k],pos[(k+2)%5],rad(k),rad((k+2)%5),"oh-k","");
+    for(k=0;k<5;k++)out+=arrow(pos[k],pos[(k+1)%5],rad(k),rad((k+1)%5),"oh-s",SJ_EL[el(k)]+"생"+SJ_EL[el(k+1)]);
+    for(k=0;k<5;k++){var e=el(k),x=pos[k][0],y=pos[k][1],r=rad(k),below=y>cy;
+      out+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r+'" fill="'+CO[e]+'" class="oh-c'+(k===0?' me':'')+'"/>'+
+        '<text x="'+x.toFixed(1)+'" y="'+(y-2).toFixed(1)+'" text-anchor="middle" class="oh-n">'+SJ_EL[e]+'('+HN[e]+')</text>'+
+        '<text x="'+x.toFixed(1)+'" y="'+(y+13).toFixed(1)+'" text-anchor="middle" class="oh-n">'+cnt[e]+'개</text>'+
+        '<text x="'+x.toFixed(1)+'" y="'+(below?y+r+15:y-r-18).toFixed(1)+'" text-anchor="middle" class="oh-r">'+REL[k]+' · '+RD[k]+(e===yong?' · <tspan class="oh-y">용신</tspan>':'')+'</text>';}
+    return '<style>.oh-svg{width:100%;max-width:360px;display:block;margin:0 auto 6px;height:auto}.oh-s{stroke:#5aa86a;stroke-width:2}.oh-k{stroke:#e06b62;stroke-width:1.4;stroke-dasharray:5 4;opacity:.75}'+
+      '.oh-c{stroke:#fff;stroke-width:3}.oh-c.me{stroke:#3b6fd8;stroke-width:4}.oh-n{font-size:12px;font-weight:800;fill:#fff}.oh-r{font-size:11px;fill:var(--muted)}.oh-y{fill:#2f8f5b;font-weight:800}.oh-lab{font-size:10px;fill:#5aa86a}</style>'+
+      '<svg class="oh-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="오행 분포 오각형: '+SJ_EL.map(function(n,j){return n+" "+cnt[j]+"개";}).join(", ")+'">'+
+      '<defs><marker id="oh-oh-s" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5aa86a"/></marker><marker id="oh-oh-k" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e06b62"/></marker></defs>'+
+      out+'</svg><p style="text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px">초록 화살표는 낳아 주는 관계(상생), 빨간 점선은 누르는 관계(상극)일세.</p>';}
   function sjSinLink(name,label){var en=SJ_SINSAL_EN[name];return en?'<a href="sinsal-'+en+'.html">'+label+'</a>':label;}
   // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
   var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)

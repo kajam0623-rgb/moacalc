@@ -43,10 +43,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     /* 입력은 한 화면에 질문 하나(보살이 묻는다) — 진행 막대와 이전·다음, '한 번에 입력'으로 예전처럼 다 펼칠 수도 있다.
        입력칸(#d·#t·#c·#tm·#nm·#g·#q)과 #go 는 그대로라 계산·자동 실행(#go)·생일 불러오기는 바뀌지 않는다 */
     el.innerHTML='<div class="wz"><div class="wz-top"><span class="wz-n"></span><button type="button" class="wz-all">한 번에 입력</button></div><div class="wz-bar"><i></i></div><p class="wz-q"></p>'+
-    '<div class="wz-s" data-q="자네를 뭐라고 불러 줄까? 비워 둬도 되네.">'+
-    // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
-    // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
-    '<label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
     '<div class="wz-s" data-q="언제 태어났나? 양력 생일을 넣게."><label for="d">생년월일 (양력)</label><input type="date" id="d" value="1990-03-15"></div>'+
     '<div class="wz-s" data-q="몇 시쯤 태어났나? 모르면 그냥 넘어가도 되네."><label>태어난 시각 (12시진)</label><select id="t"><option value="">모름 (시주 제외)</option>'+
     // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
@@ -54,6 +50,10 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
     '<div style="margin-top:10px"><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
     '<div class="wz-s" data-q="10년 흐름의 방향을 보려면 성별이 필요하네."><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
+    '<div class="wz-s" data-q="자네를 뭐라고 불러 줄까? 비워 둬도 되네.">'+
+    // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
+    // 물음을 받으면 상담이 된다. 계산은 같고 무엇을 앞에 놓느냐가 달라진다
+    '<label for="nm">이름 (선택 · 결과에 호칭으로만 씁니다)</label><input type="text" id="nm" maxlength="10" placeholder="예: 민지" value=""></div>'+
     '<div class="wz-s" data-q="마지막일세. 제일 궁금한 게 뭔가?"><label>제일 궁금한 것</label><select id="q">'+
       '<option value="all">전체 다 보기</option>'+
       '<option value="money">재물 — 언제 큰돈이 붙나</option>'+
@@ -64,7 +64,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button></div>'+
     '<div class="wz-nav"><button type="button" class="wz-prev">← 이전</button><button type="button" class="wz-next">다음 →</button></div></div>'+
     '<div id="out"></div>';
-    (function(){var W=el.querySelector(".wz"),S=[].slice.call(W.querySelectorAll(".wz-s")),i=0,all=false;
+    (function(){var W=el.querySelector(".wz"),S=[].slice.call(W.querySelectorAll(".wz-s")),i=0,all=true;   // 2026-10-10: 처음부터 한 번에 입력(다 펼침)
       function show(){W.classList.toggle("wz-flat",all);S.forEach(function(s,k){s.classList.toggle("cur",k===i);});
         W.querySelector(".wz-q").textContent=S[i].getAttribute("data-q");W.querySelector(".wz-n").textContent=(i+1)+" / "+S.length;
         W.querySelector(".wz-bar i").style.width=((i+1)/S.length*100)+"%";W.querySelector(".wz-prev").style.visibility=i&&!all?"visible":"hidden";
@@ -600,7 +600,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         ' 그래서 용신은 <b>'+yEl+'</b>, 보조로 '+y2El+josa(y2El,"를/을")+' 쓰네. 이 기운을 가까이 둘수록 일이 순하게 풀려.<br><br>'+strengthBand(st.ratio)+'</p></div>'+
         '<div class="sj-sec"><h3>나를 받쳐 주는 기운 (용신) — '+yEl+'</h3><p>'+yongWhy+'<br><br>'+
         '옷이나 물건은 <b>'+Y.color+'</b> 쪽으로, 이사나 사무실은 <b>'+Y.dir+'</b> 방향으로 잡게. 큰일은 '+Y.season+'에 벌이면 결이 맞고, 지칠 땐 '+Y.act+'으로 기운을 돌리게.</p></div>'+
-        '<div class="sj-sec"><h3>다섯 기운의 균형 (오행)</h3><p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')'+josa(mn,"가/이")+' 상대적으로 적은 편이네. 강한 기운은 자네의 재능이고, 지나칠 때만 조금 조절해 주면 되네. 덜 채워진 '+mn+' 기운을 일부러 곁에 두면 균형이 잡히네.'+
+        '<div class="sj-sec"><h3>다섯 기운의 균형 (오행)</h3>'+sjOhaengSvg(cnt,SJ_ES[ds],SJ_EL.indexOf(yEl))+'<p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mx+'('+ELDESC[mx]+')의 기운이 가장 강하고 '+mn+'('+ELDESC[mn]+')'+josa(mn,"가/이")+' 상대적으로 적은 편이네. 강한 기운은 자네의 재능이고, 지나칠 때만 조금 조절해 주면 되네. 덜 채워진 '+mn+' 기운을 일부러 곁에 두면 균형이 잡히네.'+
         '<br><br>여덟 글자를 오행으로 나누면 '+SJ_EL.map(function(e,i){return e+' '+cnt[i];}).join(" · ")+'일세. '+EL_HI[mx]+
         '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?mn+' 기운은 한 자리도 들지 않았네. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
         '<div class="sj-sec"><h3>내 삶이 도는 축 (십성)</h3><p>'+gTxt+'<br><br>'+
