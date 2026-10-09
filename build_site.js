@@ -1235,6 +1235,12 @@ function todayFortune(dt){
   out.zodiacfortune = `<section class="guide"><h2>오늘의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt} 오늘 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다. 띠를 누르면 오늘 풀이가 이어집니다.`) +
     `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}</li>`).join("")}</ul></section>`;
+  // 오늘 생일인 유명인(celeb.html #bday-sv, 2026-10-10) — 네이버 오늘생일연예인 360. 그날 월·일이 같은 위키데이터 인물, 유명한 순 12명
+  { const md = String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
+    const L = require("./content_celeb.json").rows.filter(r => r[1].slice(5) === md).slice(0, 12);
+    out.bday = `<section class="guide"><h2>오늘 생일인 연예인 — ${day}</h2>` + (L.length
+      ? `<div class="sibs">${L.map(([ko, b, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${b.slice(0, 4)}년생</small></span>`).join("")}</div>`
+      : `<p>오늘 생일인 유명인은 자료에 없습니다.</p>`) + NOTE("생일은 위키데이터 공개 자료이고, 매일 한국 시각 0시에 바뀝니다.") + `</section>`; }
   // 오늘의 행운의 숫자(lucky.html, 2026-10-09) — 하도(河圖) 오행 수: 수 1·6, 화 7·2, 목 3·8, 금 9·4, 토 5·10 (양=홀수, 음=짝수)
   { const HADO = { 목: [3, 8], 화: [7, 2], 토: [5, 10], 금: [9, 4], 수: [1, 6] }, SE = ["목","목","화","화","토","토","금","금","수","수"], BE = ["수","토","목","목","토","화","화","토","금","금","토","수"],
       GEN = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" }, EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" }, s = today.d.s, b = today.d.b, dayN = HADO[SE[s]][s % 2], dayB = HADO[BE[b]][b % 2];
@@ -2034,8 +2040,8 @@ function celebPage() {
     url: `${DOMAIN}/celeb.html`, img: "img/bosal/cheer.webp", hero: "img/tool/h-saju.webp",
     h1: "닮은 연예인 찾기 — 사주로", sub: `배우·가수·운동선수 ${n.toLocaleString()}명 · 생년월일만 넣으면 끝`,
     parent: "saju.html", parentName: "사주팔자", tool: "saju", noTool: true,
-    tags: ["닮은 연예인 찾기", "사주 닮은 연예인", "연예인 사주", "나와 닮은 연예인", "생일 같은 연예인"],
-    body: `<div class="sjw" id="cbw"><h2>나와 사주가 닮은 유명인</h2><label for="cbd">생년월일 (양력)</label><div class="sjw-row"><input id="cbd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="cbgo">닮은 유명인 찾기</button></div><p class="sjw-note">생일은 이 화면에서만 계산하고 서버로 보내지 않습니다.</p><div id="cbo" aria-live="polite"></div></div>` + js +
+    tags: ["닮은 연예인 찾기", "사주 닮은 연예인", "연예인 사주", "나와 닮은 연예인", "오늘 생일인 연예인", "생일 같은 연예인"],
+    body: `<div id="bday-sv"></div><div class="sjw" id="cbw"><h2>나와 사주가 닮은 유명인</h2><label for="cbd">생년월일 (양력)</label><div class="sjw-row"><input id="cbd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="cbgo">닮은 유명인 찾기</button></div><p class="sjw-note">생일은 이 화면에서만 계산하고 서버로 보내지 않습니다.</p><div id="cbo" aria-live="polite"></div></div>` + js +
       sec("얼굴 말고 사주로 닮은꼴", para(`닮은 연예인 찾기는 보통 얼굴 사진으로 하지만, 여기서는 태어난 날의 기운으로 봅니다. 나를 뜻하는 글자(일간)가 같은지, 태어난 날의 짝(일주)까지 같은지, 태어난 계절이 같은지, 다섯 기운(오행)이 비슷하게 섞였는지를 따져 100점 만점으로 매깁니다.\n유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교합니다. 유명인의 생일은 위키데이터 공개 자료에서 가져왔고, 정치인과 공직자는 넣지 않았습니다.`)) +
       sec("점수는 이렇게 매깁니다", `<ul><li>나를 뜻하는 글자(일간)가 같으면 30점, 같은 오행이면 15점</li><li>태어난 날의 짝(일주)까지 같으면 20점 더</li><li>태어난 계절(봄·여름·가을·겨울)이 같으면 20점</li><li>다섯 기운의 구성이 비슷할수록 최대 30점</li></ul><p style="color:var(--muted);font-size:13px;margin:8px 0 0">점수가 같으면 더 널리 알려진 사람이 먼저 나옵니다. 재미로 보는 비교이고, 같은 사주라도 삶은 사람마다 다릅니다.</p>`) +
       sec("내 사주 더 보기", `<p style="margin-bottom:10px">닮은 유명인과 함께 내 사주 전체 풀이는 <a href="saju.html">무료 사주풀이</a>, 나를 뜻하는 일주의 성격은 <a href="dict.html">사주 사전(60일주)</a>, 친구와의 궁합은 <a href="gunghap.html">사주 궁합</a>과 <a href="mbti.html">MBTI 궁합</a>에서 볼 수 있습니다.</p>`),
