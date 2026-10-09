@@ -1728,6 +1728,7 @@ function nybPage(y) {
        ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
         .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
       `<div class="res ttisum"><span>한 줄로</span><b>${esc(t.sum)}</b></div></div>` +
+      luckGoodsSec(`${yy}년생`, ZODIAC_PAGES.find(z => z.en === f.en).ele, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">${esc(A)} 기준입니다. 1월~2월 초 생일이면 띠가 앞 해일 수 있으니 아래 '띠가 바뀌는 날'을 보세요.</p>`) +
       `<div class="intro">${bodyCut("zoc-" + f.en, A + " 상징")}${para(t.all)}</div>` +
       sec(`${y}년생의 일과 돈`, para(t.work)) + sec(`사람과 가족`, para(t.people)) + sec(`건강과 생활`, para(t.life)) +
       `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
@@ -2523,6 +2524,7 @@ function ilganPage(g){
       [["천간",`${g.han} ${g.ko}`],["오행",g.el],["음양",`${g.yy}간`],["상징",g.metaphor],["잘 맞는 일간",g.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>조율이 필요한 일간</span><b>${esc(g.hard.join(" · "))}</b></div></div>`+
+      luckGoodsSec(`${g.ko}${g.el} 일간`, g.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`)+
       `<div class="intro">${para(g.intro)}</div>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 연애</h2><div class="intro" style="margin-top:0">${para(g.love)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
