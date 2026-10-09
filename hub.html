@@ -1152,8 +1152,8 @@
     for(i=0;i<5;i++)d+=Math.abs(a.el[i]-b.el[i]);s+=Math.round(30*(1-d/12));if(d<=2)why.push("오행 구성이 비슷함");
     return {s:s,why:why};}
   var SJ_CELEB=null;
-  function sjCelebFill(box,p){if(!box)return;var me=sjCelebFeat(p);
-    function draw(){var rows=SJ_CELEB.map(function(r){var o=sjCelebScore(me,{ds:r[3],db:r[4],mb:r[5],el:r[6]});return {r:r,s:o.s,why:o.why};}).sort(function(a,b){return b.s-a.s;}).slice(0,3);
+  function sjCelebFill(box,p,N){if(!box)return;var me=sjCelebFeat(p);N=N||3;
+    function draw(){var rows=SJ_CELEB.map(function(r){var o=sjCelebScore(me,{ds:r[3],db:r[4],mb:r[5],el:r[6]});return {r:r,s:o.s,why:o.why};}).sort(function(a,b){return b.s-a.s;}).slice(0,N);
       box.innerHTML='<h3>자네와 사주가 닮은 유명인</h3>'+rows.map(function(x){return '<div class="exbox" style="margin-top:8px"><b>'+x.r[0]+'</b> <span style="color:var(--muted);font-size:13px">'+x.r[2]+' · '+x.r[1]+'</span><span style="float:right;font-weight:700">닮은 정도 '+x.s+'점</span><p style="margin:6px 0 0;font-size:14px">'+(x.why.length?x.why.join(" · "):"전체 기운의 짜임이 비슷함")+'</p></div>';}).join("")+
         '<button type="button" class="ttibtn sj-celeb-share" style="margin-top:10px">닮은 유명인 친구한테 자랑하기</button>'+'<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했네. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료일세. 재미로 보게.</p>';
       var sb=box.querySelector(".sj-celeb-share");if(sb&&rows[0]){var idle=sb.textContent;sb.addEventListener("click",function(){try{track("share_click",{tool:"celeb"});}catch(e){}

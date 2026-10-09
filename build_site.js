@@ -1997,6 +1997,35 @@ function cal2027Page() {
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
 }
 
+// ── 사주로 닮은 연예인 찾기(celeb.html, 2026-10-10) — 네이버 닮은연예인찾기 8,060·연예인사주 580. 계산은 core.js 의 sjCelebFill(사주 결과와 같은 점수)
+function celebPage() {
+  const n = require("./content_celeb.json").rows.length;
+  const js = `<script>document.addEventListener("DOMContentLoaded",function(){var i=document.getElementById("cbd"),o=document.getElementById("cbo");function go(){var v=(i.value||"").replace(/\\D/g,"");` +
+    `if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 여덟 자리로 넣어 주세요.</p>';return}var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8);if(!(y>=1900&&y<=2100&&m>=1&&m<=12&&d>=1&&d<=31)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}` +
+    `if(typeof sjCelebFill!=="function"||typeof sjPillars!=="function"){o.innerHTML='<p class="sjw-note">계산기를 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.</p>';return}` +
+    `sjCelebFill(o,sjPillars(y,m,d,null,0,false),5);try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"celeb"}))}catch(e){}}` +
+    `document.getElementById("cbgo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})});</script>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "닮은 연예인 찾기", date: "2026-10-10",
+    title: "닮은 연예인 찾기 — 사주로 보는 나와 닮은 연예인·운동선수 | 동네보살",
+    desc: `생년월일만 넣으면 배우·가수·운동선수 ${n.toLocaleString()}명 가운데 나와 사주가 가장 닮은 유명인 5명을 찾아 드립니다. 얼굴이 아니라 타고난 기운으로 보는 닮은꼴, 무료입니다.`,
+    url: `${DOMAIN}/celeb.html`, img: "img/bosal/cheer.webp", hero: "img/tool/h-saju.webp",
+    h1: "닮은 연예인 찾기 — 사주로", sub: `배우·가수·운동선수 ${n.toLocaleString()}명 · 생년월일만 넣으면 끝`,
+    parent: "saju.html", parentName: "사주팔자", tool: "saju", noTool: true,
+    tags: ["닮은 연예인 찾기", "사주 닮은 연예인", "연예인 사주", "나와 닮은 연예인", "생일 같은 연예인"],
+    body: `<div class="sjw" id="cbw"><h2>나와 사주가 닮은 유명인</h2><label for="cbd">생년월일 (양력)</label><div class="sjw-row"><input id="cbd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="cbgo">닮은 유명인 찾기</button></div><p class="sjw-note">생일은 이 화면에서만 계산하고 서버로 보내지 않습니다.</p><div id="cbo" aria-live="polite"></div></div>` + js +
+      sec("얼굴 말고 사주로 닮은꼴", para(`닮은 연예인 찾기는 보통 얼굴 사진으로 하지만, 여기서는 태어난 날의 기운으로 봅니다. 나를 뜻하는 글자(일간)가 같은지, 태어난 날의 짝(일주)까지 같은지, 태어난 계절이 같은지, 다섯 기운(오행)이 비슷하게 섞였는지를 따져 100점 만점으로 매깁니다.\n유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교합니다. 유명인의 생일은 위키데이터 공개 자료에서 가져왔고, 정치인과 공직자는 넣지 않았습니다.`)) +
+      sec("점수는 이렇게 매깁니다", `<ul><li>나를 뜻하는 글자(일간)가 같으면 30점, 같은 오행이면 15점</li><li>태어난 날의 짝(일주)까지 같으면 20점 더</li><li>태어난 계절(봄·여름·가을·겨울)이 같으면 20점</li><li>다섯 기운의 구성이 비슷할수록 최대 30점</li></ul><p style="color:var(--muted);font-size:13px;margin:8px 0 0">점수가 같으면 더 널리 알려진 사람이 먼저 나옵니다. 재미로 보는 비교이고, 같은 사주라도 삶은 사람마다 다릅니다.</p>`) +
+      sec("내 사주 더 보기", `<p style="margin-bottom:10px">닮은 유명인과 함께 내 사주 전체 풀이는 <a href="saju.html">무료 사주풀이</a>, 나를 뜻하는 일주의 성격은 <a href="dict.html">사주 사전(60일주)</a>, 친구와의 궁합은 <a href="gunghap.html">사주 궁합</a>과 <a href="mbti.html">MBTI 궁합</a>에서 볼 수 있습니다.</p>`),
+    faq: [["얼굴로 닮은 연예인을 찾는 건가요?", "아닙니다. 생년월일로 계산한 사주(타고난 기운)가 닮은 유명인을 찾습니다. 사진은 쓰지 않습니다."],
+      ["유명인 생일은 어디서 가져왔나요?", `위키데이터 공개 자료에서 생년월일이 날짜까지 나온 한국 인물 ${n.toLocaleString()}명을 가져왔습니다. 정치인과 공직자는 뺐습니다.`],
+      ["태어난 시각을 넣으면 더 정확해지나요?", "유명인 대부분은 태어난 시각이 알려지지 않아 연·월·일 세 기둥만 비교합니다. 내 사주 전체는 사주풀이에서 시각까지 넣어 보세요."],
+      ["점수가 높으면 그 사람처럼 되나요?", "같은 기운을 타고났다는 재미있는 비교일 뿐이고, 삶은 사람마다 다릅니다. 닮은 점에서 내 강점을 찾아보는 정도로 즐겨 주세요."]],
+    sibTitle: "사주 함께 보기", sibs: `<div class="sibs"><a href="saju.html">무료 사주풀이</a><a href="dict.html">60일주 사전</a><a href="sinsal.html">신살 모음</a><a href="mbti.html">MBTI 궁합</a><a href="gunghap.html">궁합</a></div>`,
+    related: ["saju", "gunghap", "todayfortune", "tarot"] });
+}
+
 // ── 주역 64괘(juyeok.html, 2026-10-09) — 원고 content_juyeok.js(위키백과 King Wen 표, 한국식 이름 대조). 점은 화면에서 여섯 효를 뽑는다(서버로 보내지 않음)
 const JY = require("./content_juyeok.js");
 function juyeokPage() {
@@ -3536,7 +3565,7 @@ function indexPage(){
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/crystal.webp" alt="수정구를 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>오늘의 별자리 순위</h2><p>오늘 달의 자리와 요일의 별로 매긴 12별자리 순위 — 자정마다 바뀝니다</p></div>
 <ol class="zrank" id="srank"><li class="zr-wait">순위를 매기는 중…</li></ol>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/heart.webp" alt="하트를 든 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>지금 고민이 뭔가요</h2><p>상황에 맞는 곳으로 바로 갑니다</p></div>
-<nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html?q=money"><img class="bosal situ-bosal" src="img/bosal/s/talisman.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>언제 돈이 붙을까</b><span>재물 풀이 — 내 사주로 보는 큰돈 시기</span></div></a><a href="saju.html?q=love"><img class="bosal situ-bosal" src="img/bosal/s/lantern.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>언제 인연이 닿을까</b><span>인연 풀이 — 내 사주로 보는 만남의 때</span></div></a><a href="saju.html?q=health"><img class="bosal situ-bosal" src="img/bosal/s/point.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>어디를 먼저 챙길까</b><span>건강 풀이 — 타고난 기운으로 보는 몸 살피기</span></div></a><a href="saju.html?q=job"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a><a href="sinsal.html"><img class="bosal situ-bosal" src="img/bosal/s/magnifier.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>내 사주에 도화살 있을까</b><span>신살 모음 — 도화·역마·화개·천을귀인 12가지</span></div></a><a href="calendar-2027.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>2027년엔 언제 쉬지</b><span>2027년 달력 — 공휴일·대체공휴일·연휴</span></div></a><a href="love.html"><img class="bosal situ-bosal" src="img/bosal/s/phone.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 먼저 연락해도 될까</b><span>오늘의 연애운 — 띠별·별자리별 애정운</span></div></a><a href="mbti.html"><img class="bosal situ-bosal" src="img/bosal/s/cheer.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>MBTI로 보면 우리 몇 점</b><span>MBTI 궁합 — 16유형 궁합표</span></div></a><a href="sonless.html"><img class="bosal situ-bosal" src="img/bosal/s/diary.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이사 날짜 언제로 잡지</b><span>손 없는 날 달력 — 이번 달·다음 달</span></div></a><a href="tti-gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/smile.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>띠로 보면 우리 잘 맞을까</b><span>띠별 궁합 — 열두 띠 궁합표와 짝별 풀이</span></div></a></nav>
+<nav class="situ"><a href="tarot.html"><img class="bosal situ-bosal" src="img/bosal/s/tarot.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>그 사람 마음이 궁금해</b><span>연애 타로 — 내 마음·그 사람 마음·둘의 앞날</span></div></a><a href="gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/heart.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>우리 둘, 잘 맞을까</b><span>사주 궁합 — 끌림·안정·소통·생활</span></div></a><a href="saju.html?q=money"><img class="bosal situ-bosal" src="img/bosal/s/talisman.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>언제 돈이 붙을까</b><span>재물 풀이 — 내 사주로 보는 큰돈 시기</span></div></a><a href="saju.html?q=love"><img class="bosal situ-bosal" src="img/bosal/s/lantern.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>언제 인연이 닿을까</b><span>인연 풀이 — 내 사주로 보는 만남의 때</span></div></a><a href="saju.html?q=health"><img class="bosal situ-bosal" src="img/bosal/s/point.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>어디를 먼저 챙길까</b><span>건강 풀이 — 타고난 기운으로 보는 몸 살피기</span></div></a><a href="saju.html?q=job"><img class="bosal situ-bosal" src="img/bosal/s/scroll.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이직·이사, 언제 움직일까</b><span>사주 — 10년 흐름과 올해 흐름</span></div></a><a href="newyear.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>올해 전체 흐름이 궁금해</b><span>신년운세 — 상반기·하반기와 달마다</span></div></a><a href="todayfortune.html"><img class="bosal situ-bosal" src="img/bosal/s/crystal.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 뭘 조심할까</b><span>오늘의 운세 — 피해야 할 것 하나</span></div></a><a href="celeb.html"><img class="bosal situ-bosal" src="img/bosal/s/smile.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>나랑 사주 닮은 연예인은?</b><span>닮은 연예인 찾기 — 배우·가수·운동선수</span></div></a><a href="sinsal.html"><img class="bosal situ-bosal" src="img/bosal/s/magnifier.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>내 사주에 도화살 있을까</b><span>신살 모음 — 도화·역마·화개·천을귀인 12가지</span></div></a><a href="calendar-2027.html"><img class="bosal situ-bosal" src="img/bosal/s/newyear.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>2027년엔 언제 쉬지</b><span>2027년 달력 — 공휴일·대체공휴일·연휴</span></div></a><a href="love.html"><img class="bosal situ-bosal" src="img/bosal/s/phone.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>오늘 먼저 연락해도 될까</b><span>오늘의 연애운 — 띠별·별자리별 애정운</span></div></a><a href="mbti.html"><img class="bosal situ-bosal" src="img/bosal/s/cheer.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>MBTI로 보면 우리 몇 점</b><span>MBTI 궁합 — 16유형 궁합표</span></div></a><a href="sonless.html"><img class="bosal situ-bosal" src="img/bosal/s/diary.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>이사 날짜 언제로 잡지</b><span>손 없는 날 달력 — 이번 달·다음 달</span></div></a><a href="tti-gunghap.html"><img class="bosal situ-bosal" src="img/bosal/s/smile.webp" alt="" loading="lazy" decoding="async" onerror="this.remove()"><div><b>띠로 보면 우리 잘 맞을까</b><span>띠별 궁합 — 열두 띠 궁합표와 짝별 풀이</span></div></a></nav>
 <div class="sect"><img class="bosal sect-bosal" src="img/bosal/s/point.webp" alt="짚어 주는 아기보살" loading="lazy" decoding="async" onerror="this.remove()"><h2>동네보살은 이렇게 다릅니다</h2><p>다른 운세 서비스에서 가장 불편했던 것부터 뺐습니다</p></div>
 <div class="diff"><div><b>결제 벽이 없습니다</b><p>결과를 다 보려면 돈을 내라는 구간이 없습니다. 충전·코인·멤버십도 없고, 한 번 무료로 연 기능은 잠그지 않습니다.</p></div><div><b>생일을 서버로 보내지 않습니다</b><p>가입을 받지 않고, 넣은 생년월일은 서버로 보내지 않으며 직접 저장을 누르기 전에는 이 기기에도 남기지 않습니다. 홈의 오늘 카드에서 자세히나 내 사주 보기로 넘어갈 때만 다음 화면이 읽을 때까지 이 탭에 잠깐 두었다가 읽는 즉시 지웁니다. 계산은 전부 이 브라우저 안에서 합니다.</p></div><div><b>왜 그렇게 나왔는지 보여 줍니다</b><p>점수와 문장마다 어느 글자와 어느 글자의 관계에서 나왔는지 적어 둡니다. 절기는 태양황경으로 그 해의 실제 시각을 계산합니다.</p></div><div><b>하루는 하나입니다</b><p>같은 사람에게 오늘의 운세와 띠·별자리 운세가 서로 반대로 말하지 않습니다. 개인 운세가 기준이고 띠·별자리는 공통 분위기로 보여 줍니다.</p></div></div>
 ${basisHtml}
@@ -3659,7 +3688,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3766,6 +3795,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [닮은 연예인 찾기 — 사주로](${DOMAIN}/celeb.html): 생년월일로 위키데이터 한국 유명인(배우·가수·운동선수 등, 정치·공직 제외) 가운데 사주가 닮은 5명. 점수 = 같은 일간 30(같은 오행 15)·일주 20·계절 20·오행 구성 30, 연·월·일 세 기둥.
 - [주역 64괘](${DOMAIN}/juyeok.html): 64괘 이름(중천건·중지곤·수뢰둔…), 위아래 괘, 괘마다 큰 뜻 한 줄(문왕 차례, 위키백과 표 기준), 여섯 효를 뽑는 주역 점.
 - [잘 때 머리 방향·침대 방향](${DOMAIN}/bed-direction.html): 팔택풍수 본명괘(태어난 해 네 자리 합 → 남 11-n·여 n+4, 5는 남2·여8, 입춘 경계)로 천의·복위·생기·연년 방향 계산, 침대 위치·현관 거울 풍수, 북쪽 머리 풍습.
 - [부적](${DOMAIN}/bujeok.html): 부적 종류(합격·재물·삼재·건강·인연·안택)와 뜻, 전통적으로 지니던 방법, 화면에서 그리는 보살 부적 카드(카톡 공유). 효과를 장담하지 않는 민속 문화로 소개.
@@ -4178,6 +4208,7 @@ fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
 fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
 fs.writeFileSync(path.join(OUT,"bed-direction.html"), bedDirPage());
 fs.writeFileSync(path.join(OUT,"juyeok.html"), juyeokPage());
+fs.writeFileSync(path.join(OUT,"celeb.html"), celebPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4333,6 +4364,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/celeb.html", "닮은 연예인 찾기 — 사주로 보는 나와 닮은 유명인", "생년월일만 넣으면 배우·가수·운동선수 가운데 사주가 가장 닮은 유명인 5명을 찾아 드립니다."],
   [DOMAIN + "/juyeok.html", "주역 64괘 — 괘 이름과 뜻, 주역 점", "64괘 이름과 위아래 괘, 괘마다의 큰 뜻을 쉬운 말로. 여섯 효를 뽑아 오늘의 괘를 받아 보세요."],
   [DOMAIN + "/bed-direction.html", "잘 때 머리 방향·침대 방향 — 본명괘 계산기", "생년월일로 본명괘를 계산해 건강·숙면에 좋은 머리 방향을 알려 드립니다. 침대 위치와 현관 거울 풍수까지."],
   [DOMAIN + "/bujeok.html", "부적 — 합격·재물·삼재 부적 종류와 뜻", "부적의 뜻과 종류, 예부터 지니던 방법. 보살 부적 카드를 한 장 골라 카톡으로 보내 보세요."],
@@ -4362,7 +4394,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 88);
+].slice(0, 120 + 89);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
