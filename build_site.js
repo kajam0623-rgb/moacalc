@@ -1862,7 +1862,7 @@ function ttiPage() {
       sec("띠 앞에 붙는 색 — 붉은 말, 붉은 양, 노란 원숭이", para(X.color)) +
       sec("띠는 언제 바뀌나요 — 입춘과 설날", para(X.when).replace("사주팔자 만세력", '<a href="saju.html">사주팔자 만세력</a>')) +
       sec("만 나이와 연 나이", para(X.age)) +
-      sec("띠로 이어 보기", `<p style="margin-bottom:10px">띠마다 성격과 오늘의 운세는 <a href="zodiacfortune.html">띠별 운세</a>, 두 띠가 잘 맞는지는 <a href="tti-gunghap.html">띠 궁합</a>, 삼재 연도는 <a href="samjae.html">삼재 계산기</a>, 태어난 해로 보는 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에 있습니다.</p>`) +
+      sec("띠로 이어 보기", `<p style="margin-bottom:10px">띠마다 성격과 오늘의 운세는 <a href="zodiacfortune.html">띠별 운세</a>, 두 띠가 잘 맞는지는 <a href="tti-gunghap.html">띠 궁합</a>, 삼재 연도는 <a href="samjae.html">삼재 계산기</a>, 아홉수는 <a href="ahopsu.html">아홉수 계산기</a>, 태어난 해로 보는 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에 있습니다.</p>`) +
       `<p style="color:var(--muted);font-size:13px;margin:12px 0 0">${esc(X.note)}</p>`,
     faq: X.faq,
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
@@ -1965,6 +1965,35 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 아홉수 계산기(ahopsu.html, 2026-10-09) — 네이버 아홉수 4,400. 세는 나이(한국식) 끝자리 9 가 전통 기준, 만 나이 기준도 함께 보여 준다
+function ahopsuPage() {
+  const Y = KST_NOW.getUTCFullYear(), list = y => [9, 19, 29, 39, 49, 59, 69, 79, 89].map(a => y - a + 1);
+  const row = y => `<tr><th scope="row">${y}년</th><td>${list(y).map(b => `${b}년생<small>(${y - b + 1}세)</small>`).join(" · ")}</td></tr>`;
+  const js = `<script>(function(){var Y=${Y},i=document.getElementById("ahy"),o=document.getElementById("aho");function go(){var b=parseInt(i.value,10);if(!(b>1900&&b<=Y)){o.innerHTML='<p class="sjw-note">태어난 해를 네 자리로 넣어 주세요(예: 1998).</p>';return}var h='',nx=[];for(var a=9;a<=99;a+=10){var yr=b+a-1;if(yr>=Y-1)nx.push(yr)}` +
+    `var now=Y-b+1,man=Y-b;h+='<div class="res"><span>${Y}년 세는 나이</span><b>'+now+'세'+(now%10===9?' — 올해가 아홉수예요':'')+'</b></div>';h+='<div class="res"><span>${Y}년 만 나이(생일 지난 뒤)</span><b>'+man+'세'+(man%10===9?' — 만 나이로는 올해가 아홉수예요':'')+'</b></div>';` +
+    `h+='<div class="res"><span>다가오는 아홉수 해 (세는 나이)</span><b>'+nx.slice(0,3).map(function(y){return y+'년('+(y-b+1)+'세)'}).join(' · ')+'</b></div>';o.innerHTML=h;try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"ahopsu"}))}catch(e){}}` +
+    `document.getElementById("ahgo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "아홉수 계산기", date: "2026-10-09",
+    title: `아홉수 계산기 — ${Y}·${Y + 1}년 아홉수 나이와 년생, 아홉수 뜻 | 동네보살`,
+    desc: `${Y + 1}년 아홉수는 ${list(Y + 1).slice(1, 5).map(b => b + "년생").join("·")} 등입니다. 태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 바로 알려 드립니다.`,
+    url: `${DOMAIN}/ahopsu.html`, img: "img/tool/h-zodiacfortune.webp", hero: "img/tool/h-zodiacfortune.webp",
+    h1: "아홉수 계산기 — 올해 내 나이는 아홉수일까", sub: "세는 나이 끝자리 9 · 만 나이 기준도 함께",
+    parent: "tti.html", parentName: "띠 계산기", tool: "zodiacfortune", noTool: true,
+    tags: ["아홉수", `${Y + 1} 아홉수`, "아홉수 나이", "아홉수 년생", "아홉수 뜻", "아홉수 결혼", "29살 아홉수"],
+    body: `<div class="sjw" id="ahw"><h2>내 아홉수 확인하기</h2><label for="ahy">태어난 해</label><div class="sjw-row"><input id="ahy" type="text" inputmode="numeric" maxlength="4" placeholder="예) 1998" autocomplete="off"><button type="button" id="ahgo">아홉수 보기</button></div><p class="sjw-note">태어난 해만 쓰고, 서버로 보내지 않습니다.</p><div id="aho" aria-live="polite"></div></div>` + js +
+      `<section class="guide"><h2>해마다 아홉수인 년생 (세는 나이 기준)</h2><div class="sjt-wrap"><table class="sjt"><tbody>${[Y, Y + 1, Y + 2].map(row).join("")}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">괄호 안은 그해의 세는 나이(태어난 해를 1살로 치고 해가 바뀔 때마다 한 살)입니다. 만 나이로 보면 생일이 지난 뒤 한두 살 적습니다.</p></section>` +
+      sec("아홉수란", para(`아홉수는 나이의 끝자리가 9인 해, 곧 19·29·39·49세처럼 열 단위가 바뀌기 바로 앞의 해를 말합니다. 아홉은 한 자리 수 가운데 가장 큰 수라 꽉 차기 직전의 머뭇거림을 뜻한다고 보아, 예부터 이 해에는 혼인이나 이사 같은 큰일을 조심스럽게 정하는 풍습이 있었습니다.\n전통 아홉수는 태어나자마자 한 살로 치는 세는 나이로 셉니다. 2023년부터 법과 행정에서는 만 나이를 쓰지만, 아홉수 풍습은 지금도 세는 나이로 따지는 경우가 많습니다. 위 계산기는 두 기준을 함께 보여 드립니다.`)) +
+      sec("아홉수를 보내는 법", para(`요즘은 아홉수를 피해야 할 해라기보다 다음 열 해를 준비하는 정리의 해로 읽는 사람이 많습니다. 미뤄 둔 건강검진이나 공부, 저축 계획을 이 해에 다져 두면 앞자리가 바뀌는 해를 한결 가볍게 맞을 수 있습니다.\n결혼이나 이사 날짜가 마음에 걸린다면 <a href="sonless.html">손 없는 날 달력</a>이나 <a href="calendar-2027.html">2027년 달력</a>에서 날을 골라 보세요. 두 사람의 띠가 궁금하다면 <a href="tti-gunghap.html">띠 궁합</a>도 함께 볼 수 있습니다.`)),
+    faq: [[`${Y + 1}년 아홉수는 몇 년생인가요?`, `세는 나이 기준으로 ${list(Y + 1).map(b => b + "년생").join(", ")}입니다.`],
+      ["아홉수는 세는 나이인가요, 만 나이인가요?", "전통 아홉수는 세는 나이로 셉니다. 2023년부터 공식 나이는 만 나이지만 아홉수 풍습은 여전히 세는 나이로 따지는 경우가 많아, 위 계산기는 둘 다 보여 드립니다."],
+      ["아홉수에 결혼하면 안 되나요?", "그렇지 않습니다. 큰일을 신중하게 정하라는 옛 풍습일 뿐이고, 요즘은 형편과 마음이 맞는 때를 고르는 집이 많습니다."],
+      ["아홉수는 왜 생겼나요?", "아홉이 한 자리 수의 끝이라 열로 넘어가기 전 머뭇거리는 수로 여겼기 때문입니다. 변화를 앞두고 한 번 더 살피라는 뜻으로 받아들이면 됩니다."]],
+    sibTitle: "나이·띠 함께 보기", sibs: `<div class="sibs"><a href="tti.html">띠 계산기·나이표</a><a href="samjae.html">삼재 계산기</a><a href="newyear.html">2027 신년운세</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a></div>`,
+    related: ["zodiacfortune", "newyear", "tojeong", "gunghap"] });
 }
 
 // ── 신살(sinsal.html 모음 + sinsal-<en>.html 8, 2026-10-09) — 원고 content_sinsal.js. 계산은 쪽에 붙인 사주 도구(t-saju.js 의 sjSinsal)가 한다.
@@ -3451,7 +3480,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3557,6 +3586,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [아홉수 계산기](${DOMAIN}/ahopsu.html): 태어난 해로 올해·내년이 아홉수(세는 나이 끝자리 9)인지, 만 나이 기준과 함께. 해마다 아홉수 년생 표.
 - [2027년 달력](${DOMAIN}/calendar-2027.html): 2027년 공휴일 76일(일요일 포함), 설 연휴 2월 6~9일(대체 9일), 추석 9월 14~16일, 노동절·제헌절 신설, 대체공휴일 7일(2/9·5/3·7/19·8/16·10/4·10/11·12/27). 12달 달력에 24절기·음력 1일·15일·손 없는 날 표시. 우주항공청 2027년도 월력요항 기준.
 - [손 없는 날 달력](${DOMAIN}/sonless.html): 음력 끝자리 9·0(음력 9·10·19·20·29·30일)인 손 없는 날을 이번 달부터 14달 치 양력 날짜·요일로 정리. 이사·결혼·개업 날짜 고르기용, 휴대폰 달력 구독(.ics) 제공.
 - [만세력 보는법](${DOMAIN}/manse-howto.html): 원국표는 오른쪽이 연주, 왼쪽이 시주. 일주의 천간(일간)이 나 자신. 오행 세기 → 십성 → 절기 경계 확인 → 대운 순서로 읽는다. 대운수는 절기까지 날수 ÷ 3.
@@ -3951,6 +3981,7 @@ fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
+fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4104,6 +4135,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/ahopsu.html", "아홉수 계산기 — 올해·내년 아홉수 나이와 년생", "태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 알려 드립니다. 해마다 아홉수 년생 표도 함께."],
   [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
@@ -4128,7 +4160,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 82);
+].slice(0, 120 + 83);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
