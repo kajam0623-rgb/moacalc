@@ -955,7 +955,7 @@ function ogTag(id){
   const heroP = id && fs.existsSync(path.join(IMG_SRC,"tool","h-"+id+".webp"));
   return heroP
     ? `<meta property="og:image" content="${DOMAIN}/img/tool/h-${id}.webp">`
-    : `<meta property="og:image" content="${DOMAIN}/img/og.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
+    : `<meta property="og:image" content="${DOMAIN}/img/og.jpg?v=2"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">`;
 }
 const OG_IMG_TAG = ogTag(null);
 

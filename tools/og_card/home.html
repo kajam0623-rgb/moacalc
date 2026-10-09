@@ -1,0 +1,33 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8">
+<!-- 동네보살 기본 공유 그림(img/og.jpg) 원판, 2026-10-09. 다시 만들 때: py -3 tools/og_card/render.py -->
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1200px;height:630px;overflow:hidden;font-family:"Gowun Dodum",sans-serif;
+  background:radial-gradient(60% 80% at 78% 55%,#ffe6b8 0%,#fff3dc 45%,#fdf7ec 75%),#fdf7ec;position:relative}
+.dots{position:absolute;inset:0;background-image:radial-gradient(#f2c66a 1.6px,transparent 1.7px);background-size:34px 34px;opacity:.28}
+.band{position:absolute;left:0;right:0;top:0;height:14px;background:linear-gradient(90deg,#d93a2b 0 20%,#f2b705 20% 40%,#1f4fa8 40% 60%,#2f8f5b 60% 80%,#f6f4ef 80% 100%)}
+.txt{position:absolute;left:72px;top:96px;width:600px}
+.logo{display:inline-block;font-family:"Black Han Sans";font-size:30px;color:#1b2250;background:#fff;border:3px solid #1b2250;border-radius:14px;padding:6px 16px;transform:rotate(-2deg)}
+h1{margin-top:26px;font-family:"Black Han Sans";font-weight:400;font-size:84px;line-height:1.05;color:#1b2250;letter-spacing:-1px}
+h1 em{font-style:normal;color:#d93a2b}
+.sub{margin-top:18px;font-size:34px;color:#3a3f5c;font-weight:700}
+.chips{margin-top:28px;display:flex;gap:12px;flex-wrap:wrap}
+.chips span{font-size:23px;font-weight:700;padding:10px 18px;border-radius:999px;background:#1b2250;color:#fff}
+.chips span.y{background:#f2b705;color:#2a1d00}
+.big{position:absolute;right:120px;bottom:-14px;width:420px;filter:drop-shadow(0 18px 30px rgba(180,120,30,.35))}
+.s1{position:absolute;right:28px;top:56px;width:190px;transform:rotate(8deg)}
+.s2{position:absolute;right:520px;bottom:28px;width:150px;transform:rotate(-6deg)}
+.bubble{position:absolute;right:420px;top:70px;background:#fff;border:3px solid #1b2250;border-radius:22px;padding:12px 20px;font-size:28px;font-weight:700;color:#1b2250}
+.bubble:after{content:"";position:absolute;right:-18px;bottom:16px;border:12px solid transparent;border-left:18px solid #1b2250}
+</style></head><body>
+<div class="dots"></div><div class="band"></div>
+<div class="txt">
+  <div class="logo">동네보살</div>
+  <h1>사주·운세<br><em>끝까지 무료</em></h1>
+  <p class="sub">생년월일만 넣으면 보살이 봐 드림</p>
+  <div class="chips"><span class="y">가입·결제 없음</span><span>사주</span><span>오늘 운세</span><span>타로</span><span>궁합</span></div>
+</div>
+<img class="s1" src="../../img/bosal/tarot.webp" alt="">
+<img class="big" src="../../img/bosal/cheer.webp" alt="">
+</body></html>
