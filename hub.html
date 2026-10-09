@@ -1189,7 +1189,7 @@
   // 오행 오각형(2026-10-10, 경쟁 서비스 벤치마킹) — 나(일간 오행)를 맨 위, 시계 방향으로 상생 순서(식상→재성→관성→인성).
   // 바깥 초록 화살표 = 상생, 안쪽 빨간 점선 = 상극. 원 크기 = 개수, 용신에는 표시
   function sjOhaengSvg(cnt,me,yong){
-    var W=360,H=360,cx=180,cy=170,R=106,HN=["木","火","土","金","水"],CO=["#4f9d62","#e0574f","#b08a5a","#8c939a","#4a8fd8"],REL=["나","표현·재주","돈·재물","일·책임","배움·도움"],RD=["","내가 낳음","내가 다룸","나를 누름","나를 낳음"];   // 전문 용어를 쓰면 쉬운 말 변환이 그림 글자를 늘린다
+    var W=420,H=340,cx=210,cy=164,R=104,HN=["木","火","土","金","水"],CO=["#4f9d62","#e0574f","#b08a5a","#8c939a","#4a8fd8"],REL=["나","표현·재주","돈·재물","일·책임","배움·도움"],RD=["","내가 낳음","내가 다룸","나를 누름","나를 낳음"];   // 전문 용어를 쓰면 쉬운 말 변환이 그림 글자를 늘린다
     var pos=[],i,k,out="";
     for(k=0;k<5;k++){var a=(-90+72*k)*Math.PI/180;pos.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}
     var el=function(k){return (me+k)%5;},rad=function(k){return 20+Math.min(cnt[el(k)],4)*5;};
@@ -1201,7 +1201,10 @@
       out+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+r+'" fill="'+CO[e]+'" class="oh-c'+(k===0?' me':'')+'"/>'+
         '<text x="'+x.toFixed(1)+'" y="'+(y-2).toFixed(1)+'" text-anchor="middle" class="oh-n">'+SJ_EL[e]+'('+HN[e]+')</text>'+
         '<text x="'+x.toFixed(1)+'" y="'+(y+13).toFixed(1)+'" text-anchor="middle" class="oh-n">'+cnt[e]+'개</text>'+
-        '<text x="'+x.toFixed(1)+'" y="'+(y+r+14).toFixed(1)+'" text-anchor="middle" class="oh-r"><tspan font-weight="800">'+REL[k]+'</tspan>'+(k?'<tspan x="'+x.toFixed(1)+'" dy="13">'+RD[k]+'</tspan>':'')+(e===yong?'<tspan x="'+x.toFixed(1)+'" dy="13" class="oh-y">필요한 기운</tspan>':'')+'</text>';}
+        (function(){   // 이름표는 원의 바깥 방향: 위(나)·오른쪽 위·왼쪽 위는 옆, 아래 둘은 아래
+          var side=k===1?1:k===4?-1:0,tx=side?x+side*(r+8):x,ty=k===0?y-r-12:side?y-6:y+r+15,an=side>0?"start":side<0?"end":"middle",lines=[[REL[k],"800"]];
+          if(k)lines.push([RD[k],""]);if(e===yong)lines.push(["필요한 기운","y"]);if(k===0)ty-=13*(lines.length-1);
+          return '<text x="'+tx.toFixed(1)+'" y="'+ty.toFixed(1)+'" text-anchor="'+an+'" class="oh-r">'+lines.map(function(L,j){return '<tspan x="'+tx.toFixed(1)+'"'+(j?' dy="13"':'')+(L[1]==="800"?' font-weight="800"':L[1]==="y"?' class="oh-y"':'')+'>'+L[0]+'</tspan>';}).join("")+'</text>';})();}
     return '<style>.oh-svg{width:100%;max-width:360px;display:block;margin:0 auto 6px;height:auto}.oh-s{stroke:#5aa86a;stroke-width:2}.oh-k{stroke:#e06b62;stroke-width:1.4;stroke-dasharray:5 4;opacity:.75}'+
       '.oh-c{stroke:#fff;stroke-width:3}.oh-c.me{stroke:#3b6fd8;stroke-width:4}.oh-n{font-size:12px;font-weight:800;fill:#fff}.oh-r{font-size:11px;fill:var(--muted)}.oh-y{fill:#2f8f5b;font-weight:800}.oh-lab{font-size:10px;fill:#5aa86a}</style>'+
       '<svg class="oh-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="오행 분포 오각형: '+SJ_EL.map(function(n,j){return n+" "+cnt[j]+"개";}).join(", ")+'">'+
