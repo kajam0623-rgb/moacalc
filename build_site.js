@@ -1616,7 +1616,7 @@ function zodiacPage(z, i){
   return seoPage({
     crumb:`${z.ko}띠`,
     learn: learnMore(`${z.ko}띠는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
-    title:`${z.ko}띠 운세·나이·년생·성격·궁합 — 2027 정미년 | 동네보살`,
+    title:`${z.ko}띠 운세·오늘의 운세·나이·년생·궁합 — 2027 정미년 | 동네보살`,
     desc:`${z.ko}띠는 ${zoYears(i).filter(y => y >= 1960).join("·")}년생입니다. 오늘의 ${z.ko}띠 운세와 년생별 2026년 나이표, ${z.ko}띠(${z.ji}) 성격, 삼합·육합·충으로 보는 궁합, 2027 정미년 흐름.`,
     url:`${DOMAIN}/zodiac-${z.en}.html`, img:`img/char/zo-${z.en}.webp`, hero:"img/tool/h-zodiacfortune.webp",
     h1:`${z.ko}띠 — 오늘의 운세·나이·성격·궁합`,
