@@ -2346,7 +2346,7 @@ const GEN_OF = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" };
 const goodsLinks = g => `<div class="sj-goods">` + EL_GOODS[g].map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`;
 const GOODS_CSS = `<style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>`;
 const GOODS_NOTE = `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p>`;
-const genLine = (name, el) => `<p style="margin:0 0 6px">${name}${josa(name, "는/은")} ${el} 기운이라, 그 기운을 낳아 주는 <b>${GEN_OF[el]} 기운</b> 물건이 힘이 됩니다.</p>`;
+const genLine = (name, el) => `<p style="margin:0 0 6px">${name}${josa(name, "은/는")} ${el} 기운이라, 그 기운을 낳아 주는 <b>${GEN_OF[el]} 기운</b> 물건이 힘이 됩니다.</p>`;
 function ttiGiftSec(A, B, same) {
   const row = Z => genLine(Z.name, Z.ele) + goodsLinks(GEN_OF[Z.ele]);
   return `<section class="guide"><h2>${same ? A.name + "끼리" : "서로에게"} 주면 좋은 선물</h2>` + GOODS_CSS +
