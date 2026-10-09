@@ -77,18 +77,23 @@ console.log("  예시: " + urls.slice(0, 3).join("\n         "));
 
 if (DRY) { console.log("\n--dry 라 전송하지 않았다."); process.exit(0); }
 
-const req = https.request({
-  hostname: "api.indexnow.org", path: "/indexnow", method: "POST",
-  headers: { "Content-Type": "application/json; charset=utf-8", "Content-Length": Buffer.byteLength(body) },
-}, res => {
-  let d = ""; res.on("data", c => d += c);
-  res.on("end", () => {
-    const MEAN = { 200:"성공", 202:"수신됨 — 키 검증 진행중", 400:"형식 오류", 403:"키 불일치", 422:"호스트/키 불일치", 429:"요청 과다" };
-    console.log(`\n응답 ${res.statusCode} — ${MEAN[res.statusCode] || "알 수 없음"}`);
-    if (d.trim()) console.log("본문: " + d.trim().slice(0, 300));
-    process.exit(res.statusCode === 200 || res.statusCode === 202 ? 0 : 1);
+// 공용(api.indexnow.org)과 네이버 직접(searchadvisor.naver.com, 2026-10-09 — 서치어드바이저 화면은 브라우저 도구가 막혀 수집 요청 대신) 두 곳에 보낸다
+const MEAN = { 200:"성공", 202:"수신됨 — 키 검증 진행중", 400:"형식 오류", 403:"키 불일치", 422:"호스트/키 불일치", 429:"요청 과다" };
+const send = (hostname, label) => new Promise(done => {
+  const req = https.request({
+    hostname, path: "/indexnow", method: "POST",
+    headers: { "Content-Type": "application/json; charset=utf-8", "Content-Length": Buffer.byteLength(body) },
+  }, res => {
+    let d = ""; res.on("data", c => d += c);
+    res.on("end", () => {
+      console.log(`
+${label} 응답 ${res.statusCode} — ${MEAN[res.statusCode] || "알 수 없음"}`);
+      if (d.trim()) console.log("본문: " + d.trim().slice(0, 300));
+      done(res.statusCode === 200 || res.statusCode === 202);
+    });
   });
+  req.on("error", e => { console.error(label + " 전송 실패:", e.message); done(false); });
+  req.write(body);
+  req.end();
 });
-req.on("error", e => { console.error("전송 실패:", e.message); process.exit(1); });
-req.write(body);
-req.end();
+(async () => { const ok = [await send("api.indexnow.org", "공용"), await send("searchadvisor.naver.com", "네이버")]; process.exit(ok.every(Boolean) ? 0 : 1); })();
