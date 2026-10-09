@@ -2991,6 +2991,16 @@ const iljuFig = (p, at) => iljuImgs(p.en).filter(f => f.at === at).map(f =>
   `<figure class="iljufig ${f.w > f.h * 1.05 ? "ls" : f.h > f.w * 1.05 ? "pt" : "sq"}"><img src="${f.rel}" alt="${esc(p.ko + "일주 그림 — " + f.alt)}" width="${f.w}" height="${f.h}" loading="lazy" decoding="async"></figure>`).join("");
 // 일주 페이지 공유 줄 — 띠 궁합 페이지와 같은 작은 스크립트(TTI_SHARE_JS)를 쓴다. 공유는 이 일주 페이지 주소(?from=share)로 간다
 const iljuShareRow = p => `<div class="ttishare">` + ttiBtn("이 일주 공유하기", "share_click", `${p.ko}일주`, `${p.ko}일주(${p.han}) — ${p.txt.tag}. 내 일주는 뭘까? 동네보살에서 보기:`, `${DOMAIN}/ilju-${p.en}.html?from=share`) + `</div>` + TTI_SHARE_JS;
+// 일주별 유명인(2026-10-10) — 네이버 'OO일주 연예인' 일주마다 월 200회 안팎. content_celeb.json(위키데이터) 의 생일로 일주를 계산해 유명한 순 12명까지
+let CELEB_BY_ILJU = null;
+const iljuCelebSec = p => {
+  if (!CELEB_BY_ILJU) { CELEB_BY_ILJU = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) { const [y, m, d] = b.split("-").map(Number), q = FORT.sjPillars(y, m, d, null, 0, false); (CELEB_BY_ILJU[q.d.s + "-" + q.d.b] ||= []).push([ko, y, c]); } }
+  const L = (CELEB_BY_ILJU[p.s + "-" + p.b] || []).slice(0, 12);
+  if (!L.length) return "";
+  return `<section class="guide"><h2>${p.ko}일주 유명인</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">생일로 계산하면 ${p.ko}일주로 태어난 유명인입니다(널리 알려진 순).</p>` +
+    `<div class="sibs">${L.map(([ko, y, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${y}</small></span>`).join("")}</div>` +
+    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료이고 태어난 시각은 몰라 일주만 맞춰 보았습니다. 같은 일주라도 삶은 사람마다 다릅니다. 내 생일로 사주가 닮은 유명인을 찾으려면 <a href="celeb.html">닮은 연예인 찾기</a>를 보세요.</p></div></section>`;
+};
 function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
@@ -3005,7 +3015,7 @@ function iljuPage(p){
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju", preset:"",
-    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`일주 ${p.ko}`],
+    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`${p.ko}일주 연예인`,`일주 ${p.ko}`],
     body:
       `<div class="exbox"><h2>${p.ko}일주 한눈에 보기</h2>`+
       [["일주",`${p.han} ${p.ko}일주 (60갑자 ${p.k+1}번째)`],
@@ -3049,7 +3059,7 @@ function iljuPage(p){
       `</div></section>`+
 
       `<section class="guide"><h2>${p.ko}일주와 인연이 닿는 띠</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px">일지 ${J.ko}${josa(J.ko,"과/와")} 한 덩어리로 묶이는 삼합은 <b>${esc(p.samhap.join(", "))}띠</b>, 짝을 이루는 육합은 <b>${esc(p.yukhap)}띠</b>입니다. 정면으로 마주 보는 충은 <b>${esc(p.chung)}띠</b>인데 못 만날 사이가 아니라 끌림과 마찰이 함께 큰 사이로 읽습니다.</p></div></section>`,
+      `<p style="margin-bottom:10px">일지 ${J.ko}${josa(J.ko,"과/와")} 한 덩어리로 묶이는 삼합은 <b>${esc(p.samhap.join(", "))}띠</b>, 짝을 이루는 육합은 <b>${esc(p.yukhap)}띠</b>입니다. 정면으로 마주 보는 충은 <b>${esc(p.chung)}띠</b>인데 못 만날 사이가 아니라 끌림과 마찰이 함께 큰 사이로 읽습니다.</p></div></section>`+iljuCelebSec(p),
     faq:[
       [`${p.ko}일주는 어떤 성격인가요?`,`${G.metaphor}에 비유되는 ${gEl} 일간이 ${jEl} 위에 앉은 일주입니다. ${first(C.core,2)}`],
       [`${p.ko}일주는 여자와 남자가 다른가요?`,`기본 성격은 같고 배우자를 보는 글자가 갈립니다. 여자는 관성, 남자는 재성을 배우자로 읽습니다. ${first(C.woman,1)} ${first(C.man,1)}`],
