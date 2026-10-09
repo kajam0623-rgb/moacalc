@@ -1654,7 +1654,7 @@ function zodiacPage(z, i){
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
-      zoAgeTable(z, i)+zoCelebSec(z, i)+
+      luckGoodsSec(`${z.ko}띠`, z.ele)+zoAgeTable(z, i)+zoCelebSec(z, i)+
       `<div class="intro">${bodyCut("zoc-"+z.en, z.ko+"띠 상징")}${para(z.intro)}</div>`+
       `<section class="guide"><h2>${z.ko}띠의 연애</h2><div class="intro" style="margin-top:0">${para(z.love)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 일과 적성</h2><div class="intro" style="margin-top:0">${para(z.work)}</div></section>`+
@@ -2343,13 +2343,18 @@ const TTI_CLS = { "삼합": "sam", "육합": "yuk", "충": "chung", "원진": "w
 // 선물 기운 = 그 띠의 오행을 낳아 주는 오행(띠 운세 도구 '오늘의 행운'과 같은 규칙). 대가 문구(.cpx)는 placeAds 가 맨 위에 넣는다
 const EL_GOODS = new Function("return " + src.match(/var EL_GOODS=(\{[\s\S]*?\]\]\});/)[1])();
 const GEN_OF = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" };
+const goodsLinks = g => `<div class="sj-goods">` + EL_GOODS[g].map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`;
+const GOODS_CSS = `<style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>`;
+const GOODS_NOTE = `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p>`;
+const genLine = (name, el) => `<p style="margin:0 0 6px">${name}${josa(name, "는/은")} ${el} 기운이라, 그 기운을 낳아 주는 <b>${GEN_OF[el]} 기운</b> 물건이 힘이 됩니다.</p>`;
 function ttiGiftSec(A, B, same) {
-  const row = (Z) => { const g = GEN_OF[Z.ele];
-    return `<p style="margin:0 0 6px">${Z.name}는 ${Z.ele} 기운이라, 그 기운을 낳아 주는 <b>${g} 기운</b> 물건이 힘이 됩니다.</p><div class="sj-goods">` +
-      EL_GOODS[g].map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`; };
-  return `<section class="guide"><h2>${same ? A.name + "끼리" : "서로에게"} 주면 좋은 선물</h2><style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>` +
-    (same ? row(A) : `<p style="font-size:13px;color:var(--muted);margin:0 0 10px">${B.name}에게는 ${B.name}의 기운을, ${A.name}에게는 ${A.name}의 기운을 채워 주는 물건을 고르면 됩니다.</p>` + row(B) + row(A)) +
-    `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p></section>`;
+  const row = Z => genLine(Z.name, Z.ele) + goodsLinks(GEN_OF[Z.ele]);
+  return `<section class="guide"><h2>${same ? A.name + "끼리" : "서로에게"} 주면 좋은 선물</h2>` + GOODS_CSS +
+    (same ? row(A) : `<p style="font-size:13px;color:var(--muted);margin:0 0 10px">${B.name}에게는 ${B.name}의 기운을, ${A.name}에게는 ${A.name}의 기운을 채워 주는 물건을 고르면 됩니다.</p>` + row(B) + row(A)) + GOODS_NOTE + `</section>`;
+}
+// 띠 소개 12쪽·일주 60쪽 '힘이 되는 물건'(2026-10-10) — 같은 규칙(그 오행을 낳는 기운). 일주는 일간 기준이라 사람마다 다른 용신은 사주 풀이로 잇는다
+function luckGoodsSec(name, el, more) {
+  return `<section class="guide"><h2>${name}에게 힘이 되는 물건</h2>` + GOODS_CSS + genLine(name, el) + goodsLinks(GEN_OF[el]) + (more || "") + GOODS_NOTE + `</section>`;
 }
 const TTI_TAIL = { "삼합": "삼합, 손발이 잘 맞는 사이", "육합": "육합, 서로 끌어당기는 사이", "충": "충, 정반대라 배울 게 많은 사이", "원진": "원진, 말로 확인하면 좋아지는 사이", "형": "형, 서로 다듬어 주는 사이", "같은 띠": "같은 띠, 닮아서 편한 사이", "무난": "무난한 사이, 이렇게 맞춰 보세요" };
 const ttiLead = r => r.type === "무난" ? "특별한 합·충이 없는 사이" : r.name;
@@ -3070,6 +3075,7 @@ function iljuPage(p){
        ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) + iljuFig(p, "top") +
+      luckGoodsSec(`${p.ko}일주`, G.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간(${G.ko}${G.el})만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`) +
 
       `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
       `${para(C.core)}</div>`+
