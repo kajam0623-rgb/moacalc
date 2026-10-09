@@ -122,7 +122,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var duHtml="",duList=[];for(var i2=1;i2<=8;i2++){var kk=((m60+(fwd?i2:-i2))%60+60)%60;
         var dTg=sjTenGod(ds,kk%10),dAge=su+10*(i2-1);
         // el: 대운 천간의 오행. 용신과 맞는 구간인지 판정하는 데 쓴다
-        duList.push({age:dAge,g:SJ_SH[kk%10]+SJ_BH[kk%12],tg:dTg,el:SJ_EL[SJ_ES[kk%10]]});
+        duList.push({age:dAge,g:SJ_SH[kk%10]+SJ_BH[kk%12],tg:dTg,el:SJ_EL[SJ_ES[kk%10]],s:kk%10,b:kk%12});
         duHtml+='<div class="sj-du"><div class="a">'+dAge+'세</div><div class="g">'+SJ_SH[kk%10]+SJ_BH[kk%12]+'</div><div class="a" style="color:var(--fun-ink);margin-top:3px">'+dTg+'</div></div>';}
       // 십성 카운트
       var tgc={};chars.forEach(function(c,ci){if(!(ci===2)){var g1=sjTenGod(ds,c.s);tgc[g1]=(tgc[g1]||0)+1;}var g2=sjTenGod(ds,SJ_BMAIN[c.b]);tgc[g2]=(tgc[g2]||0)+1;});
@@ -630,6 +630,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
             '<br><span style="color:var(--muted);font-size:12.5px">그해 하늘 글자가 자네에게 어떤 기운인지, 그해 띠 글자가 태어난 날·달 글자와 부딪히거나 붙는지, 역마·도화 자리인지로 표시했습니다. 인연은 연애·결혼뿐 아니라 동업·귀인처럼 사람이 드는 일을 함께 뜻합니다.</span></p><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 자네에게 무엇이 되는지 늘어놓았네. 지난 해는 실제로 어땠는지 눌러 두게. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워지네.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운일세. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
+        (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);
+          return '<div class="sj-sec"><h3>분야별 대운 흐름</h3>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">대운 글자가 자네에게 필요한 기운(용신)인지, 그 분야를 맡은 별(재물은 재성, 애정은 배우자 별, 학업·일은 인성·관성)인지로 매긴 참고 점수일세. 보라색 칸이 지금 대운이야.</p></div>';})()+
         '<div class="sj-sec"><h3>여든까지의 흐름 한눈에</h3>'+duDetail+
         '<p style="color:var(--muted);font-size:12.5px;margin-top:4px">10년마다 바뀌는 큰 흐름입니다. 태어난 날부터 절기까지의 날수로 시작 나이를 정하며, 여기서는 8개 구간을 보여드립니다. 괄호 안은 그 구간 천간의 오행입니다.</p></div>'+
         sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+

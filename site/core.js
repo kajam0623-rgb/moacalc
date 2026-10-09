@@ -384,6 +384,34 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         '<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했네. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료일세. 재미로 보게.</p>';}
     if(SJ_CELEB){draw();return;}
     if(typeof fetch==="function")fetch("sj/celeb.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){SJ_CELEB=j;draw();}}).catch(function(){});}
+  // 분야별 대운 그래프(2026-10-09, 경쟁 서비스 벤치마킹) — 대운마다 0~100 참고 점수.
+  // 기본 50 + 대운 천간이 용신 15(보조 8)·지지가 용신 10(보조 5). 분야 별: 재물=재성+20·식상+10·비겁-10 / 애정=배우자 별(남 재성·여 관성)+20·일지와 합+10·충-10 /
+  // 건강=인성+10·비겁+5·일지와 충-15·편관-10 / 학업·일=인성+15·관성+15·식상+5. 지지는 본기 십성으로 절반만 센다. 종합=네 분야 평균
+  var SJ_DU_K=[["all","종합"],["money","재물운"],["love","애정운"],["health","건강운"],["work","학업·일"]];
+  function sjDuScores(du,ds,dbr,yEl,y2El,male){
+    var G={비견:"비겁",겁재:"비겁",식신:"식상",상관:"식상",편재:"재성",정재:"재성",편관:"관성",정관:"관성",편인:"인성",정인:"인성"},S={all:[],money:[],love:[],health:[],work:[]};
+    var cl=function(v){return Math.max(5,Math.min(95,Math.round(v)));};
+    du.forEach(function(d){var gs=G[d.tg],gb=G[sjTenGod(ds,SJ_BMAIN[d.b])],es=SJ_EL[SJ_ES[d.s]],eb=SJ_EL[SJ_EB[d.b]];
+      var has=function(g){return (gs===g?1:0)+(gb===g?0.5:0);},base=50+(es===yEl?15:es===y2El?8:0)+(eb===yEl?10:eb===y2El?5:0);
+      var ch=Math.abs(d.b-dbr)===6,hp=sjYukhap(dbr)===d.b||(d.b%4===dbr%4&&d.b!==dbr);
+      var m=cl(base+20*has("재성")+10*has("식상")-10*has("비겁")),l=cl(base+20*has(male?"재성":"관성")+(hp?10:0)-(ch?10:0)),
+        h=cl(base+10*has("인성")+5*has("비겁")-(ch?15:0)-(d.tg==="편관"?10:0)),w=cl(base+15*has("인성")+15*has("관성")+5*has("식상"));
+      S.money.push(m);S.love.push(l);S.health.push(h);S.work.push(w);S.all.push(Math.round((m+l+h+w)/4));});
+    return S;}
+  function sjDuChart(du,S,nowI){
+    var W=320,H=150,L=24,R=10,T=12,B=26,n=du.length,X=function(i){return L+(W-L-R)*i/(n-1);},Y=function(v){return T+(H-T-B)*(100-v)/100;};
+    var band=nowI>=0?'<rect x="'+(X(nowI)-(W-L-R)/(n-1)/2).toFixed(1)+'" y="'+T+'" width="'+((W-L-R)/(n-1)).toFixed(1)+'" height="'+(H-T-B)+'" class="du-now"/>':"";
+    var grid=[25,50,75].map(function(v){return '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="du-g"/><text x="2" y="'+(Y(v)+4)+'" class="du-t">'+v+'</text>';}).join("");
+    var lines=SJ_DU_K.map(function(k,ki){var pts=S[k[0]].map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1);}).join(" ");
+      return '<g class="du-s du-'+k[0]+(ki===0?' on':'')+'"><polygon points="'+X(0).toFixed(1)+','+Y(0)+' '+pts+' '+X(n-1).toFixed(1)+','+Y(0)+'" class="du-a"/><polyline points="'+pts+'" class="du-l"/>'+
+        S[k[0]].map(function(v,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" class="du-d"/>';}).join("")+'</g>';}).join("");
+    var xl=du.map(function(d,i){return '<text x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" class="du-t'+(i===nowI?' now':'')+'">'+d.age+'세</text>';}).join("");
+    return '<style>.du-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.du-tabs button{padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card,#fff);color:inherit;font-size:13.5px}.du-tabs button.on{background:#f0a020;border-color:#f0a020;color:#fff;font-weight:700}'+
+      '.du-svg{width:100%;height:auto}.du-g{stroke:var(--line);stroke-width:1}.du-t{font-size:10px;fill:var(--muted)}.du-t.now{fill:#d07a00;font-weight:700}.du-now{fill:#7b6cf6;opacity:.09}.du-s{display:none}.du-s.on{display:inline}.du-l{fill:none;stroke:#f0a020;stroke-width:2.4;stroke-linejoin:round}.du-a{fill:#f0a020;opacity:.1}.du-d{fill:#f0a020}</style>'+
+      '<div class="du-tabs">'+SJ_DU_K.map(function(k,ki){return '<button type="button"'+(ki===0?' class="on"':'')+' onclick="sjDuTab(this,\''+k[0]+'\')">'+k[1]+'</button>';}).join("")+'</div>'+
+      '<svg class="du-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="분야별 대운 흐름">'+band+grid+lines+xl+'</svg>';}
+  function sjDuTab(btn,k){var box=btn.closest(".sj-sec");[].forEach.call(box.querySelectorAll(".du-tabs button"),function(b){b.className=b===btn?"on":"";});
+    [].forEach.call(box.querySelectorAll(".du-s"),function(g){g.classList.toggle("on",g.classList.contains("du-"+k));});}
   function sjSinLink(name,label){var en=SJ_SINSAL_EN[name];return en?'<a href="sinsal-'+en+'.html">'+label+'</a>':label;}
   // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
   var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)
