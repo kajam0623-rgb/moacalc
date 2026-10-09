@@ -1818,8 +1818,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
     금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
     수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
-  function goodsRow(e){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
-    return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>자네를 받쳐 주는 '+e+' 기운 물건 — 쿠팡에서 바로 보기</b>'+
+  function goodsRow(e,lab){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
+    return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>'+(lab||'자네를 받쳐 주는 '+e+' 기운 물건')+' — 쿠팡에서 바로 보기</b>'+
     EL_GOODS[e].map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){

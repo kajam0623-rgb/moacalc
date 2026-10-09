@@ -2592,8 +2592,8 @@
     토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
     금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
     수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
-  function goodsRow(e){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
-    return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>자네를 받쳐 주는 '+e+' 기운 물건 — 쿠팡에서 바로 보기</b>'+
+  function goodsRow(e,lab){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
+    return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>'+(lab||'자네를 받쳐 주는 '+e+' 기운 물건')+' — 쿠팡에서 바로 보기</b>'+
     EL_GOODS[e].map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){
@@ -4782,6 +4782,7 @@
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 챙길 점도 함께 겹칩니다.</p></div>'+
+      goodsRow(SJ_EL[sjStrength(B).yong],whoB+josa(whoB,"를/을")+' 받쳐 주는 '+SJ_EL[sjStrength(B).yong]+' 기운 선물')+   // 궁합은 '상대에게 줄 것' — 상대 용신 기운
       shareBtn()+
       '<p class="note">두 사람을 뜻하는 글자가 짝을 이루는지, 띠와 태어난 날 글자가 서로 붙는지 부딪히는지, 덜 찬 기운을 채워 주는지를 함께 보는 전통 방식입니다. 끌림은 두 사람의 글자 관계, 안정은 띠 사이, 소통은 글자가 맡은 역할, 생활은 배우자 자리에서 나옵니다. 태어난 시각까지 넣은 정밀 궁합은 사주팔자 만세력에서 각자 여덟 글자를 확인해보세요. 참고용.</p>';
       ghLast={A:A,B:B,c:{nb:inv&&inv.n?escH(inv.n)+" 님":"상대",grade:grade,axes:subs,now:new Date().getFullYear()}};fillDeep();
