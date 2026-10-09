@@ -2339,6 +2339,18 @@ const TTI = require("./content_ttigunghap.js");
 const ttiPairUrl = (a, b) => "tti-pair-" + TTI.JI[Math.min(a, b)].en + "-" + TTI.JI[Math.max(a, b)].en + ".html";
 const ttiHubUrl = i => "tti-gunghap-" + TTI.JI[i].en + ".html";
 const TTI_CLS = { "삼합": "sam", "육합": "yuk", "충": "chung", "원진": "won", "형": "hyung", "같은 띠": "same", "무난": "plain" };
+// 띠 궁합 짝 페이지 '서로에게 주면 좋은 선물'(2026-10-10) — 물건·링크는 hub.html EL_GOODS 하나만 고친다(쿠팡 파트너스 검색 링크).
+// 선물 기운 = 그 띠의 오행을 낳아 주는 오행(띠 운세 도구 '오늘의 행운'과 같은 규칙). 대가 문구(.cpx)는 placeAds 가 맨 위에 넣는다
+const EL_GOODS = new Function("return " + src.match(/var EL_GOODS=(\{[\s\S]*?\]\]\});/)[1])();
+const GEN_OF = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" };
+function ttiGiftSec(A, B, same) {
+  const row = (Z) => { const g = GEN_OF[Z.ele];
+    return `<p style="margin:0 0 6px">${Z.name}는 ${Z.ele} 기운이라, 그 기운을 낳아 주는 <b>${g} 기운</b> 물건이 힘이 됩니다.</p><div class="sj-goods">` +
+      EL_GOODS[g].map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`; };
+  return `<section class="guide"><h2>${same ? A.name + "끼리" : "서로에게"} 주면 좋은 선물</h2><style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>` +
+    (same ? row(A) : `<p style="font-size:13px;color:var(--muted);margin:0 0 10px">${B.name}에게는 ${B.name}의 기운을, ${A.name}에게는 ${A.name}의 기운을 채워 주는 물건을 고르면 됩니다.</p>` + row(B) + row(A)) +
+    `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p></section>`;
+}
 const TTI_TAIL = { "삼합": "삼합, 손발이 잘 맞는 사이", "육합": "육합, 서로 끌어당기는 사이", "충": "충, 정반대라 배울 게 많은 사이", "원진": "원진, 말로 확인하면 좋아지는 사이", "형": "형, 서로 다듬어 주는 사이", "같은 띠": "같은 띠, 닮아서 편한 사이", "무난": "무난한 사이, 이렇게 맞춰 보세요" };
 const ttiLead = r => r.type === "무난" ? "특별한 합·충이 없는 사이" : r.name;
 const ttiTextOf = key => { const t = TTI.TEXT.pairs[key]; if (!t || !t.sum || !t.tips) throw new Error("띠 궁합 원고 없음: " + key); return t; };
@@ -2382,6 +2394,7 @@ function ttiPairPage(a, b) {
     tags: same ? [`${A.name}끼리 궁합`, `${A.name} ${A.name} 궁합`, `${A.name} 같은 띠 궁합`] : [`${A.name} ${B.name} 궁합`, `${B.name} ${A.name} 궁합`, `${A.name}와 ${B.name} 잘 맞나`, `${A.name} ${B.name} 결혼`, `${A.name} ${B.name} 연애`],
     body: `<div class="exbox"><h2>${cross} 한눈에 보기</h2>` + rows.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
       `<div class="res ttisum"><span>요약</span><b>${esc(t.sum)}</b></div></div>` + ttiShareRow(`${cross} 궁합`, `${cross} 궁합 — ${r.type === "무난" ? "무난한 사이" : r.type}. ${t.sum} 동네보살에서 보기:`, ttiPairUrl(a, b), a) +
+      ttiGiftSec(A, B, same) +
       `<section class="guide"><h2>${cross}의 연애·결혼</h2><div class="intro" style="margin-top:0">${para(t.love)}</div></section>` +
       `<section class="guide"><h2>${cross}의 일·동업</h2><div class="intro" style="margin-top:0">${para(t.work)}</div></section>` +
       `<section class="guide"><h2>${cross}의 가족·친구</h2><div class="intro" style="margin-top:0">${para(t.home)}</div></section>` +
