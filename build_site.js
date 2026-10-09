@@ -1688,6 +1688,16 @@ const nybGrid = () => '<div class="nybg">' + [1950, 1960, 1970, 1980, 1990, 2000
   NYB.YEARS.filter(x => x >= d && x < d + 10).map(x => `<a href="${nybUrl(x)}">${String(x).slice(2)}년생</a>`).join("") + '</div></div>').join("") + '</div>';
 const SEASON_LINKS = `<div class="sibs"><a href="tti.html">띠 순서·띠 계산기</a><a href="newyear.html">2027 신년운세</a><a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="column-zodiac-2027.html">2027 정미년 한눈에</a><a href="zodiacfortune.html">띠별 운세</a><a href="calendar-2027.html">2027년 달력</a></div>`;
 
+// 년생별 유명인(2026-10-10) — 네이버 92년생연예인 1,280·95년생 1,240·90년생 1,220·99/97년생 1,090·85년생 1,050. 'OO년생'은 달력 연도라 생일 연도 그대로, 유명한 순 20명
+let CELEB_BY_YEAR = null;
+const nybCelebSec = y => {
+  if (!CELEB_BY_YEAR) { CELEB_BY_YEAR = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) (CELEB_BY_YEAR[+b.slice(0, 4)] ||= []).push([ko, b.slice(5).replace("-", "월 ").replace(/^0/, "").replace(/ 0/, " ") + "일", c]); }
+  const L = (CELEB_BY_YEAR[y] || []).slice(0, 20), yy = String(y).slice(2);
+  if (!L.length) return "";
+  return `<section class="guide"><h2>${yy}년생 연예인·유명인 (${y}년생)</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">${y}년에 태어난 배우·가수·운동선수 가운데 널리 알려진 순입니다.</p>` +
+    `<div class="sibs">${L.map(([ko, md, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${md}</small></span>`).join("")}</div>` +
+    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료입니다. 1월~2월 초 생일은 사주로는 앞 해의 띠일 수 있습니다. 내 생일로 사주가 닮은 유명인은 <a href="celeb.html">닮은 연예인 찾기</a>에서 볼 수 있습니다.</p></div></section>`;
+};
 function nybPage(y) {
   const f = NYB.facts(y), t = NYB.TEXT[String(y)];
   if (!t || !t.sum || !t.all || !Array.isArray(t.tips)) throw new Error("년생별 2027 원고 없음: " + y + " — node tools/newyear2027/merge_ny.js");
@@ -1704,7 +1714,7 @@ function nybPage(y) {
     url: `${DOMAIN}/${nybUrl(y)}`, img: `img/char/zo-${f.en}.webp`, hero: "img/tool/h-zodiacfortune.webp",
     h1: `${y}년생 2027년 운세`, sub: `${f.ko}(${f.han})년생 · ${f.color} ${A} · 2027년 만 ${f.age[0]}~${f.age[1]}세`,
     parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
-    tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`],
+    tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`, `${yy}년생 연예인`],
     body: `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
       [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `만 ${f.age[1]}세 (생일 전 ${f.age[0]}세)`],
        ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
@@ -1714,6 +1724,7 @@ function nybPage(y) {
       sec(`${y}년생의 일과 돈`, para(t.work)) + sec(`사람과 가족`, para(t.people)) + sec(`건강과 생활`, para(t.life)) +
       `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
       sec(`1월~2월 초에 태어났다면 — 띠가 바뀌는 날`, `<p style="margin-bottom:10px">사주에서는 해가 1월 1일이 아니라 입춘에 바뀝니다. ${y}년 입춘은 ${ipchunText(ip)}입니다. ${y}년 1월 1일부터 이 시각 전에 태어났다면 사주로는 ${y - 1}년 ${pf.ko}년생 ${pf.animal}로 봅니다.${y - 1 >= NYB.Y0 ? ` 그런 분은 <a href="${nybUrl(y - 1)}">${y - 1}년생 2027년 운세</a>를 함께 보세요.` : ""}</p>`) +
+      nybCelebSec(y) +
       sec(`더 자세히 보기`, `<p style="margin-bottom:10px">생년월일을 넣으면 <a href="newyear.html">2027 신년운세</a>에서 내 사주로 본 한 해와 달마다의 흐름을 볼 수 있습니다. 띠 성격과 궁합은 <a href="zodiac-${f.en}.html">${A} 운세·성격</a>과 <a href="tti-gunghap-${f.en}.html">${A} 궁합</a>에, 삼재는 <a href="samjae.html">삼재 계산기</a>에 있습니다.</p>` +
         `<p style="margin-bottom:10px">같은 ${A}: ${same.map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join(" · ")}</p>` +
         `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">이 풀이는 태어난 해의 간지와 2027년 정미년의 관계(띠끼리의 관계, 태어난 해 위 글자와 정(丁)의 관계)로 본 큰 흐름입니다. 사주에서 '나'를 뜻하는 글자는 태어난 날의 위 글자(일간)라서, 같은 ${y}년생이라도 생일과 태어난 시각에 따라 한 해의 모양이 달라집니다.</p>`),
