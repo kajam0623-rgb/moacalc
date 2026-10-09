@@ -1620,6 +1620,16 @@ function zoAgeTable(z, i) {
   return `<section class="guide"><h2>${z.ko}띠 나이·년생표 (${TTI_NOW}년 기준)</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">년생</th><th scope="col">간지</th><th scope="col">${TTI_NOW}년 나이</th><th scope="col">년생별</th></tr></thead><tbody>${rows}</tbody></table></div>` +
     `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">나이는 생일이 지난 뒤의 만 나이입니다. 생일 전이면 한 살을 빼세요. 1월~2월 초(입춘 전)에 태어났다면 앞 해의 띠입니다. 다른 띠까지 한 표로 보려면 <a href="tti.html">띠 순서·띠 계산기</a>를 보세요.</p></section>`;
 }
+// 띠별 유명인(2026-10-10) — 네이버 양띠연예인 420·말띠 260·용띠 120·쥐띠 110. 띠는 입춘 기준(연주 지지). 유명한 순 16명
+let CELEB_BY_TTI = null;
+const zoCelebSec = (z, i) => {
+  if (!CELEB_BY_TTI) { CELEB_BY_TTI = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) { const [y, m, d] = b.split("-").map(Number), q = FORT.sjPillars(y, m, d, null, 0, false); (CELEB_BY_TTI[q.y.b] ||= []).push([ko, y, c]); } }
+  const L = (CELEB_BY_TTI[i] || []).slice(0, 16);
+  if (!L.length) return "";
+  return `<section class="guide"><h2>${z.ko}띠 연예인·유명인</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">태어난 해로 보면 ${z.ko}띠인 유명인입니다(널리 알려진 순, 1~2월 초 생일은 입춘 기준).</p>` +
+    `<div class="sibs">${L.map(([ko, y, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${y}년생</small></span>`).join("")}</div>` +
+    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료입니다. 내 생일로 사주가 닮은 유명인은 <a href="celeb.html">닮은 연예인 찾기</a>에서 볼 수 있습니다.</p></div></section>`;
+};
 function zodiacPage(z, i){
   return seoPage({
     crumb:`${z.ko}띠`,
@@ -1631,12 +1641,12 @@ function zodiacPage(z, i){
     sub:`${z.ji} · ${z.ele} 기운 · ${z.month} · ${z.time}`,
     parent:"zodiacfortune.html", parentName:"띠별 운세",
     tool:"zodiacfortune", preset:String(i),
-    tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2027 ${z.ko}띠`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`],
+    tags:[`${z.ko}띠 성격`,`${z.ko}띠 궁합`,`${z.ko}띠 운세`,`2027 ${z.ko}띠`,`2026 ${z.ko}띠`,`${z.ko}띠 나이`,`${z.ko}띠 연예인`],
     body:`<div id="today-sv"></div><div class="exbox"><h2>${z.ko}띠 한눈에 보기</h2>`+
       [["지지",z.ji],["오행",z.ele],["절기 달",z.month],["시간",z.time],["삼합 궁합",z.match.best.join(" · ")],["육합 궁합",z.match.hap]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖)</span><b>${esc(z.match.hard.join(" · "))}</b></div></div>`+
-      zoAgeTable(z, i)+
+      zoAgeTable(z, i)+zoCelebSec(z, i)+
       `<div class="intro">${bodyCut("zoc-"+z.en, z.ko+"띠 상징")}${para(z.intro)}</div>`+
       `<section class="guide"><h2>${z.ko}띠의 연애</h2><div class="intro" style="margin-top:0">${para(z.love)}</div></section>`+
       `<section class="guide"><h2>${z.ko}띠의 일과 적성</h2><div class="intro" style="margin-top:0">${para(z.work)}</div></section>`+
