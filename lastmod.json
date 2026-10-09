@@ -2676,39 +2676,55 @@
   "d": "2026-10-09"
  },
  "sinsal.html": {
-  "h": "ea47367d",
+  "h": "ce6d29bb",
   "d": "2026-10-09"
  },
  "sinsal-dohwa.html": {
-  "h": "326f8110",
+  "h": "b0e9fcd8",
   "d": "2026-10-09"
  },
  "sinsal-hwagae.html": {
-  "h": "b4d8a45f",
+  "h": "a992eaae",
   "d": "2026-10-09"
  },
  "sinsal-yeokma.html": {
-  "h": "d7a8ec1a",
+  "h": "429e6111",
   "d": "2026-10-09"
  },
  "sinsal-cheoneul.html": {
-  "h": "c45c284a",
+  "h": "95c5f012",
   "d": "2026-10-09"
  },
  "sinsal-munchang.html": {
-  "h": "2c8c152d",
+  "h": "b43f7583",
   "d": "2026-10-09"
  },
  "sinsal-yangin.html": {
-  "h": "6c444968",
+  "h": "84c2a510",
   "d": "2026-10-09"
  },
  "sinsal-baekho.html": {
-  "h": "00653778",
+  "h": "7beecfe5",
   "d": "2026-10-09"
  },
  "sinsal-gwaegang.html": {
-  "h": "9693a51d",
+  "h": "14e5a51a",
+  "d": "2026-10-09"
+ },
+ "sinsal-hongyeom.html": {
+  "h": "2830a9e8",
+  "d": "2026-10-09"
+ },
+ "sinsal-hyeonchim.html": {
+  "h": "3c39a5d2",
+  "d": "2026-10-09"
+ },
+ "sinsal-gwimun.html": {
+  "h": "faa13beb",
+  "d": "2026-10-09"
+ },
+ "sinsal-wonjin.html": {
+  "h": "9d73a05f",
   "d": "2026-10-09"
  }
 }

@@ -1973,20 +1973,24 @@ const SINSAL = require("./content_sinsal.js");
 { const H = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8"), grab = re => { const m = H.match(re); if (!m) throw new Error("신살 엔진 표 못 찾음 " + re); return m[1]; };
   const norm = s => s.replace(/\s|"/g, "");
   const eng = { cheoneul: grab(/var SJ_CHEONEUL=(\{[^;]*\});/), munchang: grab(/var SJ_MUNCHANG=(\[[^;]*\]);/), dohwa: grab(/SJ_DOHWA=(\{[^}]*\})/), yeokma: grab(/SJ_YEOKMA=(\{[^}]*\})/),
-    hwagae: grab(/SJ_HWAGAE=(\{[^}]*\})/), yangin: grab(/var SJ_YANGIN=(\{[^;]*\});/), baekho: grab(/SJ_BAEKHO=(\[[^\]]*\])/), gwaegang: grab(/SJ_GWAEGANG=(\[[^\]]*\])/) };
+    hwagae: grab(/SJ_HWAGAE=(\{[^}]*\})/), yangin: grab(/var SJ_YANGIN=(\{[^;]*\});/), baekho: grab(/SJ_BAEKHO=(\[[^\]]*\])/), gwaegang: grab(/SJ_GWAEGANG=(\[[^\]]*\])/),
+    hongyeom: grab(/var SJ_HONGYEOM=(\[[^;]*\]);/), hyeonchimS: grab(/SJ_HYEONCHIM_S=(\[[^\]]*\])/), hyeonchimB: grab(/SJ_HYEONCHIM_B=(\[[^\]]*\])/),
+    gwimun: grab(/SJ_GWIMUN=(\[\[.*?\]\]),/), wonjin: grab(/SJ_WONJIN=(\[\[.*?\]\]);/) };
   for (const k of Object.keys(eng)) { const mine = Array.isArray(SINSAL.T[k]) ? JSON.stringify(SINSAL.T[k]) : JSON.stringify(Object.fromEntries(Object.entries(SINSAL.T[k]).sort((a, b) => a[0] - b[0])));
     const theirs = eng[k].startsWith("[") ? JSON.stringify(JSON.parse(eng[k])) : JSON.stringify(Object.fromEntries(Object.entries(Function("return " + eng[k])()).sort((a, b) => a[0] - b[0])));
     if (norm(mine) !== norm(theirs)) throw new Error(`신살 기준표 ${k} 가 사주 도구와 다름: ${mine} vs ${theirs}`); } }
 const sinsalHref = en => SINSAL.PAGES.some(p => p.en === en) ? `sinsal-${en}.html` : `sinsal.html#${en}`;
 const sinsalName = en => (SINSAL.PAGES.find(p => p.en === en) || SINSAL.EXTRA.find(p => p.en === en)).ko;
 const SINSAL_SIBS = `<div class="sibs"><a href="sinsal.html">신살 모음</a>${SINSAL.PAGES.map(p => `<a href="sinsal-${p.en}.html">${p.ko}</a>`).join("")}</div>`;
+// 그림이 없는 신살(홍염·현침·귀문·원진)은 결이 가까운 신살 그림을 빌린다
+const SINSAL_IMG = en => { const own = `img/char/sinsal-${en}.webp`; return fs.existsSync(path.join(IMG_SRC, "char", `sinsal-${en}.webp`)) ? own : `img/char/sinsal-${({ hongyeom: "dohwa", hyeonchim: "yangin", gwimun: "hwagae", wonjin: "cheoneul" })[en] || "cheoneul"}.webp`; };
 function sinsalPage(p) {
   const tbl = `<div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">${p.tableHead[0]}</th><th scope="col">${p.tableHead[1]}</th></tr></thead><tbody>${p.table().map(r => `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td></tr>`).join("")}</tbody></table></div>`;
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
     crumb: p.ko, date: "2026-10-09",
     title: p.title + " | 동네보살", desc: p.desc,
-    url: `${DOMAIN}/sinsal-${p.en}.html`, img: `img/char/sinsal-${p.en}.webp`, hero: `img/char/sinsal-${p.en}.webp`,
+    url: `${DOMAIN}/sinsal-${p.en}.html`, img: SINSAL_IMG(p.en), hero: SINSAL_IMG(p.en),
     h1: `${p.ko} 뜻과 찾는 법`, sub: `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
     parent: "sinsal.html", parentName: "신살 모음", tool: "saju",
     tags: [p.kw, `${p.kw} 뜻`, `${p.kw} 있는 사람`, `${p.kw} 찾는 법`, "신살", "사주 신살"],
@@ -2007,17 +2011,17 @@ function sinsalHubPage() {
     title: "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인·괴강살·백호살·홍염살 | 동네보살",
     desc: "사주 신살 뜻을 한곳에 모았습니다. 도화살·화개살·역마살·천을귀인·문창귀인·양인살·백호살·괴강살 찾는 법과 홍염살·현침살·귀문관살·원진살까지, 생년월일로 내 신살을 바로 확인하세요.",
     url: `${DOMAIN}/sinsal.html`, img: "img/char/sinsal-cheoneul.webp", hero: "img/char/sinsal-cheoneul.webp",
-    h1: "신살 뜻 모음 — 내 사주의 신살 찾기", sub: "생년월일을 넣으면 사주 도구가 신살 8가지를 찾아 줍니다",
+    h1: "신살 뜻 모음 — 내 사주의 신살 찾기", sub: `생년월일을 넣으면 사주 도구가 신살 ${SINSAL.PAGES.length}가지를 찾아 줍니다`,
     parent: "saju.html", parentName: "사주팔자", tool: "saju",
     tags: ["신살", "신살 뜻", "도화살", "화개살", "역마살", "천을귀인", "괴강살", "백호살", "홍염살", "현침살"],
-    body: `<div class="intro">${para(`신살(神煞)은 사주 여덟 글자 사이의 특정한 짝을 보고 붙이는 이름입니다. 도화·역마처럼 '살'이 붙은 이름이 많아 무섭게 들리지만, 요즘 명리학에서는 대부분 그 사람의 재능과 성향, 쓰임새를 짚는 말로 읽습니다.\n위 칸에 생년월일을 넣으면 동네보살 사주 도구가 천을귀인·문창귀인·도화살·역마살·화개살·양인살·백호살·괴강살 여덟 가지를 찾아 줍니다. 아래에서 신살마다 뜻과 찾는 법을 볼 수 있습니다.`)}</div>` +
-      `<section class="guide"><h2>신살 8가지 — 뜻과 찾는 법</h2>${SINSAL.PAGES.map(p => `<div class="exbox" style="margin-top:8px"><b><a href="sinsal-${p.en}.html">${p.ko}(${p.han})</a></b><p style="margin:6px 0 0">${esc(p.desc.split(". ")[0])}.</p></div>`).join("")}</section>` +
-      `<section class="guide"><h2>그 밖에 많이 찾는 신살</h2>${SINSAL.EXTRA.map(x => `<div class="exbox" id="${x.en}" style="margin-top:8px"><b>${x.ko}</b><p style="margin:6px 0 0">${x.text}</p></div>`).join("")}<p style="color:var(--muted);font-size:13px;margin:10px 0 0">이 네 가지는 유파마다 기준표가 조금씩 달라 사주 도구가 자동으로 찾지는 않습니다. 원진은 <a href="tti-gunghap.html">띠 궁합</a>에서 띠끼리의 관계로 볼 수 있습니다.</p></section>` +
+    body: `<div class="intro">${para(`신살(神煞)은 사주 여덟 글자 사이의 특정한 짝을 보고 붙이는 이름입니다. 도화·역마처럼 '살'이 붙은 이름이 많아 무섭게 들리지만, 요즘 명리학에서는 대부분 그 사람의 재능과 성향, 쓰임새를 짚는 말로 읽습니다.\n위 칸에 생년월일을 넣으면 동네보살 사주 도구가 천을귀인·문창귀인·도화살·역마살·화개살·양인살·백호살·괴강살·홍염살·현침살·귀문관살·원진살 열두 가지를 찾아 줍니다. 아래에서 신살마다 뜻과 찾는 법을 볼 수 있습니다.`)}</div>` +
+      `<section class="guide"><h2>신살 ${SINSAL.PAGES.length}가지 — 뜻과 찾는 법</h2>${SINSAL.PAGES.map(p => `<div class="exbox" style="margin-top:8px"><b><a href="sinsal-${p.en}.html">${p.ko}(${p.han})</a></b><p style="margin:6px 0 0">${esc(p.desc.split(". ")[0])}.</p></div>`).join("")}</section>` +
+      `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">홍염살·현침살·귀문관살·원진살은 유파마다 기준표가 조금씩 달라, 동네보살은 널리 쓰는 표를 따릅니다. 원진은 <a href="tti-gunghap.html">띠 궁합</a>에서 띠끼리의 관계로도 볼 수 있습니다.</p>` +
       sec("신살을 읽을 때 기억할 것", para(`신살은 사주를 읽는 여러 관점 가운데 하나일 뿐, 그 사람의 삶을 정하지 않습니다. 같은 도화도 어떤 사람에게는 인기로, 어떤 사람에게는 감성으로 드러나듯이 사주 전체의 흐름과 함께 읽어야 합니다.\n동네보살은 신살을 겁주는 말이 아니라 강점과 쓰는 법으로 풀어 드립니다. 내 사주 전체는 <a href="saju.html">무료 사주풀이</a>에서, 신살의 원리는 <a href="learn-sinsal.html">명리학 신살 강의</a>에서 볼 수 있습니다.`)),
     faq: [["신살이란 무엇인가요?", "사주 여덟 글자 사이의 특정한 짝을 보고 붙이는 이름입니다. 요즘 명리학에서는 대부분 재능과 성향을 짚는 말로 읽습니다."],
-      ["내 사주의 신살은 어떻게 보나요?", "이 페이지 위 칸에 생년월일과 태어난 시각을 넣으면 사주 도구가 천을귀인·도화살·역마살 등 여덟 가지 신살을 찾아 보여 드립니다."],
+      ["내 사주의 신살은 어떻게 보나요?", "이 페이지 위 칸에 생년월일과 태어난 시각을 넣으면 사주 도구가 천을귀인·도화살·역마살·홍염살 등 열두 가지 신살을 찾아 보여 드립니다."],
       ["살이 있으면 나쁜 건가요?", "그렇지 않습니다. 도화는 매력, 역마는 이동과 기회, 화개는 깊이, 괴강은 리더십처럼 대부분 강점으로 읽습니다."],
-      ["홍염살이나 현침살은 왜 자동으로 안 나오나요?", "유파마다 기준표가 달라 자동 계산에서 뺐습니다. 이 페이지에 널리 쓰는 기준을 적어 두었습니다."]],
+      ["홍염살·현침살도 나오나요?", "네, 홍염살·현침살·귀문관살·원진살까지 열두 가지를 찾습니다. 이 넷은 유파마다 기준이 조금씩 달라 동네보살은 널리 쓰는 표를 따릅니다."]],
     sibTitle: "신살 더 보기", sibs: SINSAL_SIBS,
     related: ["saju", "gunghap", "newyear", "todayfortune"] });
 }
@@ -3502,9 +3506,9 @@ ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z
 - 년생별 2027년 운세(60): 1950~2009년생을 한 해씩 풀었다. 주소는 ${DOMAIN}/newyear-출생연도.html 형식이다(예: newyear-1990.html). 페이지마다 그해 간지·띠·2027년 만 나이·정미년과 띠의 관계·삼재 여부·띠가 바뀌는 입춘 시각이 계산되어 있다. 태어난 해만으로 본 큰 흐름이며, 개인 풀이는 생년월일로 보는 신년운세가 따로 있다.
 ${NYB.YEARS.map(y=>{const f=NYB.facts(y);return `- [${y}년생 2027년 운세](${DOMAIN}/${nybUrl(y)}): ${f.ko}(${f.han})년생 ${f.animal} · 2027년 만 ${f.age[1]}세 · ${f.stem[1]}${f.samjae?" · "+f.samjae:""}`;}).join("\n")}
 
-## 신살 (9) — 도화살·화개살·역마살·천을귀인 등
+## 신살 (${SINSAL.PAGES.length + 1}) — 도화살·화개살·역마살·천을귀인·현침살·홍염살 등
 
-- [신살 뜻 모음](${DOMAIN}/sinsal.html): 신살 8가지(사주 도구가 생년월일로 찾음)와 홍염살·현침살·귀문관살·원진살 기준표.
+- [신살 뜻 모음](${DOMAIN}/sinsal.html): 신살 열두 가지 — 사주 도구가 생년월일로 찾는다. 홍염·현침·귀문·원진은 유파 차이가 있어 널리 쓰는 표.
 ${SINSAL.PAGES.map(p=>`- [${p.ko}](${DOMAIN}/sinsal-${p.en}.html): ${p.desc}`).join("\n")}
 
 ## MBTI 궁합
@@ -4123,7 +4127,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 78);
+].slice(0, 120 + 82);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +

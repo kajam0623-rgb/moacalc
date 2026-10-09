@@ -366,6 +366,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
   var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
   var SJ_BAEKHO=["갑진","을미","병술","정축","무진","임술","계축"],SJ_GWAEGANG=["경진","경술","임진","무술"];
+  // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
+  var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)
+  var SJ_HYEONCHIM_S=[0,7],SJ_HYEONCHIM_B=[3,6,8];   // 현침 글자: 천간 갑·신(辛), 지지 묘·오·신(申) — 사주에 2개 이상
+  var SJ_GWIMUN=[[0,9],[1,6],[2,7],[3,8],[4,11],[5,10]],SJ_WONJIN=[[0,7],[1,6],[2,9],[3,8],[4,11],[5,10]];  // 일지와 다른 지지의 짝
   var SJ_SINSAL_DESC={
    "천을귀인":"사주에서 가장 좋은 길신일세. 어려울 때 사람이 나타나 큰 고비를 넘기게 해주는 힘이 있어.",
    "문창귀인":"학문과 글재주의 별이야. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나네.",
@@ -374,7 +378,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "화개살":"혼자 깊어지는 시간과 예술의 별일세. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
    "양인살":"승부에 강한 기운이야. 결단력과 추진력이 뛰어나니 차분히 벼려서 쓰면 남을 지키는 힘이 되네.",
    "백호대살":"강렬한 기운의 별일세. 승부처에서 힘을 내니 건강과 안전만 곁들여 챙기면 든든하네.",
-   "괴강살":"우두머리의 기운이야. 카리스마와 리더십이 강해 이끄는 자리에서 빛나네."};
+   "괴강살":"우두머리의 기운이야. 카리스마와 리더십이 강해 이끄는 자리에서 빛나네.",
+   "홍염살":"은은한 매력과 감성의 별일세. 말투와 분위기에 사람이 끌려 예술·연애·대인 관계에서 빛이 나네.",
+   "현침살":"바늘처럼 섬세한 손끝과 날카로운 눈의 별이야. 의료·디자인·기술처럼 정교함이 필요한 일에서 두각이 나네.",
+   "귀문관살":"남다른 직관과 섬세한 감수성의 별일세. 예술·상담·연구에서 남이 못 보는 걸 읽어 내니 쉴 때는 푹 쉬게.",
+   "원진살":"가까운 사이일수록 결이 달라 부딪히기 쉬운 짝이야. 말로 한 번 더 확인하는 습관이 관계를 오히려 단단하게 하네."};
   function sjSinsal(p){
     var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
     var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
@@ -387,6 +395,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var dj=SJ_S[p.d.s]+SJ_B[p.d.b];
     if(SJ_BAEKHO.indexOf(dj)>=0)found.push("백호대살");
     if(SJ_GWAEGANG.indexOf(dj)>=0)found.push("괴강살");
+    if(bs.indexOf(SJ_HONGYEOM[ds])>=0)found.push("홍염살");
+    var ss=[p.y.s,p.m.s,p.d.s];if(p.h)ss.push(p.h.s);
+    if(ss.filter(function(x){return SJ_HYEONCHIM_S.indexOf(x)>=0;}).length+bs.filter(function(x){return SJ_HYEONCHIM_B.indexOf(x)>=0;}).length>=2)found.push("현침살");
+    var others=bs.slice();others.splice(2,1);   // 일지와 나머지 지지
+    var pair=function(T){return others.some(function(o){return T.some(function(t){return (t[0]===p.d.b&&t[1]===o)||(t[1]===p.d.b&&t[0]===o);});});};
+    if(pair(SJ_GWIMUN))found.push("귀문관살");
+    if(pair(SJ_WONJIN))found.push("원진살");
     return found;
   }
   /* 지장간 — 지지 속에 숨은 천간. 지지마다 [천간 번호, 일수] 를 여기·중기·정기 순으로 둔다(일수 합 30).
