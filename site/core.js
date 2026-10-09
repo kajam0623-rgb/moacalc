@@ -408,9 +408,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var xl=du.map(function(d,i){return '<text x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" class="du-t'+(i===nowI?' now':'')+'">'+d.age+'세</text>';}).join("");
     return '<style>.du-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.du-tabs button{padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card,#fff);color:inherit;font-size:13.5px}.du-tabs button.on{background:#f0a020;border-color:#f0a020;color:#fff;font-weight:700}'+
       '.du-svg{width:100%;height:auto}.du-g{stroke:var(--line);stroke-width:1}.du-t{font-size:10px;fill:var(--muted)}.du-t.now{fill:#d07a00;font-weight:700}.du-now{fill:#7b6cf6;opacity:.09}.du-s{display:none}.du-s.on{display:inline}.du-l{fill:none;stroke:#f0a020;stroke-width:2.4;stroke-linejoin:round}.du-a{fill:#f0a020;opacity:.1}.du-d{fill:#f0a020}</style>'+
-      '<div class="du-tabs">'+SJ_DU_K.map(function(k,ki){return '<button type="button"'+(ki===0?' class="on"':'')+' onclick="sjDuTab(this,\''+k[0]+'\')">'+k[1]+'</button>';}).join("")+'</div>'+
-      '<svg class="du-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="분야별 대운 흐름">'+band+grid+lines+xl+'</svg>';}
-  function sjDuTab(btn,k){var box=btn.closest(".sj-sec");[].forEach.call(box.querySelectorAll(".du-tabs button"),function(b){b.className=b===btn?"on":"";});
+      '<div class="du-wrap"><div class="du-tabs">'+SJ_DU_K.map(function(k,ki){return '<button type="button"'+(ki===0?' class="on"':'')+' onclick="sjDuTab(this,\''+k[0]+'\')">'+k[1]+'</button>';}).join("")+'</div>'+
+      '<svg class="du-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="분야별 대운 흐름">'+band+grid+lines+xl+'</svg></div>';}
+  function sjDuTab(btn,k){var box=btn.closest(".du-wrap");[].forEach.call(box.querySelectorAll(".du-tabs button"),function(b){b.className=b===btn?"on":"";});
     [].forEach.call(box.querySelectorAll(".du-s"),function(g){g.classList.toggle("on",g.classList.contains("du-"+k));});}
   function sjSinLink(name,label){var en=SJ_SINSAL_EN[name];return en?'<a href="sinsal-'+en+'.html">'+label+'</a>':label;}
   // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
