@@ -30,6 +30,7 @@ export default {
     if (pathname === "/love.html") return todayFortune(req, env, "love", 0, "#love-sv");
     if (pathname === "/lucky.html") return todayFortune(req, env, "lucky", 0, "#lucky-sv");
     if (pathname === "/celeb.html") return todayFortune(req, env, "bday", 0, "#bday-sv");
+    if (pathname === "/" || pathname === "/index.html") return todayFortune(req, env, "bdayHome", 0, "#home-bday");
     if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
     if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
     return env.ASSETS.fetch(req);

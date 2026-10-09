@@ -926,7 +926,7 @@ body:has(.hero2.nite){overflow-x:clip;}
 .zrank{list-style:none;margin:0;padding:0;display:grid;gap:6px;}@media (min-width:760px){.zrank{grid-template-columns:repeat(2,1fr);}}
 .zrank a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);text-decoration:none;color:var(--ink);}
 .zrank em{font-style:normal;font-weight:900;width:22px;color:var(--muted);}.zrank li:nth-child(-n+3) em{color:#E6B25A;}.zrank b{min-width:64px;white-space:nowrap;}.zrank span{flex:1;font-size:13px;color:var(--muted);}.zrank i{font-style:normal;font-weight:800;}
-.zr-wait{color:var(--muted);font-size:13px;padding:8px 2px;}
+.zr-wait{color:var(--muted);font-size:13px;padding:8px 2px;}.home-bday{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:12px 0 4px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card,#fff);color:inherit;text-decoration:none}.home-bday b{font-size:14px}.home-bday span{font-size:14px;font-weight:700;color:var(--accent)}.home-bday i{font-style:normal;font-size:12.5px;color:var(--muted);flex-basis:100%}
 .dictcta{display:flex;align-items:center;gap:12px;margin:22px 0;padding:16px;border-radius:14px;border:1.5px solid #E6B25A;text-decoration:none;color:var(--ink);background:var(--surface);}
 .dictcta b{font-size:17px;white-space:nowrap;}.dictcta span{flex:1;font-size:13px;color:var(--muted);}.dictcta i{font-style:normal;font-weight:800;}
 /* 명리학 배우기 */
