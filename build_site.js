@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1965,6 +1965,45 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 부적(bujeok.html, 2026-10-09) — 네이버 부적 9,210·합격부적 1,440·행운의부적 900·삼재부적 450·건강부적 410. 민속 문화로 소개하고 효과는 장담하지 않는다.
+// 카드는 화면에서 그리는 디지털 부적(그림 파일 없음). 공유 주소에는 종류(k)만 싣는다 — 이름 같은 개인 정보는 주소에 넣지 않는다
+const BUJEOK = [["hap", "합격 부적", "合格", "시험·면접·자격증", "준비한 만큼 다 보여 주라는 마음을 담습니다. 수능·공무원 시험·면접을 앞둔 사람에게 가장 많이 건네는 부적입니다."],
+  ["jae", "재물 부적", "財運", "돈·사업·장사", "들어온 재물이 새지 않고 차곡차곡 쌓이기를 바라는 부적입니다. 가게를 열거나 새 일을 시작할 때 많이 찾습니다."],
+  ["samjae", "삼재 부적", "消災", "삼재·액막이", "삼재가 드는 해에 마음을 다잡으려고 지니는 부적입니다. 2027년 삼재띠는 돼지띠·토끼띠·양띠입니다."],
+  ["geon", "건강 부적", "安康", "건강·회복", "가족의 건강과 빠른 회복을 바라는 마음을 담습니다. 부모님께 드리는 선물로도 많이 찾습니다."],
+  ["yeon", "인연 부적", "良緣", "연애·결혼", "좋은 인연을 만나거나 지금의 관계가 오래가기를 바라는 부적입니다. 원앙부라고도 부릅니다."],
+  ["an", "안택 부적", "安宅", "집안 평안·이사", "집안이 두루 평안하기를 바라는 부적으로, 이사한 집이나 새 가게에 많이 둡니다."]];
+function bujeokPage() {
+  const data = JSON.stringify(BUJEOK.map(b => [b[0], b[1], b[2], b[3]]));
+  const js = `<style>.bj-card{position:relative;margin:14px auto 0;width:220px;height:340px;background:linear-gradient(180deg,#f7dc7a,#eec44a);border:2px solid #c99a12;border-radius:4px;box-shadow:0 10px 24px #b3891a44;display:flex;flex-direction:column;align-items:center;padding:16px 10px;color:#b3261e;font-family:"Nanum Myeongjo","Batang",serif}.bj-card .bj-top{font-size:13px;letter-spacing:.3em;color:#8a5a06}.bj-card .bj-big{writing-mode:vertical-rl;font-size:64px;font-weight:800;line-height:1;margin:14px 0 0;letter-spacing:.06em}.bj-card .bj-seal{position:absolute;right:14px;bottom:16px;width:52px;height:52px;border:2.5px solid #b3261e;border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:700;line-height:1.15;text-align:center;transform:rotate(-8deg)}.bj-card .bj-day{position:absolute;left:12px;bottom:18px;font-size:11px;color:#8a5a06;writing-mode:vertical-rl}.bj-kinds{display:flex;flex-wrap:wrap;gap:6px}.bj-kinds button{padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:var(--card,#fff);color:inherit;font-size:14px}.bj-kinds button.on{border-color:#b3261e;color:#b3261e;font-weight:700}</style>` +
+    `<script>(function(){var K=${data},o=document.getElementById("bjout"),box=document.getElementById("bjk"),cur=0;function day(){var d=new Date(Date.now()+9*36e5);return d.getUTCFullYear()+"년 "+(d.getUTCMonth()+1)+"월 "+d.getUTCDate()+"일"}` +
+    `function draw(i,push){cur=i;[].forEach.call(box.children,function(b,j){b.className=j===i?"on":""});var k=K[i];o.innerHTML='<div class="bj-card" role="img" aria-label="'+k[1]+' 카드"><div class="bj-top">동네보살</div><div class="bj-big">'+k[2]+'</div><div class="bj-day">'+day()+'</div><div class="bj-seal">동네<br>보살</div></div><p style="text-align:center;margin:10px 0 0;font-size:14px"><b>'+k[1]+'</b> · '+k[3]+'</p><div style="text-align:center;margin-top:10px"><button type="button" class="ttibtn" id="bjshare">이 부적 카톡으로 보내기</button></div>';` +
+    `document.getElementById("bjshare").onclick=function(){var u=location.origin+location.pathname+"?k="+k[0]+"&from=share",t="동네보살 "+k[1]+" 한 장 보내요 — 마음만은 꼭 닿기를",bt=this;try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"share_click"}))}catch(e){}if(navigator.share)navigator.share({title:k[1],text:t,url:u}).catch(function(){});else if(navigator.clipboard)navigator.clipboard.writeText(t+" "+u).then(function(){bt.textContent="복사됨! 카톡에 붙여넣으세요"})};` +
+    `if(push&&history.replaceState)history.replaceState(null,"","?k="+k[0]);try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"bujeok"}))}catch(e){}}` +
+    `K.forEach(function(k,i){var b=document.createElement("button");b.type="button";b.textContent=k[1];b.onclick=function(){draw(i,1)};box.appendChild(b)});var q=new URLSearchParams(location.search).get("k"),qi=K.findIndex(function(k){return k[0]===q});draw(qi>=0?qi:0,0)})();</script>`;
+  const kinds = BUJEOK.map(b => `<div class="exbox" style="margin-top:8px" id="${b[0]}"><b>${b[1]} (${b[2]})</b> — <span style="color:var(--muted)">${b[3]}</span><p style="margin:6px 0 0">${b[4]}</p></div>`).join("");
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "부적", date: "2026-10-09",
+    title: "부적 — 합격 부적·재물 부적·삼재 부적 종류와 뜻, 보살 부적 카드 보내기 | 동네보살",
+    desc: "부적의 뜻과 종류(합격·재물·삼재·건강·인연·안택), 예부터 지니던 방법을 정리했습니다. 마음을 담은 보살 부적 카드를 한 장 골라 시험 앞둔 사람에게 카톡으로 보내 보세요.",
+    url: `${DOMAIN}/bujeok.html`, img: "img/bosal/talisman.webp", hero: "img/tool/h-tojeong.webp",
+    h1: "부적 — 종류와 뜻, 보살 부적 카드", sub: "합격·재물·삼재·건강·인연·안택 · 카드는 무료로 한 장씩",
+    parent: "tojeong.html", parentName: "토정비결", tool: "tojeong", noTool: true,
+    tags: ["부적", "합격 부적", "재물 부적", "삼재 부적", "건강 부적", "부적 종류", "부적 뜻", "수능 부적"],
+    body: `<div class="sjw" id="bjw"><h2>보살 부적 카드 한 장</h2><p class="sjw-note" style="margin-top:0">종류를 고르면 오늘 날짜가 든 카드가 나옵니다. 마음을 전하고 싶은 사람에게 보내 보세요.</p><div class="bj-kinds" id="bjk"></div><div id="bjout" aria-live="polite"></div></div>` + js +
+      `<section class="guide"><h2>부적 종류와 뜻</h2>${kinds}</section>` +
+      sec("부적이란", para(`부적(符籍)은 바라는 일을 글자나 그림으로 적어 몸에 지니거나 집에 붙여 두던 민간의 풍습입니다. 전통 부적은 노란 종이(괴황지)에 붉은 광물 안료(경면주사)로 글자와 문양을 그려, 노란색과 붉은색이 액운을 막고 복을 부른다고 여겼습니다.\n오늘날 부적은 효과를 장담하는 물건이라기보다, 시험이나 새 출발을 앞둔 사람의 마음을 다잡아 주는 상징으로 많이 쓰입니다. 동네보살 부적 카드도 응원하는 마음을 전하는 데 써 주세요.`)) +
+      sec("예부터 부적을 지니던 방법", para(`전통적으로 몸에 지니는 부적은 지갑이나 옷 안주머니에 접어 넣고, 집안을 위한 부적은 문 위나 방 안 높은 곳에 붙여 두었습니다. 접을 때는 글자가 안쪽으로 가게 접는 것이 흔한 방식이었습니다.\n바라던 일이 이루어졌거나 해가 바뀌면 부적에 고마움을 담아 정리하는 풍습도 있었습니다. 어떤 방법이든 정해진 규칙보다 지니는 사람의 마음가짐이 더 중요하다고 보았습니다.`)) +
+      sec("함께 보면 좋은 것", `<p style="margin-bottom:10px">삼재가 드는 해는 <a href="samjae.html">삼재 계산기</a>, 한 해 흐름은 <a href="tojeong.html">2027 토정비결</a>과 <a href="newyear.html">2027 신년운세</a>, 이사 날짜는 <a href="sonless.html">손 없는 날 달력</a>에서 볼 수 있습니다.</p>`),
+    faq: [["부적은 효과가 있나요?", "부적은 오래된 민간 신앙이고 효과가 증명된 것은 아닙니다. 다만 바라는 일을 마음에 새기고 다잡게 해 주는 상징으로 의미가 있습니다."],
+      ["합격 부적은 언제 주면 좋나요?", "시험 며칠 전에 응원의 말과 함께 건네는 경우가 많습니다. 동네보살 합격 부적 카드는 카톡으로 바로 보낼 수 있습니다."],
+      ["2027년 삼재 부적은 어느 띠가 찾나요?", "2027년 삼재띠는 돼지띠·토끼띠·양띠로, 날삼재(삼재가 나가는 해)입니다. 자세한 내용은 삼재 계산기에서 볼 수 있습니다."],
+      ["부적은 어디에 두나요?", "몸에 지니는 부적은 지갑이나 안주머니에, 집안을 위한 부적은 문 위나 방 안 높은 곳에 두는 것이 전통적인 방식입니다."]],
+    sibTitle: "운을 다지는 것들", sibs: `<div class="sibs"><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="newyear.html">2027 신년운세</a><a href="sonless.html">손 없는 날</a><a href="todayfortune.html">오늘의 운세</a></div>`,
+    related: ["tojeong", "newyear", "todayfortune", "saju"] });
 }
 
 // ── 탄생석(birthstone.html, 2026-10-09) — 네이버 탄생석 15,890. 미국 보석업계 표준 목록(1912 제정·이후 보완)을 따른다. 상징은 '전해지는 뜻'으로만 쓴다
@@ -3516,7 +3555,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3622,6 +3661,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [부적](${DOMAIN}/bujeok.html): 부적 종류(합격·재물·삼재·건강·인연·안택)와 뜻, 전통적으로 지니던 방법, 화면에서 그리는 보살 부적 카드(카톡 공유). 효과를 장담하지 않는 민속 문화로 소개.
 - [탄생석](${DOMAIN}/birthstone.html): 1월 가넷·2월 자수정·3월 아쿠아마린·4월 다이아몬드·5월 에메랄드·6월 진주·7월 루비·8월 페리도트·9월 사파이어·10월 오팔·11월 토파즈·12월 터키석, 색과 전해지는 뜻, 생일로 탄생석·별자리 찾기.
 - [아홉수 계산기](${DOMAIN}/ahopsu.html): 태어난 해로 올해·내년이 아홉수(세는 나이 끝자리 9)인지, 만 나이 기준과 함께. 해마다 아홉수 년생 표.
 - [2027년 달력](${DOMAIN}/calendar-2027.html): 2027년 공휴일 76일(일요일 포함), 설 연휴 2월 6~9일(대체 9일), 추석 9월 14~16일, 노동절·제헌절 신설, 대체공휴일 7일(2/9·5/3·7/19·8/16·10/4·10/11·12/27). 12달 달력에 24절기·음력 1일·15일·손 없는 날 표시. 우주항공청 2027년도 월력요항 기준.
@@ -4020,6 +4060,7 @@ fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
+fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4173,6 +4214,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/bujeok.html", "부적 — 합격·재물·삼재 부적 종류와 뜻", "부적의 뜻과 종류, 예부터 지니던 방법. 보살 부적 카드를 한 장 골라 카톡으로 보내 보세요."],
   [DOMAIN + "/birthstone.html", "탄생석 — 1월~12월 탄생석 의미와 색", "달마다 탄생석과 색, 전해지는 뜻. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다."],
   [DOMAIN + "/ahopsu.html", "아홉수 계산기 — 올해·내년 아홉수 나이와 년생", "태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 알려 드립니다. 해마다 아홉수 년생 표도 함께."],
   [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
@@ -4199,7 +4241,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 84);
+].slice(0, 120 + 85);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
