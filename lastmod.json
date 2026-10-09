@@ -1804,11 +1804,11 @@
   "d": "2026-10-09"
  },
  "dream.html": {
-  "h": "bec92270",
+  "h": "c6225ccf",
   "d": "2026-10-09"
  },
  "dream-animal.html": {
-  "h": "e578b887",
+  "h": "5dd36cff",
   "d": "2026-10-09"
  },
  "dream-people.html": {
@@ -1820,7 +1820,7 @@
   "d": "2026-10-09"
  },
  "dream-action.html": {
-  "h": "9bdff322",
+  "h": "15dad3a1",
   "d": "2026-10-09"
  },
  "dream-nature.html": {
@@ -1828,7 +1828,7 @@
   "d": "2026-10-09"
  },
  "dream-waterfire.html": {
-  "h": "507cc3e9",
+  "h": "f38a27a4",
   "d": "2026-10-09"
  },
  "dream-house.html": {
@@ -1848,7 +1848,7 @@
   "d": "2026-10-09"
  },
  "dream-death.html": {
-  "h": "59a00d1d",
+  "h": "8bffcdd2",
   "d": "2026-10-09"
  },
  "dream-taemong.html": {
@@ -2737,6 +2737,26 @@
  },
  "bujeok.html": {
   "h": "90612e3a",
+  "d": "2026-10-09"
+ },
+ "dream-animal-crocodile.html": {
+  "h": "2222cb4e",
+  "d": "2026-10-09"
+ },
+ "dream-action-kissing.html": {
+  "h": "456ae0d0",
+  "d": "2026-10-09"
+ },
+ "dream-animal-rat.html": {
+  "h": "a27b11ca",
+  "d": "2026-10-09"
+ },
+ "dream-death-funeral.html": {
+  "h": "308e8c27",
+  "d": "2026-10-09"
+ },
+ "dream-waterfire-flood.html": {
+  "h": "315fc45f",
   "d": "2026-10-09"
  }
 }
