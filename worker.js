@@ -28,6 +28,7 @@ export default {
     if (pathname === "/todayfortune.html") return datedTitle(req, env);
     if (pathname === "/lunar.html") return lunarTitle(req, env);
     if (pathname === "/love.html") return todayFortune(req, env, "love", 0, "#love-sv");
+    if (pathname === "/lucky.html") return todayFortune(req, env, "lucky", 0, "#lucky-sv");
     if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
     if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
     return env.ASSETS.fetch(req);
@@ -106,7 +107,7 @@ async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
   const rw = new HTMLRewriter().on(sel, { element(e) { e.setInnerContent(html, { html: true }); } });
   // 오늘 글을 끼운 허브 두 쪽은 제목 앞에 날짜를 붙인다('10월 9일 띠별 운세 …') — 날짜로 찾는 검색과 결과 화면의 신선도
   const [, m, d] = day.split("-").map(Number);
-  if (key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "tomorrow") rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
+  if (key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow") rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
   else if (key === "month") rw.on("title", { element(e) { e.prepend(`${m}월 운세 · `); } });   // '10월운세' 4천·이번달운세 3천
   return rw.transform(res);
 }

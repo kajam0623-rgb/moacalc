@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="lucky.html">행운의 숫자</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1235,6 +1235,14 @@ function todayFortune(dt){
   out.zodiacfortune = `<section class="guide"><h2>오늘의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt} 오늘 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다. 띠를 누르면 오늘 풀이가 이어집니다.`) +
     `<ul>${ttis.map(x => `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}</li>`).join("")}</ul></section>`;
+  // 오늘의 행운의 숫자(lucky.html, 2026-10-09) — 하도(河圖) 오행 수: 수 1·6, 화 7·2, 목 3·8, 금 9·4, 토 5·10 (양=홀수, 음=짝수)
+  { const HADO = { 목: [3, 8], 화: [7, 2], 토: [5, 10], 금: [9, 4], 수: [1, 6] }, SE = ["목","목","화","화","토","토","금","금","수","수"], BE = ["수","토","목","목","토","화","화","토","금","금","토","수"],
+      GEN = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" }, EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" }, s = today.d.s, b = today.d.b, dayN = HADO[SE[s]][s % 2], dayB = HADO[BE[b]][b % 2];
+    const per = ttis.map(x => { const n = [...new Set([...HADO[GEN[BE[x.b]]], dayN])].sort((p, q) => p - q); return { x, n, gen: GEN[BE[x.b]] }; });
+    out.lucky = `<section class="guide"><h2>오늘의 행운의 숫자 — ${day}</h2>` +
+      `<div class="exbox"><div class="row"><span>오늘의 숫자</span><b style="font-size:22px">${dayN} · ${dayB}</b></div></div>` +
+      NOTE(`${ilTxt} 하늘 글자 ${F.SJ_S[s]}${josa(F.SJ_S[s], "은/는")} ${EN[SE[s]]} 기운이라 ${dayN}, 땅 글자 ${F.SJ_B[b]}${josa(F.SJ_B[b], "은/는")} ${EN[BE[b]]} 기운이라 ${dayB}입니다.`) +
+      `<h3 style="margin:14px 0 6px;font-size:16px">띠별 오늘의 행운의 숫자</h3><ul>${per.map(o => `<li><a href="zodiac-${o.x.z.en}.html">${o.x.z.ko}띠</a> · <b>${o.n.join(", ")}</b> <span style="color:var(--muted);font-size:13px">(띠를 북돋는 ${EN[o.gen]} 기운의 수 + 오늘의 수)</span></li>`).join("")}</ul></section>`; }
   // 오늘 음력 날짜(lunar.html 제목용, 2026-10-09) — worker 가 '오늘 음력 8월 29일 · ' 을 제목 앞에 붙인다
   { MANSE_CAL.setSolarDate(dt.getFullYear(), dt.getMonth() + 1, dt.getDate()); const L = MANSE_CAL.getLunarCalendar(); out.lunar = `${L.intercalation ? "윤" : ""}${L.month}월 ${L.day}일`; }
   // 오늘의 연애운(love.html, 2026-10-09) — 띠·별자리 풀이의 애정운(love) 첫 문장을 한 쪽에 모은다. worker 가 #love-sv 에 끼운다
@@ -1777,6 +1785,28 @@ function tomorrowPage() {
 }
 
 // 오늘의 연애운(love.html, 2026-10-09) — 네이버 연애운 1.15만·재회운 1,750·애정운 1,680·연애운세 1,170. 글은 worker 가 날짜 파일 love 묶음을 #love-sv 에 끼운다
+// 오늘의 행운의 숫자(lucky.html, 2026-10-09) — 네이버 행운의숫자 3,050·오늘의행운숫자 2,320·오늘의행운의숫자 1,440. 글은 worker 가 #lucky-sv 에 끼운다
+function luckyPage() {
+  return seoPage({
+    crumb: "오늘의 행운의 숫자", date: "2026-10-09",
+    title: "오늘의 행운의 숫자 — 띠별 행운의 숫자, 하도 오행 수로 매일 | 동네보살",
+    desc: "오늘의 행운의 숫자를 그날 일진의 오행으로 계산해 띠별로 알려 드립니다. 하도(河圖) 오행 수를 쓰고 매일 한국 시각 0시에 바뀝니다. 가입 없이 무료.",
+    url: `${DOMAIN}/lucky.html`, img: "img/tool/h-todayfortune.webp", hero: "img/tool/h-todayfortune.webp",
+    h1: "오늘의 행운의 숫자 — 띠별", sub: "그날 일진의 오행 · 하도 오행 수 · 매일 0시에 바뀝니다",
+    parent: "todayfortune.html", parentName: "오늘의 운세", tool: "todayfortune", noTool: true,
+    tags: ["행운의 숫자", "오늘의 행운의 숫자", "오늘의 행운 숫자", "띠별 행운의 숫자", "행운의 번호"],
+    body: `<div id="lucky-sv"><section class="guide"><h2>오늘의 행운의 숫자</h2><p>오늘 숫자를 불러오지 못했습니다. <a href="todayfortune.html">오늘의 운세</a>에서 오늘 흐름을 먼저 보세요.</p></section></div>` +
+      `<section class="guide"><h2>행운의 숫자는 이렇게 정합니다</h2><div class="intro" style="margin-top:0">${para(`동양에서는 다섯 기운(오행)마다 숫자를 붙여 온 전통이 있습니다. 옛 그림 하도(河圖)에서 나온 짝으로, 수(水)는 1과 6, 화(火)는 7과 2, 목(木)은 3과 8, 금(金)은 9와 4, 토(土)는 5와 10입니다. 양의 글자에는 홀수를, 음의 글자에는 짝수를 씁니다.\n오늘의 숫자는 그날 일진의 하늘 글자와 땅 글자가 가진 수입니다. 띠별 숫자는 내 띠의 기운을 북돋아 주는 오행의 두 수에 오늘의 수를 더했습니다. 예를 들어 쥐띠는 물(水)의 띠라, 물을 낳아 주는 금(金)의 4와 9가 기본 숫자가 됩니다.`)}</div></section>` +
+      `<section class="guide"><h2>행운의 숫자, 이렇게 써 보세요</h2><div class="intro" style="margin-top:0">${para(`행운의 숫자는 그날을 즐겁게 보내는 작은 신호로 쓰면 좋습니다. 약속 시간이나 운동 횟수, 저축 금액의 끝자리처럼 생활 속 선택에 가볍게 넣어 보세요.\n숫자는 재미로 보는 참고이고, 큰돈이 걸린 결정을 대신하지 않습니다. 하루 흐름 전체는 <a href="todayfortune.html">오늘의 운세</a>와 <a href="zodiacfortune.html">띠별 운세</a>에서 볼 수 있습니다.`)}</div></section>` +
+      `<section class="guide"><h2>함께 보기</h2><div class="sibs"><a href="todayfortune.html">오늘의 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="tomorrow.html">내일의 운세</a><a href="bujeok.html">부적</a></div></section>`,
+    faq: [["오늘의 행운의 숫자는 매일 바뀌나요?", "네, 그날 일진의 오행으로 계산해서 매일 한국 시각 0시에 바뀝니다."],
+      ["행운의 숫자는 어떻게 정하나요?", "하도(河圖) 오행 수를 씁니다. 수 1·6, 화 7·2, 목 3·8, 금 9·4, 토 5·10이고, 오늘 일진의 두 글자와 내 띠를 북돋는 오행의 수를 함께 봅니다."],
+      ["내 생년월일로 행운의 숫자를 볼 수 있나요?", "이 페이지는 띠 기준입니다. 생년월일로 보는 내 몫의 운세는 오늘의 운세에서 볼 수 있습니다."],
+      ["복권 번호로 써도 되나요?", "행운의 숫자는 재미로 보는 참고일 뿐 당첨과는 관계가 없습니다. 생활 속 작은 선택에 가볍게 써 보세요."]],
+    sibTitle: "운세 더 보기", sibs: SEASON_LINKS,
+    related: ["todayfortune", "zodiacfortune", "horoscope", "saju"] });
+}
+
 function lovePage() {
   return seoPage({
     crumb: "오늘의 연애운", date: "2026-10-09",
@@ -3555,7 +3585,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3602,6 +3632,7 @@ ${ZODIAC_PAGES.map(z=>`- [${z.ko}띠](${DOMAIN}/zodiac-${z.en}.html): 지지 ${z
 
 2027년은 정미(丁未)년, 붉은 양의 해다. 사주 달력으로는 2027년 입춘(2월 4일 오전 10시 46분)부터이고, 설날(음력 1월 1일)은 2월 7일이다.
 
+- [오늘의 행운의 숫자 — 띠별](${DOMAIN}/lucky.html): 그날 일진의 하늘·땅 글자 하도(河圖) 오행 수(수 1·6, 화 7·2, 목 3·8, 금 9·4, 토 5·10)와 띠를 북돋는 오행의 수. 매일 0시에 바뀐다.
 - [오늘의 연애운 — 띠별·별자리별](${DOMAIN}/love.html): 오늘 일진으로 본 12띠, 오늘 낮 12시 달의 자리로 본 12별자리의 총운 점수와 애정운 한 줄 풀이. 매일 한국 시각 0시에 바뀐다.
 - [주간 운세](${DOMAIN}/weekly.html): 이번 주(월~일) 12띠·12별자리 평균 점수와 가장 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀐다.
 - [이달의 운세](${DOMAIN}/monthly.html): 이번 달 12띠·12별자리 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀐다.
@@ -4065,6 +4096,7 @@ fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
 fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
+fs.writeFileSync(path.join(OUT,"lucky.html"), luckyPage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
@@ -4210,6 +4242,7 @@ const rssRows = [
   [DOMAIN + "/weekly.html", "주간 운세 — 이번 주 띠별·별자리 운세", "이번 주 12띠·12별자리의 평균 점수와 좋은 날·숨 고를 날. 매주 월요일 0시에 바뀝니다."],
   [DOMAIN + "/monthly.html", "이달의 운세 — 이번 달 띠별·별자리 운세", "이번 달 12띠·12별자리의 평균 점수와 좋은 날 세 개·숨 고를 날. 매달 1일 0시에 바뀝니다."],
   [DOMAIN + "/tomorrow.html", "내일의 운세 — 띠별·별자리별 내일 운세", "내일 날짜의 일진으로 본 12띠 운세와 12별자리 운세를 점수와 한 줄 풀이로 미리 봅니다. 매일 0시에 바뀝니다."],
+  [DOMAIN + "/lucky.html", "오늘의 행운의 숫자 — 띠별", "그날 일진의 오행으로 계산한 오늘의 행운의 숫자와 띠별 숫자. 매일 0시에 바뀝니다."],
   [DOMAIN + "/love.html", "오늘의 연애운 — 띠별·별자리별 애정운", "오늘 내 띠와 별자리의 연애운을 점수와 한 줄 풀이로 봅니다. 매일 한국 시각 0시에 바뀝니다."],
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
@@ -4241,7 +4274,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 85);
+].slice(0, 120 + 86);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
