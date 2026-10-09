@@ -50,7 +50,7 @@ TOOLS.push({id:"zodiacfortune",cat:"재미·운세",icon:"",name:"띠별 운세"
         '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>')+'</div>'+
       '<div class="sj-sec"><h3>오늘 기운의 단계 — '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+'오늘 '+SJ_TTI[b]+'띠의 기운은 열두 단계 가운데 <b>'+un+'</b> 자리에 섰네. 하루 동안 몸으로 느끼는 결이 여기서 나오네.<br><br>오늘 날짜의 글자 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 속 글자 '+SJ_S[SJ_BMAIN[b]]+'에게 그 자리를 주는 걸세.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
-      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p></div>'+
+      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p>'+goodsRow(SJ_EL[luckEl])+'</div>'+
       '<div id="zfyear">'+'<div class="sj-sec"><h3>2027 정미년 한 해</h3><p>'+y27+'</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+'</div>'+
       shareBtn()+

@@ -39,14 +39,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :r>=0.3?"채워 가며 크는 쪽이지만 크게 기울지는 않았네. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이야."
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
-    // 용신 기운 물건(쿠팡 파트너스 검색 링크, 2026-10-10) — 위 '옷이나 물건은 ○○ 쪽으로'를 바로 누를 수 있게. 맨 위 대가 문구는 페이지에 이미 있다
-    var EL_GOODS={목:[["공기정화식물","hID1ufQDEi"],["초록색 지갑","hID2d6ASXc"],["원목 책상 정리함","hID2nfaezY"]],
-      화:[["빨간 장지갑","hID2wmjAyq"],["향초 캔들","hID22mYbFk"],["레드 머그컵","hID3buujvg"]],
-      토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
-      금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
-      수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
-    function goodsRow(e){return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>자네를 받쳐 주는 '+e+' 기운 물건 — 쿠팡에서 바로 보기</b>'+
-      EL_GOODS[e].map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
     var today=new Date();
     /* 입력은 한 화면에 질문 하나(보살이 묻는다) — 진행 막대와 이전·다음, '한 번에 입력'으로 예전처럼 다 펼칠 수도 있다.
        입력칸(#d·#t·#c·#tm·#nm·#g·#q)과 #go 는 그대로라 계산·자동 실행(#go)·생일 불러오기는 바뀌지 않는다 */

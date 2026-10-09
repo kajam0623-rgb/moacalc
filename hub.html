@@ -2586,6 +2586,15 @@
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){
     bindSave(el,{file:file,tool:tool,ident:ident,score:score,grade:grade,headline:headline,body:String(body||"").replace(/<[^>]*>/g,"").split(".")[0]+".",pose:pose,badge:badge||""});}
+  // 용신 기운 물건(쿠팡 파트너스 검색 링크, 2026-10-10) — 사주(명식 표 아래)·오늘의 운세·띠 운세 '오늘의 행운' 뒤. 맨 위 대가 문구는 페이지에 이미 있다
+  var EL_GOODS={목:[["공기정화식물","hID1ufQDEi"],["초록색 지갑","hID2d6ASXc"],["원목 책상 정리함","hID2nfaezY"]],
+    화:[["빨간 장지갑","hID2wmjAyq"],["향초 캔들","hID22mYbFk"],["레드 머그컵","hID3buujvg"]],
+    토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
+    금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
+    수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
+  function goodsRow(e){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
+    return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>자네를 받쳐 주는 '+e+' 기운 물건 — 쿠팡에서 바로 보기</b>'+
+    EL_GOODS[e].map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){
     function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
@@ -3151,14 +3160,6 @@
         :r>=0.3?"채워 가며 크는 쪽이지만 크게 기울지는 않았네. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이야."
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편일세. 그만큼 섬세하고 눈치가 빠르니, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피네.";}
     var EL_TITLE={목:["푸른 나무",  "곧게 자라는 사람"],화:["붉은 태양","환하게 비추는 사람"],토:["너른 대지","품어 기르는 사람"],금:["벼린 쇠","맺고 끊는 사람"],수:["깊은 물","고요히 스며드는 사람"]};
-    // 용신 기운 물건(쿠팡 파트너스 검색 링크, 2026-10-10) — 위 '옷이나 물건은 ○○ 쪽으로'를 바로 누를 수 있게. 맨 위 대가 문구는 페이지에 이미 있다
-    var EL_GOODS={목:[["공기정화식물","hID1ufQDEi"],["초록색 지갑","hID2d6ASXc"],["원목 책상 정리함","hID2nfaezY"]],
-      화:[["빨간 장지갑","hID2wmjAyq"],["향초 캔들","hID22mYbFk"],["레드 머그컵","hID3buujvg"]],
-      토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
-      금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
-      수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
-    function goodsRow(e){return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>자네를 받쳐 주는 '+e+' 기운 물건 — 쿠팡에서 바로 보기</b>'+
-      EL_GOODS[e].map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
     var today=new Date();
     /* 입력은 한 화면에 질문 하나(보살이 묻는다) — 진행 막대와 이전·다음, '한 번에 입력'으로 예전처럼 다 펼칠 수도 있다.
        입력칸(#d·#t·#c·#tm·#nm·#g·#q)과 #go 는 그대로라 계산·자동 실행(#go)·생일 불러오기는 바뀌지 않는다 */
@@ -4487,7 +4488,7 @@
       '<div class="sj-sec"><h3>오늘 살펴 두면 좋은 것</h3><p>'+T[4]+'</p></div>'+
       '<div class="sj-sec"><h3>조언</h3><p>'+T[3]+'<br><br>그리고 '+score+'점 말인데, 이 숫자는 오늘의 기운('+rel+')에 자네 태어난 날 글자와 오늘 날짜 글자의 관계, 자네를 받쳐 주는 기운과의 맞음을 더해 나온 값이네.<br><br>숫자보다 어디에 힘이 실렸는지를 보게. 오늘은 <b>'+SUB_LBL[hiI]+'</b>이 제일 높고('+sub[hiI]+'점) <b>'+SUB_LBL[loI]+'</b>은 가장 차분하네('+sub[loI]+'점). '+SUB_LBL[hiI]+' 쪽에 힘을 싣고 '+SUB_LBL[loI]+' 쪽은 한 번 더 살피면, 오늘 하루는 자네 편일세.</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
-      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네를 받쳐 주는 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p></div>'+
+      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">전부 자네를 받쳐 주는 '+SJ_EL[luckEl]+' 기운을 보태는 것들일세. '+L[0]+' 계열을 하나 지니고, 갈 데가 있거든 '+L[1]+'으로 움직이게. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야. 사람 만나고 일이 맞물리기엔 그때가 제일 나으니, 중요한 얘기가 있거든 그 시간에 꺼내게.</p>'+goodsRow(SJ_EL[luckEl])+'</div>'+
       '<div class="sj-sec"><h3>내일 미리보기 — '+SJ_S[tp.d.s]+SJ_B[tp.d.b]+'('+SJ_SH[tp.d.s]+SJ_BH[tp.d.b]+')일</h3><p>'+bosalImg("sleepy","bs-side","달 위에서 조는 아기보살")+'내일은 자네한테 <b>'+tRel+'</b>의 날일세. "'+TXT[tRel][9]+'"<br><br>'+UN_MOOD[sjUnseong(me.d.s,tp.d.b)]+'<br><br>자세한 건 자정 넘어 일진이 바뀌거든 다시 오게.</p></div>'+
       '<div class="tail-wrap fold-skip" id="tailbox"></div>'+
       shareBtn()+
@@ -4653,7 +4654,7 @@
         '<div class="sj-sec"><h3>조언</h3><p>'+Z[4]+'</p></div>')+'</div>'+
       '<div class="sj-sec"><h3>오늘 기운의 단계 — '+un+'</h3><p>'+conceptArt(ART_UN[un],un)+'오늘 '+SJ_TTI[b]+'띠의 기운은 열두 단계 가운데 <b>'+un+'</b> 자리에 섰네. 하루 동안 몸으로 느끼는 결이 여기서 나오네.<br><br>오늘 날짜의 글자 '+SJ_B[tb]+'('+SJ_BH[tb]+')가 '+SJ_TTI[b]+'띠의 속 글자 '+SJ_S[SJ_BMAIN[b]]+'에게 그 자리를 주는 걸세.<br><br>'+SJ_UN_DESC[un]+'</p></div>'+
       '<div class="sj-sec"><h3>오늘의 행운</h3><div class="chips"><span class="chip">색 '+L[0]+'</span><span class="chip">방위 '+L[1]+'</span><span class="chip">숫자 '+L[2]+'</span><span class="chip">시간 '+SJ_HOUR[hb]+'</span></div>'+
-      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p></div>'+
+      '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">'+SJ_TTI[b]+'띠는 '+SJ_EL[SJ_EB[b]]+' 기운일세. 그걸 생해 주는 '+SJ_EL[luckEl]+josa(SJ_EL[luckEl],"가/이")+' 오늘의 보완이라, '+L[0]+' 계열과 '+L[1]+' 방향이 자네를 돕네. 시간은 오늘 일지와 육합이 되는 '+SJ_B[hb]+'('+SJ_BH[hb]+')시야.</p>'+goodsRow(SJ_EL[luckEl])+'</div>'+
       '<div id="zfyear">'+'<div class="sj-sec"><h3>2027 정미년 한 해</h3><p>'+y27+'</p></div>'+
       '<div class="sj-sec"><h3>2026 병오년 한 해</h3><p>'+y26+'</p></div>'+'</div>'+
       shareBtn()+
