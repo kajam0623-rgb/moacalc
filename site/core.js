@@ -416,8 +416,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     [].forEach.call(box.querySelectorAll(".du-s"),function(g){g.classList.toggle("on",g.classList.contains("du-"+k));});}
   // 오행 오각형(2026-10-10, 경쟁 서비스 벤치마킹) — 나(일간 오행)를 맨 위, 시계 방향으로 상생 순서(식상→재성→관성→인성).
   // 바깥 초록 화살표 = 상생, 안쪽 빨간 점선 = 상극. 원 크기 = 개수, 용신에는 표시
-  function sjOhaengSvg(cnt,me,yong){
-    var W=420,H=340,cx=210,cy=164,R=104,HN=["木","火","土","金","水"],CO=["#4f9d62","#e0574f","#b08a5a","#8c939a","#4a8fd8"],REL=["나","표현·재주","돈·재물","일·책임","배움·도움"],RD=["","내가 낳음","내가 다룸","나를 누름","나를 낳음"];   // 전문 용어를 쓰면 쉬운 말 변환이 그림 글자를 늘린다
+  function sjOhaengSvg(cnt,me,yong,meLabel){
+    var W=420,H=340,cx=210,cy=164,R=104,HN=["木","火","土","金","水"],CO=["#4f9d62","#e0574f","#b08a5a","#8c939a","#4a8fd8"],REL=[meLabel||"나","표현·재주","돈·재물","일·책임","배움·도움"],RD=["","내가 낳음","내가 다룸","나를 누름","나를 낳음"];   // 전문 용어를 쓰면 쉬운 말 변환이 그림 글자를 늘린다
     var pos=[],i,k,out="";
     for(k=0;k<5;k++){var a=(-90+72*k)*Math.PI/180;pos.push([cx+R*Math.cos(a),cy+R*Math.sin(a)]);}
     var el=function(k){return (me+k)%5;},rad=function(k){return 20+Math.min(cnt[el(k)],4)*5;};

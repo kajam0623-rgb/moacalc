@@ -109,7 +109,9 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       '<div id="ghdeep"></div>'+
       '<h3 class="gh-basis">계산 근거 — 글자별로 본 궁합</h3>'+
       rows.map(function(x){return '<div class="sj-sec"><h3>'+x[0]+'</h3><p>'+x[1]+'</p></div>';}).join("")+
-      '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3><p>'+(A.h&&B.h?"여덟 글자(연·월·일·시주)":"여섯 글자(연·월·일주)")+'에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
+      '<div class="sj-sec"><h3>다섯 기운, 나와 상대 비교</h3>'+
+        '<div class="gh-oh" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:4px 14px"><div><div class="gh-who" style="text-align:center">나</div>'+sjOhaengSvg(elA,SJ_ES[A.d.s],sjStrength(A).yong)+'</div>'+
+        '<div><div class="gh-who" style="text-align:center">'+whoB+'</div>'+sjOhaengSvg(elB,SJ_ES[B.d.s],sjStrength(B).yong,whoB)+'</div></div>'+'<p>'+(A.h&&B.h?"여덟 글자(연·월·일·시주)":"여섯 글자(연·월·일주)")+'에서 뽑은 오행 개수입니다. 앞이 나, 뒤가 상대예요.</p>'+
       '<div class="chips" style="margin-top:10px">'+SJ_EL.map(function(n,i){
         return '<span class="chip el-'+n+'">'+n+' '+elA[i]+' : '+elB[i]+'</span>';}).join("")+'</div>'+
       '<p style="font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.7">한쪽이 0인 오행을 상대가 둘 이상 갖고 있으면 서로를 채워주는 보완 관계입니다. 반대로 같은 오행이 양쪽 다 많으면 성향이 닮아 편한 대신 챙길 점도 함께 겹칩니다.</p></div>'+
