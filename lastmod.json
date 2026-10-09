@@ -1808,11 +1808,11 @@
   "d": "2026-10-09"
  },
  "dream-animal.html": {
-  "h": "31f95dd3",
+  "h": "c55e788a",
   "d": "2026-10-09"
  },
  "dream-people.html": {
-  "h": "524448ef",
+  "h": "a62382ea",
   "d": "2026-10-09"
  },
  "dream-body.html": {
@@ -1820,7 +1820,7 @@
   "d": "2026-10-09"
  },
  "dream-action.html": {
-  "h": "58c28258",
+  "h": "d6de345e",
   "d": "2026-10-09"
  },
  "dream-nature.html": {
@@ -2645,6 +2645,30 @@
  },
  "dream-travel-accident.html": {
   "h": "fd4beb4e",
+  "d": "2026-10-09"
+ },
+ "dream-animal-dog.html": {
+  "h": "9c46d34a",
+  "d": "2026-10-09"
+ },
+ "dream-animal-fish.html": {
+  "h": "5534e1b4",
+  "d": "2026-10-09"
+ },
+ "dream-people-celebrity.html": {
+  "h": "831bc0a0",
+  "d": "2026-10-09"
+ },
+ "dream-animal-spider.html": {
+  "h": "b58f8eb1",
+  "d": "2026-10-09"
+ },
+ "dream-action-falling.html": {
+  "h": "26049388",
+  "d": "2026-10-09"
+ },
+ "dream-people-baby.html": {
+  "h": "583425fb",
   "d": "2026-10-09"
  }
 }
