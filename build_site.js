@@ -982,7 +982,7 @@ const footer = `<footer class="sfoot">
 <p>무엇이든 물어보면 답이 나오는 동네보살. 결제도 가입도 없습니다. 생일은 서버로 보내지 않고 직접 저장을 누르기 전에는 기기에도 남기지 않으며(홈에서 다음 화면으로 넘길 때만 이 탭에 잠깐 두었다가 곧 지웁니다), 운세는 태양황경으로 직접 계산한 만세력으로 풀이합니다. 모든 풀이와 계산은 참고용이며 법적·재무적 판단의 근거가 될 수 없습니다.</p></div>
 <div><div class="h4">만세력</div><a href="manse.html">무료 만세력</a><a href="manse-howto.html">만세력 보는법</a><a href="lunar.html">음력 양력 변환</a><a href="calendar-2027.html">2027년 달력</a><a href="sonless.html">손 없는 날</a><a href="iljin.html">오늘 일진</a></div>
 <div><div class="h4">사이트</div><a href="learn.html">명리학 배우기</a><a href="dict.html">사주 사전</a><a href="diary.html">운세 일기</a><a href="about.html">동네보살 소개</a>${COLUMN_PAGES.length ? '<a href="column.html">보살 칼럼</a>' : ""}<a href="privacy.html">개인정보처리방침</a><a href="terms.html">이용약관</a></div>
-<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="lucky.html">행운의 숫자</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a><a href="bed-direction.html">잘 때 머리 방향</a></div>
+<div><div class="h4">운세</div><a href="todayfortune.html">오늘의 운세</a><a href="horoscope.html">별자리 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="love.html">오늘의 연애운</a><a href="lucky.html">행운의 숫자</a><a href="saju.html">사주팔자 만세력</a><a href="sinsal.html">신살 모음</a><a href="gunghap.html">궁합 보기</a><a href="mbti.html">MBTI 궁합</a><a href="stargunghap.html">별자리 궁합</a><a href="tarot.html">타로 카드</a><a href="tojeong.html">토정비결</a><a href="dream.html">꿈해몽</a><a href="birthstone.html">탄생석</a><a href="ahopsu.html">아홉수</a><a href="bujeok.html">부적</a><a href="bed-direction.html">잘 때 머리 방향</a><a href="juyeok.html">주역 64괘</a></div>
 <div class="foot-theme">${THEME_BTN}</div>
 <div class="foot">© 2026 동네보살 · <a href="mailto:${CONTACT_EMAIL}">문의 ${CONTACT_EMAIL}</a></div>
 </footer>
@@ -1017,7 +1017,7 @@ horoscope:"별자리 운세 — 오늘의 별자리 운세·12별자리 날짜 �
 zodiacfortune:"띠별 운세 — 오늘의 띠별 운세·12띠 오늘 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
 saju:"무료 사주풀이 — 인터넷 사주·사주팔자 보기·만세력",
-gunghap:"무료 사주궁합 — 사주 궁합·띠 궁합 보기",
+gunghap:"무료 궁합 — 사주 궁합 테스트·생년월일 궁합·띠 궁합 보기",
 tojeong:"2027 토정비결 — 무료 토정비결 보기 144괘",
 newyear:"2027 신년운세 — 2027년 운세·올해 운세·정미년 무료 신년운세",
 tarot:"무료 타로 — 타로카드 뽑기·오늘의 타로·연애 타로",
@@ -1995,6 +1995,38 @@ function cal2027Page() {
       ["노동절과 제헌절도 쉬나요?", "네, 2027년 월력요항에 노동절(5월 1일)과 제헌절(7월 17일)이 공휴일로 들어 있고, 둘 다 토요일이라 5월 3일과 7월 19일이 대체공휴일입니다. 회사마다 적용이 다를 수 있으니 근무 규정을 확인하세요."]],
     sibTitle: "2027 정미년 함께 보기", sibs: SEASON_LINKS,
     related: ["lunar", "newyear", "tojeong", "todayfortune"] });
+}
+
+// ── 주역 64괘(juyeok.html, 2026-10-09) — 원고 content_juyeok.js(위키백과 King Wen 표, 한국식 이름 대조). 점은 화면에서 여섯 효를 뽑는다(서버로 보내지 않음)
+const JY = require("./content_juyeok.js");
+function juyeokPage() {
+  const key = Object.fromEntries(JY.GUA.map(g => [JY.TRI[g[4]][2].concat(JY.TRI[g[3]][2]).join(""), g[0]]));   // 아래→위 여섯 효 → 괘 번호
+  if (Object.keys(key).length !== 64) throw new Error("주역 효 조합 64개 아님");
+  const data = JSON.stringify({ k: key, g: JY.GUA.map(g => [g[0], g[1], JY.fullName(g), g[5], JY.TRI[g[3]][1] + JY.TRI[g[4]][1]]) });
+  const js = `<style>.jy-lines{display:flex;flex-direction:column-reverse;gap:7px;width:120px;margin:12px auto}.jy-lines i{display:flex;gap:14px;height:11px}.jy-lines i b{flex:1;background:var(--ink,#222);border-radius:2px}.jy-tbl td,.jy-tbl th{padding:6px 6px;font-size:13.5px;vertical-align:top}</style>` +
+    `<script>(function(){var J=${data},o=document.getElementById("jyout");function rnd(){var a=new Uint8Array(6);crypto.getRandomValues(a);return [].map.call(a,function(x){return x&1})}` +
+    `function show(ln){var n=J.k[ln.join("")],g=J.g[n-1];o.innerHTML='<div class="jy-lines">'+ln.map(function(v){return v?'<i><b></b></i>':'<i><b></b><b></b></i>'}).join("")+'</div><div class="res"><span>제'+g[0]+'괘 '+g[4]+'</span><b>'+g[2]+'('+g[1]+')</b></div><p style="margin:10px 0 0">'+g[3]+'</p><p class="sjw-note"><a href="#g'+g[0]+'">64괘 표에서 보기</a></p>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"juyeok"}))}catch(e){}}` +
+    `document.getElementById("jygo").onclick=function(){show(rnd())}})();</script>`;
+  const rows = JY.GUA.map(g => `<tr id="g${g[0]}"><th scope="row">${g[0]}</th><td><b>${JY.fullName(g)}</b><small> ${g[1]} · ${JY.TRI[g[3]][1]}${JY.TRI[g[4]][1]}</small><br>${g[5]}</td></tr>`).join("");
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: "주역 64괘", date: "2026-10-09",
+    title: "주역 64괘 — 괘 이름과 뜻 한눈에, 무료 주역 점 보기 | 동네보살",
+    desc: "주역 64괘의 이름(중천건·중지곤·수뢰둔…)과 위아래 괘, 괘마다의 큰 뜻을 쉬운 말로 정리했습니다. 마음속 질문을 떠올리고 여섯 효를 뽑아 오늘의 괘를 받아 보세요.",
+    url: `${DOMAIN}/juyeok.html`, img: "img/tool/h-tojeong.webp", hero: "img/tool/h-tojeong.webp",
+    h1: "주역 64괘 — 이름과 뜻, 주역 점", sub: "위키백과 64괘 표 기준 · 여섯 효를 뽑아 괘 받기",
+    parent: "tojeong.html", parentName: "토정비결", tool: "tojeong", noTool: true,
+    tags: ["주역", "주역 64괘", "주역 점", "육효", "64괘 뜻", "중천건", "지천태"],
+    body: `<div class="sjw" id="jyw"><h2>주역 점 — 오늘의 괘 받기</h2><p class="sjw-note" style="margin-top:0">마음속으로 궁금한 일을 하나 떠올린 뒤 눌러 보세요. 여섯 효를 아래에서부터 차례로 뽑아 괘를 만듭니다.</p><div class="sjw-row"><button type="button" id="jygo" style="width:100%">괘 뽑기</button></div><div id="jyout" aria-live="polite"></div></div>` + js +
+      sec("주역이란", para(`주역(周易)은 음(陰)과 양(陽) 두 가지 효를 여섯 개 쌓아 만든 64괘로 세상의 변화를 읽는 옛 책입니다. 효 세 개로 된 팔괘(하늘·못·불·우레·바람·물·산·땅)를 위아래로 겹쳐 하나의 괘가 됩니다.\n괘 이름은 위 괘와 아래 괘의 모습을 차례로 부릅니다. 예를 들어 지천태(地天泰)는 땅이 위에, 하늘이 아래에 있는 괘로 하늘과 땅의 기운이 서로 통하는 태평함을 뜻합니다. 같은 괘가 겹치면 '중(重)'을 붙여 중천건·중지곤처럼 부릅니다.`)) +
+      `<section class="guide"><h2>주역 64괘 이름과 뜻</h2><div class="sjt-wrap"><table class="sjt jy-tbl"><tbody>${rows}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">괘 순서와 위아래 괘는 전통 순서(문왕 차례)를 따랐습니다. 뜻풀이는 괘의 큰 흐름을 쉬운 말로 줄인 것이라, 자세한 괘사와 효사는 주역 원문과 함께 보시길 권합니다.</p></section>` +
+      sec("주역 점을 볼 때", para(`주역 점은 앞날을 정해 주는 것이 아니라, 지금 상황을 다른 눈으로 비춰 보게 하는 거울에 가깝습니다. 같은 질문은 하루에 한 번만 묻고, 나온 괘의 뜻을 내 상황에 비춰 천천히 생각해 보세요.\n한 해 흐름은 <a href="tojeong.html">2027 토정비결</a>(144괘)에서, 생년월일로 보는 타고난 흐름은 <a href="saju.html">무료 사주풀이</a>에서, 질문을 정해 카드를 뽑는 점은 <a href="tarot.html">타로</a>에서 볼 수 있습니다.`)),
+    faq: [["주역 64괘는 어떻게 만들어지나요?", "음과 양 효 세 개로 된 팔괘 여덟 가지를 위아래로 겹쳐 8×8=64괘가 됩니다."],
+      ["괘 이름은 어떻게 읽나요?", "위 괘의 모습, 아래 괘의 모습, 괘 이름 순서로 읽습니다. 지천태는 땅(위)·하늘(아래)·태(泰)이고, 같은 괘가 겹치면 중천건처럼 '중'을 붙입니다."],
+      ["주역 점은 몇 번 봐도 되나요?", "같은 질문은 하루에 한 번만 묻는 것이 전통입니다. 여러 번 뽑기보다 처음 나온 괘를 차분히 생각해 보세요."],
+      ["토정비결과 주역은 다른가요?", "토정비결은 주역의 원리를 빌려 생년월일로 한 해 운세를 보는 144괘 풀이이고, 주역은 64괘로 그때그때의 상황을 비춰 보는 책입니다."]],
+    sibTitle: "점과 운세 함께 보기", sibs: `<div class="sibs"><a href="tojeong.html">2027 토정비결</a><a href="tarot.html">타로</a><a href="saju.html">무료 사주풀이</a><a href="newyear.html">2027 신년운세</a><a href="bujeok.html">부적</a></div>`,
+    related: ["tojeong", "tarot", "saju", "newyear"] });
 }
 
 // ── 잘 때 머리 방향·침대 방향(bed-direction.html, 2026-10-09) — 네이버 잘때머리방향 4,370·잠자는방향 1,930·침대방향 1,920·현관거울 1,930·침대위치 1,540·풍수인테리어 1,430.
@@ -3627,7 +3659,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -3734,6 +3766,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [주역 64괘](${DOMAIN}/juyeok.html): 64괘 이름(중천건·중지곤·수뢰둔…), 위아래 괘, 괘마다 큰 뜻 한 줄(문왕 차례, 위키백과 표 기준), 여섯 효를 뽑는 주역 점.
 - [잘 때 머리 방향·침대 방향](${DOMAIN}/bed-direction.html): 팔택풍수 본명괘(태어난 해 네 자리 합 → 남 11-n·여 n+4, 5는 남2·여8, 입춘 경계)로 천의·복위·생기·연년 방향 계산, 침대 위치·현관 거울 풍수, 북쪽 머리 풍습.
 - [부적](${DOMAIN}/bujeok.html): 부적 종류(합격·재물·삼재·건강·인연·안택)와 뜻, 전통적으로 지니던 방법, 화면에서 그리는 보살 부적 카드(카톡 공유). 효과를 장담하지 않는 민속 문화로 소개.
 - [탄생석](${DOMAIN}/birthstone.html): 1월 가넷·2월 자수정·3월 아쿠아마린·4월 다이아몬드·5월 에메랄드·6월 진주·7월 루비·8월 페리도트·9월 사파이어·10월 오팔·11월 토파즈·12월 터키석, 색과 전해지는 뜻, 생일로 탄생석·별자리 찾기.
@@ -4136,6 +4169,7 @@ fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
 fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
 fs.writeFileSync(path.join(OUT,"bed-direction.html"), bedDirPage());
+fs.writeFileSync(path.join(OUT,"juyeok.html"), juyeokPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
@@ -4291,6 +4325,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/juyeok.html", "주역 64괘 — 괘 이름과 뜻, 주역 점", "64괘 이름과 위아래 괘, 괘마다의 큰 뜻을 쉬운 말로. 여섯 효를 뽑아 오늘의 괘를 받아 보세요."],
   [DOMAIN + "/bed-direction.html", "잘 때 머리 방향·침대 방향 — 본명괘 계산기", "생년월일로 본명괘를 계산해 건강·숙면에 좋은 머리 방향을 알려 드립니다. 침대 위치와 현관 거울 풍수까지."],
   [DOMAIN + "/bujeok.html", "부적 — 합격·재물·삼재 부적 종류와 뜻", "부적의 뜻과 종류, 예부터 지니던 방법. 보살 부적 카드를 한 장 골라 카톡으로 보내 보세요."],
   [DOMAIN + "/birthstone.html", "탄생석 — 1월~12월 탄생석 의미와 색", "달마다 탄생석과 색, 전해지는 뜻. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다."],
@@ -4319,7 +4354,7 @@ const rssRows = [
     `${p.ko}일주(${p.han}) — 일간 ${p.gan.ko}${p.gan.el}, 배우자 자리 ${p.ji.ko}${p.ji.el}, 십이운성 ${p.un}.`]),
   ...ILGAN_PAGES.map(g => [
     `${DOMAIN}/ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor]),
-].slice(0, 120 + 87);
+].slice(0, 120 + 88);
 
 const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `<rss version="2.0"><channel>` +
