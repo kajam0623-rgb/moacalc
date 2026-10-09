@@ -9,7 +9,7 @@
    그 밖의 주소는 전부 정적 자산(site/)이다. wrangler.jsonc 의 run_worker_first 가 위 경로만 여기로 보낸다. */
 import { ogName, ogInvite } from "./worker_og.js";
 const PATH_RE = /^\/[a-z0-9-]{0,80}(\.html)?$/;
-const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit", "person_save", "person_use", "wz_2", "wz_3", "wz_4", "wz_5", "wz_all", "saju_go", "sum_img", "topic_in", "chap_2", "chap_3", "chap_4", "chap_all"]);
+const EVENTS = new Set(["fortune_view", "tarot_read", "saju_print", "share_click", "image_save", "js_error", "invite_make", "invite_open", "tail_ask", "learn_practice", "learn_test", "share_visit", "person_save", "person_use", "wz_2", "wz_3", "wz_4", "wz_5", "wz_all", "saju_go", "sum_img", "topic_in", "chap_2", "chap_3", "chap_4", "chap_all", "goods_click"]);
 const BOT = /bot|crawl|spider|slurp|headless|lighthouse|preview|facebookexternalhit|embedly/i;
 const SELF = /(^|\.)dongnebosal\.com$/;
 const kstDay = (off = 0) => new Date(Date.now() + 9 * 3600e3 - off * 86400e3).toISOString().slice(0, 10);

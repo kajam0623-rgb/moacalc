@@ -1223,7 +1223,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     "과":"와/과","와":"와/과","으로":"로/으로","로":"로/으로","이라":"라/이라","라":"라/이라",
     "이란":"란/이란","란":"란/이란","이야":"야/이야","야":"야/이야"};
   var PLAIN_AMBIG={"세운":1,"상관":1,"인성":1,"지지":1};
-  var PLAIN_SKIP="a,.ss-traits,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
+  var PLAIN_SKIP="a,.sj-goods,.ss-traits,.sj-basis,.sj-ai,.yrs,.sj-gloss,.sj-daeun,.sj-grid,.sj-bars,.chips,.gh-pair,.sj-char,table";
   function plainTxt(t){if(typeof document==="undefined")return t;var d=document.createElement("div");d.textContent=t;plainWords(d);return d.textContent;}
   function plainWords(root){
     if(!root||typeof document==="undefined")return;
