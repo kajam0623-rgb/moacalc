@@ -1104,7 +1104,7 @@ ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
 ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
-${t.id==="todayfortune" ? '<section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
+${t.id==="todayfortune" ? '<div id="goods-sv"></div><section class="guide"><h2>일진별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">날에 붙는 간지 60가지입니다. <a href="iljin.html">오늘 일진</a>을 먼저 확인하면 그 날 페이지로 바로 갈 수 있습니다.</p>'+iljinChips(null)+'</section>'
  : t.id==="horoscope" ? '<div id="today-sv"></div><section class="guide"><h2>별자리별로 자세히 보기</h2>'+starChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 별자리 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>에서 미리 볼 수 있습니다.</p></section>'
  : t.id==="zodiacfortune" ? '<div id="today-sv"></div><section class="guide"><h2>띠별로 자세히 보기</h2>'+zodiacChips(null)+'<p style="color:var(--muted);font-size:13px;margin:10px 0 0">내일·이번 주·이달 띠별 운세는 <a href="tomorrow.html">내일의 운세</a>·<a href="weekly.html">주간 운세</a>·<a href="monthly.html">이달의 운세</a>, 띠 순서와 나이표는 <a href="tti.html">띠 계산기</a>, 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서, 태어난 해별 2027년 흐름은 <a href="newyear.html#by-year">년생별 2027 운세</a>에서 볼 수 있습니다.</p></section>'
  : t.id==="newyear" ? '<section class="guide" id="by-year"><h2>태어난 해로 보는 2027년 운세</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">1950년생부터 2009년생까지 60갑자 한 바퀴를 한 해씩 풀었습니다. 태어난 해만으로 보는 큰 흐름이고, 위에 생년월일을 넣으면 내 사주로 본 2027년이 나옵니다. 2027년 삼재띠는 <a href="samjae.html">삼재 계산기</a>에서 확인하세요.</p>'+nybGrid()+'</section>'
@@ -1250,6 +1250,7 @@ function todayFortune(dt){
     // 오늘 기운 물건(2026-10-10) — 일진 하늘 글자 오행. 홈(#home-bday 뒤에 붙여)·행운의 숫자 쪽에 같은 줄
     const todayGoods = `<div class="home-goods" style="margin:10px 0 4px">${GOODS_CSS}<p style="margin:0 0 6px;font-size:14px"><b>오늘은 ${EN[SE[s]]} 기운이 도는 날</b> — 이 기운과 결이 맞는 물건, 쿠팡에서 보기</p>${goodsLinks(SE[s])}</div>`;
     out.bdayHome = (out.bdayHome || "") + todayGoods;
+    out.goodsToday = todayGoods;   // todayfortune.html #goods-sv
     out.lucky = `<section class="guide"><h2>오늘의 행운의 숫자 — ${day}</h2>` +
       `<div class="exbox"><div class="row"><span>오늘의 숫자</span><b style="font-size:22px">${dayN} · ${dayB}</b></div></div>` +
       todayGoods +

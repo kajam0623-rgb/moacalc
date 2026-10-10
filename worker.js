@@ -25,7 +25,7 @@ export default {
     const tf = pathname.match(TODAY_RE);
     if (tf) return todayFortune(req, env, tf[1]);
     if (pathname === "/tomorrow.html") return todayFortune(req, env, "tomorrow", -1, "#tomorrow-sv");
-    if (pathname === "/todayfortune.html") return datedTitle(req, env);
+    if (pathname === "/todayfortune.html") return todayFortune(req, env, "goodsToday", 0, "#goods-sv");   // 오늘 기운 물건 + 제목 날짜
     if (pathname === "/lunar.html") return lunarTitle(req, env);
     if (pathname === "/love.html") return todayFortune(req, env, "love", 0, "#love-sv");
     if (pathname === "/lucky.html") return todayFortune(req, env, "lucky", 0, "#lucky-sv");
@@ -82,13 +82,6 @@ async function gunghapInvite(req, env) {
 const TODAY_RE = /^\/(star-[a-z]+|zodiac-[a-z]+|horoscope|zodiacfortune)\.html$/;
 // /tomorrow.html 은 다음 날(off=-1) 파일의 tomorrow 묶음을 #tomorrow-sv 에 끼운다. 날짜가 다르니 캐시도 날짜별로 둔다
 let todayCache = {};
-// 오늘의 운세(생년월일 도구)는 끼울 글이 없어 제목 앞에 그날 날짜만 붙인다('10월 9일 오늘의 운세 …')
-async function datedTitle(req, env) {
-  const res = await env.ASSETS.fetch(req);
-  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
-  const [, m, d] = kstDay().split("-").map(Number);
-  return new HTMLRewriter().on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } }).transform(res);
-}
 // 음력 계산기는 제목 앞에 오늘 음력 날짜('오늘 음력 8월 29일 · ') — 날짜 파일의 lunar 값, 없으면 그대로
 async function lunarTitle(req, env) {
   const res = await env.ASSETS.fetch(req), day = kstDay();
@@ -109,7 +102,7 @@ async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
   const rw = new HTMLRewriter().on(sel, { element(e) { e.setInnerContent(html, { html: true }); } });
   // 오늘 글을 끼운 허브 두 쪽은 제목 앞에 날짜를 붙인다('10월 9일 띠별 운세 …') — 날짜로 찾는 검색과 결과 화면의 신선도
   const [, m, d] = day.split("-").map(Number);
-  if (key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow" || /^(star|zodiac)-/.test(key)) rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
+  if (key === "goodsToday" || key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow" || /^(star|zodiac)-/.test(key)) rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
   else if (key === "month") rw.on("title", { element(e) { e.prepend(`${m}월 운세 · `); } });   // '10월운세' 4천·이번달운세 3천
   return rw.transform(res);
 }
