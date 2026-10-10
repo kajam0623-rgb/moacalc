@@ -2485,6 +2485,7 @@ function ttiHubPage(i) {
       group("맞춰 가면 좋은 띠 — 충·원진·형", `속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 안 맞는 띠가 아니라 서로 배울 것이 많은 띠입니다.`, ["충", "원진", "형"]) +
       group("그 밖의 띠 — 무난한 사이와 같은 띠", `특별한 합·충 표시가 없는 사이입니다. 두 사람의 성격과 대화가 관계의 모양을 정합니다.`, ["무난", "같은 띠"]) +
       `<section class="guide"><h2>${z.name}의 연애·결혼 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.love)}</div></section>` +
+      cpSec(`${z.name}와 짝에게 커플 선물`, `궁합이 잘 맞는 짝을 만났다면, 둘이 함께 쓰는 물건 하나로 마음을 전해 보세요.`, [["커플링", "hIY53jNlaC"], ["커플 잠옷", "hIY6cnZwrs"], ["커플 키링", "hIY6ly7geO"]]) +
       `<section class="guide"><h2>${z.name}의 일·동업 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.work)}</div></section>` +
       `<section class="guide"><h2>궁합을 볼 때 기억할 한 가지</h2><div class="intro" style="margin-top:0">${para(h.tip)}${ttiMore}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">${z.name}의 성격과 오늘의 운세는 <a href="zodiac-${z.en}.html">${z.name} 운세·성격</a>에서 볼 수 있습니다.</p></div></section>`,
     faq: [
