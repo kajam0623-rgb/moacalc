@@ -1586,6 +1586,13 @@ ${THEME_JS}${FAVICON}</head><body>
 `</div></main></div></body></html>`;
 }
 
+// 별자리 기간이 걸친 두 달의 탄생석(2026-10-10) — 탄생석 페이지와 같은 쿠팡 링크(BS_CP). 별자리는 서양 원소라 오행 물건 줄은 쓰지 않는다
+function starStoneSec(s){
+  const [a, b] = s.range.split("~").map(x => x.split(".").map(Number)), last = new Date(2024, a[0], 0).getDate();   // 윤년(2024)으로 — 2월 29일생도 들어가게
+  const line = (m, d1, d2) => { const B = BIRTHSTONE[m - 1]; return `<p style="margin:0 0 6px">${m}월 ${d1}~${d2}일생은 ${m}월 탄생석 <b>${B[0]}</b>(${B[2]}, ${B[4]})</p><div class="sj-goods">${bsLink(m - 1, m + "월 탄생석 목걸이 보기 →")}</div>`; };
+  return `<section class="guide"><h2>${s.ko}의 탄생석</h2>` + GOODS_CSS + line(a[0], a[1], last) + line(b[0], 1, b[1]) +
+    `<p style="font-size:13px;color:var(--muted);margin:0 0 6px">달마다 탄생석과 뜻은 <a href="birthstone.html">탄생석 전체 표</a>에 있습니다.</p>` + GOODS_NOTE + `</section>`;
+}
 function starPage(s, i){
   return seoPage({
     crumb:`${s.ko}`,
@@ -1602,6 +1609,7 @@ function starPage(s, i){
       [["기간",s.range],["원소",s.ele],["양태",s.mode],["수호성",s.ruler],["잘 맞는 별자리",s.match.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>어려운 별자리</span><b>${esc(s.match.hard.join(" · "))}</b></div></div>`+
+      starStoneSec(s)+
       `<div class="intro">${bodyCut("stc-"+s.en, s.ko+" 상징")}${para(s.intro)}</div>`+
       `<section class="guide"><h2>${s.ko}의 연애</h2><div class="intro" style="margin-top:0">${para(s.love)}</div></section>`+
       `<section class="guide"><h2>${s.ko}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(s.work)}</div></section>`+
