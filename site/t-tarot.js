@@ -557,6 +557,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       try{rd.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});}catch(e){}
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
       bindSave(rd,{file:"동네보살-타로",draw:drawShare});
+      rd.insertAdjacentHTML("beforeend",cpRow([["유니버셜 웨이트 타로 카드","hIXZiWxjQO"],["타로 입문 책","hIXZr5Ij6W"],["타로 천 스프레드 매트","hIXZBg0tDo"]],"직접 뽑아 보고 싶다면 — 타로 카드, 쿠팡에서 바로 보기"));
       [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
       tailAsk(rd.querySelector("#tailbox"),tarotTail);
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});

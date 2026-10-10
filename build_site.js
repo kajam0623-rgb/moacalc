@@ -2720,7 +2720,8 @@ function tarotPage(c){
       sec(`연애에서 ${c.ko} 카드`, c.love)+
       sec(`재회·속마음 질문에서 ${c.ko} 카드`, c.reunion)+
       sec(`일·금전에서 ${c.ko} 카드`, c.work)+
-      sec(`${c.ko} 카드는 예일까 아니오일까`, c.yesnoWhy),
+      sec(`${c.ko} 카드는 예일까 아니오일까`, c.yesnoWhy)+
+      cpSec("직접 뽑아 보고 싶다면", `${c.ko} 카드를 손에 들고 보고 싶다면, 여기 풀이가 따르는 라이더–웨이트 덱부터 시작하면 쉽습니다.`, [["유니버셜 웨이트 타로 카드", "hIXZiWxjQO"], ["타로 입문 책", "hIXZr5Ij6W"], ["타로 천 스프레드 매트", "hIXZBg0tDo"]]),
     faq:[
       [`${c.ko} 카드 역방향은 나쁜 뜻인가요?`, c.rev.split("\n")[0]],
       [`${c.ko} 카드가 연애 질문에 나오면요?`, c.love.split("\n")[0]],
