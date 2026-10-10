@@ -4600,6 +4600,7 @@
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
       fillSg();
       bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");
+      el.querySelector("#out").insertAdjacentHTML("beforeend",cpRow([["커플링","hIY53jNlaC"],["커플 잠옷","hIY6cnZwrs"],["커플 키링","hIY6ly7geO"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
       saveScore(el,"별자리궁합","별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b],sc,grade,ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+" "+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+" 만나면 — "+grade,SGD?SGD.pair[Math.min(a,b)+"-"+Math.max(a,b)].core:E[2]);askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"smile",say:sc>=85?"두 별이 참 잘 어울리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 이야기만 자주 나누면 오래가네.":sc>=58?"서로 맞춰 가는 재미가 있는 사이야. 아래 '이렇게 하면 더 좋아지네'를 보게.":"다름이 매력인 사이일세. 아래 '이렇게 하면 더 좋아지네'가 길잡이가 되어 줄 걸세."});}
     askWire(el,go,["두 사람의 별자리를 세운다","불·흙·공기·물 원소를 견준다","하늘에서의 거리를 재어 본다"],"두 사람 것을 아직 안 물어봤네.");
     }},
@@ -5033,6 +5034,7 @@
       // 결과 공유 링크는 두 이름을 싣고(받은 사람이 열자마자 같은 결과를 본다), 초대 링크는 내 이름(첫 칸)만 싣는다(받은 사람이 자기 이름만 넣는다)
       bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:","a="+encodeURIComponent(A)+"&b="+encodeURIComponent(B));
       bindShare(el,"이름 궁합",A+josa(A,"가/이")+" 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:","a="+encodeURIComponent(A),".invite-btn","invite_make");
+      if(typeof cpRow==="function")out.insertAdjacentHTML("beforeend",cpRow([["커플링","hIY53jNlaC"],["커플 잠옷","hIY6cnZwrs"],["커플 키링","hIY6ly7geO"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
       saveScore(el,"이름궁합","이름 궁합",A+" ♥ "+B,r.score,band.type,band.msg,band.good,r.score>=55?"heart":"diary");}
     el.querySelector("#go").addEventListener("click",function(){go(true);});
     ["#a","#b"].forEach(function(q){el.querySelector(q).addEventListener("keydown",function(e){if(e.key==="Enter")go(true);});});

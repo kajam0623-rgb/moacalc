@@ -36,6 +36,7 @@ TOOLS.push({id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",des
       // 결과 공유 링크는 두 이름을 싣고(받은 사람이 열자마자 같은 결과를 본다), 초대 링크는 내 이름(첫 칸)만 싣는다(받은 사람이 자기 이름만 넣는다)
       bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:","a="+encodeURIComponent(A)+"&b="+encodeURIComponent(B));
       bindShare(el,"이름 궁합",A+josa(A,"가/이")+" 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:","a="+encodeURIComponent(A),".invite-btn","invite_make");
+      if(typeof cpRow==="function")out.insertAdjacentHTML("beforeend",cpRow([["커플링","hIY53jNlaC"],["커플 잠옷","hIY6cnZwrs"],["커플 키링","hIY6ly7geO"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
       saveScore(el,"이름궁합","이름 궁합",A+" ♥ "+B,r.score,band.type,band.msg,band.good,r.score>=55?"heart":"diary");}
     el.querySelector("#go").addEventListener("click",function(){go(true);});
     ["#a","#b"].forEach(function(q){el.querySelector(q).addEventListener("keydown",function(e){if(e.key==="Enter")go(true);});});
