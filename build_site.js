@@ -1268,6 +1268,7 @@ function todayFortune(dt){
   out.tomorrow = `<section class="guide"><h2>내일의 띠별 운세 — ${day}</h2>` +
     NOTE(`${ilTxt.replace("오늘 일진은", "내일 일진은")} 내일 점수가 가장 높은 띠는 ${topT.z.ko}띠(${topT.sc}점)입니다.`) +
     `<ul>${ttis.map(x => { const g = x.o.secs.find(s => s.k === "gen"); return `<li><a href="zodiac-${x.z.en}.html">${x.z.ko}띠</a> · <b>${x.sc}점 ${x.grade}</b> · ${F.ZF_LINE[x.o.rel]}${g ? `<br><span style="color:var(--muted);font-size:13.5px">${F.plainStr(g.p[0], {}).replace(/오늘/g, "내일")}</span>` : ""}</li>`; }).join("")}</ul></section>` +
+    out.goodsToday.replace("<b>오늘은 ", "<b>내일은 ") +   // 이 파일의 날이 '내일'로 보인다(worker off=-1)
     `<section class="guide"><h2>내일의 별자리 운세 — ${day}</h2>` +
     NOTE(`${moonTxt.replace("오늘 낮 12시", "내일 낮 12시")} 내일 점수가 가장 높은 별자리는 ${top.s.ko}(${top.hs.score}점)입니다.`) +
     `<ul>${stars.map(x => `<li><a href="star-${x.s.en}.html">${F.ST_SYM[x.i]} ${x.s.ko}</a> · <b>${x.hs.score}점 ${x.grade}</b> · ${F.HS_LINE[x.hs.md]}</li>`).join("")}</ul></section>`;
