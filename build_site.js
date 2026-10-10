@@ -1293,6 +1293,13 @@ function monthGoods(start) {
   const EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" };
   return `<div class="home-goods" style="margin:10px 0 4px">${GOODS_CSS}<p style="margin:0 0 6px;font-size:14px"><b>${start.getMonth() + 1}월은 ${EN[el]} 기운의 달</b>(${FORT.SJ_S[p.m.s]}${FORT.SJ_B[p.m.b]}월) — 이 기운과 결이 맞는 물건, 쿠팡에서 보기</p>${goodsLinks(el)}</div>`;
 }
+// 이번 주 기운 물건(2026-10-10) — 이레 일진 하늘 글자 오행 가운데 가장 많은 것(같으면 첫날 쪽)
+function weekGoods(days) {
+  const SE = ["목","목","화","화","토","토","금","금","수","수"], n = {};
+  days.forEach(d => { const e = SE[FORT.sjPillars(d.dt.getFullYear(), d.dt.getMonth() + 1, d.dt.getDate(), null, 0, false).d.s]; n[e] = (n[e] || 0) + 1; });
+  const el = Object.keys(n).sort((a, b) => n[b] - n[a])[0], EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" };
+  return `<div class="home-goods" style="margin:10px 0 4px">${GOODS_CSS}<p style="margin:0 0 6px;font-size:14px"><b>이번 주는 ${EN[el]} 기운이 많은 주</b> — 이 기운과 결이 맞는 물건, 쿠팡에서 보기</p>${goodsLinks(el)}</div>`;
+}
 function periodBlock(kind, dt) {   // kind "week" | "month"
   const start = kind === "week" ? new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - (dt.getDay() + 6) % 7) : new Date(dt.getFullYear(), dt.getMonth(), 1);
   const key = kind + ymd(start); if (PERIOD.has(key)) return PERIOD.get(key);
@@ -1314,7 +1321,7 @@ function periodBlock(kind, dt) {   // kind "week" | "month"
     `<section class="guide"><h2>${kind === "week" ? "이번 주" : "이달의"} 별자리 운세 — ${label}</h2>` +
     NOTE(`${word} 평균이 가장 높은 별자리는 ${topS.s.ko}(${topS.avg}점)입니다. 별자리를 누르면 성격과 오늘의 풀이로 이어집니다.`) +
     `<ul>${ts.map(x => li(0, `star-${x.s.en}.html`, `${F.ST_SYM[x.i]} ${x.s.ko}`, x)).join("")}</ul></section>` +
-    (kind === "month" ? monthGoods(start) : "");
+    (kind === "month" ? monthGoods(start) : weekGoods(days));
   PERIOD.set(key, html); return html;
 }
 const IL_D0 = new Date(2026, 8, 3); // 기준일 — 이 날의 일진 인덱스로 60갑자 순환을 센다
@@ -1796,6 +1803,7 @@ function samjaePage() {
       `<section class="guide"><h2>띠별 삼재 연도표</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">띠</th><th scope="col">삼재가 드는 해</th><th scope="col">최근</th><th scope="col">다음</th></tr></thead><tbody>${tableRows}</tbody></table></div>` +
         `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">세 해는 차례로 들삼재·눌삼재·날삼재입니다. 같은 무리의 띠는 나이와 상관없이 같은 해에 삼재를 맞습니다.</p></section>` +
       `<section class="guide"><h2>삼재 해를 편하게 보내는 법</h2><ul>${X.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul><div class="intro" style="margin-top:8px">${para(X.custom)}</div></section>` +
+      cpSec("삼재 드는 해, 예부터 곁에 두던 것", "예부터 삼재가 드는 해에는 현관에 명태를 걸거나 팥을 지니며 마음을 다잡았습니다. 효험을 따지기보다 한 해를 조심히 보내자는 다짐으로 즐겨 보세요.", [["액막이 명태", "hIXyEt5GEu"], ["팥 주머니", "hIXze0KE6C"], ["복주머니", "hIXyNutnRA"]]) +
       sec("복삼재 — 삼재에도 좋은 일이 있습니다", para(X.bok)) +
       sec("삼재는 언제부터인가요 — 입춘과 설날", para(X.when).replace("사주팔자 만세력", '<a href="saju.html">사주팔자 만세력</a>')) +
       sec("태어난 해로 보는 2027년 운세", `<p style="margin-bottom:10px">1950년생부터 2009년생까지 한 해씩 2027년 흐름을 풀었습니다. 삼재 여부도 함께 적었습니다.</p>${nybGrid()}`) +
@@ -2182,6 +2190,7 @@ function bujeokPage() {
     body: `<div class="sjw" id="bjw"><h2>보살 부적 카드 한 장</h2><p class="sjw-note" style="margin-top:0">종류를 고르면 오늘 날짜가 든 카드가 나옵니다. 마음을 전하고 싶은 사람에게 보내 보세요.</p><div class="bj-kinds" id="bjk"></div><div id="bjout" aria-live="polite"></div></div>` + js +
       `<section class="guide"><h2>부적 종류와 뜻</h2>${kinds}</section>` +
       sec("부적이란", para(`부적(符籍)은 바라는 일을 글자나 그림으로 적어 몸에 지니거나 집에 붙여 두던 민간의 풍습입니다. 전통 부적은 노란 종이(괴황지)에 붉은 광물 안료(경면주사)로 글자와 문양을 그려, 노란색과 붉은색이 액운을 막고 복을 부른다고 여겼습니다.\n오늘날 부적은 효과를 장담하는 물건이라기보다, 시험이나 새 출발을 앞둔 사람의 마음을 다잡아 주는 상징으로 많이 쓰입니다. 동네보살 부적 카드도 응원하는 마음을 전하는 데 써 주세요.`)) +
+      cpSec("부적과 함께 두는 복 물건", "부적을 넣어 다닐 주머니나, 집안에 두고 복을 비는 물건을 찾는다면 여기서 골라 보세요.", [["복주머니", "hIXyNutnRA"], ["황금 두꺼비", "hIXyWqLfRQ"], ["액막이 명태", "hIXyEt5GEu"]]) +
       sec("예부터 부적을 지니던 방법", para(`전통적으로 몸에 지니는 부적은 지갑이나 옷 안주머니에 접어 넣고, 집안을 위한 부적은 문 위나 방 안 높은 곳에 붙여 두었습니다. 접을 때는 글자가 안쪽으로 가게 접는 것이 흔한 방식이었습니다.\n바라던 일이 이루어졌거나 해가 바뀌면 부적에 고마움을 담아 정리하는 풍습도 있었습니다. 어떤 방법이든 정해진 규칙보다 지니는 사람의 마음가짐이 더 중요하다고 보았습니다.`)) +
       sec("함께 보면 좋은 것", `<p style="margin-bottom:10px">삼재가 드는 해는 <a href="samjae.html">삼재 계산기</a>, 한 해 흐름은 <a href="tojeong.html">2027 토정비결</a>과 <a href="newyear.html">2027 신년운세</a>, 이사 날짜는 <a href="sonless.html">손 없는 날 달력</a>에서 볼 수 있습니다.</p>`),
     faq: [["부적은 효과가 있나요?", "부적은 오래된 민간 신앙이고 효과가 증명된 것은 아닙니다. 다만 바라는 일을 마음에 새기고 다잡게 해 주는 상징으로 의미가 있습니다."],
@@ -2251,6 +2260,7 @@ function ahopsuPage() {
     body: `<div class="sjw" id="ahw"><h2>내 아홉수 확인하기</h2><label for="ahy">태어난 해</label><div class="sjw-row"><input id="ahy" type="text" inputmode="numeric" maxlength="4" placeholder="예) 1998" autocomplete="off"><button type="button" id="ahgo">아홉수 보기</button></div><p class="sjw-note">태어난 해만 쓰고, 서버로 보내지 않습니다.</p><div id="aho" aria-live="polite"></div></div>` + js +
       `<section class="guide"><h2>해마다 아홉수인 년생 (세는 나이 기준)</h2><div class="sjt-wrap"><table class="sjt"><tbody>${[Y, Y + 1, Y + 2].map(row).join("")}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">괄호 안은 그해의 세는 나이(태어난 해를 1살로 치고 해가 바뀔 때마다 한 살)입니다. 만 나이로 보면 생일이 지난 뒤 한두 살 적습니다.</p></section>` +
       sec("아홉수란", para(`아홉수는 나이의 끝자리가 9인 해, 곧 19·29·39·49세처럼 열 단위가 바뀌기 바로 앞의 해를 말합니다. 아홉은 한 자리 수 가운데 가장 큰 수라 꽉 차기 직전의 머뭇거림을 뜻한다고 보아, 예부터 이 해에는 혼인이나 이사 같은 큰일을 조심스럽게 정하는 풍습이 있었습니다.\n전통 아홉수는 태어나자마자 한 살로 치는 세는 나이로 셉니다. 2023년부터 법과 행정에서는 만 나이를 쓰지만, 아홉수 풍습은 지금도 세는 나이로 따지는 경우가 많습니다. 위 계산기는 두 기준을 함께 보여 드립니다.`)) +
+      cpSec("아홉수에 빨간 옷을 입는 풍습", "아홉수 해에는 빨간 속옷이나 양말을 입으면 액을 막는다는 풍습이 있습니다. 가볍게 마음을 다잡는 선물로도 많이 주고받습니다.", [["빨간 속옷", "hIXyvnAHFA"], ["빨간 양말", "hIXy5DUcfc"], ["복주머니", "hIXyNutnRA"]]) +
       sec("아홉수를 보내는 법", para(`요즘은 아홉수를 피해야 할 해라기보다 다음 열 해를 준비하는 정리의 해로 읽는 사람이 많습니다. 미뤄 둔 건강검진이나 공부, 저축 계획을 이 해에 다져 두면 앞자리가 바뀌는 해를 한결 가볍게 맞을 수 있습니다.\n결혼이나 이사 날짜가 마음에 걸린다면 <a href="sonless.html">손 없는 날 달력</a>이나 <a href="calendar-2027.html">2027년 달력</a>에서 날을 골라 보세요. 두 사람의 띠가 궁금하다면 <a href="tti-gunghap.html">띠 궁합</a>도 함께 볼 수 있습니다.`)),
     faq: [[`${Y + 1}년 아홉수는 몇 년생인가요?`, `세는 나이 기준으로 ${list(Y + 1).map(b => b + "년생").join(", ")}입니다.`],
       ["아홉수는 세는 나이인가요, 만 나이인가요?", "전통 아홉수는 세는 나이로 셉니다. 2023년부터 공식 나이는 만 나이지만 아홉수 풍습은 여전히 세는 나이로 따지는 경우가 많아, 위 계산기는 둘 다 보여 드립니다."],
