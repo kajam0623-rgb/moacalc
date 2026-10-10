@@ -1287,6 +1287,12 @@ function dayScores(dt) {
 }
 const mdKo = d => `${d.getMonth() + 1}월 ${d.getDate()}일(${WDAY[d.getDay()]})`;
 const PERIOD = new Map();
+// 이달 기운 물건(2026-10-10) — 그달 15일의 월건(절기 달) 하늘 글자 오행. 이달의 운세(네이버 9,080) 쪽 쿠팡 줄
+function monthGoods(start) {
+  const p = FORT.sjPillars(start.getFullYear(), start.getMonth() + 1, 15, null, 0, false), el = ["목","목","화","화","토","토","금","금","수","수"][p.m.s];
+  const EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" };
+  return `<div class="home-goods" style="margin:10px 0 4px">${GOODS_CSS}<p style="margin:0 0 6px;font-size:14px"><b>${start.getMonth() + 1}월은 ${EN[el]} 기운의 달</b>(${FORT.SJ_S[p.m.s]}${FORT.SJ_B[p.m.b]}월) — 이 기운과 결이 맞는 물건, 쿠팡에서 보기</p>${goodsLinks(el)}</div>`;
+}
 function periodBlock(kind, dt) {   // kind "week" | "month"
   const start = kind === "week" ? new Date(dt.getFullYear(), dt.getMonth(), dt.getDate() - (dt.getDay() + 6) % 7) : new Date(dt.getFullYear(), dt.getMonth(), 1);
   const key = kind + ymd(start); if (PERIOD.has(key)) return PERIOD.get(key);
@@ -1307,7 +1313,8 @@ function periodBlock(kind, dt) {   // kind "week" | "month"
     `<ul>${tz.map(x => li(0, `zodiac-${x.z.en}.html`, x.z.ko + "띠", x)).join("")}</ul></section>` +
     `<section class="guide"><h2>${kind === "week" ? "이번 주" : "이달의"} 별자리 운세 — ${label}</h2>` +
     NOTE(`${word} 평균이 가장 높은 별자리는 ${topS.s.ko}(${topS.avg}점)입니다. 별자리를 누르면 성격과 오늘의 풀이로 이어집니다.`) +
-    `<ul>${ts.map(x => li(0, `star-${x.s.en}.html`, `${F.ST_SYM[x.i]} ${x.s.ko}`, x)).join("")}</ul></section>`;
+    `<ul>${ts.map(x => li(0, `star-${x.s.en}.html`, `${F.ST_SYM[x.i]} ${x.s.ko}`, x)).join("")}</ul></section>` +
+    (kind === "month" ? monthGoods(start) : "");
   PERIOD.set(key, html); return html;
 }
 const IL_D0 = new Date(2026, 8, 3); // 기준일 — 이 날의 일진 인덱스로 60갑자 순환을 센다

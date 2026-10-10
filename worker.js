@@ -203,7 +203,7 @@ async function admin(req, env) {
   const rows = Object.entries(byDay);
   const sumV = rows.reduce((a, [, x]) => a + x.v, 0), sumP = rows.reduce((a, [, x]) => a + x.p, 0), sumM = rows.reduce((a, [, x]) => a + x.m, 0);
   const maxP = Math.max(1, ...rows.map(([, x]) => x.p));
-  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", share_visit: "공유 링크로 들어옴", wz_2: "사주 입력 2단계(생일)까지", wz_3: "사주 입력 3단계(시각)까지", wz_4: "사주 입력 4단계(성별)까지", wz_5: "사주 입력 5단계(질문)까지", wz_all: "사주 '한 번에 입력' 누름", saju_go: "사주 보기 누름", sum_img: "한 장 요약 이미지 저장", chap_2: "사주 결과 2장 펼침", chap_3: "사주 결과 3장 펼침", chap_4: "사주 결과 4장 펼침", chap_all: "사주 결과 '한 번에 다 보기'", topic_in: "주제 입구(?q=)로 들어옴", person_save: "홈에서 생일 저장", person_use: "저장한 생일로 보기", image_save: "이미지 저장", js_error: "스크립트 오류" };
+  const EV_KO = { fortune_view: "운세 결과 보기", tarot_read: "타로 풀이", saju_print: "사주 인쇄", share_click: "공유 버튼", goods_click: "쿠팡 물건 링크 클릭", share_visit: "공유 링크로 들어옴", wz_2: "사주 입력 2단계(생일)까지", wz_3: "사주 입력 3단계(시각)까지", wz_4: "사주 입력 4단계(성별)까지", wz_5: "사주 입력 5단계(질문)까지", wz_all: "사주 '한 번에 입력' 누름", saju_go: "사주 보기 누름", sum_img: "한 장 요약 이미지 저장", chap_2: "사주 결과 2장 펼침", chap_3: "사주 결과 3장 펼침", chap_4: "사주 결과 4장 펼침", chap_all: "사주 결과 '한 번에 다 보기'", topic_in: "주제 입구(?q=)로 들어옴", person_save: "홈에서 생일 저장", person_use: "저장한 생일로 보기", image_save: "이미지 저장", js_error: "스크립트 오류" };
   const table = (head, list) => `<table><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr>${list.join("") || `<tr><td colspan="${head.length}" class="mu">아직 기록 없음</td></tr>`}</table>`;
   const kpi = (label, v, unit = "") => `<div class="k"><span>${label}</span><b>${v.toLocaleString("ko-KR")}${unit}</b></div>`;
 
