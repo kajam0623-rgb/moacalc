@@ -1981,6 +1981,7 @@ function sonlessPage() {
       `<section class="guide"><h2>손 없는 날 달력 — ${months[0][0]}년 ${months[0][1]}월부터 14달</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">달</th><th scope="col">손 없는 날(양력·요일·음력)</th></tr></thead><tbody>${table}</tbody></table></div>` +
         `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">달 이름을 누르면 그달 날짜별 일진·음력·절기가 있는 만세력 월력으로 갑니다. 휴대폰 달력에 넣고 싶다면 <a href="calendar-sonless.ics">손 없는 날 달력 구독(.ics)</a>을 누르세요.</p></section>` +
       sec("손 없는 날이란", para(`'손'은 날짜에 따라 동서남북을 옮겨 다니며 사람이 하는 일을 훼방 놓는다고 믿던 민간의 귀신입니다. 음력 1·2일은 동쪽, 3·4일은 남쪽, 5·6일은 서쪽, 7·8일은 북쪽에 있다가 끝자리가 9와 0인 날에는 하늘로 올라가 어느 방향에도 없다고 여겼습니다.\n그래서 음력 9·10일, 19·20일, 29·30일을 '손 없는 날'이라 부르고, 이삿날이나 혼삿날, 가게 여는 날로 즐겨 골랐습니다. 한 달에 대개 여섯 번 있고, 음력 달이 29일로 끝나는 달은 다섯 번입니다.`)) +
+      cpSec("이사 준비물, 미리 챙기기", "날짜를 정했다면 짐 싸기 준비물부터 챙겨 두면 이삿날이 한결 가볍습니다.", [["이사 박스", "hIWreEUEnY"], ["에어캡 뽁뽁이", "hIWrnU6sak"], ["이불 압축팩", "hIWrwXtlhQ"]]) +
       sec("이사 날짜 고를 때 알아 두면 좋은 것", para(`손 없는 날, 그중에서도 주말과 월말은 이사 수요가 몰려 이삿짐 업체 예약이 빨리 차고 요금도 올라가는 일이 많습니다. 날짜를 정했다면 한 달쯤 앞서 견적을 받아 두는 편이 마음이 편합니다.\n손 없는 날을 꼭 맞추기 어렵다면 평일 손 없는 날이나, 업체와 짐 옮기는 날만 조율하는 방법도 있습니다. 손 없는 날은 오래된 민간 풍습이라 지키면 마음이 든든하고, 형편에 맞춰 고르셔도 괜찮습니다.`)) +
       sec("날짜로 이어 보기", `<p style="margin-bottom:10px">그날의 일진(간지)은 <a href="iljin.html">오늘 일진</a>, 음력 생일을 양력으로 바꾸려면 <a href="lunar.html">음력 양력 변환</a>, 달마다 날짜별 음력·절기는 <a href="manse-${months[0][0]}-${String(months[0][1]).padStart(2, "0")}.html">이번 달 만세력</a>, 그날 내 운세는 <a href="todayfortune.html">오늘의 운세</a>에서 볼 수 있습니다.</p>`),
     faq: [
@@ -2141,6 +2142,7 @@ function bedDirPage() {
       sec("잘 때 머리, 어느 쪽이 좋을까", para(`우리 옛 풍습에서는 해가 뜨는 동쪽으로 머리를 두면 새 기운을 받는다고 여겼고, 북쪽으로 머리를 두는 것은 돌아가신 분을 모시는 방향이라 하여 피하는 집이 많았습니다. 남쪽은 따뜻한 기운, 서쪽은 차분한 기운으로 보았습니다.\n풍수에서는 사람마다 맞는 방향이 다르다고 보아, 태어난 해와 성별로 본명괘를 정하고 그에 맞는 좋은 방향 네 가지를 씁니다. 잘 때는 건강을 뜻하는 천의 방향이나 안정을 뜻하는 복위 방향으로 머리를 두라고 권합니다. 위 계산기에 생년월일을 넣으면 바로 알려 드립니다.`)) +
       `<section class="guide"><h2>본명괘별 좋은 방향 표</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">본명괘</th><th scope="col">무리</th><th scope="col">천의(건강)</th><th scope="col">복위(숙면)</th><th scope="col">생기(활력)</th></tr></thead><tbody>${tbl}</tbody></table></div><p style="color:var(--muted);font-size:13px;margin:8px 0 0">본명괘는 태어난 해의 네 자리 숫자를 더해 한 자리로 줄인 뒤 남자는 11에서 빼고 여자는 4를 더해 정합니다(다시 한 자리로, 5가 나오면 남자 2·여자 8). 해의 경계는 입춘(2월 4일 무렵)이라 1월~2월 초에 태어났다면 앞 해로 셉니다.</p></section>` +
       sec("침대 위치 풍수 — 이렇게 두면 편합니다", para(`침대 머리는 벽에 붙여 등 뒤가 든든하게 하고, 방문을 열었을 때 발이 문과 일직선이 되는 자리는 피하는 것이 좋다고 봅니다. 문이 보이되 문과 마주 보지 않는 대각선 자리가 가장 편안한 자리로 꼽힙니다.\n창문 바로 아래나 무거운 선반 아래는 피하고, 침대 밑은 비워 바람이 통하게 두면 좋습니다. 이런 배치는 풍수 전통이기도 하지만 바람과 소음을 줄여 실제로 잠자리를 편하게 해 줍니다.`)) +
+      cpSec("잠자리 바꿀 때 함께 보면 좋은 것", "머리 방향을 바꾸는 김에 베개 높이와 빛 가림까지 맞추면 잠이 더 편해집니다.", [["경추 베개", "hIWrPhuudg"], ["침대 프레임", "hIWrYqlqX6"], ["암막 커튼", "hIWr7G6GZw"]]) +
       sec("현관 거울은 어디에", para(`풍수에서는 현관문을 열었을 때 바로 정면에 거울이 있으면 들어오는 좋은 기운을 되돌려 보낸다고 보아 피합니다. 현관에 거울을 두고 싶다면 들어올 때 옆으로 보이는 벽에 거는 것이 좋다고 권합니다.\n현관은 집의 얼굴이라 밝고 깔끔하게 정리하는 것이 가장 좋은 풍수라고 말합니다. 신발을 정리하고 조명을 밝게 해 보세요.`)) +
       sec("함께 보면 좋은 것", `<p style="margin-bottom:10px">이사 날짜는 <a href="sonless.html">손 없는 날 달력</a>, 집안 평안을 바라는 마음은 <a href="bujeok.html">부적</a>, 2027년 한 해 흐름은 <a href="newyear.html">2027 신년운세</a>에서 볼 수 있습니다. 풍수는 오래된 전통 지혜로, 편히 잘 자는 것이 언제나 가장 중요합니다.</p>`),
     faq: [["잘 때 머리 방향은 어디가 좋나요?", "옛 풍습으로는 해가 뜨는 동쪽을 좋게 보았고, 풍수에서는 본명괘에 따라 사람마다 다르게 봅니다. 위 계산기로 내 천의·복위 방향을 확인해 보세요."],
@@ -2368,7 +2370,10 @@ const TTI_CLS = { "삼합": "sam", "육합": "yuk", "충": "chung", "원진": "w
 // 선물 기운 = 그 띠의 오행을 낳아 주는 오행(띠 운세 도구 '오늘의 행운'과 같은 규칙). 대가 문구(.cpx)는 placeAds 가 맨 위에 넣는다
 const EL_GOODS = new Function("return " + src.match(/var EL_GOODS=(\{[\s\S]*?\]\]\});/)[1])();
 const GEN_OF = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" };
-const goodsLinks = g => `<div class="sj-goods">` + EL_GOODS[g].map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`;
+const cpChips = items => `<div class="sj-goods">` + items.map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`;
+const goodsLinks = g => cpChips(EL_GOODS[g]);
+// 주제 물건 칸(이사·침실 등) — 쿠팡 파트너스 검색 링크
+const cpSec = (h, lead, items) => `<section class="guide"><h2>${h}</h2>` + GOODS_CSS + `<p style="margin:0 0 6px">${lead}</p>` + cpChips(items) + GOODS_NOTE + `</section>`;
 const GOODS_CSS = `<style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>`;
 const GOODS_NOTE = `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p>`;
 const genLine = (name, el) => `<p style="margin:0 0 6px">${name}${josa(name, "은/는")} ${el} 기운이라, 그 기운을 낳아 주는 <b>${GEN_OF[el]} 기운</b> 물건이 힘이 됩니다.</p>`;
