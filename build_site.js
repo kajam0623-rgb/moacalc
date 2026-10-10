@@ -1247,8 +1247,12 @@ function todayFortune(dt){
   { const HADO = { 목: [3, 8], 화: [7, 2], 토: [5, 10], 금: [9, 4], 수: [1, 6] }, SE = ["목","목","화","화","토","토","금","금","수","수"], BE = ["수","토","목","목","토","화","화","토","금","금","토","수"],
       GEN = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" }, EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" }, s = today.d.s, b = today.d.b, dayN = HADO[SE[s]][s % 2], dayB = HADO[BE[b]][b % 2];
     const per = ttis.map(x => { const n = [...new Set([...HADO[GEN[BE[x.b]]], dayN])].sort((p, q) => p - q); return { x, n, gen: GEN[BE[x.b]] }; });
+    // 오늘 기운 물건(2026-10-10) — 일진 하늘 글자 오행. 홈(#home-bday 뒤에 붙여)·행운의 숫자 쪽에 같은 줄
+    const todayGoods = `<div class="home-goods" style="margin:10px 0 4px">${GOODS_CSS}<p style="margin:0 0 6px;font-size:14px"><b>오늘은 ${EN[SE[s]]} 기운이 도는 날</b> — 이 기운과 결이 맞는 물건, 쿠팡에서 보기</p>${goodsLinks(SE[s])}</div>`;
+    out.bdayHome = (out.bdayHome || "") + todayGoods;
     out.lucky = `<section class="guide"><h2>오늘의 행운의 숫자 — ${day}</h2>` +
       `<div class="exbox"><div class="row"><span>오늘의 숫자</span><b style="font-size:22px">${dayN} · ${dayB}</b></div></div>` +
+      todayGoods +
       NOTE(`${ilTxt} 하늘 글자 ${F.SJ_S[s]}${josa(F.SJ_S[s], "은/는")} ${EN[SE[s]]} 기운이라 ${dayN}, 땅 글자 ${F.SJ_B[b]}${josa(F.SJ_B[b], "은/는")} ${EN[BE[b]]} 기운이라 ${dayB}입니다.`) +
       `<h3 style="margin:14px 0 6px;font-size:16px">띠별 오늘의 행운의 숫자</h3><ul>${per.map(o => `<li><a href="zodiac-${o.x.z.en}.html">${o.x.z.ko}띠</a> · <b>${o.n.join(", ")}</b> <span style="color:var(--muted);font-size:13px">(띠를 북돋는 ${EN[o.gen]} 기운의 수 + 오늘의 수)</span></li>`).join("")}</ul></section>`; }
   // 오늘 음력 날짜(lunar.html 제목용, 2026-10-09) — worker 가 '오늘 음력 8월 29일 · ' 을 제목 앞에 붙인다
