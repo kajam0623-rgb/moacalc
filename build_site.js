@@ -3362,7 +3362,7 @@ function dreamDeepPage(d) {
 <section class="guide"><h2>마음 쪽에서 보면</h2><div class="intro" style="margin-top:0">${para(d.mind)}</div></section>
 <section class="guide"><h2>이 꿈을 꾼 날 해 볼 일</h2><ul>${d.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></section>
 <section class="faq"><h2>자주 묻는 질문</h2>${d.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>
-<section class="guide"><h2>함께 보는 꿈</h2><div class="sibs">${d.rel.map(k => `<a href="${dreamItemUrl(k)}">${esc(DREAM_ITEM[k].title)}</a>`).join("")}${DREAM_DEEP.filter(x => x.k !== d.k && !d.rel.includes(x.k)).slice(0, 4).map(x => `<a href="dream-${x.k}.html">${esc(x.kw)}</a>`).join("")}</div></section>
+<section class="guide"><h2>함께 보는 꿈</h2><div class="sibs">${d.rel.map(k => `<a href="${dreamItemUrl(k)}">${esc(DREAM_ITEM[k].title)}</a>`).join("")}${DREAM_DEEP.map((_, j) => DREAM_DEEP[(DREAM_DEEP.indexOf(d) + 1 + j) % DREAM_DEEP.length]).filter(x => x.k !== d.k && !d.rel.includes(x.k)).slice(0, 6).map(x => `<a href="dream-${x.k}.html">${esc(x.kw)}</a>`).join("")}</div></section>
 ${DREAM_NOTE}
 <section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs"><a href="dream.html">꿈해몽 찾기</a>${DREAM.map(x => `<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
 ${footer}
