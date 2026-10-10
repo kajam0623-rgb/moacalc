@@ -1,15 +1,15 @@
 # 구글 서치콘솔 색인 요청 대기열 — 예약 작업 gsc-daily-index 가 위에서부터 요청하고, 끝난 줄은 '# 요청됨 YYYY-MM-DD ' 를 붙여 남긴다.
 # 새 페이지를 만들면 여기 맨 아래에 주소 한 줄을 더한다(https://dongnebosal.com/... 만).
 # 요청됨 2026-10-09 https://dongnebosal.com/calendar-2027.html
-https://dongnebosal.com/newyear.html
-https://dongnebosal.com/column-zodiac-2027.html
-https://dongnebosal.com/tojeong.html
-https://dongnebosal.com/samjae.html
-https://dongnebosal.com/sinsal-dohwa.html
-https://dongnebosal.com/sinsal-hwagae.html
-https://dongnebosal.com/sinsal-yeokma.html
-https://dongnebosal.com/sinsal-cheoneul.html
-https://dongnebosal.com/sinsal.html
+# 요청됨 2026-10-10 https://dongnebosal.com/newyear.html
+# 요청됨 2026-10-10 https://dongnebosal.com/column-zodiac-2027.html
+# 요청됨 2026-10-10 https://dongnebosal.com/tojeong.html
+# 요청됨 2026-10-10 https://dongnebosal.com/samjae.html
+# 요청됨 2026-10-10 https://dongnebosal.com/sinsal-dohwa.html
+# 요청됨 2026-10-10 https://dongnebosal.com/sinsal-hwagae.html
+# 요청됨 2026-10-10 https://dongnebosal.com/sinsal-yeokma.html
+# 요청됨 2026-10-10 https://dongnebosal.com/sinsal-cheoneul.html
+# 요청됨 2026-10-10 https://dongnebosal.com/sinsal.html
 https://dongnebosal.com/love.html
 https://dongnebosal.com/dream-animal-tiger.html
 https://dongnebosal.com/dream-waterfire-housefire.html
