@@ -3764,7 +3764,7 @@
         (st.strong
           ?'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두고, 넘치는 힘은 밖으로 쓸 길을 열어 두면 짐이 아니라 든든한 연장이 돼요.'
           :'혼자 다 지려 하지 말고 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두세요. 도움은 청하되 마지막 결정은 내 손으로 내리면 힘이 두 배로 서요.')+
-        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(SJE&&SJE.str3&&SJE.str3[ds]?' 타고난 <b>'+SJE.str3[ds]+'</b>'+josa(SJE.str3[ds],"를/을")+' 이 흐름에 얹으면 힘이 가장 잘 실려요.':'')+
+        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(SJE&&SJE.str3&&SJE.str3[ds]?' 타고난 <b>'+SJE.str3[ds]+'</b>'+josa(SJE.str3[ds],"를/을")+(duOk?' 이 흐름에 얹으면 힘이 가장 잘 실려요.':' 지금 하나씩 다져 두면 다음 흐름에서 크게 쓰여요.'):'')+
         '<br><br>여기 적힌 건 타고난 결이에요. 결을 알면 거스르지 않고 편하게 탈 수 있어요. 오늘 하루도 잘 살아 내세요.</p></div>';
       /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
       var TQ=null;
@@ -3819,7 +3819,7 @@
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>';
       // 신살은 종합에 하나만 말하고, 이 칸은 나머지를 푼다(같은 기운을 두 번 말하던 중복)
       var synSin=SJE&&SJE.sin?sinsal.filter(function(k){return SJE.sin[k];})[0]:null,sinRest=sinsal.filter(function(k){return k!==synSin;});
-      var sinH=sinRest.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+(synSin?'위 종합에서 말한 <b>'+SJE.sin[synSin][0]+'</b> 말고도 이런 기운이 있어요.<br><br>':'')+conceptArt(ART_SINSAL[sinRest[0]],sinRest[0])+''+sinRest.map(function(s){return '<b>'+sjSinLink(s,SJE&&SJE.sin&&SJE.sin[s]?SJE.sin[s][0]:s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+      var sinH=sinRest.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinRest[0]],sinRest[0])+(synSin?'<b>'+sjSinLink(synSin,SJE.sin[synSin][0])+'</b> — 위 종합에서 풀었어요.<br><br>':'')+sinRest.map(function(s){return '<b>'+sjSinLink(s,SJE&&SJE.sin&&SJE.sin[s]?SJE.sin[s][0]:s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
         :synSin?'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>'+conceptArt(ART_SINSAL[synSin],synSin)+'눈에 띄는 기운은 위 종합에서 말한 <b>'+sjSinLink(synSin,SJE.sin[synSin][0])+'</b> 하나예요. 그 밖에 따로 튀는 기운이 없는 담백한 짜임이라 오행과 십성의 흐름이 그대로 드러나요.</p></div>'
         :'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>따로 튀는 기운이 없는 담백한 구조예요. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나요.</p></div>';
       var elH='<div class="sj-sec"><h3>나에게 필요한 기운 — '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+'</h3><p>'+strengthBand(st.ratio)+' '+yongWhy+'<br><br>'+
