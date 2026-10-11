@@ -151,18 +151,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 십이운성 — 일간이 각 지지에서 갖는 기운의 단계 (양간 순행 / 음간 역행)
   var SJ_UN=["장생","목욕","관대","건록","제왕","쇠","병","사","묘","절","태","양"];
   var SJ_UN_DESC={
-   "장생":"갓 태어난 아기처럼 새로 시작하는 맑은 기운일세. 순수하고 앞으로 자랄 힘이 크며, 주변 사람들의 도움을 자연스럽게 받는 자리야.",
-   "목욕":"멋을 내고 감정이 풍부해지는 자리일세. 사람을 끄는 매력이 큰 만큼 기분에 따라 마음이 잘 흔들리기도 하니, 결정은 차분할 때 하면 좋네.",
-   "관대":"이제 막 세상에 나선 씩씩한 청년의 기운이야. 자신감과 의욕이 넘치는 대신 조금 성급해질 수 있으니, 한 박자만 쉬어 가면 되네.",
-   "건록":"제 힘으로 벌어 제 발로 서는, 열두 단계 가운데서도 손꼽히게 단단한 자리일세. 실속이 있고 책임감이 강해서 곁의 사람들에게 믿음을 주네.",
-   "제왕":"기운이 가장 왕성한 맨 꼭대기 자리야. 앞장서는 힘이 뛰어난 만큼, 고집으로 흐르지 않게 남의 말도 한 번 들어 주면 그 힘이 더 크게 빛나네.",
-   "쇠":"가장 높은 때를 지나 안정으로 접어든 자리일세. 무리하지 않고 안을 다지는 데 강해서, 오래 가는 힘을 가졌네.",
-   "병":"기운이 섬세하고 예민해지는 자리야. 대신 마음결이 깊고 배려심이 커서 사람을 잘 살피니, 몸만 잘 돌보면 그 따뜻함이 오래가네.",
-   "사":"움직이는 것보다 생각이 깊어지는 자리일세. 연구나 기획처럼 안으로 파고드는 일에 잘 어울려서 조용한 집중력이 빛나네.",
-   "묘":"거두어서 차곡차곡 챙기는 자리야. 모으고 지키는 힘이 있어서 살림을 관리하고 하나씩 쌓아 가는 데 특히 강하네.",
-   "절":"한 번 멈췄다가 다시 이어지는 자리일세. 변화가 잦은 대신 새 출발의 기운도 함께 들어 있어서 다시 시작하는 힘이 크네.",
-   "태":"새 생명이 막 생겨나는 자리야. 아이디어와 가능성이 씨앗처럼 자리를 잡아서 앞으로 크게 자랄 힘이 있네.",
-   "양":"세상에 나오기 전에 품 안에서 자라는 자리일세. 보호받으며 준비하는 시기라서 성품이 온화하고 부드러워, 사람들과 잘 어울리네."};
+   "장생":"갓 태어난 아기처럼 새로 시작하는 맑은 기운이에요. 순수하고 앞으로 자랄 힘이 크며, 주변 사람들의 도움을 자연스럽게 받는 자리예요.",
+   "목욕":"멋을 내고 감정이 풍부해지는 자리예요. 사람을 끄는 매력이 큰 만큼 기분에 따라 마음이 잘 흔들리기도 하니, 결정은 차분할 때 하면 좋아요.",
+   "관대":"이제 막 세상에 나선 씩씩한 청년의 기운이에요. 자신감과 의욕이 넘치는 대신 조금 성급해질 수 있으니, 한 박자만 쉬어 가면 돼요.",
+   "건록":"제 힘으로 벌어 제 발로 서는, 열두 단계 가운데서도 손꼽히게 단단한 자리예요. 실속이 있고 책임감이 강해서 곁의 사람들에게 믿음을 줘요.",
+   "제왕":"기운이 가장 왕성한 맨 꼭대기 자리예요. 앞장서는 힘이 뛰어난 만큼, 고집으로 흐르지 않게 남의 말도 한 번 들어 주면 그 힘이 더 크게 빛나요.",
+   "쇠":"가장 높은 때를 지나 안정으로 접어든 자리예요. 무리하지 않고 안을 다지는 데 강해서, 오래 가는 힘을 가졌어요.",
+   "병":"기운이 섬세하고 예민해지는 자리예요. 대신 마음결이 깊고 배려심이 커서 사람을 잘 살피니, 몸만 잘 돌보면 그 따뜻함이 오래가요.",
+   "사":"움직이는 것보다 생각이 깊어지는 자리예요. 연구나 기획처럼 안으로 파고드는 일에 잘 어울려서 조용한 집중력이 빛나요.",
+   "묘":"거두어서 차곡차곡 챙기는 자리예요. 모으고 지키는 힘이 있어서 살림을 관리하고 하나씩 쌓아 가는 데 특히 강해요.",
+   "절":"한 번 멈췄다가 다시 이어지는 자리예요. 변화가 잦은 대신 새 출발의 기운도 함께 들어 있어서 다시 시작하는 힘이 커요.",
+   "태":"새 생명이 막 생겨나는 자리예요. 아이디어와 가능성이 씨앗처럼 자리를 잡아서 앞으로 크게 자랄 힘이 있어요.",
+   "양":"세상에 나오기 전에 품 안에서 자라는 자리예요. 보호받으며 준비하는 시기라서 성품이 온화하고 부드러워, 사람들과 잘 어울려요."};
   // 개념 삽화 파일명 매핑 — 한글 개념명을 이미지 파일명으로 연결한다
   var ART_UN={"장생":"un-jangsaeng","목욕":"un-mogyok","관대":"un-gwandae","건록":"un-geollok","제왕":"un-jewang","쇠":"un-soe","병":"un-byeong","사":"un-sa","묘":"un-myo","절":"un-jeol","태":"un-tae","양":"un-yang"};
   var ART_SINSAL={"천을귀인":"sinsal-cheoneul","문창귀인":"sinsal-munchang","도화살":"sinsal-dohwa","역마살":"sinsal-yeokma","화개살":"sinsal-hwagae","양인살":"sinsal-yangin","백호대살":"sinsal-baekho","괴강살":"sinsal-gwaegang"};
@@ -263,10 +263,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var nb=c.nb||"상대",ea=SJ_ES[A.d.s],eb=SJ_ES[B.d.s],hap=Math.abs(A.d.s-B.d.s)===5,r1=hap?"합":sjTenGod(A.d.s,B.d.s),R=D.rel[r1],M={B:nb},secs=[],i;
     var axes=c.axes.slice().sort(function(x,y){return y[1]-x[1];}),low=axes[axes.length-1][0];
     var sum=ghFill(D.sum[c.grade],{top:axes[0][0],low:low,t:R.t});
-    var pic=['<b>자네</b> '+SJ_ILGAN_ID[A.d.s],'<b>'+nb+'</b> '+SJ_ILGAN_ID[B.d.s]];
+    var pic=['<b>나</b> '+SJ_ILGAN_ID[A.d.s],'<b>'+nb+'</b> '+SJ_ILGAN_ID[B.d.s]];
     if(hap)pic.push(D.hap[Math.min(A.d.s,B.d.s)]);
     else{var lo=ea<=eb,pe=D.pairEl[lo?SJ_EL[ea]+SJ_EL[eb]:SJ_EL[eb]+SJ_EL[ea]];
-      pic.push('두 글자를 한 장의 그림으로 그리면 「'+pe.img+'」일세. '+ghFill(pe.body,{X:lo?"자네":nb,Y:lo?nb:"자네"}));}
+      pic.push('두 글자를 한 장의 그림으로 그리면 「'+pe.img+'」이에요. '+ghFill(pe.body,{X:lo?"나":nb,Y:lo?nb:"나"}));}
     secs.push({k:"pic",h:"두 사람을 한 장의 그림으로",p:pic,n:D.note.pic});
     secs.push({k:"bond",h:"서로에게 어떻게 보이나 — "+R.t,p:['<b>끌리는 이유</b> '+ghFill(R.pull,M),'<b>부딪히는 지점</b> '+ghFill(R.clash,M),'<b>풀어 가는 법</b> '+ghFill(R.fix,M),ghFill(R.you,M)]});
     var Mo=D.mode[r1];
@@ -277,28 +277,28 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(z.length){var zi=z[0];for(k=0;k<z.length;k++)if(co[z[k]]>=2){zi=z[k];break;}
         out.push(ghFill(D.elx.none[SJ_EL[zi]],{P:pn}));if(co[zi]>=2)out.push(ghFill(D.elx.fill,{P:pn,Q:qn,E:SJ_EL[zi]}));}
       return out;}
-    el=elLine(cA,cB,"자네",nb).concat(elLine(cB,cA,nb,"자네"));
+    el=elLine(cA,cB,"나",nb).concat(elLine(cB,cA,nb,"나"));
     var dl=0;for(i=0;i<5;i++)dl+=Math.abs(cA[i]-cB[i]);
     if(!el.length)el.push(dl<=3?D.elx.same:ghFill(D.elx.flat,M));
     secs.push({k:"el",h:"오행이 서로에게 하는 일",p:el,n:D.note.el});
     function seas(b){return b>=2&&b<=4?"봄":b>=5&&b<=7?"여름":b>=8&&b<=10?"가을":"겨울";}
     var SA=seas(A.m.b),SB=seas(B.m.b),SO=["봄","여름","가을","겨울"],pk=SO.indexOf(SA)<=SO.indexOf(SB)?SA+SB:SB+SA;
-    secs.push({k:"season",h:"태어난 계절이 서로에게 하는 일",p:[ghFill(D.season[SA],{P:"자네"}),ghFill(D.season[SB],{P:nb}),D.seasonPair[pk]],n:D.note.season});
+    secs.push({k:"season",h:"태어난 계절이 서로에게 하는 일",p:[ghFill(D.season[SA],{P:"나"}),ghFill(D.season[SB],{P:nb}),D.seasonPair[pk]],n:D.note.season});
     function rk(a,b){return a===b?"같음":(a%4===b%4)?"삼합":(a+b===13||(a===0&&b===1)||(a===1&&b===0))?"육합":Math.abs(a-b)===6?"충":"무난";}
     var tk=rk(A.y.b,B.y.b),ik=rk(A.d.b,B.d.b),tm={ta:SJ_TTI[A.y.b]+"띠",tb:SJ_TTI[B.y.b]+"띠"};
     secs.push({k:"home",h:"겉의 호흡(띠)과 속의 호흡(배우자 자리)",p:['<b>사람들 앞에서</b> '+ghFill(D.home.tti[tk],tm),'<b>집 안에서</b> '+D.home.ilji[ik]],n:D.note.home});
     var sa=sjStrength(A),sb=sjStrength(B);
-    secs.push({k:"str",h:"힘의 균형 — 누가 앞서고 누가 받치나",p:[ghFill(D.str[(sa.strong?"강":"약")+(sb.strong?"강":"약")],M)],n:D.note.str+" (자네 "+Math.round(sa.ratio*100)+"%, "+nb+" "+Math.round(sb.ratio*100)+"%)"});
+    secs.push({k:"str",h:"힘의 균형 — 누가 앞서고 누가 받치나",p:[ghFill(D.str[(sa.strong?"강":"약")+(sb.strong?"강":"약")],M)],n:D.note.str+" (나 "+Math.round(sa.ratio*100)+"%, "+nb+" "+Math.round(sb.ratio*100)+"%)"});
     var gA=ghTg(A),gB=ghTg(B),roles=[];
     ["재","관","식","인","비"].forEach(function(g){var a=gA[g],b=gB[g],d=D.role[g],who,txt;
       if(a>=3&&b>=3){who="둘 다";txt=d.both;}
-      else if(Math.abs(a-b)>=2){var pa=a>b;who=pa?"자네":nb;txt=ghFill(d.lead,{P:who});}
+      else if(Math.abs(a-b)>=2){var pa=a>b;who=pa?"나":nb;txt=ghFill(d.lead,{P:who});}
       else if(a<=1&&b<=1){who="둘 다 적은 편";txt=d.none;}
       else{who="비슷";txt=d.even;}
       roles.push({k:d.t,w:who,t:txt});});
     secs.push({k:"role",h:"역할 나누기 — 누가 무엇을 맡으면 편한가",roles:roles,n:D.note.role});
     var YA=sa.yong,YB=sb.yong;
-    secs.push({k:"work",h:"함께하면 잘 풀리는 일의 결",p:[ghFill(D.work.a,{P:"자네",E:SJ_EL[YA],J:SJ_YONG[SJ_EL[YA]].job}),ghFill(D.work.a,{P:nb,E:SJ_EL[YB],J:SJ_YONG[SJ_EL[YB]].job}),YA===YB?D.work.same:((YA+1)%5===YB||(YB+1)%5===YA)?D.work.chain:D.work.other],n:D.note.work});
+    secs.push({k:"work",h:"함께하면 잘 풀리는 일의 결",p:[ghFill(D.work.a,{P:"나",E:SJ_EL[YA],J:SJ_YONG[SJ_EL[YA]].job}),ghFill(D.work.a,{P:nb,E:SJ_EL[YB],J:SJ_YONG[SJ_EL[YB]].job}),YA===YB?D.work.same:((YA+1)%5===YB||(YB+1)%5===YA)?D.work.chain:D.work.other],n:D.note.work});
     var years=[],y0=c.now,best,worst,Y;
     for(Y=y0;Y<y0+6;Y++){var ya=ghYear(A,Y),yb=ghYear(B,Y),av=Math.round((ya.score+yb.score)/2),flag=Math.min(ya.score,yb.score)<=62?(ya.score<yb.score?D.yr.a:D.yr.b):"";
       years.push({y:Y,la:D.yt[ya.rel],lb:D.yt[yb.rel],a:ya.score,b:yb.score,s:av,v:av>=80?"좋은 해":av>=70?"무난":"차분히",j:av>=80?D.yr.good:av>=70?D.yr.ok:D.yr.care,flag:flag});}
@@ -380,8 +380,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var SJ_CELEB=null;
   function sjCelebFill(box,p,N){if(!box)return;var me=sjCelebFeat(p);N=N||3;
     function draw(){var rows=SJ_CELEB.map(function(r){var o=sjCelebScore(me,{ds:r[3],db:r[4],mb:r[5],el:r[6]});return {r:r,s:o.s,why:o.why};}).sort(function(a,b){return b.s-a.s;}).slice(0,N);
-      box.innerHTML='<h3>자네와 사주가 닮은 유명인</h3>'+rows.map(function(x){return '<div class="exbox" style="margin-top:8px"><b>'+x.r[0]+'</b> <span style="color:var(--muted);font-size:13px">'+x.r[2]+' · '+x.r[1]+'</span><span style="float:right;font-weight:700">닮은 정도 '+x.s+'점</span><p style="margin:6px 0 0;font-size:14px">'+(x.why.length?x.why.join(" · "):"전체 기운의 짜임이 비슷함")+'</p></div>';}).join("")+
-        '<button type="button" class="ttibtn sj-celeb-share" style="margin-top:10px">닮은 유명인 친구한테 자랑하기</button>'+'<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했네. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료일세. 재미로 보게.</p>';
+      box.innerHTML='<h3>나와 사주가 닮은 유명인</h3>'+rows.map(function(x){return '<div class="exbox" style="margin-top:8px"><b>'+x.r[0]+'</b> <span style="color:var(--muted);font-size:13px">'+x.r[2]+' · '+x.r[1]+'</span><span style="float:right;font-weight:700">닮은 정도 '+x.s+'점</span><p style="margin:6px 0 0;font-size:14px">'+(x.why.length?x.why.join(" · "):"전체 기운의 짜임이 비슷함")+'</p></div>';}).join("")+
+        '<button type="button" class="ttibtn sj-celeb-share" style="margin-top:10px">닮은 유명인 친구한테 자랑하기</button>'+'<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했어요. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료예요. 재미로 봐 주세요.</p>';
       var sb=box.querySelector(".sj-celeb-share");if(sb&&rows[0]){var idle=sb.textContent;sb.addEventListener("click",function(){try{track("share_click",{tool:"celeb"});}catch(e){}
         shareOut(sb,"동네보살 — 사주 닮은 유명인","내 사주가 "+rows[0].r[0]+josa(rows[0].r[0],"랑/이랑")+" "+rows[0].s+"점 닮았대! 너는 누구랑 닮았는지 봐 봐 → "+location.origin+"/saju.html?from=share",idle);});}}
     if(SJ_CELEB){draw();return;}
@@ -437,18 +437,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '.oh-c{stroke:#fff;stroke-width:3}.oh-c.me{stroke:#3b6fd8;stroke-width:4}.oh-n{font-size:12px;font-weight:800;fill:#fff}.oh-r{font-size:11px;fill:var(--muted)}.oh-y{fill:#2f8f5b;font-weight:800}.oh-lab{font-size:10px;fill:#5aa86a}</style>'+
       '<svg class="oh-svg" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="오행 분포 오각형: '+SJ_EL.map(function(n,j){return n+" "+cnt[j]+"개";}).join(", ")+'">'+
       '<defs><marker id="oh-oh-s" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#5aa86a"/></marker><marker id="oh-oh-k" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#e06b62"/></marker></defs>'+
-      out+'</svg><div class="oh-cap" style="text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px">초록 화살표는 낳아 주는 관계(상생), 빨간 점선은 누르는 관계(상극)일세.</div>';}   // <p> 로 두면 접는 칸이 이 줄을 제목으로 가져간다
+      out+'</svg><div class="oh-cap" style="text-align:center;color:var(--muted);font-size:12px;margin:0 0 8px">초록 화살표는 낳아 주는 관계(상생), 빨간 점선은 누르는 관계(상극)예요.</div>';}   // <p> 로 두면 접는 칸이 이 줄을 제목으로 가져간다
   // 사주 특징 칩(2026-10-10, 경쟁 서비스 벤치마킹) — 있는 특징만 좋은 쪽으로. 판정 규칙은 각 설명에 밝힌다
   function sjTraits(o){var t=[],c=o.tgc,n=function(a,b){return (c[a]||0)+(c[b]||0);},gw=n("편관","정관"),gi=n("편인","정인"),gs=n("식신","상관"),gj=n("편재","정재");
-    if(o.gyeok)t.push(["타고난 큰 틀","태어난 달 글자가 이끄는 사주의 큰 틀일세. 아래 ‘타고난 그릇 모양’에서 자세히 풀었네."]);
-    if(o.ratio>=0.45&&o.ratio<=0.55)t.push(["고르게 짜인 사주","나를 돕는 기운과 빼는 기운이 반반에 가까워 치우침이 적은 사주(돕는 기운 "+Math.round(o.ratio*100)+"%)일세. 어느 쪽으로도 쓸 수 있는 고른 그릇이야."]);
-    if(gw&&gi)t.push(["인정받으며 크는 사주","일·책임의 기운이 배움·도움의 기운을 낳고, 그 기운이 다시 자네를 받치는 짜임일세. 조직 안에서 인정받으며 크기 좋네."]);
-    if(gs&&gj)t.push(["재주가 돈이 되는 사주","재주와 표현의 기운이 돈의 기운으로 이어지는 짜임일세. 잘하는 것을 일로 만들면 수입이 따라오네."]);
-    if(gj&&gw)t.push(["모은 것이 자리가 되는 사주","돈의 기운이 자리·명예의 기운을 낳는 짜임일세. 모은 것이 이름과 자리로 이어지기 쉽네."]);
-    if(o.cnt[o.yong]>0)t.push(["필요한 기운을 품고 난 사주","자네에게 필요한 기운("+SJ_EL[o.yong]+")이 이미 사주 여덟 글자 안에 있네. 부족한 것을 밖에서만 찾지 않아도 되는 사주야."]);
-    if(o.cnt.every(function(x){return x>0;}))t.push(["다섯 기운을 다 갖춘 사주","나무·불·흙·쇠·물 다섯 기운이 모두 사주에 있네. 기운이 한 바퀴 돌며 서로 이어 주는 구조일세."]);
-    if(o.du.some(function(d){return d.age>=20&&d.age<=59&&d.el===o.yEl;}))t.push(["한창때 순풍이 부는 사주","20~50대 사이에 필요한 기운("+o.yEl+")의 10년 흐름(대운)이 들어오네. 한창 일할 때 바람이 등 뒤에서 부는 셈이야."]);
-    if(o.ilUn==="건록"||o.ilUn==="제왕")t.push(["스스로 서는 힘이 센 사주","나를 뜻하는 글자가 열두 단계 가운데 힘이 가장 센 자리("+o.ilUn+")에 앉았네. 스스로 서는 힘이 강한 사주일세."]);
+    if(o.gyeok)t.push(["타고난 큰 틀","태어난 달 글자가 이끄는 사주의 큰 틀이에요. 아래 ‘타고난 그릇 모양’에서 자세히 풀었어요."]);
+    if(o.ratio>=0.45&&o.ratio<=0.55)t.push(["고르게 짜인 사주","나를 돕는 기운과 빼는 기운이 반반에 가까워 치우침이 적은 사주(돕는 기운 "+Math.round(o.ratio*100)+"%)예요. 어느 쪽으로도 쓸 수 있는 고른 그릇이에요."]);
+    if(gw&&gi)t.push(["인정받으며 크는 사주","일·책임의 기운이 배움·도움의 기운을 낳고, 그 기운이 다시 나를 받쳐 주는 짜임이에요. 조직 안에서 인정받으며 크기 좋아요."]);
+    if(gs&&gj)t.push(["재주가 돈이 되는 사주","재주와 표현의 기운이 돈의 기운으로 이어지는 짜임이에요. 잘하는 것을 일로 만들면 수입이 따라와요."]);
+    if(gj&&gw)t.push(["모은 것이 자리가 되는 사주","돈의 기운이 자리·명예의 기운을 낳는 짜임이에요. 모은 것이 이름과 자리로 이어지기 쉬워요."]);
+    if(o.cnt[o.yong]>0)t.push(["필요한 기운을 품고 난 사주","나에게 필요한 기운("+SJ_EL[o.yong]+")이 이미 사주 여덟 글자 안에 있어요. 부족한 것을 밖에서만 찾지 않아도 되는 사주예요."]);
+    if(o.cnt.every(function(x){return x>0;}))t.push(["다섯 기운을 다 갖춘 사주","나무·불·흙·쇠·물 다섯 기운이 모두 사주에 있어요. 기운이 한 바퀴 돌며 서로 이어 주는 구조예요."]);
+    if(o.du.some(function(d){return d.age>=20&&d.age<=59&&d.el===o.yEl;}))t.push(["한창때 순풍이 부는 사주","20~50대 사이에 필요한 기운("+o.yEl+")의 10년 흐름(대운)이 들어와요. 한창 일할 때 바람이 등 뒤에서 부는 셈이에요."]);
+    if(o.ilUn==="건록"||o.ilUn==="제왕")t.push(["스스로 서는 힘이 센 사주","나를 뜻하는 글자가 열두 단계 가운데 힘이 가장 센 자리("+o.ilUn+")에 앉았어요. 스스로 서는 힘이 강한 사주예요."]);
     // 칩 이름은 쉬운 말, 옛 용어는 풀이 끝에 작게(사용자 "설명이 너무 어렵다" 2026-10-10)
     var OLD={"타고난 큰 틀":o.gyeok,"고르게 짜인 사주":"중화","인정받으며 크는 사주":"관인상생","재주가 돈이 되는 사주":"식신생재","모은 것이 자리가 되는 사주":"재생관","필요한 기운을 품고 난 사주":"용신이 원국에 있음","다섯 기운을 다 갖춘 사주":"오행구족","한창때 순풍이 부는 사주":"용신 대운","스스로 서는 힘이 센 사주":"건록·제왕"};
     return t.map(function(x){return [x[0],x[1]+' <small style="opacity:.6">옛 이름: '+OLD[x[0]]+'</small>'];});}
@@ -458,18 +458,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var SJ_HYEONCHIM_S=[0,7],SJ_HYEONCHIM_B=[3,6,8];   // 현침 글자: 천간 갑·신(辛), 지지 묘·오·신(申) — 사주에 2개 이상
   var SJ_GWIMUN=[[0,9],[1,6],[2,7],[3,8],[4,11],[5,10]],SJ_WONJIN=[[0,7],[1,6],[2,9],[3,8],[4,11],[5,10]];  // 일지와 다른 지지의 짝
   var SJ_SINSAL_DESC={
-   "천을귀인":"사주에서 가장 좋은 길신일세. 어려울 때 사람이 나타나 큰 고비를 넘기게 해주는 힘이 있어.",
-   "문창귀인":"학문과 글재주의 별이야. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나네.",
-   "도화살":"매력과 인기의 별일세. 사람을 끄는 힘이 강해 예술·연예·서비스·영업 쪽에서 강점이 되네.",
-   "역마살":"이동과 변화의 별이야. 해외든 출장이든 이사든 유통이든, 움직이는 일에서 기회가 열리네.",
-   "화개살":"혼자 깊어지는 시간과 예술의 별일세. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
-   "양인살":"승부에 강한 기운이야. 결단력과 추진력이 뛰어나니 차분히 벼려서 쓰면 남을 지키는 힘이 되네.",
-   "백호대살":"강렬한 기운의 별일세. 승부처에서 힘을 내니 건강과 안전만 곁들여 챙기면 든든하네.",
-   "괴강살":"우두머리의 기운이야. 카리스마와 리더십이 강해 이끄는 자리에서 빛나네.",
-   "홍염살":"은은한 매력과 감성의 별일세. 말투와 분위기에 사람이 끌려 예술·연애·대인 관계에서 빛이 나네.",
-   "현침살":"바늘처럼 섬세한 손끝과 날카로운 눈의 별이야. 의료·디자인·기술처럼 정교함이 필요한 일에서 두각이 나네.",
-   "귀문관살":"남다른 직관과 섬세한 감수성의 별일세. 예술·상담·연구에서 남이 못 보는 걸 읽어 내니 쉴 때는 푹 쉬게.",
-   "원진살":"가까운 사이일수록 결이 달라 부딪히기 쉬운 짝이야. 말로 한 번 더 확인하는 습관이 관계를 오히려 단단하게 하네."};
+   "천을귀인":"사주에서 가장 좋은 길신이에요. 어려울 때 사람이 나타나 큰 고비를 넘기게 해주는 힘이 있어요.",
+   "문창귀인":"학문과 글재주의 별이에요. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나요.",
+   "도화살":"매력과 인기의 별이에요. 사람을 끄는 힘이 강해 예술·연예·서비스·영업 쪽에서 강점이 돼요.",
+   "역마살":"이동과 변화의 별이에요. 해외든 출장이든 이사든 유통이든, 움직이는 일에서 기회가 열려요.",
+   "화개살":"혼자 깊어지는 시간과 예술의 별이에요. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
+   "양인살":"승부에 강한 기운이에요. 결단력과 추진력이 뛰어나니 차분히 벼려서 쓰면 남을 지키는 힘이 돼요.",
+   "백호대살":"강렬한 기운의 별이에요. 승부처에서 힘을 내니 건강과 안전만 곁들여 챙기면 든든해요.",
+   "괴강살":"우두머리의 기운이에요. 카리스마와 리더십이 강해 이끄는 자리에서 빛나요.",
+   "홍염살":"은은한 매력과 감성의 별이에요. 말투와 분위기에 사람이 끌려 예술·연애·대인 관계에서 빛이 나요.",
+   "현침살":"바늘처럼 섬세한 손끝과 날카로운 눈의 별이에요. 의료·디자인·기술처럼 정교함이 필요한 일에서 두각이 나요.",
+   "귀문관살":"남다른 직관과 섬세한 감수성의 별이에요. 예술·상담·연구에서 남이 못 보는 걸 읽어 내니 쉴 때는 푹 쉬세요.",
+   "원진살":"가까운 사이일수록 결이 달라 부딪히기 쉬운 짝이에요. 말로 한 번 더 확인하는 습관이 관계를 오히려 단단하게 해요."};
   function sjSinsal(p){
     var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
     var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
@@ -509,16 +509,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 격국 — 월지 본기의 십성으로 판정
   var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
   var SJ_GYEOK_DESC={
-   "건록격":"스스로 벌어 스스로 서는 자수성가의 구조일세. 남에게 기대기보다 제 힘으로 기반을 만드는 짜임이라 독립·전문직·자기 사업이 잘 맞네.",
-   "양인격":"강한 추진력과 승부 기질을 타고났네. 극한에서 오히려 힘을 내는 구조라, 평소엔 그 기운을 운동이나 전문 기술로 풀어줘야 하네.",
-   "식신격":"먹을 복과 표현력의 구조야. 만들고 창작하고 가르치는 일에서 결실이 나고 성격도 여유로운 편일세.",
-   "상관격":"재능이 밖으로 뻗는 구조일세. 틀을 깨는 발상이 강점이나 조직의 규율과는 부딪히기 쉬우니 자율이 있는 자리가 좋네.",
-   "편재격":"큰 판을 보는 사업가의 구조야. 돈의 흐름을 읽는 감이 뛰어나 유통·영업·투자처럼 규모가 움직이는 데가 어울리네.",
-   "정재격":"성실하게 쌓아 올리는 구조일세. 정해진 수입을 꾸준히 굴려 자산을 만드는 데 강하고, 신용이 곧 재산이 되네.",
-   "편관격":"압박을 이겨내며 크는 구조야. 경쟁이 치열한 자리, 위기를 관리해야 하는 자리에서 능력이 드러나네.",
-   "정관격":"질서와 명예를 중히 여기는 구조일세. 원칙대로 갈 때 인정받으니 공직·대기업·전문 자격 쪽이 잘 맞네.",
-   "편인격":"독특한 관점과 직관의 구조야. 남들이 안 보는 걸 보니 전문 연구·기술·예술처럼 깊이 파는 데서 빛나네.",
-   "정인격":"배우고 품는 구조일세. 학문·교육·상담처럼 지식을 쌓아 나누는 일에서 인정받고 귀인의 도움도 따르네."};
+   "건록격":"스스로 벌어 스스로 서는 자수성가의 구조예요. 남에게 기대기보다 제 힘으로 기반을 만드는 짜임이라 독립·전문직·자기 사업이 잘 맞아요.",
+   "양인격":"강한 추진력과 승부 기질을 타고났어요. 극한에서 오히려 힘을 내는 구조라, 평소엔 그 기운을 운동이나 전문 기술로 풀어줘야 해요.",
+   "식신격":"먹을 복과 표현력의 구조예요. 만들고 창작하고 가르치는 일에서 결실이 나고 성격도 여유로운 편이에요.",
+   "상관격":"재능이 밖으로 뻗는 구조예요. 틀을 깨는 발상이 강점이나 조직의 규율과는 부딪히기 쉬우니 자율이 있는 자리가 좋아요.",
+   "편재격":"큰 판을 보는 사업가의 구조예요. 돈의 흐름을 읽는 감이 뛰어나 유통·영업·투자처럼 규모가 움직이는 데가 어울려요.",
+   "정재격":"성실하게 쌓아 올리는 구조예요. 정해진 수입을 꾸준히 굴려 자산을 만드는 데 강하고, 신용이 곧 재산이 돼요.",
+   "편관격":"압박을 이겨내며 크는 구조예요. 경쟁이 치열한 자리, 위기를 관리해야 하는 자리에서 능력이 드러나요.",
+   "정관격":"질서와 명예를 중히 여기는 구조예요. 원칙대로 갈 때 인정받으니 공직·대기업·전문 자격 쪽이 잘 맞아요.",
+   "편인격":"독특한 관점과 직관의 구조예요. 남들이 안 보는 걸 보니 전문 연구·기술·예술처럼 깊이 파는 데서 빛나요.",
+   "정인격":"배우고 품는 구조예요. 학문·교육·상담처럼 지식을 쌓아 나누는 일에서 인정받고 귀인의 도움도 따라요."};
   function sjTenGod(dayS,otherS){ // 십성
     var de=SJ_ES[dayS],oe=SJ_ES[otherS],same=(dayS%2)===(otherS%2);
     if(de===oe)return same?"비견":"겁재";
@@ -588,7 +588,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjSumHtml(o){
     var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
     var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
-    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있네.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두껍네("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리일세.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편일세.");
+    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있어요.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두꺼워요("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리예요.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편이에요.");
     var tiles=SJ_EL.map(function(e,i){var f=mxV?Math.round(cnt[i]/mxV*100):0;
       return '<div class="ss-t5"><div class="ss-box"><i class="bg-'+e+'" style="height:'+f+'%"></i></div><b class="el-'+e+'">'+H[e]+'</b><span>'+cnt[i]+'</span></div>';}).join("");
     // 십성 별 그림: 위부터 시계 방향 자아(비겁)·표현(식상)·재물(재성)·명예(관성)·학문(인성)
@@ -618,7 +618,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-mo"></div>'+
       '<button type="button" class="ss-save">이 요약 이미지로 저장</button>'+
-      '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이네. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'자네가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 주네.</div>'+
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이에요. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'내가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 줘요.</div>'+
       '</div>';}
   /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
   function sjMonthSvg(M){
@@ -634,7 +634,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<polyline points="'+line+'" class="ml"/>'+
       M.map(function(x,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x.sc).toFixed(1)+'" r="'+(x.sc>=3||x.sc<0?4.5:2.5)+'" class="'+(x.sc>=3?"mg":x.sc<0?"mb":"mn")+'"/>'+
         '<text x="'+X(i).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" class="rl'+(i===0?" now":"")+'">'+x.m+'</text>';}).join("")+'</svg>'+
-      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가네')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>일세.':best.length?'일세.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있네.</p>';}
+      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
   /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
      o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
   // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
@@ -661,12 +661,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div><button type="button" class="ss-save">이 요약 이미지로 저장</button></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
-    var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"자네";
-    return [["종합","magnifier",nm+" 사주를 펼쳐 봤네. 먼저 큰 그림부터 짚어 주지."],
-      ["한눈에 보기","crystal",(QL[o.q]?QL[o.q]+" 얘기가 제일 궁금하다 했지? ":"")+"이제 돈·일·인연·몸, 네 갈래로 나눠 보세."],
-      ["나를 뜻하는 글자","scroll","여기서부터는 왜 그렇게 읽었는지, 보살의 셈법일세. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠야."],
-      ["달마다 흐름","diary","이제 시간 순서로 보세. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 물결일세."],
-      ["맺는 말","bow","끝까지 읽어 줬구먼. 마지막으로 한마디만 더 하지."]];}
+    var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"보내 주신";
+    return [["종합","magnifier",nm+" 사주를 펼쳐 봤어요. 먼저 큰 그림부터 짚어 볼게요."],
+      ["한눈에 보기","crystal",(QL[o.q]?QL[o.q]+" 얘기가 제일 궁금하다고 하셨죠? ":"")+"이제 돈·일·인연·몸, 네 갈래로 나눠 볼게요."],
+      ["나를 뜻하는 글자","scroll","여기서부터는 왜 그렇게 읽었는지, 셈한 근거예요. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠예요."],
+      ["달마다 흐름","diary","이제 시간 순서로 볼게요. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 흐름이에요."],
+      ["맺는 말","bow","끝까지 읽어 주셨네요. 마지막으로 한마디만 더 할게요."]];}
   // P: [[라벨 첫머리, 포즈, 대사]] — 라벨은 접힌 칸(.fold-lab)이나 덩어리 제목(h3)에서 찾는다
   /* 결과를 장으로 나눈다 — 첫 장만 보이고, 버튼을 눌러야 다음 장이 열린다. C=[[경계 웹툰 칸 이름, 장 제목, 버튼 글]]
      경계는 sjToon 이 단 data-k. 못 찾은 경계는 건너뛴다. 다음 장 버튼은 앞 장 끝에 둬서 앞 장이 닫혀 있으면 같이 숨는다 */
@@ -1781,7 +1781,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     else if((m=/^(\d)(\d{2})$/.exec(t))){H=+m[1];M=+m[2];}
     else if((m=/^(\d{2})(\d{2})$/.exec(t))){H=+m[1];M=+m[2];}
     if(H>=0){if(pm&&H<12)H+=12;if(H===12&&night)H=0;if(H===12&&am&&!pm)H=0;}
-    if(H<0||H>23||M>59)return {ok:false,v:"",say:"",err:"시각을 읽지 못했네. 숫자 4자리(24시간제)로 적어 주게. 예) 오전 9시 30분은 0930, 오후 2시 30분은 1430일세."};
+    if(H<0||H>23||M>59)return {ok:false,v:"",say:"",err:"시각을 읽지 못했어요. 숫자 4자리(24시간제)로 적어 주세요. 예) 오전 9시 30분은 0930, 오후 2시 30분은 1430이에요."};
     return {ok:true,v:(H<10?"0"+H:""+H)+":"+(M<10?"0"+M:""+M),say:clockSay(H,M),err:""};}
   // 이름을 물었으면 결과에서 그 이름으로 부른다("민지 님"). 엄마·아빠처럼 이미 호칭이면 님을 더 붙이지 않는다
   function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모|남편|아내|남친|여친|아들|딸|친구)$/.test(n)?n:n+" 님";}
@@ -1820,7 +1820,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     토:[["노란색 지갑","hID3kKXYoC"],["황토 베개","hID3tWYXXo"],["도자기 그릇","hID3DDh7GC"]],
     금:[["실버 925 팔찌","hID3L61GXk"],["흰색 지갑","hID3VgYzRc"],["스테인리스 텀블러","hID34q0nvw"]],
     수:[["검정 장지갑","hID4dPFGOy"],["가습기","hID4mZZlzU"],["미니 어항","hID4vSp1ae"]]};
-  function goodsRow(e,lab){return cpRow(EL_GOODS[e],(lab||'자네를 받쳐 주는 '+e+' 기운 물건')+' — 쿠팡에서 바로 보기');}
+  function goodsRow(e,lab){return cpRow(EL_GOODS[e],(lab||'나를 받쳐 주는 '+e+' 기운 물건')+' — 쿠팡에서 바로 보기');}
   function cpRow(items,title){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
     return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>'+title+'</b>'+
     items.map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
