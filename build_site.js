@@ -1016,7 +1016,7 @@ todayfortune:"오늘의 운세 — 생년월일로 보는 무료 운세·오늘 
 horoscope:"별자리 운세 — 오늘의 별자리 운세·12별자리 날짜 무료",
 zodiacfortune:"띠별 운세 — 오늘의 띠별 운세·12띠 오늘 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
-saju:"무료 사주풀이 — 인터넷 사주·사주팔자 보기·만세력",
+saju:"무료 사주풀이 — 생년월일로 사주팔자·재물운·연애운·10년 대운까지",
 gunghap:"무료 궁합 — 사주 궁합 테스트·생년월일 궁합·띠 궁합 보기",
 tojeong:"2027 토정비결 — 무료 토정비결 보기 144괘",
 newyear:"2027 신년운세 — 2027년 운세·올해 운세·정미년 무료 신년운세",
@@ -1024,6 +1024,10 @@ tarot:"무료 타로 — 타로카드 뽑기·오늘의 타로·연애 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
 gongmang:"공망 찾기 — 내 일주 공망 무료 계산",
 lunar:"음력 계산기 — 양력 음력 변환·음력 생일·윤달 무료",
+};
+// 검색 결과에 보이는 설명만 따로 — 본문 intro 는 그대로 둔다(2026-10-12 네이버 노출 대비 클릭 낮음)
+const descOverride = {
+saju:"가입·결제 없이 생년월일시만 넣으면 바로 나와요. 타고난 성격 한마디, 재물·직업·연애·건강운, 올해와 앞뒤 5년, 10년마다 바뀌는 흐름까지 쉬운 말로 풀어 드려요.",
 };
 // 도구 페이지 본문에서 관련 칼럼으로 가는 링크 — 칼럼의 tool·related 를 거꾸로 이어 자동으로 만든다(그 도구가 주인인 칼럼을 앞에, 최신순, 3편까지, 제목만 — 도구 페이지끼리 같은 글이 반복돼 고유율이 떨어지지 않게)
 function toolColumnsHtml(id){
@@ -1046,7 +1050,7 @@ const cardShowHtml = id => { const c = CARD_SHOW[id]; if (!c) return "";
       return `<figure><img src="img/${f}" alt="${esc(alt)}" width="${w}" height="${h}" loading="lazy" decoding="async"></figure>`; }).join("") + `</div></section>`; };
 function toolPage(t){
   const title = (titleOverride[t.id] || t.name+" — 무료 온라인 계산기")+" | 동네보살";
-  const desc = (intro[t.id]||t.desc).slice(0,155);
+  const desc = (descOverride[t.id]||intro[t.id]||t.desc).slice(0,155);
   const url = DOMAIN+"/"+t.id+".html";
   // 운세 도구를 FinanceApplication으로 표기하면 스키마가 실제 내용과 어긋난다
   const appCat = t.cat==="재미·운세" ? "LifestyleApplication"
@@ -1616,8 +1620,8 @@ function starStoneSec(s){
 function starPage(s, i){
   return seoPage({
     crumb:`${s.ko}`,
-    title:`${s.ko} 운세·성격·궁합 — 2027 | 동네보살`,
-    desc:`${s.ko}(${s.range}) 성격과 연애 스타일, 잘 맞는 별자리와 어려운 별자리. 태양황경으로 판정하는 오늘의 ${s.ko} 운세와 2027년 흐름.`,
+    title:`${s.ko} 오늘의 운세 — 성격·궁합·잘 맞는 별자리 | 동네보살`,
+    desc:`${s.ko}(${s.range}생) 오늘의 운세를 날마다 새로 올려요. 연애할 때 모습, 잘 맞는 별자리(${s.match.best.join("·")}), 이달 흐름과 2027년 운세까지 한 쪽에서 무료로 봐요.`,
     // img=OG용 캐릭터(정사각), hero=배너용 가로 이미지. 정사각을 16:7 배너에 넣으면 얼굴이 잘린다
     url:`${DOMAIN}/star-${s.en}.html`, img:`img/char/st-${s.en}.webp`, hero:"img/tool/h-horoscope.webp",
     h1:`${s.sym} ${s.ko} — 성격·연애·궁합·오늘의 운세`,
@@ -2668,8 +2672,8 @@ function sipseongPage(s){
   return seoPage({
     crumb:`${s.ko}`,
     learn: learnMore(`${s.ko}${josa(s.ko,"은/는")} ${s.group}에 속하는 십성입니다. 열 가지 십성을 한 표로 찾는 법은 6강, 십성이 일간의 힘을 재는 데 쓰이는 방식은 7강, 사주의 틀(격국)을 정하는 방식은 9강에서 배웁니다.`, [6, 7, 9]),
-    title:`${s.ko} — 뜻·성격·직업·재물 풀이 | 동네보살`,
-    desc:`${s.ko}${josa(s.ko,"은/는")} ${s.rule}입니다. ${s.strong}${josa(s.strong,"이/가")} 강점, ${s.weak}${josa(s.weak,"이/가")} 챙길 점. 연애·직업·재물에서 어떻게 나타나는지.`,
+    title:`${s.ko} 사주 뜻 — 성격·잘 맞는 직업·많을 때와 없을 때 | 동네보살`,
+    desc:`사주에 ${s.ko}${josa(s.ko,"이/가")} 있으면 어떤 사람일까요? ${s.strong}${josa(s.strong,"이/가")} 강점이에요. 잘 맞는 직업, 돈 모으는 법, 연애할 때 모습, ${s.ko}${josa(s.ko,"이/가")} 많을 때와 없을 때를 쉬운 말로 풀었어요.`,
     url:`${DOMAIN}/sipseong-${s.en}.html`, img:`img/char/ss-${s.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${s.han} ${s.ko} — ${s.keyword}`,
     sub:`${s.group} · ${s.rule} · 짝이 되는 십성 ${s.pair}`,
@@ -2746,6 +2750,7 @@ function mansePage(p){
   const jeol = M.terms[0], jung = M.terms[1];      // 앞이 절기(월주를 가름), 뒤가 중기
   const mid = M.days[Math.min(15, M.dim) - 1];     // 대표일 — FAQ에서 "15일 일진"으로 쓴다
   const prevJi = MANSE_SRC.MONTH_TEXT[prev.mo].ji;
+  const sonD = M.days.filter(x => x.son), sonW = sonD.filter(x => x.w === 0 || x.w === 6);
 
   /* 연주·월주는 같은 달이라도 해마다 다르다. 월주는 5년, 연주는 60년 주기다.
      절입일은 3~9일·18~24일 사이라 1일은 늘 절입 전, 말일은 늘 절입 후다. */
@@ -2768,8 +2773,8 @@ function mansePage(p){
     noindex: !MANSE_KEEP(p),
     crumb:`${p.y}년 ${p.mo}월 만세력`,
     learn: learnMore(`${p.y}년 ${p.mo}월의 연주와 월주를 읽는 순서는 1강, 달이 절기(${jeol.name})에서 바뀌는 이유는 4강, 해마다 바뀌는 큰 흐름과 월운은 15강에서 배웁니다.`, [1, 4, 15]),
-    title:`${p.y}년 ${p.mo}월 음력 달력·만세력 — 일진·절기·손 없는 날 | 동네보살`,
-    desc:`${p.y}년 ${p.mo}월 음력 달력 — ${M.dim}일 전체의 음력 날짜와 일진, 손 없는 날. ${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}.`,
+    title:`${p.y}년 ${p.mo}월 음력 달력·손 없는 날 — 날짜별 일진·절기 만세력 | 동네보살`,
+    desc:`${p.y}년 ${p.mo}월 손 없는 날: ${sonD.map(x=>x.d).join("·")}일${sonW.length ? "(주말 "+sonW.map(x=>x.d).join("·")+"일)" : ""}. ${M.dim}일 전체 음력 날짜·일진을 한 표로 보고, ${jeol.name} ${termAt(jeol)}·${jung.name} ${termAt(jung)} 절기 시각도 확인해요.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:`${p.y}년 ${p.mo}월 만세력 — ${T.season}, ${T.ji}월`,
     sub:`${jeol.name} ${termAt(jeol)} · ${jung.name} ${termAt(jung)} · ${lunSpan}`,
@@ -2880,8 +2885,8 @@ function manseHubPage(){
       return `<a href="manse-${en}.html">${mo}월</a>`;}).join(" · ")+`</b></div>`).join("");
   return seoPage({
     crumb:"무료 만세력",
-    title:"무료 만세력 — 사주 만세력 계산기·보는법 | 동네보살",
-    desc:"생년월일시를 넣으면 사주 여덟 글자와 대운이 바로 나오는 무료 만세력. 절기는 태양황경으로 계산하고 월별 만세력 132장도 있습니다.",
+    title:"무료 만세력 — 생년월일만 넣으면 사주 여덟 글자·대운이 바로 | 동네보살",
+    desc:"생년월일시만 넣으면 연·월·일·시 네 기둥 여덟 글자와 10년 대운이 바로 나와요. 절기는 천문 계산으로 맞추고, 달마다 음력·일진·손 없는 날 만세력 표도 있어요.",
     url, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
     h1:"무료 만세력 — 생년월일로 뽑는 사주 원국",
     sub:`만세력 계산기 · 대운 · 절입 시각 · 월별 만세력 ${MANSE_PAGES.length}장`,
