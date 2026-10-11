@@ -1163,7 +1163,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   const cardFn = code.slice(code.indexOf("function iljuCardKey("));
   t("일주 카드: 카드·공유 코드에 생일·이름·저장값이 들어가지 않는다", !/birth|loadPrefs|localStorage|\.value|nm\b/.test(cardFn), true);
   t("일주 카드 배선: 사주 결과 헤드라인 뒤에 칸을 두고 채우며, 그림은 big 을 그리고, 홈 오늘 카드·일주 페이지·sj/ilju.json 이 이어진다", [
-    src.includes("+yEl+'</div></div><div class=\"ilc-slot\"></div>';"), src.includes('iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));'), src.includes("else if(o.big){") && src.includes("hy2=(o.score!=null||o.big?700:520)+oy"),
+    src.includes("+yEl+')</div></div><div class=\"ilc-slot\"></div>';"), src.includes('iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b),1);'), src.includes("else if(o.big){") && src.includes("hy2=(o.score!=null||o.big?700:520)+oy"),
     bs.includes('if(window.iljuCard)iljuCard(box.querySelector(".today-card"),+p[0],+p[1],+p[2]);'), bs.includes("ttiBtn(\"이 일주 공유하기\"") && bs.includes("iljuShareRow(p) +"), bs.includes('path.join(OUT,"sj","ilju.json")')].join(","), "true,true,true,true,true,true"); }
 // ── 홈 저장 명단(직접 저장만) · 홈 화면 추가 안내 ──
 { const m = bs.match(/const HOME_KEEP_JS = `(.*?)`;/s), js = m ? m[1] : "";

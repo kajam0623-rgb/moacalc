@@ -1413,7 +1413,7 @@
       '<polyline points="'+line+'" class="ml"/>'+
       M.map(function(x,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x.sc).toFixed(1)+'" r="'+(x.sc>=3||x.sc<0?4.5:2.5)+'" class="'+(x.sc>=3?"mg":x.sc<0?"mb":"mn")+'"/>'+
         '<text x="'+X(i).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" class="rl'+(i===0?" now":"")+'">'+x.m+'</text>';}).join("")+'</svg>'+
-      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
+      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.slice(0,3).join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
   /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
      o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
   // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
@@ -2585,13 +2585,16 @@
     while((t=w.nextNode())){var v=t.nodeValue,o=v;v=v.replace(/올해\((\d{4}년)\)(이에요|이니|이라|이고|이며)/g,function(m,y,j){return "올해("+y+")"+J[j];});
       if(six&&!(t.parentElement&&t.parentElement.closest("h3,summary,.fold-lab")))v=v.replace(/여덟 글자/g,"여섯 글자");if(v!==o)t.nodeValue=v;}}
   // 나이 맞춤(2026-10-11 검수: 60대에게 연애 시작·월급 인상·부모님 안부가 나왔음). 55세 이상이면 말을 바꾸고 애정운 맨 앞에 한 줄
-  function sjAgeFix(root,age){if(!root||!(age>=55)||typeof document==="undefined")return;
-    var R=[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"],[/연애를 잊고/g,"사람 만나는 일을 잊고"],
-      [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];
+  function sjAgeFix(root,age){if(!root||!(age>=45)||typeof document==="undefined")return;
+    var R=[],R1=[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"],[/연애를 잊고/g,"사람 만나는 일을 잊고"],
+      [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];if(age>=55)R=R1;
     var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t;
     while((t=w.nextNode())){var v=t.nodeValue,o=v;R.forEach(function(r){v=v.replace(r[0],r[1]);});if(v!==o)t.nodeValue=v;}
+    var NEW=/만남의 자리|사람 만나는 자리|인연이 싹|소개|새 인연|새로운 인연|연애 감정|인연이 움직|설레는 만남|썸/;
     [].forEach.call(root.querySelectorAll(".fold-lab,.sj-sec > h3"),function(h){if(!/애정운$/.test(h.textContent.trim()))return;var box=h.closest("details,.sj-sec");if(!box||box.querySelector(".age-note"))return;
-      var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 연애보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
+      var tw=document.createTreeWalker(box,NodeFilter.SHOW_TEXT,null,false),tn;while((tn=tw.nextNode())){if(tn.parentElement&&tn.parentElement.closest("summary"))continue;
+        var ps=tn.nodeValue.split(/(?<=[.!?])\s+/),keep=ps.filter(function(x){return !NEW.test(x);});if(keep.length!==ps.length)tn.nodeValue=keep.join(" ");}
+      var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 만남보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
   /* 결과 전체 중복 걷기(2026-10-11 검수: '적어 두세요'·'몫 나누기'가 한 결과에 5번). 같은 문장은 두 번째부터 빼고,
      같은 처방 낱말은 결과 전체에서 2번까지만 남긴다. 제목·요약 줄·근거 주석은 손대지 않는다 */
   function sjDedupe(root){if(!root||typeof document==="undefined")return;
@@ -2603,7 +2606,9 @@
         if(seen[n]){ch=true;return;}seen[n]=1;
         var hit=KEYS.filter(function(k){return x.indexOf(k)>=0;}),over=hit.some(function(k){return (cnt[k]||0)>=2;});
         if(over&&/[.!?]$/.test(x.trim())){ch=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
-      if(ch)t.nodeValue=out.join(" ");});}
+      var nv=(ch?out.join(" "):t.nodeValue).replace(/든든(해요|한|하게|해져요|하고)/g,function(m,e){cnt.dd=(cnt.dd||0)+1;if(cnt.dd<=3)return m;return ({"해요":"마음이 놓여요","한":"믿음직한","하게":"넉넉하게","해져요":"마음이 놓여요","하고":"믿음직하고"})[e];})
+        .replace(/(^|[^가-힣(·])([목화토금수]) 기운/g,function(m,a,e){return a+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운";});
+      if(nv!==t.nodeValue)t.nodeValue=nv;});}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
@@ -2690,13 +2695,13 @@
      생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
   function ilKey(ds,db){for(var k=ds;k<60;k+=10)if(k%12===db)return k;return -1;}
   var IL_DATA=null;
-  function iljuCardKey(host,k){
+  function iljuCardKey(host,k,sea){
     if(!host||k<0||typeof fetch!=="function")return;
     function paint(J){var o=J[k];if(!o||host.querySelector(".ilc"))return;
       var box=document.createElement("div");box.className="ilc";
       // 일주 그림(o.i)이 있는 일주는 카드 맨 위에 그 그림을 싣고, 저장 이미지에도 일간 그림 대신 쓴다
       box.innerHTML=(o.i?'<img class="ilc-img" src="'+escH(o.i)+'" width="'+(+o.iw||0)+'" height="'+(+o.ih||0)+'" alt="'+escH(o.ko)+'일주 그림" decoding="async">':'')+
-        '<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(o.t)+'</div><p class="ilc-d">'+escH(o.d)+'</p>'+
+        '<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(sea?String(o.t).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,""):o.t)+'</div><p class="ilc-d">'+escH(sea?String(o.d).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,""):o.d)+'</p>'+
         '<div class="ilc-b"><button type="button" class="save-btn">이미지로 저장</button><button type="button" class="ilc-share">친구에게 알려주기</button></div>'+
         '<a class="ilc-a" href="ilju-'+o.en+'.html">'+escH(o.ko)+'일주 자세히 보기 →</a>';
       host.appendChild(box);
@@ -3430,7 +3435,7 @@
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주예요. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하세요."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주예요. 생활 리듬이 맞는 사람과 오래가요.";
       var love=verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love")+P+
-        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+({목:"새로 배우길 좋아하고 앞으로 나아가게 북돋아 주는 사람",화:"밝고 표현이 따뜻해 분위기를 살려 주는 사람",토:"믿음직하고 한결같아 마음을 놓이게 하는 사람",금:"맺고 끊음이 분명하고 약속을 잘 지키는 사람",수:"생각이 깊고 말수는 적어도 잘 맞춰 주는 사람"})[yEl]+"이에요. 배우자 자리가 어떤 모습인지는 아래 ‘여덟 글자, 어느 자리가 무엇인가’에 자세히 있어요."+P+
+        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+({목:"새로 배우길 좋아하고 앞으로 나아가게 북돋아 주는 사람",화:"밝고 표현이 따뜻해 분위기를 살려 주는 사람",토:"믿음직하고 한결같아 마음이 놓이게 하는 사람",금:"맺고 끊음이 분명하고 약속을 잘 지키는 사람",수:"생각이 깊고 말수는 적어도 잘 맞춰 주는 사람"})[yEl]+"이에요. 배우자 자리가 어떤 모습인지는 아래 ‘여덟 글자, 어느 자리가 무엇인가’에 자세히 있어요."+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기예요. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워요. 사람 만나는 자리에 자주 나가 보세요."
           :"")+
@@ -3707,7 +3712,7 @@
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
-        (st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+yEl+'</div></div><div class="ilc-slot"></div>';
+        (MID?"고르게 짜인 편":st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+'('+yEl+')</div></div><div class="ilc-slot"></div>';
       // 한눈에 보기 — 결과 맨 위에서 용어 없이 세 줄로 요약한다
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+ST_TITLE[ds][1]+'이에요. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.<br>'+
@@ -3816,7 +3821,7 @@
                   :'힘을 채워 가며 크는 편이니 이 틀을 좁게 잡고 깊이 파는 편이 나아요. 넓히기보다 하나를 끝까지 밀어 보세요.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
-        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,SJE&&SJE.sin&&SJE.sin[s]?SJE.sin[s][0]:s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>따로 튀는 기운이 없는 담백한 구조예요. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나요.</p></div>')+
         '<div class="sj-sec" id="sjceleb"></div>'+
         gungSec()+
@@ -3841,7 +3846,7 @@
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 덜 찼으면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
-      iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
+      iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b),1);
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
       sjCelebFill(el.querySelector("#sjceleb"),p,0,nmHon(nm));

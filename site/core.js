@@ -637,7 +637,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<polyline points="'+line+'" class="ml"/>'+
       M.map(function(x,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(x.sc).toFixed(1)+'" r="'+(x.sc>=3||x.sc<0?4.5:2.5)+'" class="'+(x.sc>=3?"mg":x.sc<0?"mb":"mn")+'"/>'+
         '<text x="'+X(i).toFixed(1)+'" y="'+(H-10)+'" text-anchor="middle" class="rl'+(i===0?" now":"")+'">'+x.m+'</text>';}).join("")+'</svg>'+
-      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
+      '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.slice(0,3).join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
   /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
      o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
   // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
@@ -1809,13 +1809,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     while((t=w.nextNode())){var v=t.nodeValue,o=v;v=v.replace(/올해\((\d{4}년)\)(이에요|이니|이라|이고|이며)/g,function(m,y,j){return "올해("+y+")"+J[j];});
       if(six&&!(t.parentElement&&t.parentElement.closest("h3,summary,.fold-lab")))v=v.replace(/여덟 글자/g,"여섯 글자");if(v!==o)t.nodeValue=v;}}
   // 나이 맞춤(2026-10-11 검수: 60대에게 연애 시작·월급 인상·부모님 안부가 나왔음). 55세 이상이면 말을 바꾸고 애정운 맨 앞에 한 줄
-  function sjAgeFix(root,age){if(!root||!(age>=55)||typeof document==="undefined")return;
-    var R=[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"],[/연애를 잊고/g,"사람 만나는 일을 잊고"],
-      [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];
+  function sjAgeFix(root,age){if(!root||!(age>=45)||typeof document==="undefined")return;
+    var R=[],R1=[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"],[/연애를 잊고/g,"사람 만나는 일을 잊고"],
+      [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];if(age>=55)R=R1;
     var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t;
     while((t=w.nextNode())){var v=t.nodeValue,o=v;R.forEach(function(r){v=v.replace(r[0],r[1]);});if(v!==o)t.nodeValue=v;}
+    var NEW=/만남의 자리|사람 만나는 자리|인연이 싹|소개|새 인연|새로운 인연|연애 감정|인연이 움직|설레는 만남|썸/;
     [].forEach.call(root.querySelectorAll(".fold-lab,.sj-sec > h3"),function(h){if(!/애정운$/.test(h.textContent.trim()))return;var box=h.closest("details,.sj-sec");if(!box||box.querySelector(".age-note"))return;
-      var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 연애보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
+      var tw=document.createTreeWalker(box,NodeFilter.SHOW_TEXT,null,false),tn;while((tn=tw.nextNode())){if(tn.parentElement&&tn.parentElement.closest("summary"))continue;
+        var ps=tn.nodeValue.split(/(?<=[.!?])\s+/),keep=ps.filter(function(x){return !NEW.test(x);});if(keep.length!==ps.length)tn.nodeValue=keep.join(" ");}
+      var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 만남보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
   /* 결과 전체 중복 걷기(2026-10-11 검수: '적어 두세요'·'몫 나누기'가 한 결과에 5번). 같은 문장은 두 번째부터 빼고,
      같은 처방 낱말은 결과 전체에서 2번까지만 남긴다. 제목·요약 줄·근거 주석은 손대지 않는다 */
   function sjDedupe(root){if(!root||typeof document==="undefined")return;
@@ -1827,7 +1830,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         if(seen[n]){ch=true;return;}seen[n]=1;
         var hit=KEYS.filter(function(k){return x.indexOf(k)>=0;}),over=hit.some(function(k){return (cnt[k]||0)>=2;});
         if(over&&/[.!?]$/.test(x.trim())){ch=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
-      if(ch)t.nodeValue=out.join(" ");});}
+      var nv=(ch?out.join(" "):t.nodeValue).replace(/든든(해요|한|하게|해져요|하고)/g,function(m,e){cnt.dd=(cnt.dd||0)+1;if(cnt.dd<=3)return m;return ({"해요":"마음이 놓여요","한":"믿음직한","하게":"넉넉하게","해져요":"마음이 놓여요","하고":"믿음직하고"})[e];})
+        .replace(/(^|[^가-힣(·])([목화토금수]) 기운/g,function(m,a,e){return a+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운";});
+      if(nv!==t.nodeValue)t.nodeValue=nv;});}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
@@ -1914,13 +1919,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
      생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
   function ilKey(ds,db){for(var k=ds;k<60;k+=10)if(k%12===db)return k;return -1;}
   var IL_DATA=null;
-  function iljuCardKey(host,k){
+  function iljuCardKey(host,k,sea){
     if(!host||k<0||typeof fetch!=="function")return;
     function paint(J){var o=J[k];if(!o||host.querySelector(".ilc"))return;
       var box=document.createElement("div");box.className="ilc";
       // 일주 그림(o.i)이 있는 일주는 카드 맨 위에 그 그림을 싣고, 저장 이미지에도 일간 그림 대신 쓴다
       box.innerHTML=(o.i?'<img class="ilc-img" src="'+escH(o.i)+'" width="'+(+o.iw||0)+'" height="'+(+o.ih||0)+'" alt="'+escH(o.ko)+'일주 그림" decoding="async">':'')+
-        '<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(o.t)+'</div><p class="ilc-d">'+escH(o.d)+'</p>'+
+        '<div class="ilc-k">나의 일주</div><div class="ilc-n">'+escH(o.ko)+'일주 <small>'+escH(o.han)+'</small></div><div class="ilc-t">'+escH(sea?String(o.t).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,""):o.t)+'</div><p class="ilc-d">'+escH(sea?String(o.d).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,""):o.d)+'</p>'+
         '<div class="ilc-b"><button type="button" class="save-btn">이미지로 저장</button><button type="button" class="ilc-share">친구에게 알려주기</button></div>'+
         '<a class="ilc-a" href="ilju-'+o.en+'.html">'+escH(o.ko)+'일주 자세히 보기 →</a>';
       host.appendChild(box);

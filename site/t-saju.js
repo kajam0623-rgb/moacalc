@@ -237,7 +237,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주예요. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하세요."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주예요. 생활 리듬이 맞는 사람과 오래가요.";
       var love=verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love")+P+
-        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+({목:"새로 배우길 좋아하고 앞으로 나아가게 북돋아 주는 사람",화:"밝고 표현이 따뜻해 분위기를 살려 주는 사람",토:"믿음직하고 한결같아 마음을 놓이게 하는 사람",금:"맺고 끊음이 분명하고 약속을 잘 지키는 사람",수:"생각이 깊고 말수는 적어도 잘 맞춰 주는 사람"})[yEl]+"이에요. 배우자 자리가 어떤 모습인지는 아래 ‘여덟 글자, 어느 자리가 무엇인가’에 자세히 있어요."+P+
+        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+({목:"새로 배우길 좋아하고 앞으로 나아가게 북돋아 주는 사람",화:"밝고 표현이 따뜻해 분위기를 살려 주는 사람",토:"믿음직하고 한결같아 마음이 놓이게 하는 사람",금:"맺고 끊음이 분명하고 약속을 잘 지키는 사람",수:"생각이 깊고 말수는 적어도 잘 맞춰 주는 사람"})[yEl]+"이에요. 배우자 자리가 어떤 모습인지는 아래 ‘여덟 글자, 어느 자리가 무엇인가’에 자세히 있어요."+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기예요. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워요. 사람 만나는 자리에 자주 나가 보세요."
           :"")+
@@ -514,7 +514,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
         '<div style="color:var(--muted);font-size:13px;margin-top:7px">나를 뜻하는 글자 '+SJ_S[ds]+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') · 타고난 힘 '+
-        (st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+yEl+'</div></div><div class="ilc-slot"></div>';
+        (MID?"고르게 짜인 편":st.strong?"넉넉한 편":"채워 가며 크는 편")+' · 필요한 기운 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+'('+yEl+')</div></div><div class="ilc-slot"></div>';
       // 한눈에 보기 — 결과 맨 위에서 용어 없이 세 줄로 요약한다
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+ST_TITLE[ds][1]+'이에요. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.<br>'+
@@ -623,7 +623,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
                   :'힘을 채워 가며 크는 편이니 이 틀을 좁게 잡고 깊이 파는 편이 나아요. 넓히기보다 하나를 끝까지 밀어 보세요.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>'+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
-        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
+        (sinsal.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinsal[0]],sinsal[0])+''+sinsal.map(function(s){return '<b>'+sjSinLink(s,SJE&&SJE.sin&&SJE.sin[s]?SJE.sin[s][0]:s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
           :'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>따로 튀는 기운이 없는 담백한 구조예요. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나요.</p></div>')+
         '<div class="sj-sec" id="sjceleb"></div>'+
         gungSec()+
@@ -648,7 +648,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<p class="note">'+p.tti+'띠 · 절기(태양황경) 기반 만세력 · 진태양시 보정 '+(corr?"적용":"미적용")+'. 타고난 힘의 세기는 태어난 달과 날의 자리를 무겁게 쳐서 재고, 받쳐 주는 기운은 넘치면 덜고 덜 찼으면 채우는 기준으로 골랐습니다. 전통 명리학의 해석 틀에 따른 참고용 풀이입니다.</p>';
       var pdfBtn=el.querySelector("#pdf");
       if(pdfBtn)pdfBtn.addEventListener("click",function(){track("saju_print",{});window.print();});
-      iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
+      iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b),1);
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
       sjCelebFill(el.querySelector("#sjceleb"),p,0,nmHon(nm));
