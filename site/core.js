@@ -516,10 +516,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 격국 — 월지 본기의 십성으로 판정
   var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
   var SJ_GYEOK_DESC={
-   "건록격":"스스로 벌어 스스로 서는 자수성가의 구조예요. 남에게 기대기보다 제 힘으로 기반을 만드는 짜임이라 독립·전문직·자기 사업이 잘 맞아요.",
-   "양인격":"강한 추진력과 승부 기질을 타고났어요. 극한에서 오히려 힘을 내는 구조라, 평소엔 그 기운을 운동이나 전문 기술로 풀어 주면 좋아요.",
-   "식신격":"먹을 복과 표현력의 구조예요. 만들고 창작하고 가르치는 일에서 결실이 나고 성격도 여유로운 편이에요.",
-   "상관격":"재능이 밖으로 뻗는 구조예요. 틀을 깨는 발상이 강점이나 조직의 규율과는 부딪히기 쉬우니 자율이 있는 자리가 좋아요.",
+   "건록격":"내 이름으로 일을 일구는 구조예요. 독립·전문직·자기 사업처럼 내 몫이 분명한 자리에서 기반이 쌓여요.",
+   "양인격":"승부가 걸린 자리에서 힘이 붙는 구조예요. 평소엔 그 기운을 운동이나 전문 기술로 풀어 주면 좋아요.",
+   "식신격":"먹을 복과 표현력의 구조예요. 만들고 창작하고 가르치는 일에서 결실이 나요.",
+   "상관격":"재능이 밖으로 뻗는 구조예요. 틀을 새로 짜는 발상이 강점이라, 내가 정할 몫이 있는 자리에서 잘 풀려요.",
    "편재격":"큰 판을 보는 사업가의 구조예요. 돈의 흐름을 읽는 감이 뛰어나 유통·영업·투자처럼 규모가 움직이는 데가 어울려요.",
    "정재격":"성실하게 쌓아 올리는 구조예요. 정해진 수입을 꾸준히 굴려 자산을 만드는 데 강하고, 신용이 곧 재산이 돼요.",
    "편관격":"압박을 이겨내며 크는 구조예요. 경쟁이 치열한 자리, 위기를 관리해야 하는 자리에서 능력이 드러나요.",
@@ -595,7 +595,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjSumHtml(o){
     var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
     var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
-    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있어요.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두꺼워요("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리예요.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편이에요.");
+    var mnV=Math.min.apply(null,cnt),line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 있어요."+(mnV===0?" 비어 있는 칸은 채우면 좋은 자리예요.":""):H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두꺼워요("+mxV+"자)."+(mnV===0?" 비어 있는 칸은 채우면 좋은 자리예요.":mxV-mnV<=1?" 다섯 칸이 모두 들어 있어 고르게 퍼진 편이에요.":" 다섯 칸이 모두 들어 있어 비어 있는 기운은 없어요.");   // 3·1·1·1·1 을 '고르게'라 했던 오판(검수)
     var tiles=SJ_EL.map(function(e,i){var f=mxV?Math.round(cnt[i]/mxV*100):0;
       return '<div class="ss-t5"><div class="ss-box"><i class="bg-'+e+'" style="height:'+f+'%"></i></div><b class="el-'+e+'">'+H[e]+'</b><span>'+cnt[i]+'</span></div>';}).join("");
     // 십성 별 그림: 위부터 시계 방향 자아(비겁)·표현(식상)·재물(재성)·명예(관성)·학문(인성)
@@ -1842,8 +1842,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     SJ_NEW_LOVE=/소개팅|새 연애|연애 초반|썸|설레는 만남|새 인연|새로운 인연|인연이 싹|만남의 자리|사람 만나는 자리|결혼 준비|여러 인연을 만나/,
     SJ_YOUNG_BAN=/손주|자녀 교육비|교육비|뒷바라지|퇴근한 짝|연금|은퇴|노후 자금|자녀 진학|결혼한 뒤에도/,
     SJ_RX={미루기:/묵혀|하룻밤|하루만 (미뤄|두)|하루 묵|한 박자 늦/,기록:/적어 (두|보)|기록(해|을|으로)|메모|한 줄씩/,자립:/혼자 힘으로|제 힘으로 서|스스로 서는|제 발로/,통장:/통장|따로 떼어|따로 묶어|저축부터/,샘:/나가기도 쉬|새기 쉬|나가는 곳도|새는 (곳|돈)/,몫:/몫(을|부터) (미리 )?(나눠|정해)|역할을 (미리 )?나눠/,숨:/숨을 (세 번|한 번)/,말끝:/말끝|말이 날카롭|날 선/,
-      작게:/작게라도|작게 시작/,배움:/배운 것을|바로 써 보세요/,윗사람:/윗사람과 (말|의견)이? ?(엇갈|부딪|갈리)/,서운:/서운한 (건|마음|일)|혼자 (오래 )?앓/,마감:/마감/,고집:/고집이 세/,혼자:/혼자 다 (지|짊어|해내려)|혼자 끙끙|혼자 붙들/,도움:/도움을? (먼저 )?청|도움 받을 줄|도움은 청/},
-    SJ_SENIOR_BAN=/이직|전업|승진|명함|입사|취업|신입|퇴근하고도|자녀 진학|뒷바라지|교육비|합격|자격증|시험 접수|수업 필기|필기/,
+      작게:/작게라도|작게 시작/,비유:/촛불|큰 나무|풀꽃|덩굴|한낮의 해|햇볕|큰 산|너른 밭|곡식을 키우는 밭|벼린 쇠|보석|큰 강|바다|빗물|이슬/,배움:/배운 것을|바로 써 보세요/,윗사람:/윗사람과 (말|의견)이? ?(엇갈|부딪|갈리)/,서운:/서운한 (건|마음|일)|혼자 (오래 )?앓/,마감:/마감/,고집:/고집이 세/,혼자:/혼자 다 (지|짊어|해내려)|혼자 끙끙|혼자 붙들/,도움:/도움을? (먼저 )?청|도움 받을 줄|도움은 청/},
+    SJ_SENIOR_BAN=/이직|전업|승진|명함|입사|취업|신입|퇴근하고도|자녀 진학|뒷바라지|교육비|합격|자격증|시험 접수|수업 필기|필기|제안서|공부를 시작|저축을 한 칸|가게를 꾸리|거래처를 늘리/,
     SJ_DEM=/^(그|그러면|그래야|그렇게|이렇게|그 덕|그만큼|그러니|그래서|그럴 땐|그럴 때)\s/;
   // 성향 쌍마다 이 사람이 어느 쪽인지 — 조립된 글에서 많이 나온 쪽, 같으면 프로필(일간·힘·무리)로 정한다. 한쪽만 나오면 거를 것 없음(null)
   function sjAxes(text,PF){var S=String(text).replace(/<[^>]+>/g," ").split(/(?<=[.!?])\s+/).filter(function(x){return !SJ_OTHER.test(x);}),
@@ -1858,16 +1858,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(PF.age<50&&/손주|용돈 관리|자녀에게 너무 기대/.test(t))return true;
     if(PF.age>=55&&SJ_SENIOR_BAN.test(t))return true;
     if(/^맞는 짝은|^잘 맞는 짝은/.test(t))return true;   // 짝 모습은 '여덟 글자' 칸의 태어난 날 자리 한곳에서만
-    var K=PF.kw||(PF.kw={}),hit=Object.keys(SJ_RX).filter(function(k){return SJ_RX[k].test(t);});
-    if(hit.some(function(k){return (K[k]||0)>=2;}))return true;hit.forEach(function(k){K[k]=(K[k]||0)+1;});
+    var K=PF.kw||(PF.kw={}),hit=Object.keys(SJ_RX).filter(function(k){return SJ_RX[k].test(t);}),ONE={서운:1,혼자:1,숨:1,말끝:1,윗사람:1};
+    if(hit.some(function(k){return (K[k]||0)>=(ONE[k]?1:2);}))return true;hit.forEach(function(k){K[k]=(K[k]||0)+1;});
     if(!PF.G.인성&&/배우는 일을 즐겨/.test(t))return true;
     return (PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);});}
   function sjFit(h,PF){if(!h||!PF)return h;
-    var out=String(h).split(/(<br\s*\/?>|<\/p>)/).map(function(seg){if(/^<(br|\/p)/.test(seg))return seg;var drop=false;
+    var out=String(h).split(/(<br\s*\/?>|<\/?p[^>]*>|<\/?div[^>]*>|<h3[^>]*>[\s\S]*?<\/h3>|<span[^>]*>[\s\S]*?<\/span>|<img[^>]*>)/).map(function(seg){if(/^<(br|\/?p|\/?div|h3|span|img)\b/.test(seg))return seg;/* 제목·문단·회색 주석은 문장 나누기 전에 떼어 둔다(칸 첫 문장을 뺄 때 제목 글자까지 지워졌음) */var drop=false;
       return seg.split(/(?<=[.!?])\s+/).map(function(x){var t=x.replace(/<[^>]+>/g,"").replace(/^[^—]{0,14}—\s*/,"").trim(),keepTags=function(){return (x.match(/<[^>]+>/g)||[]).join("");};
         if(drop&&SJ_DEM.test(t))return keepTags();drop=t.length>6&&sjBadSent(t,PF);return drop?keepTags():x;}).filter(function(x){return x!=="";}).join(" ");}).join("");
     if(PF.age>=55)[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모나 윗사람/g,"윗사람"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"]].forEach(function(r){out=out.replace(r[0],r[1]);});
-    return out.replace(/(<br\s*\/?>\s*){3,}/g,"<br><br>").replace(/<p>\s*(<br\s*\/?>\s*)*<\/p>/g,"").replace(/(<p>)\s*(<br\s*\/?>\s*)+/g,"$1").replace(/(<br\s*\/?>\s*)+(<\/p>)/g,"$2");}
+    return out.replace(/<b>\s*<\/b>/g,"").replace(/(<br\s*\/?>\s*){3,}/g,"<br><br>").replace(/<p>\s*(<br\s*\/?>\s*)*<\/p>/g,"").replace(/(<p>)\s*(<br\s*\/?>\s*)+/g,"$1").replace(/(<br\s*\/?>\s*)+(<\/p>)/g,"$2");}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
@@ -1891,7 +1891,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjEasy(f,D){
     var N=f.nm?f.nm+josa(f.nm,"는/은"):"",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,1),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
-    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+(f.mid?'돕는 기운과 덜어 내는 기운이 고르게 짜인 사주라, 어떤 자리에서도 제 몫을 해내요.':D.str[sk])+' '+(!f.strong&&!f.mid&&D.gyW&&D.gyW[f.wolTg]||D.gy[f.wolTg]));
+    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+(f.mid?'나를 돕는 힘과 덜어 내는 힘이 반반이라, 힘이 한쪽으로 쏠리지 않는 사주예요.':D.str[sk])+' '+(!f.strong&&!f.mid&&D.gyW&&D.gyW[f.wolTg]||D.gy[f.wolTg]));
     // 2026-10-11 '왜 이렇게 보냐면' — 이 사람의 실제 값(태어난 계절·가장 많은 기운·비어 있는 기운·힘의 세기)을 한 흐름으로 엮는다(같은 조각을 받는 사람이 겹치지 않게)
     if(f.G&&f.cnt){var GK=["관성","재성","식상","인성","비겁"],top=GK.reduce(function(a,b){return (f.G[b]||0)>(f.G[a]||0)?b:a;}),ELW=["나무","불","흙","쇠","물"],
       ss=["겨울","겨울","봄","봄","봄","여름","여름","여름","가을","가을","가을","겨울"][f.mb],emp=f.cnt.map(function(n,i){return n?null:ELW[i];}).filter(Boolean),

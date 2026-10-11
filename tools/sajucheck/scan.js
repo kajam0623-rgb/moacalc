@@ -14,6 +14,7 @@ function check(date, h, g, nowY) {
   const html = R.renderSaju(date, h, g), t = prose(html), S = sents(t), y = +date.slice(0, 4), age = nowY - y, band = age < 35 ? "young" : age >= 55 ? "senior" : "mid";
   const st = /채워 가며 크는 편/.test(html.slice(html.indexOf("타고난 힘 "), html.indexOf("타고난 힘 ") + 30)) ? "weak" : /넉넉한 편/.test(html.slice(html.indexOf("타고난 힘 "), html.indexOf("타고난 힘 ") + 30)) ? "strong" : "mid";
   const bad = [];
+  ["재물운","직업운","애정운","건강운","타고난 성격","맺는 말","타고난 그릇 모양"].forEach(k => { if (html.indexOf(">" + k) < 0 && html.indexOf(k + "<") < 0) bad.push(["칸 제목 빠짐", k]); });
   if (/<p>(\s|<br\s*\/?>)*<\/p>|<b>\s*<\/b>/.test(html)) bad.push(["빈 문단", date]);   // 거르개가 문장을 다 뺀 자리
   const own = S.filter(x => !C.SJ_OTHER.test(x));
   C.SJ_TRAIT_PAIRS.forEach((pr, i) => { const a = own.filter(x => pr[0].test(x)), b = own.filter(x => pr[1].test(x)); if (a.length && b.length) bad.push(["성향" + i, a[0].slice(0, 40) + " ↔ " + b[0].slice(0, 40)]); });

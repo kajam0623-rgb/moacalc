@@ -1371,7 +1371,7 @@
   function sjSumHtml(o){
     var p=o.p,ds=p.d.s,cnt=o.cnt,H={목:"木",화:"火",토:"土",금:"金",수:"水"},myEl=SJ_EL[SJ_ES[ds]];
     var mxV=Math.max.apply(null,cnt),mxI=cnt.indexOf(mxV),tied=cnt.filter(function(c){return c===mxV;}).length;
-    var line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 고르게 퍼져 있어요.":H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두꺼워요("+mxV+"자)."+(cnt.indexOf(0)>=0?" 비어 있는 칸은 채우면 좋은 자리예요.":" 다섯 칸이 모두 들어 있어 고르게 퍼진 편이에요.");
+    var mnV=Math.min.apply(null,cnt),line=tied>1?"가장 두꺼운 기운이 "+tied+"갈래로 나뉘어 있어요."+(mnV===0?" 비어 있는 칸은 채우면 좋은 자리예요.":""):H[SJ_EL[mxI]]+"("+SJ_EL[mxI]+")"+josa(SJ_EL[mxI],"가/이")+" 가장 두꺼워요("+mxV+"자)."+(mnV===0?" 비어 있는 칸은 채우면 좋은 자리예요.":mxV-mnV<=1?" 다섯 칸이 모두 들어 있어 고르게 퍼진 편이에요.":" 다섯 칸이 모두 들어 있어 비어 있는 기운은 없어요.");   // 3·1·1·1·1 을 '고르게'라 했던 오판(검수)
     var tiles=SJ_EL.map(function(e,i){var f=mxV?Math.round(cnt[i]/mxV*100):0;
       return '<div class="ss-t5"><div class="ss-box"><i class="bg-'+e+'" style="height:'+f+'%"></i></div><b class="el-'+e+'">'+H[e]+'</b><span>'+cnt[i]+'</span></div>';}).join("");
     // 십성 별 그림: 위부터 시계 방향 자아(비겁)·표현(식상)·재물(재성)·명예(관성)·학문(인성)
@@ -2619,7 +2619,7 @@
     SJ_YOUNG_BAN=/손주|자녀 교육비|교육비|뒷바라지|퇴근한 짝|연금|은퇴|노후 자금|자녀 진학|결혼한 뒤에도/,
     SJ_RX={미루기:/묵혀|하룻밤|하루만 (미뤄|두)|하루 묵|한 박자 늦/,기록:/적어 (두|보)|기록(해|을|으로)|메모|한 줄씩/,자립:/혼자 힘으로|제 힘으로 서|스스로 서는|제 발로/,통장:/통장|따로 떼어|따로 묶어|저축부터/,샘:/나가기도 쉬|새기 쉬|나가는 곳도|새는 (곳|돈)/,몫:/몫(을|부터) (미리 )?(나눠|정해)|역할을 (미리 )?나눠/,숨:/숨을 (세 번|한 번)/,말끝:/말끝|말이 날카롭|날 선/,
       작게:/작게라도|작게 시작/,비유:/촛불|큰 나무|풀꽃|덩굴|한낮의 해|햇볕|큰 산|너른 밭|곡식을 키우는 밭|벼린 쇠|보석|큰 강|바다|빗물|이슬/,배움:/배운 것을|바로 써 보세요/,윗사람:/윗사람과 (말|의견)이? ?(엇갈|부딪|갈리)/,서운:/서운한 (건|마음|일)|혼자 (오래 )?앓/,마감:/마감/,고집:/고집이 세/,혼자:/혼자 다 (지|짊어|해내려)|혼자 끙끙|혼자 붙들/,도움:/도움을? (먼저 )?청|도움 받을 줄|도움은 청/},
-    SJ_SENIOR_BAN=/이직|전업|승진|명함|입사|취업|신입|퇴근하고도|자녀 진학|뒷바라지|교육비|합격|자격증|시험 접수|수업 필기|필기/,
+    SJ_SENIOR_BAN=/이직|전업|승진|명함|입사|취업|신입|퇴근하고도|자녀 진학|뒷바라지|교육비|합격|자격증|시험 접수|수업 필기|필기|제안서|공부를 시작|저축을 한 칸|가게를 꾸리|거래처를 늘리/,
     SJ_DEM=/^(그|그러면|그래야|그렇게|이렇게|그 덕|그만큼|그러니|그래서|그럴 땐|그럴 때)\s/;
   // 성향 쌍마다 이 사람이 어느 쪽인지 — 조립된 글에서 많이 나온 쪽, 같으면 프로필(일간·힘·무리)로 정한다. 한쪽만 나오면 거를 것 없음(null)
   function sjAxes(text,PF){var S=String(text).replace(/<[^>]+>/g," ").split(/(?<=[.!?])\s+/).filter(function(x){return !SJ_OTHER.test(x);}),
@@ -2639,7 +2639,7 @@
     if(!PF.G.인성&&/배우는 일을 즐겨/.test(t))return true;
     return (PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);});}
   function sjFit(h,PF){if(!h||!PF)return h;
-    var out=String(h).split(/(<br\s*\/?>|<\/p>)/).map(function(seg){if(/^<(br|\/p)/.test(seg))return seg;var drop=false;
+    var out=String(h).split(/(<br\s*\/?>|<\/?p[^>]*>|<\/?div[^>]*>|<h3[^>]*>[\s\S]*?<\/h3>|<span[^>]*>[\s\S]*?<\/span>|<img[^>]*>)/).map(function(seg){if(/^<(br|\/?p|\/?div|h3|span|img)\b/.test(seg))return seg;/* 제목·문단·회색 주석은 문장 나누기 전에 떼어 둔다(칸 첫 문장을 뺄 때 제목 글자까지 지워졌음) */var drop=false;
       return seg.split(/(?<=[.!?])\s+/).map(function(x){var t=x.replace(/<[^>]+>/g,"").replace(/^[^—]{0,14}—\s*/,"").trim(),keepTags=function(){return (x.match(/<[^>]+>/g)||[]).join("");};
         if(drop&&SJ_DEM.test(t))return keepTags();drop=t.length>6&&sjBadSent(t,PF);return drop?keepTags():x;}).filter(function(x){return x!=="";}).join(" ");}).join("");
     if(PF.age>=55)[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모나 윗사람/g,"윗사람"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"]].forEach(function(r){out=out.replace(r[0],r[1]);});
@@ -2667,7 +2667,7 @@
   function sjEasy(f,D){
     var N=f.nm?f.nm+josa(f.nm,"는/은"):"",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,1),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
-    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+(f.mid?'돕는 기운과 덜어 내는 기운이 고르게 짜인 사주라, 어떤 자리에서도 제 몫을 해내요.':D.str[sk])+' '+(!f.strong&&!f.mid&&D.gyW&&D.gyW[f.wolTg]||D.gy[f.wolTg]));
+    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+(f.mid?'나를 돕는 힘과 덜어 내는 힘이 반반이라, 힘이 한쪽으로 쏠리지 않는 사주예요.':D.str[sk])+' '+(!f.strong&&!f.mid&&D.gyW&&D.gyW[f.wolTg]||D.gy[f.wolTg]));
     // 2026-10-11 '왜 이렇게 보냐면' — 이 사람의 실제 값(태어난 계절·가장 많은 기운·비어 있는 기운·힘의 세기)을 한 흐름으로 엮는다(같은 조각을 받는 사람이 겹치지 않게)
     if(f.G&&f.cnt){var GK=["관성","재성","식상","인성","비겁"],top=GK.reduce(function(a,b){return (f.G[b]||0)>(f.G[a]||0)?b:a;}),ELW=["나무","불","흙","쇠","물"],
       ss=["겨울","겨울","봄","봄","봄","여름","여름","여름","가을","가을","가을","겨울"][f.mb],emp=f.cnt.map(function(n,i){return n?null:ELW[i];}).filter(Boolean),
@@ -3447,14 +3447,14 @@
       var money=verdict("money",mBk,moneyBase)+ilg("money")+P+
         "10년마다 바뀌는 큰 흐름으로 보면 지금은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있어요. "+DU_MONEY[duG]+
         (nearY("돈")?" 해마다 드는 운으로 보면 돈이 크게 움직이는 가장 가까운 해는 <b>"+nearY("돈")+"</b>이에요.":"")+
-        (nearY("지출")?(plan.지출[0]===nowY?" 올해는 사람과 일이 넓어지는 만큼 돈 쓸 일도 함께 늘기 쉬우니 미리 여유를 두면 든든해요.":" 돈 쓸 일이 늘기 쉬운 해는 <b>"+nearY("지출")+"</b>이니 미리 여유를 두면 든든해요."):"")+
+        (plan.지출.filter(function(v){return v>nowY;})[0]?" 씀씀이를 챙기면 좋은 해는 <b>"+plan.지출.filter(function(v){return v>nowY;})[0]+"년</b>이니 미리 여유를 두면 든든해요.":"")+
         (hTg?P+HOUR_MONEY[hTg]:"");
       var jobBase=G.관성===0?"일·자리 기운이 드러나 있지 않아요. 남이 정한 규칙에 매이면 답답해서 오래 못 버티는 사람이에요. <b>전문 기술이든 프리랜서든 자기 사업이든</b>, 스스로 규칙을 정하는 자리에서 실력이 나와요."
         :G.관성>=3?"일·자리 기운이 <b>강해요</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 커요. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아요."
         :G.식상>=3?"재주와 표현 기운이 <b>발달했어요</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이에요. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞아요."
         :"일·자리 기운이 알맞아요. <b>회사에서도, 혼자서도</b> 해낼 수 있는 사람이에요. 역할이 분명하고 성과가 눈에 보이는 자리에서 만족이 크겠어요.";
       var job=verdict("job",jBk,jobBase)+ilg("job")+P+
-        "여덟 글자 가운데 일을 맡아 지키는 힘이 "+G.관성+"칸, 만들어 내놓는 힘이 "+G.식상+"칸, 배워서 쌓는 힘이 "+G.인성+"칸이에요. 칸이 많은 쪽이 편하게 쓰는 힘이에요."+P+
+        "여덟 글자 가운데 일을 맡아 지키는 힘이 "+G.관성+"칸, 만들어 내놓는 힘이 "+G.식상+"칸, 배워서 쌓는 힘이 "+G.인성+"칸이에요. "+(Math.max(G.관성,G.식상,G.인성)===0?"세 힘 모두 사주 글자에 드러나지 않아, 해마다 드는 운에서 그때그때 빌려 쓰는 편이에요.":(function(){var L=[["일을 맡아 지키는 힘",G.관성],["만들어 내놓는 힘",G.식상],["배워서 쌓는 힘",G.인성]].sort(function(a,b){return b[1]-a[1];});return L[0][1]===L[1][1]?(L[1][1]===L[2][1]?"세 힘이 고르게 들어 있어 상황에 맞춰 골라 쓰면 돼요.":L[0][0]+"과 "+L[1][0]+"이 고르게 많아요."):"그중 "+L[0][0]+"이 가장 편하게 쓰는 힘이에요.";})())+P+
         "사주의 짜임으로 보면 내가 빛나는 자리는 <b>"+STAGE[wolTg]+"</b>"+josa(STAGE[wolTg],"예요/이에요")+". "+(cnt[SJ_EL.indexOf(yEl)]?"그 자리에서 필요한 기운("+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+")까지 살리고 싶다면 ":"사주에 비어 있어 채우면 좋은 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운을 곁에 두려면 ")+Y.job+" 쪽과 손잡는 일이 힘이 돼요."+
         (nearY("일")?P+"일과 자리에 변화가 오는 가장 가까운 해는 <b>"+nearY("일")+"</b>이에요."
           +(nearY("문서")?" 시험·계약·자격 쪽은 <b>"+nearY("문서")+"</b>에 힘이 실려요.":""):"");
@@ -3580,7 +3580,7 @@
       var seYear=seBefore?nowD.getFullYear()-1:nowD.getFullYear();
       // 2026-10-11 '올해 흐름' 칸은 아래 '해마다 흐름' 맨 앞 단락으로 합쳤다(같은 해를 두 번 말하던 중복)
       var seSec='<p><b>올해 '+seYear+' '+SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</b> — 올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+') 기운이에요. 나에게는 <b>'+seTg+'</b>에 해당해요.<br><br>'+
-        (seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해예요. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
+        (SJE&&SJE.se&&SJE.se[seTg]?'올해는 <b>'+SJE.se[seTg][0]+'</b>'+josa(SJE.se[seTg][0],"예요/이에요")+'. '+SJE.se[seTg][1]+' ':seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해예요. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
         '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 그해 글자를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
         (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p>';
 
@@ -3765,7 +3765,7 @@
         (st.strong
           ?'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두고, 넘치는 힘은 밖으로 쓸 길을 열어 두면 짐이 아니라 든든한 연장이 돼요.'
           :'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두세요. 도움은 청하되 마지막 결정은 내 손으로 내리면 힘이 두 배로 서요.')+
-        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(SJE&&SJE.str3&&SJE.str3[ds]?' 타고난 <b>'+SJE.str3[ds]+'</b>'+josa(SJE.str3[ds],"를/을")+(duOk?' 이 흐름에 얹으면 힘이 가장 잘 실려요.':' 지금 하나씩 다져 두면 다음 흐름에서 크게 쓰여요.'):'')+
+        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(duOk?' 위에서 말한 대표 강점을 이 흐름에 얹으면 힘이 가장 잘 실려요.':' 위에서 말한 대표 강점을 지금 하나씩 다져 두면 다음 흐름에서 크게 쓰여요.')+
         '<br><br>여기 적힌 건 타고난 결이에요. 결을 알면 거스르지 않고 편하게 탈 수 있어요. 오늘 하루도 잘 살아 내세요.</p></div>';
       /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
       var TQ=null;
