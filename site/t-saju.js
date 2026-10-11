@@ -340,7 +340,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var nowD=new Date();
       var seP=sjPillars(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0,false);
       var seTg=sjTenGod(ds,seP.y.s), seEl=SJ_EL[SJ_ES[seP.y.s]];
-      var duOk=duNow.el===yEl||duNow.el===y2El, seOk=seEl===yEl||seEl===y2El;
+      var topEl=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],duOk=duNow.el===yEl||(duNow.el===y2El&&y2El!==topEl), seOk=seEl===yEl||(seEl===y2El&&y2El!==topEl);   // 종합·해마다·10년 칸이 같은 결론을 쓰게(3차 검수)
       var NOWFIT=duOk&&seOk?"큰 흐름도 올해도 나를 받쳐 주니 미뤄 둔 일을 꺼내 볼 때예요."
         :duOk?"큰 흐름이 받쳐 주니 올해 막히는 일은 잠깐 걸리는 턱이에요."
         :seOk?"큰 흐름은 다지는 때지만 올해만큼은 한 걸음 내디뎌 볼 만해요."
@@ -440,7 +440,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         var hb=p.h.b,dbb=p.d.b,rel=Math.abs(hb-dbb)===6?"충":(sjYukhap(dbb)===hb||(hb%4===dbb%4&&hb!==dbb))?"합":"";
         return '<div class="sj-sec sj-hour fold-skip"><h3>태어난 시각이 더하는 것 — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+') 시주</h3>'+
           '<p><b>쉽게 말하면</b> — 태어난 시각은 <b>말년(나이 들어서의 모습)</b>과 <b>자녀·아랫사람 복</b>, 그리고 <b>일의 마무리</b>를 보여 주는 자리예요. 내 시각 글자는 '+SJ_S[p.h.s]+SJ_B[p.h.b]+'이고, 위 글자 '+SJ_S[p.h.s]+josa(SJ_S[p.h.s],"는/은")+' 나에게 <b>'+tgS+josa(tgS,"를/을")+'</b> 더해 주고, 아래 글자 '+SJ_B[p.h.b]+josa(SJ_B[p.h.b],"는/은")+' <b>'+tgB+josa(tgB,"를/을")+'</b> 더해 줘요.</p>'+
-          '<p><b>말년</b> — '+HOUR_LATE[tgS]+'</p><p><b>자녀·아랫사람</b> — '+HOUR_KIDS[tgB]+'</p><p><b>일의 마무리</b> — '+HOUR_WORK[tgS]+'</p><p><b>말년의 기운</b> — '+(HOUR_UN[un]||"")+'</p>'+
+          '<p><b>말년</b> — '+HOUR_LATE[tgS]+'</p><p><b>자녀·아랫사람</b> — '+HOUR_KIDS[tgB]+'</p><p><b>일의 마무리</b> — '+HOUR_WORK[tgS]+'</p>'+
           '<p><b>필요한 기운과의 관계</b> — 시각 자리가 '+add.join("·")+' 기운을 더해 줘요. '+(add.indexOf(yEl)>=0?'나에게 필요한 '+yEl+' 기운이 여기서 채워지니 든든해요.':'나에게 필요한 '+yEl+' 기운은 시각 자리에서 오지 않으니 생활 속에서 따로 챙기면 더 좋아요.')+'</p>'+
           (rel==="충"?'<p>태어난 날 자리와 시각 자리가 서로 마주 보아 집안일과 바깥일 사이의 균형이 중요한 시각이에요. 늘그막엔 한쪽을 줄여 균형을 잡으면 마음이 편해요.</p>'
             :rel==="합"?'<p>태어난 날 자리와 시각 자리가 붙어 늘그막에 집안이 화목하고 곁을 지키는 사람이 있어요.</p>':'')+
@@ -690,7 +690,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");sjTextFix(outEl,!p.h);nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:0});sjAgeFix(outEl,nowY-y);sjDedupe(outEl);/* 2026-10-11 네 갈래 운은 한 줄 요약만 — 눌러서 펼침(1장이 너무 길었음) */sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));
+      var outEl=el.querySelector("#out");sjTextFix(outEl,!p.h);nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:0});sjAgeFix(outEl,nowY-y);sjConsist(outEl);sjDedupe(outEl);/* 2026-10-11 네 갈래 운은 한 줄 요약만 — 눌러서 펼침(1장이 너무 길었음) */sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));
       sjChapters(outEl,[["종합","타고난 성격과 돈·일·인연·몸","내가 어떤 사람인지부터 알아봐요"],["달마다 흐름","앞으로의 흐름","열두 달·올해·10년씩 바뀌는 물결"],["타고난 그릇 모양","왜 이렇게 읽었나","사주 글자로 짚은 근거예요"]]);[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 해의 자리로 재는 중","나를 뜻하는 글자의 힘을 재어 보는 중","나를 받쳐 줄 기운을 고르는 중","타고난 그릇과 눈에 띄는 기운을 짚는 중","10년마다 바뀌는 흐름 여덟 구간을 펼치는 중","올해 흐름을 겹쳐 보는 중","맺음말을 고르는 중"],

@@ -1826,13 +1826,31 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t,L=[];while((t=w.nextNode()))L.push(t);
     L.forEach(function(t){var pe=t.parentElement;if(!pe||pe.closest("h3,summary,.fold-lab,.fold-key,.note,.gh-note,.tail,.sj-confirm,.sj-warn,.ss-traits,.yr-h,.sj-goods,.sh-acts"))return;
       var parts=t.nodeValue.split(/(?<=[.!?])\s+/),out=[],ch=false;
-      parts.forEach(function(x){var n=x.replace(/[^가-힣]/g,"");if(n.length<12){out.push(x);return;}
-        if(seen[n]){ch=true;return;}seen[n]=1;
+      var drop=false,DEM=/^(그|그러면|그래야|그렇게|이렇게|그 덕|그만큼|그러니)\s/;
+      parts.forEach(function(x){if(drop&&DEM.test(x.trim())){ch=true;return;}drop=false;var n=x.replace(/[^가-힣]/g,"");if(n.length<12){out.push(x);return;}
+        if(seen[n]){ch=true;drop=true;return;}seen[n]=1;
         var hit=KEYS.filter(function(k){return x.indexOf(k)>=0;}),over=hit.some(function(k){return (cnt[k]||0)>=2;});
-        if(over&&/[.!?]$/.test(x.trim())){ch=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
+        if(over&&/[.!?]$/.test(x.trim())){ch=true;drop=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
       var nv=(ch?out.join(" "):t.nodeValue).replace(/든든(해요|한|하게|해져요|하고)/g,function(m,e){cnt.dd=(cnt.dd||0)+1;if(cnt.dd<=3)return m;return ({"해요":"마음이 놓여요","한":"믿음직한","하게":"넉넉하게","해져요":"마음이 놓여요","하고":"믿음직하고"})[e];})
         .replace(/(^|[^가-힣(·])([목화토금수]) 기운/g,function(m,a,e){return a+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운";});
       if(nv!==t.nodeValue)t.nodeValue=nv;});}
+  /* 성향 다수결(2026-10-12 구조 개편 1단계). 결과 하나 안에서 반대 성향 문장 쌍을 세고, 적은 쪽 문장(과 이어지는 지시어 문장)을 본문에서 뺀다.
+     같으면 둘 다 둔다. 제목·요약 줄·근거 주석·한 장 요약은 건드리지 않는다 */
+  var SJ_TRAIT_PAIRS=[
+    [/결단이 빠르|빠른 결단|결단력|맺고 끊음이 (확실|분명)|단호하/, /결정(을|은|이)? ?(미루|남에게 넘기|다 넘기|늦어)|망설이|우유부단|결정할 때를 놓치/],
+    [/말수가 많|수다|분위기를 띄우|사교적|침묵을 깨|말이 잘 통하고/, /말수(가|는) 적|속내를 (잘 )?드러내지 않|과묵|표현이 서툴|말없이/],
+    [/발 빠르게|과감하|달려들|밀어붙이/, /신중한 편|변화를 미루|조심부터|선뜻 나서지 못/],
+    [/남 걱정에|양보가 앞서|내 마음을 뒤로|맞춰 주다 내 뜻/, /지기 싫어|승부욕|경쟁이 붙어야|한마디 더 얹/]];
+  function sjConsist(root){if(!root||typeof document==="undefined")return 0;
+    var SKIP="h3,summary,.fold-lab,.fold-key,.note,.gh-note,.tail,.sj-confirm,.sj-warn,.ss-traits,.sj-sum,.yr-h,.sj-goods,.sh-acts,.ilc";
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t,L=[];while((t=w.nextNode())){var pe=t.parentElement;if(pe&&!pe.closest(SKIP))L.push(t);}
+    var removed=0;
+    SJ_TRAIT_PAIRS.forEach(function(pr){var a=0,b=0;L.forEach(function(t){t.nodeValue.split(/(?<=[.!?])\s+/).forEach(function(x){if(pr[0].test(x))a++;if(pr[1].test(x))b++;});});
+      if(!a||!b||a===b)return;var bad=a>b?pr[1]:pr[0],DEM=/^(그|그러면|그래야|그렇게|이렇게|그 덕|그만큼|그러니)\s/;
+      L.forEach(function(t){var ps=t.nodeValue.split(/(?<=[.!?])\s+/),out=[],drop=false,ch=false;
+        ps.forEach(function(x){if(drop&&DEM.test(x.trim())){ch=true;return;}drop=false;if(bad.test(x)&&/[.!?]$/.test(x.trim())){ch=true;drop=true;removed++;return;}out.push(x);});
+        if(ch)t.nodeValue=out.join(" ");});});
+    return removed;}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
