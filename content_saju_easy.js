@@ -24,6 +24,11 @@ const str = {
 };
 
 // 사주의 짜임(월지가 데려가는 자리) 10
+// 힘을 채워 가며 크는 사람에게 '혼자 힘으로 서는 큰 틀'은 힘의 세기와 부딪힌다(2026-10-12 검수) — 비견·겁재 틀만 따로
+const gyW = {
+  비견: "사주의 큰 틀이 내 이름으로 서는 쪽이라, 마음 맞는 동료와 함께할 때 그 힘이 더 단단해져요.",
+  겁재: "사주의 큰 틀이 사람들 속에서 겨루는 쪽이라, 든든한 같은 편을 곁에 둘 때 힘이 나요."
+};
 const gy = {
   비견: "사주의 큰 틀이 혼자 힘으로 서는 쪽이라, 내 이름으로 무언가를 해내는 데 강해요.",
   겁재: "사주의 큰 틀이 사람들과 어울려 겨루는 쪽이라, 경쟁 속에서 오히려 힘이 나요.",
@@ -222,4 +227,4 @@ const seTip = {
 // 근거 고지(존댓말) — 화면에는 회색 작은 글씨로 나간다
 const note = "쉽게 풀어 쓴 종합입니다. 일간의 성질, 사주의 짜임(태어난 달 글자가 데려가는 자리), 힘의 세기, 눈에 띄는 별(신살), 사주에 뚜렷이 보이지 않는 기운, 지금의 10년 흐름(대운)과 올해 흐름(세운)을 계산한 값에서 문장을 골랐습니다. 명리 전통의 해석을 바탕으로 한 참고용입니다.";
 
-module.exports = { il, str, str3, gy, good, strat, care, work, money, people, body, habit, seTip, sin, miss, du, se, fit, close, note };
+module.exports = { il, str, str3, gy, gyW, good, strat, care, work, money, people, body, habit, seTip, sin, miss, du, se, fit, close, note };

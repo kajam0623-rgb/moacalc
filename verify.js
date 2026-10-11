@@ -268,7 +268,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 풀이: 일간 결 10 · 이기는 방식 10", arr("STYLE")+"/"+arr("WIN"), "10/10");
   const stg = sj.slice(sj.indexOf("var STAGE={"), sj.indexOf("};", sj.indexOf("var STAGE={")));
   t("사주 종합 풀이: 격국 무대 십성 10개", (stg.match(/"[^"]+":/g) || []).length, 10);
-  t("사주 종합·성격 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+synth+charSec+hourSec()+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance"), true);
+  t("사주 종합·성격 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+F(synth)+F(charSec)+F(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance"), true);
   t("인생 시기표 영역 표시·앞으로 10년 요약 배선", sj.includes("yr-tags") && sj.includes("planTxt") && sj.includes('TAGS=["인연","이동","일","문서","돈","지출","집안"]'), true);
 }
 
@@ -286,7 +286,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
   t("사주 종합 원고는 해요체(보살 어미 0)", JSON.stringify(SY).match(new RegExp(TONE_BAD.source, "g")), null);
   t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
-  t("태어난 시각이 재물·애정·시기·한눈에 풀이에 들어간다", ["HOUR_MONEY[hTg]", "HOUR_LOVE[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —"].every(x => toolBlock("saju").includes(x)), true);
+  t("태어난 시각이 재물·시기·한눈에 풀이에 들어가고, 자녀 풀이는 시각 칸 한곳(시지 기준)에서만", ["HOUR_MONEY[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —", "HOUR_KIDS[tgB]"].every(x => toolBlock("saju").includes(x)) && !toolBlock("saju").includes("HOUR_LOVE"), true);
   t("홈 h1에 title 검색어(무료사주·사주풀이·오늘의 운세·궁합·타로)", (h => ["무료사주","사주풀이","오늘의 운세","궁합","타로"].every(k => h.includes(k)))((bs.match(/<h1 class="hero-h">([\s\S]*?)<\/h1>/) || ["",""])[1].replace(/&nbsp;/g, " ")), true);
   t("꼬리질문 통계 이벤트: 화면이 보내는 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"tail_ask"/.test(fs.readFileSync("worker.js", "utf8")) && src.includes('track("tail_ask"'), true);
   t("사주 꼬리질문: 결과 뒤에 자리·질문 12개·엔진 연결", ["tailAsk(el.querySelector(\"#tailbox\"),tailCfg)", 'first:["money","quit","marry","month"]', 'fetch("sj/q.json")', "TPRED={"].every(x => toolBlock("saju").includes(x)) && ["quit","exam","move","marry","kids","people","startup","month","money","job","love","health"].every(k => toolBlock("saju").includes(k + ":")), true);
@@ -358,8 +358,8 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
   // 2026-10: 맨 위는 '이 정보로 풀었습니다' 확인 카드와 '한 장 요약'(sjSumHtml), 그 바로 아래가 명식 표다 — 명식 표는 여전히 풀이보다 먼저
-  t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+synth+charSec+hourSec()"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
-  t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+synth+charSec+hourSec()+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
+  t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+F(synth)+F(charSec)+F(hourH)"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
+  t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+F(synth)+F(charSec)+F(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
 
@@ -566,9 +566,9 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   { const { note, ...body } = SC; t("사주 성격 원고: 풀이 본문은 보살 말투(존댓말 어미 0)", JOND.test(JSON.stringify(body)) ? "혼입" : "0", "0"); }
   let badC = 0, minC = 1e9, maxC = 0; for (let i = 0; i < 3000; i++) { const y = 1930 + Math.floor(Math.random() * 86), m = 1 + Math.floor(Math.random() * 12), d = 1 + Math.floor(Math.random() * 28), h = i % 3 ? null : Math.floor(Math.random() * 24);
     const p = sjPillars(y, m, d, h, 30, true), r = sjChar(p, SC), len = r.join("").replace(/\s+/g, "").length; minC = Math.min(minC, len); maxC = Math.max(maxC, len);
-    if (r.length !== 7 || r.some(x => !x || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
-  t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 250), "0|true");
-  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+synth+charSec+hourSec()+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
+    if (r.length !== 7 || r.some((x, k) => (!x && k !== 3) || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
+  t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 180), "0|true");
+  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+F(synth)+F(charSec)+F(hourH)+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
 // 신년운세 깊이 풀이(content_newyear.js → nyDeep): 원고 칸 · 월주 손계산 · 무작위 생일 3000개 · 도구 배선
 { const NY = require("./content_newyear.js"), JOND = TONE_BAD;
   const RELS = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];
@@ -822,7 +822,13 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjConsist","sjDedupe","sjAgeFix","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjFit","sjAxes","sjDedupe","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+// ── 사주 '한 사람 이야기'(2026-10-12 구조 개편): 실제 도구를 가짜 화면으로 무작위 3000명 그려, 조립된 본문에 칸끼리 반대 성향·힘의 세기와 반대인 말·
+//    나이에 안 맞는 말(45+ 새 만남, 35 미만 노후·교육비, 55+ 월급·부모님)·같은 문장 반복이 하나도 없어야 한다(tools/sajucheck)
+{ const SC = require("./tools/sajucheck/scan.js"), r = SC.run(3000, 1012);
+  t("사주 결과 3000명: 반대 성향·힘·나이·반복 어긋남 0", JSON.stringify(r.tally), "{}");
+  if (Object.keys(r.tally).length) console.log("   예:", r.ex); }
+
 const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
