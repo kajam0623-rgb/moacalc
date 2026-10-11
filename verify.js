@@ -285,7 +285,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const SY = require("./content_saju_synth.js"), GRPS = ["비겁","식상","재성","관성","인성"], SINS = ["천을귀인","문창귀인","도화살","역마살","화개살","양인살","백호대살","괴강살"];
   t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
   t("사주 종합 원고는 해요체(보살 어미 0)", JSON.stringify(SY).match(new RegExp(TONE_BAD.source, "g")), null);
-  t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("F(monthSec())+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
+  t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthH=monthSec()") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("태어난 시각이 재물·시기·한눈에 풀이에 들어가고, 자녀 풀이는 시각 칸 한곳(시지 기준)에서만", ["HOUR_MONEY[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —", "HOUR_KIDS[tgB]"].every(x => toolBlock("saju").includes(x)) && !toolBlock("saju").includes("HOUR_LOVE"), true);
   t("홈 h1에 title 검색어(무료사주·사주풀이·오늘의 운세·궁합·타로)", (h => ["무료사주","사주풀이","오늘의 운세","궁합","타로"].every(k => h.includes(k)))((bs.match(/<h1 class="hero-h">([\s\S]*?)<\/h1>/) || ["",""])[1].replace(/&nbsp;/g, " ")), true);
   t("꼬리질문 통계 이벤트: 화면이 보내는 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"tail_ask"/.test(fs.readFileSync("worker.js", "utf8")) && src.includes('track("tail_ask"'), true);

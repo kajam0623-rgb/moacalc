@@ -194,13 +194,13 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         if(p.h&&Math.abs(yb-p.h.b)===6)T.push("집안");
         return T;}
       var plan={};TAGS.forEach(function(t){plan[t]=[];});
-      for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){plan[t].push(fy);});}
+      for(var fy=nowY;fy<nowY+10;fy++){if(fy-y+1<1)continue;yTags(fy).forEach(function(t){if(!(t==="지출"&&fy===nowY))plan[t].push(fy);});}   // 올해 지출은 목록에서 뺌 — 올해는 '해마다 흐름' 첫머리 한 줄로만(검수: '활기 도는 해'와 엇갈림)
       /* 시각 자리(시주)는 자녀·말년 자리다. 재물·애정 풀이와 시기 표시에 넣는다(2026-09 사용자 지적: 시각을 바꿔도 풀이가 같았다) */
       var hTg=p.h?sjTenGod(ds,p.h.s):"",hG=p.h?grp(hTg):"";
       var HOUR_MONEY={
         "비견":"태어난 시각 자리(말년 자리)에 나와 나란한 기운이 앉아 늦은 나이의 돈은 남에게 기대지 않고 제 손으로 버는 쪽이에요. 오래 할 수 있는 자기 일을 하나 만들어 두면 든든해요.",
         "겁재":"태어난 시각 자리(말년 자리)에 나눠 갖는 기운이 있어 늦게 벌인 일에 사람이 함께하는 짜임이에요. 나이 들어 하는 동업은 계약서부터 쓰면 몫이 깔끔하게 정리돼요.",
-        "식신":"태어난 시각 자리(말년 자리)에 넉넉히 낳는 기운이 있어 나이 들수록 손맛과 솜씨가 꾸준한 벌이가 돼요. 좋아하는 일을 작게라도 이어 가세요.",
+        "식신":"태어난 시각 자리(말년 자리)에 꾸준히 만들어 내는 기운이 있어 나이 들수록 손맛과 솜씨가 꾸준한 벌이가 돼요. 좋아하는 일을 작게라도 이어 가세요.",
         "상관":"태어난 시각 자리(말년 자리)에 튀는 재주가 있어 늦게까지 말과 생각으로 돈을 불러요. 가르치거나 알리는 일로 벌이를 넓혀 볼 만해요.",
         "편재":"태어난 시각 자리(말년 자리)에 크게 도는 돈 기운이 있어 늦게 큰 목돈이 오갈 수 있는 짜임이에요. 들어온 돈의 절반은 손대지 않는 곳에 묶어 두면 오래 든든해요.",
         "정재":"태어난 시각 자리(말년 자리)에 꾸준한 돈 기운이 앉아 갈수록 살림이 차곡차곡 불어나요. 젊어서 부어 둔 것이 늦게 효자 노릇을 해요.",
@@ -579,7 +579,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var tSel=el.querySelector("#t"),tLab=tSel&&tSel.selectedOptions&&tSel.selectedOptions[0]?tSel.selectedOptions[0].textContent:"";
       var TRAITS=sjTraits({age:nowY-y+1,tgc:tgc,ratio:st.ratio,gyeok:gyeok,cnt:cnt,yong:SJ_EL.indexOf(yEl),yEl:yEl,du:duList,ilUn:ilUn});   // 한 장 요약의 특징 칩
       /* 2026-10-12 구조 개편: 풀이 칸을 먼저 다 만든 뒤, 이 사람의 성향 축(sjAxes)을 정하고 모든 칸을 sjFit 으로 거른다(칸끼리 반대말·힘·나이 어긋남을 조립에서 없앰) */
-      var hourH=hourSec(),gungH=gungSec(),coreH='<div class="sj-sec"><h3>타고난 그릇 모양</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀은 내가 무엇을 담고 사는 사람인지를 말해 줘요. '+
+      var hourH=hourSec(),monthH=monthSec(),gungH=gungSec(),coreH='<div class="sj-sec"><h3>타고난 그릇 모양</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀은 내가 무엇을 담고 사는 사람인지를 말해 줘요. '+
         (st.strong?'힘이 넉넉하니 이 틀을 크게 벌려 써도 버텨요. 판을 키우는 쪽이 맞아요.'
                   :'힘을 채워 가며 크는 편이니 이 틀을 좁게 잡고 깊이 파는 편이 나아요. 넓히기보다 하나를 끝까지 밀어 보세요.'))+
         '<br><span style="color:var(--muted);font-size:12.5px">월지 '+SJ_B[p.m.b]+'('+SJ_BH[p.m.b]+')의 본기가 '+wolTg+'이라 '+gyeok+'으로 봅니다. 사주 전체의 뼈대가 되는 틀입니다.</span></p></div>';
@@ -596,7 +596,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec"><h3>내 삶이 도는 축</h3><p>'+gTxt+'<br><br>'+
         '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
         '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>';
-      PF.ax=sjAxes([synth,charSec,hourH,secFortune,coreH,sinH,gungH,elH,closing].join(" "),PF);var F=function(x){return sjFit(x,PF);};
+      PF.ax=sjAxes([synth,charSec,hourH,secFortune,monthH,coreH,sinH,gungH,elH,closing].join(" "),PF);var F=function(x){return sjFit(x,PF);};
       el.querySelector("#out").innerHTML=
         // 이 정보로 풀었다 — 넣은 값을 먼저 되보여 준다(잘못 넣었으면 바로 알 수 있게). 생일은 서버로 가지 않는다
         '<div class="sj-confirm"><div class="k">이 정보로 풀었습니다</div><b>양력 '+y+'년 '+mo+'월 '+d+'일 · '+(B.exact?B.exact+' (적어 주신 시각)':h==null?'태어난 시각 모름':escH(tLab))+' · '+(male?'남':'여')+'</b>'+
@@ -608,7 +608,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+ST_TITLE[ds][0]+'</div>'+
         '<p>'+ST_TITLE[ds][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.</p></div></div>'+
         headline+F(synth)+F(charSec)+F(hourH)+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+F(secFortune)+focusBlock()+
-        F(monthSec())+
+        F(monthH)+
         F((function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var rows="";
           /* 해마다 영역 표시. 한 줄 십성 풀이만으로는 "언제 무엇을"에 답이 안 됐다.
