@@ -1860,7 +1860,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         재성:["힘이 넉넉해 돈과 일을 크게 굴려도 잘 버텨요.","돈과 일이 많이 오가는 만큼 지치기 쉬우니, 지킬 만큼만 쥐면 좋아요."],
         관성:["책임이 큰 자리에서 오히려 실력이 드러나요.","책임이 자주 몰려오니 혼자 다 지지 말고 나눠 맡을 때 잘 풀려요."],
         인성:["생각과 배움이 깊어, 배운 것을 밖으로 꺼내 쓸 때 빛나요.","도와주는 사람과 배움이 곁에 많아, 기대며 클수록 좋아요."]};
-      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, 여덟 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.'+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong||f.mid?0:1]);}
+      var tops=GK.filter(function(k){return (f.G[k]||0)===(f.G[top]||0);});
+      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, '+(tops.length>1?tops.map(function(k){return SJ_MISS_LAB[k];}).join('·')+'의 기운이 고르게 많아요.':'사주 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.')+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong||f.mid?0:1]);}
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));

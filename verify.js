@@ -1362,7 +1362,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     [hz.includes("민지 님 한 장 요약"), hz.includes('class="ss-glyph'), (hz.match(/class="ss-t5"/g) || []).length === 5, hz.includes('<svg class="ss-radar"'), (hz.match(/class="ss-pc"/g) || []).length >= 1, hz.includes("풀이 한 스푼"), !/undefined|NaN/.test(hz)].join(","), "true,true,true,true,true,true,true");
   t("한 장 요약: 사람을 약하다고 부르지 않는다(신약 대신 채워 가며 크는 편)", !/신약|약한|약해/.test(sjSumHtml({ p, cnt, G, strong: false, yEl: "목", nm: "", hasH: true })), true);
   t("한 장 요약: 사주 결과 맨 위에 '이 정보로 풀었습니다' 확인 카드와 함께 붙고, 일주 별명은 sj/ilju.json 으로 채운다",
-    [src.includes("'<div class=\"sj-confirm\"><div class=\"k\">이 정보로 풀었습니다</div>"), src.includes("sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h,traits:TRAITS})+\n        sjGridHtml("), src.includes('box.querySelector(".ss-arch-t").textContent=o.t')].join(","), "true,true,true"); }
+    [src.includes("'<div class=\"sj-confirm\"><div class=\"k\">이 정보로 풀었습니다</div>"), src.includes("sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h,traits:TRAITS})+\n        sjGridHtml("), src.includes('box.querySelector(".ss-arch-t").textContent=noSea(o.t)')].join(","), "true,true,true"); }
 // ── 궁합·신년 상위 N% — 궁합 표(GH_PCT)는 다른 시드로 다시 재어 맞추고, 신년은 점수 함수 하나를 go 와 상위 %가 같이 쓴다 ──
 { const GM = require("./tools/sajupct/make_gh_pct.js"), R = GM.make(40000, 777), sh = (A, sc) => A.slice(sc - 35).reduce((a, b) => a + b, 0) / A.reduce((a, b) => a + b, 0) * 100;
   const worst = Math.max(...[50, 60, 67, 75, 85, 95].map(sc => Math.abs(sh(GH_PCT, sc) - sh(R, sc))));

@@ -2636,7 +2636,8 @@
         재성:["힘이 넉넉해 돈과 일을 크게 굴려도 잘 버텨요.","돈과 일이 많이 오가는 만큼 지치기 쉬우니, 지킬 만큼만 쥐면 좋아요."],
         관성:["책임이 큰 자리에서 오히려 실력이 드러나요.","책임이 자주 몰려오니 혼자 다 지지 말고 나눠 맡을 때 잘 풀려요."],
         인성:["생각과 배움이 깊어, 배운 것을 밖으로 꺼내 쓸 때 빛나요.","도와주는 사람과 배움이 곁에 많아, 기대며 클수록 좋아요."]};
-      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, 여덟 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.'+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong||f.mid?0:1]);}
+      var tops=GK.filter(function(k){return (f.G[k]||0)===(f.G[top]||0);});
+      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, '+(tops.length>1?tops.map(function(k){return SJ_MISS_LAB[k];}).join('·')+'의 기운이 고르게 많아요.':'사주 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.')+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong||f.mid?0:1]);}
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
@@ -3444,7 +3445,9 @@
       // u: 대운이면 "구간", 세운이면 "해". 같은 문장을 쓰면 세운을 구간이라 부르게 된다
       function duFit(e,u){
         u=u||"구간";
-        return e===yEl?"용신 "+yEl+josa(yEl,"와/과")+" 같은 기운이라 <b>순하게 풀리는 "+u+"</b>"+josa(u,"예요/이에요")+"."
+        var topE=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))];   // 두 번째로 필요한 기운이 이미 가장 많은 기운이면 '도움이 붙는'이 넘치는 기운과 부딪힘(2차 검수)
+        if(e===y2El&&e===topE)return "이미 넉넉한 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운이 더해지는 "+u+josa(u,"라/이라")+" 무리하지 않으면 <b>무난한 "+u+"</b>"+josa(u,"예요/이에요")+".";
+        return e===yEl?"필요한 기운 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl],"와/과")+" 같은 기운이라 <b>순하게 풀리는 "+u+"</b>"+josa(u,"예요/이에요")+"."
           // u가 "구간"이면 받침이 있고 "해"면 없다. 조사를 박아두면 "해이야"가 나온다
           :e===y2El?"두 번째로 필요한 기운 "+y2El+josa(y2El,"와/과")+" 같은 기운이라 <b>도움이 붙는 "+u+"</b>"+josa(u,"예요/이에요")+"."
           :(u==="해"?"필요한 기운과는 결이 다른 해라 <b>큰 결정은 한 번 더 따져 보고</b> 내리면 든든해요."
@@ -3659,7 +3662,7 @@
           var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
           score.push({m:M,y:Y,sc:sc,tg:tg,i:i,T:T});
           rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
-            '<p>'+MTG[tg][0]+' '+(fit===2?MTG[tg][1]:fit===1?"두 번째로 필요한 기운이 붙어 한결 수월해요. "+MTG[tg][1]:MTG[tg][2])+
+            '<p>'+(score.slice(0,-1).some(function(x){return x.tg===tg;})?'':MTG[tg][0]+' ')+(fit===2?MTG[tg][1]:fit===1?"두 번째로 필요한 기운이 붙어 한결 수월해요. "+MTG[tg][1]:MTG[tg][2])+
             (chung?' 태어난 날 글자와 맞춰 가야 하는 달이라 이동과 대화와 몸 관리를 한 번 더 살펴 두면 좋아요.':hap?' 태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀려요.':'')+'</p>'+
             (T.length?'<div class="yr-tags">'+T.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+'</div>';}
         MSC=score;
@@ -3723,6 +3726,7 @@
         (st.strong
           ?'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두고, 넘치는 힘은 밖으로 쓸 길을 열어 두면 짐이 아니라 든든한 연장이 돼요.'
           :'혼자 다 지려 하지 말고 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두세요. 도움은 청하되 마지막 결정은 내 손으로 내리면 힘이 두 배로 서요.')+
+        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(SJE&&SJE.str3&&SJE.str3[ds]?' 타고난 <b>'+SJE.str3[ds]+'</b>'+josa(SJE.str3[ds],"를/을")+' 이 흐름에 얹으면 힘이 가장 잘 실려요.':'')+
         '<br><br>여기 적힌 건 타고난 결이에요. 결을 알면 거스르지 않고 편하게 탈 수 있어요. 오늘 하루도 잘 살아 내세요.</p></div>';
       /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
       var TQ=null;
@@ -3846,7 +3850,7 @@
           glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,
           radar:{lab:["자아","표현","재물","명예","학문"],val:vals,top:Math.max(3,Math.max.apply(null,vals))},
           pcts:sjPcList(G,!!p.h).map(function(q){return [q.v,PL[q.k]+" "+q.c+"칸"];})}));}});bindSumShare(el);
-      (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
+      (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;var noSea=function(x){return String(x).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,"");};box.querySelector(".ss-arch-t").textContent=noSea(o.t);box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+noSea(o.d);}
         if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
       // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
