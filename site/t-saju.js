@@ -464,7 +464,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           var chung=Math.abs(mp.b-p.d.b)===6,hap=sjYukhap(p.d.b)===mp.b||(mp.b%4===p.d.b%4&&mp.b!==p.d.b);
           var mt=sjMonthTerms(sjJdKST(Y,M,20,12,0)),st0=sjKst(mt.prev).replace(/^\d+년 /,"").replace(/ \d\d:\d\d$/,"");
           var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
-          score.push({m:M,y:Y,sc:sc,tg:tg,i:i});
+          score.push({m:M,y:Y,sc:sc,tg:tg,i:i,T:T});
           rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
             '<p>'+MTG[tg][0]+' '+(fit===2?MTG[tg][1]:fit===1?"보조로 쓰는 기운이 붙어 한결 수월해요. "+MTG[tg][1]:MTG[tg][2])+
             (chung?' 태어난 날 글자와 맞춰 가야 하는 달이라 이동과 대화와 몸 관리를 한 번 더 살펴 두면 좋아요.':hap?' 태어난 날 글자와 붙는 달이라 사람 일이 순하게 풀려요.':'')+'</p>'+
@@ -557,10 +557,16 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           if(w.sc>=1)return '<p>앞으로 열두 달 가운데 크게 무거운 달은 없어요. 그래도 힘이 가장 덜 실리는 달은 <b>'+mn(w)+'</b>이니 큰일은 그달을 피해서 잡으세요.</p>'+foot;
           var w2=W.filter(function(x){return x.sc<0&&x!==w;})[0];
           return '<p>가장 차분히 가면 좋은 달은 <b>'+mn(w)+'</b>이에요. '+Q.ten[w.tg]+(w2?' 그다음으로 차분히 가면 좋은 달은 <b>'+mn(w2)+'</b>이에요.':'')+'</p>'+foot;}
+        /* 2026-10-11 '유료 수준' 보강 — 언제(해) · 가까이로는(앞으로 열두 달 중 그 기운이 드는 달) · 내 사주에 맞는 방법(힘의 세기 + 필요한 기운) 세 단으로 */
+        var TAGK={quit:["일","일과 자리"],exam:["문서","서류와 합격"],move:["이동","움직임"],marry:["인연","인연"],kids:["인연","집안 인연"],people:["인연","사람 인연"],startup:["돈","돈"]}[k],
+          mn=function(x){return (x.y!==nowY?x.y+"년 ":"")+x.m+"월";},
+          near=TAGK?MSC.filter(function(x){return x.T&&x.T.indexOf(TAGK[0])>=0&&x.sc>=1;}).slice(0,2):[],
+          nearP=near.length?'<p><b>가까이로는</b> — 앞으로 열두 달 가운데 <b>'+near.map(mn).join("·")+'</b>에 '+TAGK[1]+'의 기운이 들어와요. 준비는 이 달에 맞춰 잡아 보세요.</p>':'',
+          Yh=SJ_YONG[yEl],howP=Q.how?'<p><b>내 사주에 맞는 방법</b> — '+Q.how[st.strong?"strong":"weak"]+(Yh?' 기운을 보태려면 '+Yh.season+'에 시작하고, '+Yh.act+josa(Yh.act,"를/을")+' 곁에 두면 좋아요.':'')+'</p>':'';
         var c=tqYears(k);
-        if(!c.length)return '<p>'+Q.none+'</p>'+foot;
+        if(!c.length)return '<p><b>언제</b> — '+Q.none+'</p>'+nearP+howP+foot;
         var a=c[0],b=c.filter(function(x){return x.fy!==a.fy;})[0],ny=function(x){return x.fy===nowY?"올해("+x.fy+"년)":x.fy+"년";};
-        return '<p>가장 볼 만한 해는 <b>'+ny(a)+'</b>이에요. '+Q.ten[a.tg]+(b?' 그다음은 <b>'+ny(b)+'</b>이에요.':'')+'</p>'+foot;}
+        return '<p><b>언제</b> — 가장 볼 만한 해는 <b>'+ny(a)+'</b>이에요. '+Q.ten[a.tg]+(b?' 그다음은 <b>'+ny(b)+'</b>이에요.':'')+'</p>'+nearP+howP+foot;}
       var TL={money:"재물운은 언제 붙나요?",job:"일·사업은 언제까지 가나요?",love:"인연은 언제 오나요?",health:"몸은 어디를 살피면 좋아요?",
         quit:"지금 이직해도 되나요?",exam:"시험·합격 운은?",move:"이사·이동은 언제?",marry:"결혼 시기는?",kids:"자녀·집안 일은?",people:"사람·귀인 운은?",
         startup:"창업은 언제가 좋나요?",month:"차분히 가면 좋은 달은 언제예요?"};
