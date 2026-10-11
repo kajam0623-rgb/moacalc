@@ -446,7 +446,7 @@ t("배우기 CSS 클래스가 hub.html 의 공용 CSS 와 겹치지 않는다(lp
   t("공유 출처: ?from=share 로 열리면 조회 뒤에 share_visit 하나가 더 간다(다른 쿼리와 섞여도)", [sent("?from=share"), sent("?s=3&from=share"), sent("?from=share&s=3")].map(a => a.length + a[1]).join(","), '2{"e":"share_visit"},2{"e":"share_visit"},2{"e":"share_visit"}');
   t("공유 출처: from=shared·xfrom=share 같은 비슷한 값은 세지 않는다", [sent("?from=shared").length, sent("?xfrom=share").length].join(","), "1,1");
   t("공유 출처: 서버 허용 목록에 share_visit 이 있고 아무 이름이나 받지는 않는다", EV.has("share_visit") + "," + EV.has("share_visit2") + "," + EV.has("fortune_view"), "true,false,true");
-  t("공유 출처: 공유 버튼은 쿼리를 걷어낸 주소 뒤에 ?from=share(와 결과 쿼리 q)를 붙인다", src.includes('var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");'), true);
+  t("공유 출처: 공유 버튼은 쿼리를 걷어낸 주소 뒤에 ?from=share(와 결과 쿼리 q)를 붙인다", src.includes('var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"")'), true);
   t("공유 출처: 대시보드가 share_visit 을 한글로 보여 주고 방침 문구에 적혀 있다", wk.includes('share_visit: "공유 링크로 들어옴"') && fs.readFileSync("content_site.js", "utf8").includes("공유 링크로 열렸는지 포함"), true); }
 t("클래스 이름 lmark 는 홈 머리 로고 하나만 쓴다(배우기 버튼은 lmarkbtn — 같은 이름이면 로고가 빈 사각형이 된다)", (fs.readFileSync("hub.html", "utf8").match(/\.lmark\{/g) || []).length + "|" + (bs.match(/\.lmark\{/g) || []).length + "|" + (bs.match(/class="lmark"/g) || []).length, "1|0|1");
 // 모바일 화면 점검(2026-09)에서 나온 깨짐: 떠 있는 캐릭터 옆에 카드가 좁게 눌리거나 모서리를 덮이던 것, 값이 긴 표에서 라벨이 한 글자 폭으로 눌리던 것

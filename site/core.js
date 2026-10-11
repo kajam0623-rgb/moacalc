@@ -1609,8 +1609,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     go.addEventListener("click",function(){clearTimeout(timer);apply();});
     go.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();clearTimeout(timer);apply();}});}
 
-  function shareBtn(){return '<button type="button" class="share-btn">결과 공유하기</button>'+
-    '<button type="button" class="save-btn">이미지로 저장</button>';}
+  function shareBtn(){return '<div class="sh-acts"><button type="button" class="save-btn">이미지 저장</button><button type="button" class="share-btn">내 결과 보내기</button><button type="button" class="inv-btn">친구도 보게 하기</button></div>'+
+    '<p class="ss-acts-n">‘내 결과 보내기’는 내 결과를, ‘친구도 보게 하기’는 친구가 자기 운세를 보는 링크만 보내요.</p>';}
   // 캔버스는 자동 줄바꿈이 없다. 폭을 넘기기 직전 어절에서 끊어 줄 배열로 돌려준다
   function wrapText(ctx,text,maxW){
     var words=String(text).split(" "),lines=[],cur="";
@@ -1732,7 +1732,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(iv&&!iv._b){iv._b=1;var ii=iv.textContent;iv.addEventListener("click",function(){track("invite_make",{tool:location.pathname});
       shareOut(iv,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+base+"?from=invite",ii);});}}
   function bindSave(el,opts){
-    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;if(opts&&opts.draw)b._draw=opts.draw;
+    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
+    function make(cb){if(opts&&opts.draw){opts.draw(cb);return;}
+      var o2=typeof opts==="function"?opts():opts;
+      if(o2&&o2.score!=null&&!o2.pillars){var bi=new Image();
+        bi.onload=function(){o2.bosalImg=bi;cb(fortuneCard(o2));};bi.onerror=function(){cb(fortuneCard(o2));};
+        bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
+      cb(fortuneCard(o2));}
+    b._draw=make;
     b.addEventListener("click",function(){
       track(opts&&opts.ev||"image_save",{tool:location.pathname});
       var name=(opts&&opts.file||"dongnebosal")+".png";
@@ -1752,13 +1759,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
             reset();}
         },"image/png");}catch(e){b.textContent="저장 실패";}}
       b.textContent="만드는 중...";
-      // 카드 그림처럼 불러와야 그릴 수 있는 이미지는 draw 가 다 그린 뒤 캔버스를 넘긴다
-      if(opts&&opts.draw){opts.draw(finish);return;}
-      var o2=typeof opts==="function"?opts():opts;
-      if(o2&&o2.score!=null&&!o2.pillars){var bi=new Image();
-        bi.onload=function(){o2.bosalImg=bi;finish(fortuneCard(o2));};bi.onerror=function(){finish(fortuneCard(o2));};
-        bi.src="img/bosal/"+(o2.pose||bosalPose(o2.score))+".webp";return;}
-      finish(fortuneCard(o2));});}
+      make(finish);});}   // 카드 그림처럼 불러와야 그릴 수 있는 이미지는 draw 가 다 그린 뒤 캔버스를 넘긴다
   function ymd3(y,m,d){return y+"."+String(m).padStart(2,"0")+"."+String(d).padStart(2,"0");}
   // 신년운세 깊이 풀이 한 칸을 그린다(접지 않고 펼친 채로). 달·일 종류별 줄, 약속 목록, 근거 고지까지
   function nySecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
@@ -1861,8 +1862,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function bindShare(el,title,text,q,sel,ev){var b=el.querySelector(sel||".share-btn");if(!b)return;var idle=b.textContent;
     b.addEventListener("click",function(){
       track(ev||"share_click",{tool:location.pathname});
-      var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:"");
-      shareOut(b,title,text+" "+url,idle);});}
+      var url=location.href.split("#")[0].split("?")[0]+"?from=share"+(q?"&"+q:""),sv=sel?null:el.querySelector(".save-btn");
+      if(!(sv&&sv._draw&&navigator.canShare)){shareOut(b,title,text+" "+url,idle);return;}
+      b.textContent="만드는 중...";sv._draw(function(c){try{c.toBlob(function(blob){var f=null;try{f=new File([blob],"dongnebosal.png",{type:"image/png"});}catch(e){}
+        if(f&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:text+" "+url}).catch(function(){}).then(function(){b.textContent=idle;});}else{b.textContent=idle;shareOut(b,title,text+" "+url,idle);}},"image/png");}catch(e){b.textContent=idle;shareOut(b,title,text+" "+url,idle);}});});}
+  // 친구도 보게 하기 — 내 결과 없이 이 도구 링크만. 버튼이 어디에 그려지든 한 번에 받는다
+  if(typeof document!=="undefined")document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest(".inv-btn");if(!b)return;
+    var page=(document.title.split(/ [—|-] /)[0]||"동네보살").trim();track("invite_make",{tool:location.pathname});
+    shareOut(b,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+location.href.split("#")[0].split("?")[0]+"?from=invite",b.textContent);});
   /* 내 일주 카드 — 양력 생일(또는 사주 결과의 일주)로 60갑자 가운데 내 일주를 찾아 '나는 ○○일주 — 별명' 한 칸을 그린다.
      별명·첫 문장은 일주 60편 원고(content_ilju60.js)에서 빌드가 만든 sj/ilju.json 에서 받는다. 저장 카드(이미지)와 공유(그 일주 페이지로 가는 링크)가 달린다.
      생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
