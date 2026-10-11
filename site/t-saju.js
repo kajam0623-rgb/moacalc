@@ -14,7 +14,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     "이슬비나 시냇물처럼 총명하고 감수성이 깊은 사람이에요. 스며들듯 남의 마음을 읽어내고, 머릿속에 생각이 늘 많아요.<br><br>안으로 깊이 들어가는 일이 결에 맞아요. 연구든 기획이든 상담이든 글이든 데이터든, 혼자 파고드는 자리에서 남들이 못 본 걸 건져요.<br><br>무토·경금 같은 사람이 곁에 있으면 물이 고일 그릇이 생겨요. 기토처럼 흐리는 기운이나 같은 계수끼리는 생각만 깊어지니 밖으로 꺼내 놓으세요."];
     // 일간 상세 페이지 슬러그. 갑을병정무기경신임계 순서
     var ILGAN_EN=["gap","eul","byeong","jeong","mu","gi","gyeong","sin","im","gye"];
-    var ELDESC={목:"성장·시작·인정",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·저장"};
+    var ELDESC={목:"성장·시작·따뜻함",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·깊이"};
     var EL_EN={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"};
     // 오행 균형 풀이 — 가장 센 기운일 때, 가장 모자랄 때, 채우는 법
     var EL_HI={목:"나무 기운이 두터우면 뻗어 나가려는 힘과 자존심이 세요. 새 일을 벌이는 데 거침이 없으니, 벌여 놓은 것을 거두는 시간을 따로 정해 두면 더 알차요.",
@@ -114,6 +114,10 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
       var p=sjPillars(B.y,B.mo,B.d,h,B.mi,corr),ds=p.d.s;
+      // 2026-10-11 절기가 바뀌는 날 + 시각 모름 → 오전·오후에 따라 달(해) 기둥이 달라진다고 맨 위에 알린다(검수: 정오로 정해 버리고 말이 없었음)
+      var termWarn="";if(h==null){var q0=sjPillars(B.y,B.mo,B.d,0,0,false),q1=sjPillars(B.y,B.mo,B.d,23,59,false);
+        if(q0.m.s!==q1.m.s||q0.m.b!==q1.m.b){var tmw=sjMonthTerms(sjJdKST(B.y,B.mo,B.d,23,59)),hm=sjKst(tmw.prev).slice(-5),yrCh=q0.y.b!==q1.y.b;
+          termWarn='<div class="sj-warn" style="margin:10px 0;padding:12px 14px;border-radius:12px;border:1.5px solid #e6b25a;background:rgba(230,178,90,.12);font-size:14px;line-height:1.7"><b>이 날은 절기('+tmw.prevName+')가 바뀌는 날이에요.</b> 그날 <b>'+hm+'</b> 전에 태어났으면 '+SJ_S[q0.m.s]+SJ_B[q0.m.b]+'월, 뒤에 태어났으면 '+SJ_S[q1.m.s]+SJ_B[q1.m.b]+'월로 사주가 달라져요'+(yrCh?'(태어난 해와 띠도 함께 바뀌어요)':'')+'. 지금은 시각을 몰라 낮 12시로 보고 풀었어요. 위에서 태어난 시각을 넣으면 정확해져요.</div>';}}
       // 오행 카운트
       var cnt=[0,0,0,0,0],chars=[p.y,p.m,p.d];if(p.h)chars.push(p.h);
       chars.forEach(function(c){cnt[SJ_ES[c.s]]++;cnt[SJ_EB[c.b]]++;});
@@ -137,12 +141,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var G={비겁:0,식상:0,재성:0,관성:0,인성:0};
       // 결과 앞쪽은 명리 용어 대신 이 말로 쓴다
       var GRP_PLAIN={비겁:"경쟁과 자립",식상:"재주와 표현",재성:"돈",관성:"일과 책임",인성:"배움과 도움"};
-      var UN_PLAIN={장생:"새로 싹트듯 생기가 도는 자리라 함께 자라는 관계가 되기 쉬워요.",목욕:"설레는 기운이 있는 자리라 연애 감정이 풍부해요. 마음이 들뜰 땐 한 박자 쉬어 가면 더 오래가요.",
-        관대:"한창 멋을 내는 자리라 서로 자존심이 살아 있는 관계예요. 서로 인정해 주면 활기가 넘쳐요.",건록:"제 힘으로 서는 자리라 서로 독립적인 관계가 편해요.",
-        제왕:"기운이 가장 센 자리라 관계를 이끄는 힘이 커요. 상대 이야기를 먼저 들어 주면 더 깊어져요.",쇠:"한풀 꺾여 차분해지는 자리라 편안하고 무던한 관계가 맞아요.",
-        병:"기운이 잦아드는 자리라 서로 챙겨 주고 돌보는 관계가 돼요.",사:"조용히 깊어지는 자리라 표현은 적어도 속정이 깊은 관계가 돼요.",
-        묘:"속마음을 소중히 간직하는 자리라 마음을 열기까지 시간이 걸리지만 한번 열면 오래가요.",절:"새로 이어지는 자리라 관계에 새 출발의 기회가 있어요. 약속을 분명히 하면 더 든든해요.",
-        태:"새 생명이 깃드는 자리라 관계가 조심스럽게 시작되어 천천히 자라요.",양:"품에서 길러지는 자리라 보살핌을 주고받는 따뜻한 관계가 맞아요."};
       chars.forEach(function(c,ci){if(ci!==2)G[grp(sjTenGod(ds,c.s))]++;G[grp(sjTenGod(ds,SJ_BMAIN[c.b]))]++;});
       // 격국이 데려가는 무대 — 직업운과 종합 풀이가 같이 쓴다
       var STAGE={"비견":"제 힘으로 서야 하는 자리","겁재":"사람과 경쟁이 붐비는 자리","식신":"무언가를 만들어 내놓는 자리","상관":"틀을 깨고 말로 승부하는 자리",
@@ -239,7 +237,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :spouseN>=3?"배우자를 뜻하는 기운이 많아 <b>이성 인연이 자주 오는</b> 사주예요. 고를 게 많은 만큼 마음이 흔들리기 쉬우니, 오래 볼 사람인지 한 번 더 보고 정하세요."
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주예요. 생활 리듬이 맞는 사람과 오래가요.";
       var love=verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love")+P+
-        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+ELDESC[yEl]+" 같은 기운을 가진 사람이에요. "+(UN_PLAIN[ilUn]||"")+P+
+        "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 곁에 두면 편안한 사람은 "+({목:"새로 배우길 좋아하고 앞으로 나아가게 북돋아 주는 사람",화:"밝고 표현이 따뜻해 분위기를 살려 주는 사람",토:"믿음직하고 한결같아 마음을 놓이게 하는 사람",금:"맺고 끊음이 분명하고 약속을 잘 지키는 사람",수:"생각이 깊고 말수는 적어도 잘 맞춰 주는 사람"})[yEl]+"이에요. 배우자 자리가 어떤 모습인지는 아래 ‘여덟 글자, 어느 자리가 무엇인가’에 자세히 있어요."+P+
         "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기예요. "+(duG===spouseG
           ?"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워요. 사람 만나는 자리에 자주 나가 보세요."
           :"")+
@@ -583,7 +581,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       el.querySelector("#out").innerHTML=
         // 이 정보로 풀었다 — 넣은 값을 먼저 되보여 준다(잘못 넣었으면 바로 알 수 있게). 생일은 서버로 가지 않는다
         '<div class="sj-confirm"><div class="k">이 정보로 풀었습니다</div><b>양력 '+y+'년 '+mo+'월 '+d+'일 · '+(B.exact?B.exact+' (적어 주신 시각)':h==null?'태어난 시각 모름':escH(tLab))+' · '+(male?'남':'여')+'</b>'+
-        '<p>넣어 주신 생년월일은 이 기기 안에서만 계산했고 서버로 보내지 않았습니다. 잘못 넣었다면 위 칸을 고쳐 다시 보세요.</p></div>'+
+        '<p>넣어 주신 생년월일은 이 기기 안에서만 계산했고 서버로 보내지 않았습니다. 잘못 넣었다면 위 칸을 고쳐 다시 보세요.</p></div>'+termWarn+
         sjSumHtml({p:p,cnt:cnt,G:G,strong:st.strong,yEl:yEl,nm:nmHon(nm),hasH:!!p.h,traits:TRAITS})+
         sjGridHtml(p,"날 자리(나)")+
         goodsRow(yEl)+   // 접힌 칸 안이면 아무도 못 본다 — 명식 표 바로 아래, 늘 보이는 자리
@@ -689,7 +687,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       bindYearFb(el,y+"-"+mo+"-"+d);
       tailAsk(el.querySelector("#tailbox"),tailCfg);
       bindAiCopy(el,sjAiPrompt({p:p,male:male,h:h,st:st,gyeok:gyeok,sinsal:sinsal,cnt:cnt,G:G,duList:duList,su:su,fwd:fwd}));
-      var outEl=el.querySelector("#out");sjTextFix(outEl,!p.h);nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:0});/* 2026-10-11 네 갈래 운은 한 줄 요약만 — 눌러서 펼침(1장이 너무 길었음) */sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));
+      var outEl=el.querySelector("#out");sjTextFix(outEl,!p.h);nmSwap(outEl,nmHon(nm));plainWords(outEl);foldAll(outEl,{open:0});sjAgeFix(outEl,nowY-y);sjDedupe(outEl);/* 2026-10-11 네 갈래 운은 한 줄 요약만 — 눌러서 펼침(1장이 너무 길었음) */sjToon(outEl,sjToonSaju({nm:nmHon(nm),q:Q,strong:st.strong,yEl:yEl}));
       sjChapters(outEl,[["종합","타고난 성격과 돈·일·인연·몸","내가 어떤 사람인지부터 알아봐요"],["달마다 흐름","앞으로의 흐름","열두 달·올해·10년씩 바뀌는 물결"],["타고난 그릇 모양","왜 이렇게 읽었나","사주 글자로 짚은 근거예요"]]);[].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 해의 자리로 재는 중","나를 뜻하는 글자의 힘을 재어 보는 중","나를 받쳐 줄 기운을 고르는 중","타고난 그릇과 눈에 띄는 기운을 짚는 중","10년마다 바뀌는 흐름 여덟 구간을 펼치는 중","올해 흐름을 겹쳐 보는 중","맺음말을 고르는 중"],

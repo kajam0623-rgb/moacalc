@@ -1808,6 +1808,26 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjTextFix(root,six){if(!root||typeof document==="undefined")return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t,J={"이에요":"예요","이니":"니","이라":"라","이고":"고","이며":"며"};
     while((t=w.nextNode())){var v=t.nodeValue,o=v;v=v.replace(/올해\((\d{4}년)\)(이에요|이니|이라|이고|이며)/g,function(m,y,j){return "올해("+y+")"+J[j];});
       if(six&&!(t.parentElement&&t.parentElement.closest("h3,summary,.fold-lab")))v=v.replace(/여덟 글자/g,"여섯 글자");if(v!==o)t.nodeValue=v;}}
+  // 나이 맞춤(2026-10-11 검수: 60대에게 연애 시작·월급 인상·부모님 안부가 나왔음). 55세 이상이면 말을 바꾸고 애정운 맨 앞에 한 줄
+  function sjAgeFix(root,age){if(!root||!(age>=55)||typeof document==="undefined")return;
+    var R=[[/월급날/g,"수입이 들어오는 날"],[/월급이 오르면/g,"수입이 늘면"],[/월급/g,"수입"],[/부모님께/g,"집안 어른께"],[/부모님/g,"집안 어른"],[/연애 초반/g,"관계 초반"],[/연애를 잊고/g,"사람 만나는 일을 잊고"],
+      [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t;
+    while((t=w.nextNode())){var v=t.nodeValue,o=v;R.forEach(function(r){v=v.replace(r[0],r[1]);});if(v!==o)t.nodeValue=v;}
+    [].forEach.call(root.querySelectorAll(".fold-lab,.sj-sec > h3"),function(h){if(!/애정운$/.test(h.textContent.trim()))return;var box=h.closest("details,.sj-sec");if(!box||box.querySelector(".age-note"))return;
+      var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 연애보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
+  /* 결과 전체 중복 걷기(2026-10-11 검수: '적어 두세요'·'몫 나누기'가 한 결과에 5번). 같은 문장은 두 번째부터 빼고,
+     같은 처방 낱말은 결과 전체에서 2번까지만 남긴다. 제목·요약 줄·근거 주석은 손대지 않는다 */
+  function sjDedupe(root){if(!root||typeof document==="undefined")return;
+    var KEYS=["적어 두","문서로","글로 남","몫","역할을 나눠","비상금","저축","쉬는 날","잠을 지키","한 번 더 따져","하루 묵혀","하룻밤","손실 한도","보증"],seen={},cnt={};
+    var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t,L=[];while((t=w.nextNode()))L.push(t);
+    L.forEach(function(t){var pe=t.parentElement;if(!pe||pe.closest("h3,summary,.fold-lab,.fold-key,.note,.gh-note,.tail,.sj-confirm,.sj-warn,.ss-traits,.yr-h,.sj-goods,.sh-acts"))return;
+      var parts=t.nodeValue.split(/(?<=[.!?])\s+/),out=[],ch=false;
+      parts.forEach(function(x){var n=x.replace(/[^가-힣]/g,"");if(n.length<12){out.push(x);return;}
+        if(seen[n]){ch=true;return;}seen[n]=1;
+        var hit=KEYS.filter(function(k){return x.indexOf(k)>=0;}),over=hit.some(function(k){return (cnt[k]||0)>=2;});
+        if(over&&/[.!?]$/.test(x.trim())){ch=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
+      if(ch)t.nodeValue=out.join(" ");});}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
