@@ -285,7 +285,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const SY = require("./content_saju_synth.js"), GRPS = ["비겁","식상","재성","관성","인성"], SINS = ["천을귀인","문창귀인","도화살","역마살","화개살","양인살","백호대살","괴강살"];
   t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
   t("사주 종합 원고는 해요체(보살 어미 0)", JSON.stringify(SY).match(new RegExp(TONE_BAD.source, "g")), null);
-  t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
+  t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("F(monthSec())+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("태어난 시각이 재물·시기·한눈에 풀이에 들어가고, 자녀 풀이는 시각 칸 한곳(시지 기준)에서만", ["HOUR_MONEY[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —", "HOUR_KIDS[tgB]"].every(x => toolBlock("saju").includes(x)) && !toolBlock("saju").includes("HOUR_LOVE"), true);
   t("홈 h1에 title 검색어(무료사주·사주풀이·오늘의 운세·궁합·타로)", (h => ["무료사주","사주풀이","오늘의 운세","궁합","타로"].every(k => h.includes(k)))((bs.match(/<h1 class="hero-h">([\s\S]*?)<\/h1>/) || ["",""])[1].replace(/&nbsp;/g, " ")), true);
   t("꼬리질문 통계 이벤트: 화면이 보내는 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"tail_ask"/.test(fs.readFileSync("worker.js", "utf8")) && src.includes('track("tail_ask"'), true);
@@ -618,14 +618,14 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const nm = NMS[i % NMS.length], f = { ds, strong: st.strong, yong: SJ_EL[st.yong], wolTg: sjTenGod(ds, SJ_BMAIN[p.m.b]), sin: sjSinsal(p), miss: Object.keys(G).filter(k => G[k] === 0), duTg: TG[i % 10], seTg: TG[(i * 7 + 3) % 10], duOk: !!(i & 1), seOk: !!(i & 2), nm };
     const ps = sjEasy(f, SE), txt = ps.map(x => x.replace(/<[^>]+>/g, "")).join("\n"), len = txt.replace(/\s+/g, "").length; minL = Math.min(minL, len); maxL = Math.max(maxL, len); sumL += len;
     if (/[{}]/.test(txt)) cnt.token++; if (/undefined|NaN|null/.test(txt)) cnt.undef++; if (JOND.test(txt)) cnt.jondae++; if (NEG.test(txt)) cnt.neg++;
-    if (ps.length < 8 || ps.length > 12) cnt.paras++;
+    if (ps.length < 7 || ps.length > 12) cnt.paras++;   // 2026-10-12 '네 가지 한눈에'를 뺐다(아래 네 운 칸과 중복)
     const first = ps[0].replace(/<[^>]+>/g, ""); if (nm ? !first.startsWith("쉽게 말하면 — " + nm + josa(nm, "는/은") + " ") : /^쉽게 말하면 — (자네|당신)/.test(first)) cnt.josa++; }
   t("쉬운 종합: 무작위 3000명(이름 없음·민지 님·엄마 …) — 남은 토큰·undefined·존댓말 혼입·겁주는 말·문단 수·이름 조사 오류가 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, paras: 0, neg: 0 }));
   // 글자 수의 최솟값은 무작위가 아니라 계산으로 잡는다(항목마다 문장이 이어 붙는 합이라 차원별 최솟값의 합이 곧 전체 최솟값 — 무작위 표본은 그보다 작을 수 없다)
   { const EL5 = ["목", "화", "토", "금", "수"], base = { ds: 0, strong: true, yong: "목", wolTg: "비견", sin: [], miss: [], duTg: "비견", seTg: "비견", duOk: false, seOk: false, nm: "" }, L = f => sjEasy(f, SE).map(x => x.replace(/<[^>]+>/g, "")).join("\n").replace(/\s+/g, "").length, L0 = L(base);
     let exact = L0; [["ds", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], ["strong", [true, false]], ["yong", EL5], ["wolTg", TG], ["duTg", TG], ["seTg", TG]].forEach(([k, vs]) => { exact += Math.min(...vs.map(v => L({ ...base, [k]: v }))) - L0; });
     exact += Math.min(...[[false, false], [true, false], [false, true], [true, true]].map(v => L({ ...base, duOk: v[0], seOk: v[1] }))) - L0;
-    t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 600자 이상, 평균 850자 이상(중복 걷어 낸 뒤)", exact >= 600 && minL >= exact && sumL / 3000 >= 850, true); }
+    t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 380자 이상, 평균 550자 이상(네 운 칸과 겹치던 '네 가지 한눈에'·시기 결 풀이를 뺀 뒤)", exact >= 380 && minL >= exact && sumL / 3000 >= 550, true); }
   // 이름 부르기: 엄마·아빠는 님을 더 붙이지 않고 이름에는 님을 붙이며, 결과 글의 섹션마다 첫 '자네'를 바꾼다(조사는 받침대로)
   t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon(""), nmHon("남친"), nmHon("딸")].join("|"), "민지 님|민지 님|엄마|이수현씨|||남친|딸");
   { const sj = toolBlock("saju");
