@@ -640,7 +640,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       iljuCardKey(el.querySelector(".ilc-slot"),ilKey(p.d.s,p.d.b));
       // 한 장 요약의 일주 별명(sj/ilju.json 의 t) — 일주 카드와 같은 데이터를 같은 캐시(IL_DATA)로 쓴다
       (function(){var mo=el.querySelector(".sj-sum .ss-mo");if(mo)mo.innerHTML=sjMonthSvg(MSC);})();
-      sjCelebFill(el.querySelector("#sjceleb"),p);
+      sjCelebFill(el.querySelector("#sjceleb"),p,0,nmHon(nm));
       bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"사주_한장요약",draw:function(cb){var bx=el.querySelector(".sj-sum"),PL={비겁:"자아·자립",식상:"표현·재주",재성:"재물",관성:"명예·자리",인성:"학문·도움"},myE=SJ_EL[SJ_ES[ds]],vals=SJ_GRP5.map(function(k){return G[k];});
         cb(sumCanvas({ttl:(nmHon(nm)?nmHon(nm)+" ":"")+"한 장 요약",sub:"타고난 기운의 무게중심",arch:bx.querySelector(".ss-arch-t").textContent,archd:bx.querySelector(".ss-arch-d").textContent,
           glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,
