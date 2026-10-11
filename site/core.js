@@ -1730,7 +1730,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       br.textContent="만드는 중...";sv._draw(function(c){try{c.toBlob(function(blob){var f=null;try{f=new File([blob],"dongnebosal.png",{type:"image/png"});}catch(e){}
         if(f&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:txt+" "+url}).catch(function(){}).then(function(){br.textContent=bi;});}else{br.textContent=bi;plain();}},"image/png");}catch(e){br.textContent=bi;plain();}});});}
     if(iv&&!iv._b){iv._b=1;var ii=iv.textContent;iv.addEventListener("click",function(){track("invite_make",{tool:location.pathname});
-      shareOut(iv,page,page+" — 생년월일만 넣으면 무료로 바로 나와요. 너는 몇 점일지 봐 봐! "+base+"?from=invite",ii);});}}
+      shareOut(iv,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+base+"?from=invite",ii);});}}
   function bindSave(el,opts){
     var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;if(opts&&opts.draw)b._draw=opts.draw;
     b.addEventListener("click",function(){
