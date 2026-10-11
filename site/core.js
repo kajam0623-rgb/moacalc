@@ -617,7 +617,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-h"><b>十星</b> 무엇에 무게가 실렸나</div>'+svg+
       (pcts?'<div class="ss-pcs">'+pcts+'</div><p class="ss-note">상위 N%는 1950~2009년생 '+(o.hasH?'26만 2천여 건(날짜×12시진)':'2만 1천여 건(날짜)')+'을 같은 계산으로 돌려, 그 기운이 같은 칸 수 이상인 사람의 비율로 매긴 것입니다.</p>':'')+
       '<div class="ss-mo"></div>'+
-      '<button type="button" class="ss-save">이 요약 이미지로 저장</button>'+
+      SUM_ACTS+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이에요. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'내가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 줘요.</div>'+
       '</div>';}
   /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
@@ -658,7 +658,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       (o.pct&&o.pct.v<=60?'<div class="ss-pcs"><div class="ss-pc"><b>상위 <em>'+o.pct.v+'</em>%</b><span>'+escH(o.pct.t)+'</span></div></div><p class="ss-note">'+escH(o.pct.n)+'</p>':'')+
       '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
       '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'이에요.</p>'+
-      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div><button type="button" class="ss-save">이 요약 이미지로 저장</button></div>';}
+      '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div>'+SUM_ACTS+'</div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"보내 주신";
@@ -1111,7 +1111,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
         cb(sumCanvas({ttl:so.ttl,sub:so.sub,arch:tx(".ss-arch-t")||so.arch,archd:tx(".ss-arch-d")||so.archd,chips:bx?[].map.call(bx.querySelectorAll(".ss-chips span"),function(n){return n.textContent;}):so.chips,
         radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)이에요.",
-        pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});}
+        pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});bindSumShare(out);}
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
       var sb=out.querySelector(".share-btn");
@@ -1717,8 +1717,22 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     x.fillStyle="#8b95a6";x.font="400 30px "+F;x.fillText("무료 사주 · 오늘의 운세",W/2,H-118);
     x.fillStyle="#d4af6e";x.font="600 34px "+F;x.fillText(BRAND_URL,W/2,H-76);
     return c;}
+  /* 한 장 요약 아래 버튼 셋(2026-10-11 사용자 "저장이랑 공유가 같이 있어야지… 내 운세를 공유하는 건지 상대방에게 보내는 건지"):
+     저장 = 그림 파일, 내 결과 보내기 = 이 카드 그림+한 줄(내 결과), 친구도 보게 하기 = 내 결과 없이 '너도 봐' 링크 */
+  var SUM_ACTS='<div class="ss-acts"><button type="button" class="ss-save">이미지 저장</button><button type="button" class="ss-brag">내 결과 보내기</button><button type="button" class="ss-inv">친구도 보게 하기</button></div>'+
+    '<p class="ss-acts-n">‘내 결과 보내기’는 이 카드를, ‘친구도 보게 하기’는 친구가 자기 운세를 보는 링크만 보내요.</p>';
+  function bindSumShare(el){var box=el.querySelector(".sj-sum");if(!box)return;var sv=box.querySelector(".ss-save"),br=box.querySelector(".ss-brag"),iv=box.querySelector(".ss-inv");
+    var base=location.href.split("#")[0].split("?")[0],tt=function(q){var n=box.querySelector(q);return n?n.textContent.trim():"";},page=(document.title.split(/ [—|-] /)[0]||"동네보살").trim();
+    if(br&&!br._b){br._b=1;var bi=br.textContent;br.addEventListener("click",function(){track("share_click",{tool:location.pathname});
+      var pc=box.querySelector(".ss-pc em"),txt="내 "+tt(".ss-ttl").replace(/^.*님 /,"").replace("한 장 요약","결과")+" — "+tt(".ss-arch-t")+(pc?" (상위 "+pc.textContent+"%)":"")+". 너는 어떻게 나와?",url=base+"?from=share";
+      function plain(){shareOut(br,page,txt+" "+url,bi);}
+      if(!(sv&&sv._draw)||!navigator.canShare){plain();return;}
+      br.textContent="만드는 중...";sv._draw(function(c){try{c.toBlob(function(blob){var f=null;try{f=new File([blob],"dongnebosal.png",{type:"image/png"});}catch(e){}
+        if(f&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:txt+" "+url}).catch(function(){}).then(function(){br.textContent=bi;});}else{br.textContent=bi;plain();}},"image/png");}catch(e){br.textContent=bi;plain();}});});}
+    if(iv&&!iv._b){iv._b=1;var ii=iv.textContent;iv.addEventListener("click",function(){track("invite_make",{tool:location.pathname});
+      shareOut(iv,page,page+" — 생년월일만 넣으면 무료로 바로 나와요. 너는 몇 점일지 봐 봐! "+base+"?from=invite",ii);});}}
   function bindSave(el,opts){
-    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
+    var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;if(opts&&opts.draw)b._draw=opts.draw;
     b.addEventListener("click",function(){
       track(opts&&opts.ev||"image_save",{tool:location.pathname});
       var name=(opts&&opts.file||"dongnebosal")+".png";

@@ -645,7 +645,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         cb(sumCanvas({ttl:(nmHon(nm)?nmHon(nm)+" ":"")+"한 장 요약",sub:"타고난 기운의 무게중심",arch:bx.querySelector(".ss-arch-t").textContent,archd:bx.querySelector(".ss-arch-d").textContent,
           glyph:{ch:SJ_SH[ds],el:myE},chips:[(st.strong?"힘이 넉넉한 편":"채워 가며 크는 편"),"필요한 기운 "+yEl,SJ_TTI[p.y.b]+"띠"],five:cnt,
           radar:{lab:["자아","표현","재물","명예","학문"],val:vals,top:Math.max(3,Math.max.apply(null,vals))},
-          pcts:sjPcList(G,!!p.h).map(function(q){return [q.v,PL[q.k]+" "+q.c+"칸"];})}));}});
+          pcts:sjPcList(G,!!p.h).map(function(q){return [q.v,PL[q.k]+" "+q.c+"칸"];})}));}});bindSumShare(el);
       (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;box.querySelector(".ss-arch-t").textContent=o.t;box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+o.d;}
         if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
