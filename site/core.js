@@ -664,7 +664,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var QL={money:"재물",job:"일",love:"인연",health:"건강"},nm=o.nm||"보내 주신";
     return [["종합","magnifier",nm+" 사주를 펼쳐 봤어요. 먼저 큰 그림부터 짚어 볼게요."],
       ["한눈에 보기","crystal",(QL[o.q]?QL[o.q]+" 얘기가 제일 궁금하다고 하셨죠? ":"")+"이제 돈·일·인연·몸, 네 갈래로 나눠 볼게요."],
-      ["나를 뜻하는 글자","scroll","여기서부터는 왜 그렇게 읽었는지, 셈한 근거예요. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠예요."],
+      ["타고난 그릇 모양","scroll","여기서부터는 왜 그렇게 읽었는지, 셈한 근거예요. "+(o.strong?"힘이 넉넉한 사주라":"채워 가며 크는 사주라")+" "+o.yEl+" 기운이 어디서 들어오는지가 열쇠예요."],
       ["달마다 흐름","diary","이제 시간 순서로 볼게요. 앞으로 열두 달, 그리고 10년씩 바뀌는 큰 흐름이에요."],
       ["맺는 말","bow","끝까지 읽어 주셨네요. 마지막으로 한마디만 더 할게요."]];}
   // P: [[라벨 첫머리, 포즈, 대사]] — 라벨은 접힌 칸(.fold-lab)이나 덩어리 제목(h3)에서 찾는다
@@ -688,12 +688,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       if(all)all.addEventListener("click",function(){track("chap_all");[].forEach.call(out.querySelectorAll(".sj-chap"),function(x){x.hidden=false;});
         [].forEach.call(out.querySelectorAll(".sj-next"),function(x){x.remove();});try{w.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});});
     // 공유·저장 버튼은 장 밖 맨 끝에 둬서 첫 장만 보고도 쓸 수 있게 한다
-    wraps.forEach(function(w){[].slice.call(w.children).forEach(function(n){if(n.matches(".share-btn,.save-btn"))out.appendChild(n);});});}
+    wraps.forEach(function(w){[].slice.call(w.children).forEach(function(n){if(n.matches(".share-btn,.save-btn,.sh-acts,.ss-acts-n"))out.appendChild(n);});});}
   function sjToon(out,P){
     if(!out||!P||typeof document==="undefined")return;
     var labs=[].slice.call(out.querySelectorAll(".fold-lab,h3"));
     P.forEach(function(x){
-      for(var i=0;i<labs.length;i++){if(labs[i].textContent.trim().indexOf(x[0])!==0)continue;
+      for(var i=0;i<labs.length;i++){if(labs[i].textContent.trim().replace(/^\S+ 님(의|을|를|과|와)? /,"").indexOf(x[0])!==0)continue;
         var box=labs[i].closest("details.fold,div.fold,.sj-sec")||labs[i];if(!box.parentNode)return;
         var d=document.createElement("div");d.className="sj-toon";d.setAttribute("data-k",x[0]);d.innerHTML=bosalSay(x[1],escH(x[2]));
         box.parentNode.insertBefore(d,box);return;}});
