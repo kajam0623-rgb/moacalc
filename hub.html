@@ -2498,7 +2498,7 @@
   var SUM_ACTS='<div class="ss-acts"><button type="button" class="ss-save">이미지 저장</button><button type="button" class="ss-brag">내 결과 보내기</button><button type="button" class="ss-inv">친구도 보게 하기</button></div>'+
     '<p class="ss-acts-n">‘내 결과 보내기’는 이 카드를, ‘친구도 보게 하기’는 친구가 자기 운세를 보는 링크만 보내요.</p>';
   function bindSumShare(el){var box=el.querySelector(".sj-sum");if(!box)return;var sv=box.querySelector(".ss-save"),br=box.querySelector(".ss-brag"),iv=box.querySelector(".ss-inv");
-    var base=location.href.split("#")[0].split("?")[0],tt=function(q){var n=box.querySelector(q);return n?n.textContent.trim():"";},page=(document.title.split(/ [—|-] /)[0]||"동네보살").trim();
+    var base=location.href.split("#")[0].split("?")[0],tt=function(q){var n=box.querySelector(q);return n?n.textContent.trim():"";},page=((document.querySelector("h1")||{}).textContent||"동네보살").trim();
     if(br&&!br._b){br._b=1;var bi=br.textContent;br.addEventListener("click",function(){track("share_click",{tool:location.pathname});
       var pc=box.querySelector(".ss-pc em"),txt="내 "+tt(".ss-ttl").replace(/^.*님 /,"").replace("한 장 요약","결과")+" — "+tt(".ss-arch-t")+(pc?" (상위 "+pc.textContent+"%)":"")+". 너는 어떻게 나와?",url=base+"?from=share";
       function plain(){shareOut(br,page,txt+" "+url,bi);}
@@ -2644,7 +2644,7 @@
         if(f&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:text+" "+url}).catch(function(){}).then(function(){b.textContent=idle;});}else{b.textContent=idle;shareOut(b,title,text+" "+url,idle);}},"image/png");}catch(e){b.textContent=idle;shareOut(b,title,text+" "+url,idle);}});});}
   // 친구도 보게 하기 — 내 결과 없이 이 도구 링크만. 버튼이 어디에 그려지든 한 번에 받는다
   if(typeof document!=="undefined")document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest(".inv-btn");if(!b)return;
-    var page=(document.title.split(/ [—|-] /)[0]||"동네보살").trim();track("invite_make",{tool:location.pathname});
+    var page=((document.querySelector("h1")||{}).textContent||"동네보살").trim();track("invite_make",{tool:location.pathname});
     shareOut(b,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+location.href.split("#")[0].split("?")[0]+"?from=invite",b.textContent);});
   /* 내 일주 카드 — 양력 생일(또는 사주 결과의 일주)로 60갑자 가운데 내 일주를 찾아 '나는 ○○일주 — 별명' 한 칸을 그린다.
      별명·첫 문장은 일주 60편 원고(content_ilju60.js)에서 빌드가 만든 sj/ilju.json 에서 받는다. 저장 카드(이미지)와 공유(그 일주 페이지로 가는 링크)가 달린다.
