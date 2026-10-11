@@ -1730,7 +1730,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       br.textContent="만드는 중...";sv._draw(function(c){try{c.toBlob(function(blob){var f=null;try{f=new File([blob],"dongnebosal.png",{type:"image/png"});}catch(e){}
         if(f&&navigator.canShare({files:[f]})){navigator.share({files:[f],text:txt+" "+url}).catch(function(){}).then(function(){br.textContent=bi;});}else{br.textContent=bi;plain();}},"image/png");}catch(e){br.textContent=bi;plain();}});});}
     if(iv&&!iv._b){iv._b=1;var ii=iv.textContent;iv.addEventListener("click",function(){track("invite_make",{tool:location.pathname});
-      shareOut(iv,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+base+"?from=invite",ii);});}}
+      shareOut(iv,page,page+" — 가입 없이 무료로 바로 나와요. 너는 어떻게 나올지 봐 봐! "+base+"?from=invite",ii);});}}
   function bindSave(el,opts){
     var b=el.querySelector(opts&&opts.btn||".save-btn");if(!b)return;var lab=b.textContent;
     function make(cb){if(opts&&opts.draw){opts.draw(cb);return;}
@@ -1869,7 +1869,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 친구도 보게 하기 — 내 결과 없이 이 도구 링크만. 버튼이 어디에 그려지든 한 번에 받는다
   if(typeof document!=="undefined")document.addEventListener("click",function(e){var b=e.target&&e.target.closest&&e.target.closest(".inv-btn");if(!b)return;
     var page=((document.querySelector("h1")||{}).textContent||"동네보살").trim();track("invite_make",{tool:location.pathname});
-    shareOut(b,page,page+" — 생년월일만 넣으면 바로 나와요. 너는 어떻게 나올지 봐 봐! "+location.href.split("#")[0].split("?")[0]+"?from=invite",b.textContent);});
+    shareOut(b,page,page+" — 가입 없이 무료로 바로 나와요. 너는 어떻게 나올지 봐 봐! "+location.href.split("#")[0].split("?")[0]+"?from=invite",b.textContent);});
   /* 내 일주 카드 — 양력 생일(또는 사주 결과의 일주)로 60갑자 가운데 내 일주를 찾아 '나는 ○○일주 — 별명' 한 칸을 그린다.
      별명·첫 문장은 일주 60편 원고(content_ilju60.js)에서 빌드가 만든 sj/ilju.json 에서 받는다. 저장 카드(이미지)와 공유(그 일주 페이지로 가는 링크)가 달린다.
      생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
