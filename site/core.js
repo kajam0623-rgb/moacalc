@@ -241,7 +241,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   /* 궁합 깊이 있는 풀이 — 원고 D(content_gunghap.js → gh/deep.json)에서 두 사람의 명식에 맞는 문장을 골라 잇는 순수 함수.
      엔진에 둔 이유: verify.js 가 무작위 쌍으로 검사한다. 이름 토큰은 {B:이/가} 꼴(받침 있으면 앞, 없으면 뒤)로 조사를 맞춘다 */
   function ghJ(w,pair){var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28!==0)?p[0]:p[1];}
-  function ghFill(s,map){return String(s).replace(/\{([A-Za-z]+)(?::([^}]+))?\}/g,function(m,k,j){var v=map[k];if(v==null)return m;return j?v+ghJ(v,j):v;});}
+  function ghFill(s,map){return String(s).replace(/\{([A-Za-z]+)(?::([^}]+))?\}/g,function(m,k,j){var v=map[k];if(v==null)return m;var r=j?v+ghJ(v,j):v;return r==="나가"?"내가":r;});}   // '자네'→'나' 뒤로 '나가'가 생겼다
   var GH_GRP={비견:"비",겁재:"비",식신:"식",상관:"식",편재:"재",정재:"재",편관:"관",정관:"관",편인:"인",정인:"인"};
   function ghTg(p){var ds=p.d.s,c={재:0,관:0,식:0,인:0,비:0}; // 일간을 뺀 천간과 지지 본기의 십성 무리별 개수
     [p.y.s,p.m.s].concat(p.h?[p.h.s]:[]).forEach(function(s){c[GH_GRP[sjTenGod(ds,s)]]++;});
@@ -307,6 +307,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     secs.push({k:"yr",h:"함께 나아가기 좋은 해 — 결혼·동거·큰 계약을 정한다면",p:yp,years:years,n:D.note.yr});
     secs.push({k:"tip",h:"마음 맞추는 약속 세 가지",list:D.tip[r1].slice(),p:[D.axis[low]]});
     noRepeat(secs);
+    // 2026-10-11 '나가'(→내가)·한 글자 오행('목 기운'→'나무 기운') 손질 — 원고·연결 문장 어디서 와도 한 번에
+    var ELW={목:"나무",화:"불",토:"흙",금:"쇠",수:"물"},fixT=function(t){return typeof t!=="string"?t:t.replace(/(^|[^가-힣])나가 /g,"$1내가 ").replace(/(^|[^가-힣(])([목화토금수]) 기운/g,function(m,a,e){return a+ELW[e]+" 기운";});};
+    sum=fixT(sum);secs.forEach(function(x){if(x.p)x.p=x.p.map(fixT);if(x.h)x.h=fixT(x.h);});
     return {sum:sum,secs:secs,meta:{r1:r1,title:R.t,years:years,gA:gA,gB:gB,cA:cA,cB:cB,tk:tk,ik:ik,SA:SA,SB:SB,YA:YA,YB:YB,sa:sa.strong,sb:sb.strong}};}
   /* 사주 결과 '타고난 성격' — 일간·힘의 세기·태어난 계절·가장 두터운 십성 무리에서 네 조각을 골라 잇는 순수 함수.
      원고 D = content_saju_char.js(→ sj/char.json). 무리 개수가 같으면 비겁·식상·재성·관성·인성 차례로 앞의 것을 고른다 */
