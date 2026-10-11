@@ -27,7 +27,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       }
       // 2. 띠(연지) 합충
       var ab=a.y.b,bb=b.y.b,d=Math.abs(ab-bb);
-      if(ab%4===bb%4&&ab!==bb){sc+=12;f.tti="삼합";out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")는 셋이 뭉치는 짝일세 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
+      if(ab%4===bb%4&&ab!==bb){sc+=12;f.tti="삼합";out.push(["띠끼리 찰떡","두 띠("+SJ_TTI[ab]+"·"+SJ_TTI[bb]+")는 셋이 뭉치는 짝이에요 — 목표를 향해 같이 달리는 최고의 팀 궁합."]);}
       else if(ab+bb===13||(ab===0&&bb===1)||(ab===1&&bb===0)){sc+=10;f.tti="육합";out.push(["띠끼리 편안","두 띠는 둘이 맞는 짝 — 서로를 편안하게 만드는 찰떡 조합."]);}
       else if(d===6){sc-=12;f.tti="충";out.push(["띠끼리 서로 자극","두 띠는 서로 마주 서는 짝 — 처음엔 강하게 끌리고, 생활 방식만 맞춰 가면 오래 이어지는 관계."]);}
       else{out.push(["띠끼리 무난","띠끼리 맞부딪히거나 붙는 자리가 없어 — 무난한 흐름입니다."]);}
@@ -54,7 +54,7 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
     function ghSecHtml(s){var h='<div class="sj-sec gh-deep fold-skip"><h3>'+s.h+'</h3>';
       (s.p||[]).forEach(function(x){h+='<p>'+x+'</p>';});
       if(s.roles)h+=s.roles.map(function(r){return '<div class="gh-role"><div><b>'+r.k+'</b> <span class="gh-w">'+r.w+'</span></div><div>'+r.t+'</div></div>';}).join("");
-      if(s.years)h+='<div class="gh-yrs">'+s.years.map(function(r){return '<div class="gh-yr"><div><b>'+r.y+'년</b> <span class="gh-v '+(r.v==="좋은 해"?"g":r.v==="무난"?"o":"c")+'">'+r.v+'</span>'+(r.flag?' <span class="gh-flag">'+r.flag+'</span>':"")+'</div><div class="gh-yl">자네 '+r.la+' · 상대 '+r.lb+'</div></div>';}).join("")+'</div>';
+      if(s.years)h+='<div class="gh-yrs">'+s.years.map(function(r){return '<div class="gh-yr"><div><b>'+r.y+'년</b> <span class="gh-v '+(r.v==="좋은 해"?"g":r.v==="무난"?"o":"c")+'">'+r.v+'</span>'+(r.flag?' <span class="gh-flag">'+r.flag+'</span>':"")+'</div><div class="gh-yl">내 '+r.la+' · 상대 '+r.lb+'</div></div>';}).join("")+'</div>';
       if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
       if(s.n)h+='<p class="gh-note">'+s.n+'</p>';
       return h+'</div>';}
@@ -123,14 +123,14 @@ TOOLS.push({id:"gunghap",cat:"재미·운세",icon:"",name:"궁합 보기",desc:
       bindShare(el,"사주 궁합","우리 궁합 "+sc+"점 · "+grade+" ("+SJ_TTI[A.y.b]+"띠 ♥ "+SJ_TTI[B.y.b]+"띠). 동네보살에서 확인:");
       saveScore(el,"사주궁합","사주 궁합",SJ_TTI[A.y.b]+"띠 "+SJ_S[A.d.s]+"일간 ♥ "+SJ_TTI[B.y.b]+"띠 "+SJ_S[B.d.s]+"일간",sc,grade,topAx[0]+"이 가장 강한 축",advice,sc>=60?"heart":"worry",ghPct(sc)<=60?"짝 20만 쌍 가운데 상위 "+ghPct(sc)+"%":"");askFx(el,{sumO:({ttl:"두 사람 한 장 요약",sub:"이 궁합의 무게중심",arch:grade,archd:SJ_TTI[A.y.b]+"띠 × "+SJ_TTI[B.y.b]+"띠 · "+sc+"점",
         chips:["나 "+SJ_S[A.d.s]+SJ_B[A.d.b]+"일주",(inv&&inv.n?inv.n:"상대")+" "+SJ_S[B.d.s]+SJ_B[B.d.b]+"일주",topAx[0]+"이 가장 강한 축"],axes:subs,pct:{v:ghPct(sc),t:"궁합 "+sc+"점",n:"1950~2009년생 두 사람 짝 20만 쌍(시각 모름)을 같은 계산으로 돌려, "+sc+"점 이상이 나온 짝의 비율입니다."},
-        spoon:"네 축은 끌림·안정·소통·생활일세. 점수가 낮은 축은 안 맞는다는 뜻이 아니라, 둘이 약속으로 채워 갈 자리라는 뜻이네."}),toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤네. 큰 그림부터 보세."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 보세. 모자란 쪽을 서로 채워 주면 되네."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었네."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법일세."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물리네! 이 인연 아껴 두게.":sc>=72?"결이 좋은 사이일세. 대화만 자주 하면 오래가네.":sc>=58?"맞춰 가면 되는 사이야. 아래 맞춰 갈 자리를 보게.":"맞춰 갈 자리가 여럿이네. 서로의 거리를 정해 두면 훨씬 편해지네."});ghDone=true;}
+        spoon:"네 축은 끌림·안정·소통·생활이에요. 점수가 낮은 축은 안 맞는다는 뜻이 아니라, 둘이 약속으로 채워 갈 자리라는 뜻이에요."}),toon:[["종합","magnifier","두 사람 사주를 나란히 펼쳐 봤어요. 큰 그림부터 볼게요."],["다섯 기운(오행)","heart","이제 두 사람 기운이 서로에게 무슨 일을 하는지 볼게요. 모자란 쪽을 서로 채워 주면 돼요."],["함께 나아가기 좋은 해","diary","언제 함께 큰일을 벌이면 좋은지, 해마다 짚어 두었어요."],["계산 근거","scroll","끝으로 글자 하나하나로, 왜 이렇게 봤는지 셈법이에요."]],score:sc,grade:grade,pose:sc>=60?"heart":"worry",say:sc>=85?"둘이 참 잘 맞물려요! 이 인연 아껴 두세요.":sc>=72?"결이 좋은 사이예요. 대화만 자주 하면 오래가요.":sc>=58?"맞춰 가면 되는 사이에요. 아래 맞춰 갈 자리를 보세요.":"맞춰 갈 자리가 여럿이에요. 서로의 거리를 정해 두면 훨씬 편해져요."});ghDone=true;}
     // 초대 링크(?i=)로 들어오면 상대 칸 대신 보낸 사람의 사주 글자를 쓴다
     var inv=null,iq=(location.search.match(/[?&]i=([a-z0-9]{10})(?![a-z0-9])/)||[])[1];
     if(iq&&typeof fetch==="function")fetch("/api/invite?i="+iq).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;}).then(function(j){
       var bar=document.createElement("div");bar.className="gh-inv";el.insertBefore(bar,el.firstChild);
-      if(!j||!j.p){bar.textContent="초대 링크가 만료됐거나 잘못됐네. 링크는 7일 동안만 열리니 보낸 사람에게 다시 받아 보게.";return;}
+      if(!j||!j.p){bar.textContent="초대 링크가 만료됐거나 잘못됐어요. 링크는 7일 동안만 열리니 보낸 사람에게 다시 받아 보세요.";return;}
       inv={p:{y:{s:j.p[0],b:j.p[1]},m:{s:j.p[2],b:j.p[3]},d:{s:j.p[4],b:j.p[5]},h:null},g:j.g==="m"?"m":"f",n:j.n||""};
-      bar.innerHTML='<b>'+(inv.n?escH(inv.n)+" 님":"친구")+'</b>'+(inv.n?"이":"가")+' 궁합을 보자고 보냈네. 자네 생년월일과 성별만 넣고 물어보게. 보낸 사람의 생년월일은 여기 오지 않았고, 사주 글자만 받았네.';
+      bar.innerHTML='<b>'+(inv.n?escH(inv.n)+" 님":"친구")+'</b>'+(inv.n?"이":"가")+' 궁합을 보자고 보냈어요. 내 생년월일과 성별만 넣고 물어보세요. 보낸 사람의 생년월일은 여기 오지 않았고, 사주 글자만 받았어요.';
       ["#b","#gb","#hb"].forEach(function(q){var x=el.querySelector(q);if(x&&x.parentNode)x.parentNode.style.display="none";});
       track("invite_open",{});});
-    askWire(el,go,["두 사람의 사주 여덟 글자를 세운다","나를 뜻하는 글자끼리 견주어 본다","배우자 자리끼리 맞는지 본다"],"두 사람 것을 아직 안 물어봤네.");birthDial(el,"#a");birthDial(el,"#b");}});
+    askWire(el,go,["두 사람의 사주 여덟 글자를 세운다","나를 뜻하는 글자끼리 견주어 본다","배우자 자리끼리 맞는지 본다"],"두 사람 것을 아직 안 물어봤어요.");birthDial(el,"#a");birthDial(el,"#b");}});

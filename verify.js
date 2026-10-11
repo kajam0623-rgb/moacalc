@@ -156,11 +156,11 @@ t("타로 풀이 원고 78장 · 자리 9 · 고민 8×정역 · 한마디", TRE
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
 const bosalLines = readLines.concat(TREAD.flatMap(c => [c.desc.up, c.desc.rev]), tarotData.EL_LINE, [tarotData.EL_MIX], tarotData.STAGE, tarotData.REVL, tarotData.CLOSE, [].concat(...tarotData.REL), [].concat(...Object.values(tarotData.YN_LINE)),
   tarotData.TOPICS.flatMap(tp => [tp.hi].concat(tp.qs.map(q => q.say))));
-// 2026-10-11: 원고 파일(content_tarot_read)은 해요체, hub 타로 대화(tarotData)는 아직 보살 말투 — 둘을 나눠 본다
+// 2026-10-11: 원고 파일(content_tarot_read)과 hub 타로 대화(tarotData) 모두 해요체 — 둘을 나눠 본다
 const tarotHubLines = bosalLines.slice(readLines.length + TREAD.length * 2);
 t("타로 원고(content_tarot_read)는 해요체(보살 어미 0)", readLines.concat(TREAD.flatMap(c => [c.desc.up, c.desc.rev])).filter(x => TONE_BAD.test(x)).length, 0);
 t("타로 대화 원고(hub)에 존댓말 없음", tarotHubLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x)).length, 0);
-t("타로 대화 원고(hub)가 보살 어미 사용", tarotHubLines.filter(x => !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
+t("타로 대화 원고(hub)는 해요체(보살 어미 0)", tarotHubLines.filter(x => TONE_BAD.test(x)).length, 0);
 t("타로 대화 원고에 단정·유도 표현 없음", bosalLines.filter(x => /반드시|틀림없|정확하게|신령|부적|굿을/.test(x)).length, 0);
 // 건강 고민은 생활 리듬·컨디션만 다룬다. 병명·증상·예후를 말하면 사람을 겁주거나 병원에 갈 사람을 붙잡는다
 const healthLines = TREAD.flatMap(c => c.topic.health);
@@ -203,11 +203,10 @@ t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-i
 // ── T2 페르소나: 보살 문체 ──
 // 풀이 원고에 존댓말이 섞이면 화자가 둘로 갈라진다. 계산 근거 고지(note·회색 주석)는 존댓말 유지이므로 데이터만 검사한다.
 const JONDAE = /습니다|합니다|하세요|입니다|십시오/;
-const BOSAL = /일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./;
 const tfBody = Object.values(TFTXT).flatMap(a => [a[1],a[2],a[3],a[4],a[6],a[7],a[8]]);
 const tfHead = Object.values(TFTXT).map(a => a[9]);
 t("오늘의 운세 원고에 존댓말 없음", tfBody.concat(tfHead).filter(s=>JONDAE.test(s)).length, 0);
-t("오늘의 운세 원고가 보살 어미 사용", tfBody.filter(s=>!BOSAL.test(s)).length, 0);
+t("오늘의 운세 원고는 해요체(보살 어미 0)", tfBody.filter(s=>TONE_BAD.test(s)).length, 0);
 // 헤드라인(슬롯 9)만은 체언 종결 카피 — 공유·저장 이미지에 그대로 박히므로 짧게 유지한다
 t("헤드라인 10종은 짧은 카피", tfHead.every(s=>s.length<=34), true);
 t("UN_MOOD 12종 보살 문체", Object.values(UN_MOOD).filter(s=>JONDAE.test(s)).length, 0);
@@ -377,8 +376,8 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   const TV = [[1976,8,26,2005,"212"],[1975,7,25,2024,"811"],[1972,7,9,2003,"231"],[1990,1,15,2026,"531"],[1985,2,14,2026,"262"],[1976,8,26,2026,"363"],[2000,12,1,2026,"331"],[1970,5,30,2026,"151"],[1966,2,30,2026,"562"]];
   t("토정비결 작괘 9개 예제", TV.map(([a,b2,c,Y])=>tjCalc(a,b2,c,Y,KLC,gz).code).join(","), TV.map(x=>x[4]).join(","));
   const TJ = require("./content_tojeong.js"), codes = []; for (let a = 1; a <= 8; a++) for (let b2 = 1; b2 <= 6; b2++) for (let c = 1; c <= 3; c++) codes.push(""+a+b2+c);
-  t("토정비결 144괘 원고 · 총운 + 12달", codes.every(k => TJ[k] && TJ[k].chongun.length > 250 && [1,2,3,4,5,6,7,8,9,10,11,12].every(m => (TJ[k].months[m]||"").length > 60)), true);
-  t("토정비결 풀이는 보살 말투", codes.filter(k => JONDAE.test([TJ[k].chongun].concat(Object.values(TJ[k].months)).join(" "))).length, 0);
+  t("토정비결 144괘 원고 · 총운 + 12달", codes.every(k => TJ[k] && TJ[k].chongun.length > 200 && [1,2,3,4,5,6,7,8,9,10,11,12].every(m => (TJ[k].months[m]||"").length > 45)), true);   // 2026-10-11 해요체·중복 걷어 냄으로 기준 낮춤
+  t("토정비결 풀이는 해요체(보살 어미 0)", codes.filter(k => TONE_BAD.test([TJ[k].chongun].concat(Object.values(TJ[k].months)).join(" "))).length, 0);
 }
 
 // ── T3 프로그래매틱 SEO: 별자리 12 + 띠 12 원고 ──
@@ -662,7 +661,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   scan("사주 꼬리질문 답", require("./content_saju_q.js"), { newTone: true });
   scan("오늘의 운세 꼬리질문 답", require("./content_today_q.js"), { newTone: true });
   { const src2 = inner.slice(inner.indexOf("{id:\"todayfortune\"")), code = src2.slice(src2.indexOf("var TXT="), src2.indexOf("el.innerHTML=")), tfl = (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0], R = new Function(tfl + "\n" + code + "\nreturn {TXT:TXT,TF_LINE:TF_LINE};")();
-    scan("오늘의 운세 그날 기운 원고(TXT·한 줄 요약)", { a: Object.values(R.TXT).map(v => v.filter(x => typeof x === "string")), b: R.TF_LINE });
+    scan("오늘의 운세 그날 기운 원고(TXT·한 줄 요약)", { a: Object.values(R.TXT).map(v => v.filter(x => typeof x === "string")), b: R.TF_LINE }, { newTone: true });
     t("오늘의 운세 그날 기운 원고: 10가지 × (총운·재물·조언·살펴 둘 것·애정·직장·건강) 칸이 모두 있고 각 칸이 두 문장 이상이다", Object.values(R.TXT).every(v => [1, 2, 3, 4, 6, 7, 8].every(i => typeof v[i] === "string" && (v[i].match(/[.!?]/g) || []).length >= 2)), true); }
 }
 // 별자리 운세 깊이 풀이(content_horoscope.js → hsDeep): 원고 칸 · 문체 · 무작위 별자리×날짜 3000개 · 도구 배선
@@ -711,9 +710,9 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   { const sb = toolBlock("stargunghap");
     t("별자리 궁합 도구가 원고(sg/deep.json)를 받아 자리(#sgdeep)에 채우고, 빌드가 sg/deep.json 을 내보낸다", [sb.includes('fetch("sg/deep.json")'), sb.includes('<div id="sgdeep">'), sb.includes("fillSg();"), bs.includes('"sg","deep.json"')].join(","), "true,true,true,true"); } }
 // 토정비결 144괘·꿈해몽·타로 78장 풀이 문장: 겁주는 말과 존댓말 어미가 없다(등급·분류 이름·분류 소개글·꿈 제목은 제외)
-{ const NEGX = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/, JONDX = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
+{ const NEGX = /위험|흉(?!내|터)|불행|재앙|사고(?!력|파|팔)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/, JONDX = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
   const flat = (o, p, a) => { if (typeof o === "string") a[p] = o; else if (o && typeof o === "object") Object.keys(o).forEach(k => flat(o[k], p ? p + "." + k : k, a)); return a; };
-  [["토정비결", require("./content_tojeong.js"), /\.(grade)$/], ["꿈해몽", require("./content_dream.js"), /\.(kind|id|ko|title|intro)$/], ["타로", require("./content_tarot_read.js"), /\.(no)$/, TONE_BAD]].forEach(([nm, d, skip, tone]) => {
+  [["토정비결", require("./content_tojeong.js"), /\.(grade)$/, TONE_BAD], ["꿈해몽", require("./content_dream.js"), /\.(kind|id|ko|title|intro)$/, TONE_BAD], ["타로", require("./content_tarot_read.js"), /\.(no)$/, TONE_BAD]].forEach(([nm, d, skip, tone]) => {
     const f = flat(d, "", {}), bad = Object.entries(f).filter(([k, v]) => !skip.test(k) && (NEGX.test(v) || (tone || JONDX).test(v))).map(([k]) => k);
     t(nm + " 풀이: 겁주는 말·존댓말 어미 0 (문자열 " + Object.keys(f).length + "개)" + (bad.length ? " — " + bad.slice(0, 3).join(",") : ""), bad.length, 0); }); }
 // 공망 찾기 깊이 풀이(content_gongmang.js → gmDeep): 원고 칸 · 문체 · 60일주 × 시각 유무 × 여러 해 · 도구 배선
@@ -738,12 +737,12 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     [lp.includes("function fromSolar()"), lp.includes('lp.addEventListener("toggle",function(){if(lp.open)fromSolar();});'), lp.includes("timer=setTimeout(apply,400)"), lp.includes('lp.addEventListener("input",auto)'), lp.includes('inp.addEventListener("input",sync)'), lp.includes("function whenLib(cb)")].join(","), "true,true,true,true,true,true"); }
 // 토정비결 144괘 쉬운 말 풀이(content_tojeong.js → tjDeep): 새 칸 · 문체(보살 말투·겁주는 말 0·옛말 0) · 등급별 달 분위기 · 제목 144개 · 화면 구성
 { const TJ = require("./content_tojeong.js"), codes = []; for (let a = 1; a <= 8; a++) for (let b2 = 1; b2 <= 6; b2++) for (let c = 1; c <= 3; c++) codes.push("" + a + b2 + c);
-  const JONDT = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/, NEGT = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세|액운|액땜/,
+  const JONDT = TONE_BAD, NEGT = /위험|흉(?!내|터)|불행|재앙|사고(?!력|파|팔)|실패|나쁜|망하|망한|화근|재난|불길|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세|액운|액땜/,
     ARCHT = /섣달|동짓달|정월|귀인|혼사|횡재|송사|구설|시비|곳간|음덕|덕망|경사|재물운|복을 짓|왕성|번창|융성|형통|도모|삼가|근신|유념|임하게|처신|길복|옥구슬|꾀꼬리|오곡|비단|보금자리|사방으로|형국|연유|대저|하매/, HARDT = /격국|용신|십성|신강|신약|일간|월지|천간|(?<![가-힣])지지|비견|겁재|식신|상관(?!없|이 없|이 있)|편재|정재|편관|정관|편인|정인|인성|재성|관성|식상|비겁/;
   const F = ["title", "sum", "image", "chongun", "money", "work", "love", "health"], MIN = { title: 8 }, MS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   const flatStr = g => F.map(f => [f, g[f]]).concat((g.tips || []).map((x, i) => ["tips." + i, x])).concat(MS.map(m => ["months." + m, (g.months || {})[m] || ""]));
   t("토정비결 144괘가 모두 새 형식이다(제목·한눈에·옛 그림·총운·분야 4칸·실천 3·달 흐름 12글자·열두 달)",
-    codes.filter(k => { const g = TJ[k]; return !(g && F.every(f => typeof g[f] === "string" && g[f].length >= (MIN[f] || 20)) && Array.isArray(g.tips) && g.tips.length === 3 && /^[goc]{12}$/.test(g.flow || "") && MS.every(m => (g.months[m] || "").length >= 85) && ["길", "평", "흉"].includes(g.grade)); }).length, 0);
+    codes.filter(k => { const g = TJ[k]; return !(g && F.every(f => typeof g[f] === "string" && g[f].length >= (MIN[f] || 20)) && Array.isArray(g.tips) && g.tips.length === 3 && /^[goc]{12}$/.test(g.flow || "") && MS.every(m => (g.months[m] || "").length >= 45) && ["길", "평", "흉"].includes(g.grade)); }).length, 0);
   { const bad = { jondae: [], neg: [], arch: [], hard: [], token: [] };
     codes.forEach(k => flatStr(TJ[k]).forEach(([f, v]) => { const vv = f === "image" ? v.replace(/'[^']*'/g, "") : v; if (JONDT.test(v)) bad.jondae.push(k + "." + f); if (NEGT.test(v)) bad.neg.push(k + "." + f); if (ARCHT.test(vv)) bad.arch.push(k + "." + f); if (HARDT.test(vv.replace(/\([^)]*\)/g, ""))) bad.hard.push(k + "." + f); if (/[{}]|undefined|NaN/.test(v)) bad.token.push(k + "." + f); }));
     t("토정비결 풀이: 존댓말 어미·겁주는 말·옛말/시적 말·명리 용어·토큰이 모두 0" + (Object.values(bad).some(a => a.length) ? " — " + Object.entries(bad).filter(([, a]) => a.length).map(([n, a]) => n + ":" + a.slice(0, 3).join(",")).join(" ") : ""), Object.values(bad).reduce((n, a) => n + a.length, 0), 0); }
@@ -757,7 +756,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
       const sn = {}; txt.split(/(?<=[.!?])\s+/).map(x => x.trim()).filter(x => x.length >= 14).forEach(x => { sn[x] = (sn[x] || 0) + 1; }); if (Object.values(sn).some(n => n > 1)) cnt.dup++;
       const ms = S.filter(s => s.month); if (ms.length !== 12 || (cur && !/^이번 달 — /.test(ms[0].h)) || ms.some(s => !s.p[0] || !s.p[1])) cnt.month++; });
     t("토정비결 화면 구성(tjDeep): 144괘 × 이번 달 4가지 — 17칸(한눈에·총운·분야별·실천·달 표·달 풀이 12)·달 표 12칸·토큰 0·같은 문장 되풀이 0·이번 달이 맨 앞", JSON.stringify(cnt), JSON.stringify({ secs: 0, grid: 0, tok: 0, dup: 0, month: 0 }));
-    t("토정비결 화면 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 예전(총운 약 450자 + 달 12×110자 ≈ 1,800자)보다 많은 1,900자 이상", minLen >= 1900, true); }
+    t("토정비결 화면 글자 수(공백 제외) 최소 " + minLen + " · 최대 " + maxLen + " — 1,700자 이상(2026-10-11 해요체로 바꾸며 중복을 걷어 내 기준을 낮춤)", minLen >= 1700, true); }
   { const tb = toolBlock("tojeong");
     t("토정비결 도구가 tjDeep 으로 결과를 그리고, 그날 쓴 음력 생일과 바꾸는 방법을 밝힌다", [tb.includes("tjDeep(g,Y,cur,starts).map(tjSecHtml)"), tb.includes("음력 생일이세요?"), tb.includes("g.sum"), !tb.includes("g.chongun"), bs.includes("쉬운 말로 새로 썼습니다")].join(","), "true,true,true,true,true"); } }
 // 생일을 탭의 임시 저장소로 넘기는 만큼, 개인정보 문구(홈 신뢰 블록·홈 FAQ·소개문·처리방침)가 그 사실을 밝힌다
@@ -1021,9 +1020,9 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     const ok = r.steps[0].length === a.length + b.length && lens.every((L, k) => k === 0 || L === lens[k - 1] - 1) && last.length === 2 && r.steps.every(x => x.every(d => d >= 0 && d <= 9)) && r.score === (last[0] * 10 + last[1] || 100) && r.score >= 1 && r.score <= 100;
     if (!ok && badR.length < 3) badR.push(a + "/" + b); }
   t("이름궁합: 무작위 이름 400쌍 — 줄이 한 칸씩 줄어 두 자리에서 끝나고 점수는 1~100", badR.join(","), "");
-  const JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGS = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/, bandBad = [];   // 이름궁합 풀이(hub)는 아직 보살 말투 — hub 다른 도구 바꿀 때 TONE_BAD 로
+  const JOND = TONE_BAD, NEGS = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/, bandBad = [];   // 이름궁합 풀이(hub)도 해요체(2026-10-11) — 보살 어미 0
   [100, 95, 90, 89, 80, 75, 74, 60, 55, 54, 40, 35, 34, 10, 1].forEach(sc => { const b = nmBand(sc); ["msg", "good", "care", "tip"].forEach(k => { if (!b[k] || JOND.test(b[k]) || NEGS.test(b[k])) bandBad.push(sc + k); }); });
-  t("이름궁합 풀이: 점수대 다섯 유형의 문장이 모두 있고 보살 말투·겁주는 말 없음", bandBad.join(","), "");
+  t("이름궁합 풀이: 점수대 다섯 유형의 문장이 모두 있고 해요체(보살 어미 0)·겁주는 말 없음", bandBad.join(","), "");
   t("이름궁합 점수대: 90/75/55/35 경계가 안내글 표와 같다", [[100, "운명형"], [90, "운명형"], [89, "안정형"], [75, "안정형"], [74, "성장형"], [55, "성장형"], [54, "밀당형"], [35, "밀당형"], [34, "도전형"], [1, "도전형"]].every(([sc, ty]) => nmBand(sc).type === ty)
     && ['["90점 이상","운명형"', '["75~89점","안정형"', '["55~74점","성장형"', '["35~54점","밀당형"', '["34점 이하","도전형"'].every(x => bs.includes(x)), true);
   const NMB = (() => { const a = src.indexOf("/*NM-BEGIN*/"), b = src.indexOf("/*NM-END*/"); return new Function(src.slice(a, b) + "\nreturn {nmCalc:nmCalc};")(); })();

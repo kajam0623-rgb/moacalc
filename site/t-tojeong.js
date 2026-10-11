@@ -26,7 +26,7 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
     function go(){
       var out=el.querySelector("#out"),dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;
       var K=window.KoreanLunarCalendar;
-      if(!K){lib();out.innerHTML='<p class="note">음력 달력을 불러오는 중이네. 잠깐 뒤에 다시 눌러 주게.</p>';return;}
+      if(!K){lib();out.innerHTML='<p class="note">음력 달력을 불러오는 중이에요. 잠깐 뒤에 다시 눌러 주세요.</p>';return;}
       track("fortune_view",{tool:"tojeong"});
       var Y=+el.querySelector("#yr").value,cal=new K();
       cal.setSolarDate(+dv[0],+dv[1],+dv[2]);var L=cal.getLunarCalendar();
@@ -37,11 +37,11 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
       data(r.code).then(function(g){
         var yg=SJ_S[r.ys]+SJ_B[r.yb],mg=SJ_S[r.ms]+SJ_B[r.mb],dg=SJ_S[r.ds]+SJ_B[r.db],lunarTxt='음력 '+L.year+'년 '+L.month+'월'+(L.intercalation?'(윤달)':'')+' '+L.day+'일';
         out.innerHTML=
-        '<div class="tf-hl">'+Y+'년 자네 괘는 '+r.code+'괘 — '+g.title+'</div>'+
+        '<div class="tf-hl">'+Y+'년 내 괘는 '+r.code+'괘 — '+g.title+'</div>'+
         '<div class="out" style="margin-top:16px"><div class="k">'+Y+' '+yg+'년 토정비결 · '+lunarTxt.replace("(윤달)","(윤)")+'생</div>'+
         '<div class="v">'+r.code+'<small>괘</small></div><div class="s">'+g.title+'</div></div>'+
-        '<p class="gh-note" style="margin:8px 0 0">이 괘는 '+lunarTxt+'(양력 '+(+dv[0])+'년 '+(+dv[1])+'월 '+(+dv[2])+'일)생으로 뽑았네. 음력 생일이 다르면 위 "음력 생일이세요?"에서 고친 뒤 다시 물어보게.</p>'+
-        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔네. 그래도 들뜨지 말고 달마다 짚은 대로 가게.":g.grade==="흉"?"차분히 다져 갈 대목이 있는 괘일세. 걱정할 것 없네. 미리 알고 준비하면 오히려 든든하지.":"무난하게 흘러가는 괘일세. 좋은 달엔 힘을 싣고 차분한 달엔 쉬어 가게.")+
+        '<p class="gh-note" style="margin:8px 0 0">이 괘는 '+lunarTxt+'(양력 '+(+dv[0])+'년 '+(+dv[1])+'월 '+(+dv[2])+'일)생으로 뽑았어요. 음력 생일이 다르면 위 "음력 생일이세요?"에서 고친 뒤 다시 물어보세요.</p>'+
+        bosalSay(g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll",g.grade==="길"?"좋은 괘가 나왔어요. 그래도 들뜨지 말고 달마다 짚은 대로 가세요.":g.grade==="흉"?"차분히 다져 갈 대목이 있는 괘예요. 걱정할 것 없어요. 미리 알고 준비하면 오히려 든든해요.":"무난하게 흘러가는 괘예요. 좋은 달엔 힘을 싣고 차분한 달엔 쉬어 가세요.")+
         tjDeep(g,Y,cur,starts).map(tjSecHtml).join("")+
         '<div class="sj-sec"><h3>괘를 어떻게 세웠나</h3><p>토정비결은 나이와 태어난 음력 달·날에 그해·그달·그날의 정해진 숫자를 더해 세 자리 괘를 만듭니다. 각 자리는 8, 6, 3으로 나눈 나머지예요.<br><br>'+
         '첫째 자리 '+r.code[0]+' = (세는 나이 '+r.age+' + 그해 숫자 '+r.taese+' · '+yg+'년) ÷ 8의 나머지<br>'+
@@ -54,5 +54,5 @@ TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"
         bindShare(el,Y+" 토정비결",Y+"년 내 토정비결은 "+r.code+"괘 — "+g.title+". 동네보살에서 확인:");
         saveScore(el,Y+"토정비결",Y+" 토정비결","한 해 신수를 세운 괘",r.code,"토정비결 괘",g.title,g.sum,g.grade==="흉"?"worry":g.grade==="길"?"newyear":"scroll");
         askFx(el,{grade:g.grade==="흉"?"주의":g.grade==="평"?"평온":"길"});
-      }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했네. 잠시 뒤 다시 눌러 주게.</p>';});}
-    askWire(el,go,["음력 생일을 찾는다","그해 달력에서 해·달·날의 숫자를 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았네.");birthDial(el,"#d");}});
+      }).catch(function(){out.innerHTML='<p class="note">괘 풀이를 불러오지 못했어요. 잠시 뒤 다시 눌러 주세요.</p>';});}
+    askWire(el,go,["음력 생일을 찾는다","그해 달력에서 해·달·날의 숫자를 센다","상·중·하괘를 세운다"],"올해 괘를 아직 안 뽑았어요.");birthDial(el,"#d");}});

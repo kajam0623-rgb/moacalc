@@ -19,7 +19,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var ST_RANGE=["3.21~4.19","4.20~5.20","5.21~6.21","6.22~7.22","7.23~8.22","8.23~9.22","9.23~10.22","10.23~11.21","11.22~12.21","12.22~1.19","1.20~2.18","2.19~3.20"];
   var ST_ELE=["불","흙","공기","물"]; // 별자리 index%4
   var ST_RULER=["화성","금성","수성","달","태양","수성","금성","화성","목성","토성","토성","목성"]; // 전통 지배성
-  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자일세. 속도가 곧 무기야.","한번 정하면 끝까지 지키는 뚝심이 있네. 감각과 실속을 함께 챙기지.","호기심과 말솜씨가 살아 있는 전달자일세. 사람과 정보가 늘 모여드네.","마음의 온도를 먼저 읽는 보호자일세. 내 사람에게는 한없이 깊지.","존재만으로 무대를 만드는 사람일세. 인정받을 때 가장 빛나지.","작은 어긋남을 먼저 알아보는 정밀한 눈을 가졌네. 완성도가 곧 자존심이지.","균형과 관계를 조율하는 사람일세. 아름다움과 공정함을 함께 보네.","한 번 파고들면 끝을 보는 집중력이 있네. 겉과 속의 깊이가 남다르지.","시야가 넓고 낙천적인 탐험가일세. 자유로울 때 가장 신나지.","시간을 자기 편으로 만드는 전략가일세. 늦어도 결국 올라서네.","남과 다른 각도로 보는 혁신가일세. 규칙보다 이유를 먼저 묻지.","경계 없이 스며드는 공감력이 있네. 예술과 직관이 강점일세."];
+  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자예요. 속도가 곧 무기예요.","한번 정하면 끝까지 지키는 뚝심이 있어요. 감각과 실속을 함께 챙겨요.","호기심과 말솜씨가 살아 있는 전달자예요. 사람과 정보가 늘 모여들어요.","마음의 온도를 먼저 읽는 보호자예요. 내 사람에게는 한없이 깊어요.","존재만으로 무대를 만드는 사람이에요. 인정받을 때 가장 빛나요.","작은 어긋남을 먼저 알아보는 정밀한 눈을 가졌어요. 완성도가 곧 자존심이에요.","균형과 관계를 조율하는 사람이에요. 아름다움과 공정함을 함께 봐요.","한 번 파고들면 끝을 보는 집중력이 있어요. 겉과 속의 깊이가 남달라요.","시야가 넓고 낙천적인 탐험가예요. 자유로울 때 가장 신나요.","시간을 자기 편으로 만드는 전략가예요. 늦어도 결국 올라서요.","남과 다른 각도로 보는 혁신가예요. 규칙보다 이유를 먼저 물어요.","경계 없이 스며드는 공감력이 있어요. 예술과 직관이 강점이에요."];
   var ST_ELE_RULERS={"불":["태양","화성","목성"],"흙":["금성","수성","토성"],"공기":["수성","금성","토성"],"물":["달","화성","목성"]};
   var WD_KO=["일","월","화","수","목","금","토"];
   var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
@@ -68,7 +68,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "壬(임) — 바다처럼 깊고 넓게 흐르는 물.",
    "癸(계) — 스며들어 적시는 빗물과 이슬."];
   // 오행별 전통 상징 — [행운색, 방위, 행운숫자]
-  var SJ_LUCK=[["청록·초록","동쪽","3·8"],["빨강·자주","남쪽","2·7"],["노랑·베이지","중앙","5·10"],["흰색·은색","서쪽","4·9"],["검정·남색","북쪽","1·6"]];
+  var SJ_LUCK=[["청록·초록","동쪽","3·8"],["빨강·자주","남쪽","2·7"],["노랑·베이에요","중앙","5·10"],["흰색·은색","서쪽","4·9"],["검정·남색","북쪽","1·6"]];
   var SJ_HOUR=["23~01시","01~03시","03~05시","05~07시","07~09시","09~11시","11~13시","13~15시","15~17시","17~19시","19~21시","21~23시"];
   function sjYukhap(b){return (b===0)?1:(b===1)?0:13-b;} // 육합 짝 지지(자축·인해·묘술·진유·사신·오미)
   function sjJdn(y,m,d){var a=Math.floor((14-m)/12),Y=y+4800-a,M=m+12*a-3;
@@ -179,18 +179,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return '<img class="sj-art" width="520" height="520" src="img/char/'+file+'.webp" alt="'+escH(alt||"")+'" loading="lazy" onerror="this.remove()">';}
   // 십이운성 무드 — 하루의 '온도'를 총운에 접합 (오늘의 운세 총운 조립용, SJ_UN_DESC와 별개)
   var UN_MOOD={
-   "장생":"몸이 가볍고 마음이 열리는 날이라 새로 시작하는 일에 힘이 붙네. 첫걸음을 내딛기 좋은 하루일세.",
-   "목욕":"감정이 풍부해져서 매력이 살아나는 날일세. 다만 기분 따라 정하면 마음이 흔들리기 쉬우니 큰 결정은 한 번 더 생각하게.",
-   "관대":"의욕이 차오르고 자신감도 넘치는 날이야. 다만 마음이 앞서 서두르면 마무리가 거칠어지니 끝맺음을 한 번 더 살펴보게.",
-   "건록":"발밑이 단단해서 마음이 놓이는 날일세. 지금 손에 쥔 일부터 하나씩 끝내면 하루가 알차게 쌓이네.",
-   "제왕":"기운이 가장 높이 오른 날이라 밀어붙이는 힘이 아주 좋네. 속도만 조금 늦추면 더 멀리 가네.",
-   "쇠":"속도를 줄이고 안을 차분히 다지기 좋은 날이야. 새 일을 벌이기보다 정리하고 돌보는 일이 잘 어울리네.",
-   "병":"마음결이 섬세하고 예민해지는 날일세. 몸이 보내는 신호가 잘 느껴지니 컨디션부터 먼저 챙겨 주면 하루가 편안하네.",
-   "사":"생각이 안으로 깊어지는 날이라 혼자 집중하는 일에서 좋은 성과가 나네. 조용한 시간을 만들어 보게.",
-   "묘":"모아 둔 것을 거두고 챙기는 날일세. 새 판을 벌이기보다 가진 것을 지키고 정리하면 마음이 차분해지네.",
-   "절":"흐름이 잠시 멈췄다가 새로 이어지는 날이야. 변화가 와도 놀라지 말고 새 출발의 신호로 받아들이게. 다시 시작하기 좋은 때일세.",
-   "태":"새로운 생각이 씨앗처럼 자리를 잡는 날일세. 바로 실행하기보다 적어 두고 키워 가기 좋은 때일세.",
-   "양":"보호받으며 차분히 준비하는 날이야. 서두르지 말고 배우고 쉬며 힘을 기르게. 몸도 마음도 조금씩 자라는 하루일세."};
+   "장생":"몸이 가볍고 마음이 열리는 날이라 새로 시작하는 일에 힘이 붙어요. 첫걸음을 내딛기 좋은 하루예요.",
+   "목욕":"감정이 풍부해져서 매력이 살아나는 날이에요. 다만 기분 따라 정하면 마음이 흔들리기 쉬우니 큰 결정은 한 번 더 생각해 보세요.",
+   "관대":"의욕이 차오르고 자신감도 넘치는 날이에요. 다만 마음이 앞서 서두르면 마무리가 거칠어지니 끝맺음을 한 번 더 살펴보세요.",
+   "건록":"발밑이 단단해서 마음이 놓이는 날이에요. 지금 손에 쥔 일부터 하나씩 끝내면 하루가 알차게 쌓여요.",
+   "제왕":"기운이 가장 높이 오른 날이라 밀어붙이는 힘이 아주 좋아요. 속도만 조금 늦추면 더 멀리 가요.",
+   "쇠":"속도를 줄이고 안을 차분히 다지기 좋은 날이에요. 새 일을 벌이기보다 정리하고 돌보는 일이 잘 어울려요.",
+   "병":"마음결이 섬세하고 예민해지는 날이에요. 몸이 보내는 신호가 잘 느껴지니 컨디션부터 먼저 챙겨 주면 하루가 편안해요.",
+   "사":"생각이 안으로 깊어지는 날이라 혼자 집중하는 일에서 좋은 성과가 나요. 조용한 시간을 만들어 보세요.",
+   "묘":"모아 둔 것을 거두고 챙기는 날이에요. 새 판을 벌이기보다 가진 것을 지키고 정리하면 마음이 차분해져요.",
+   "절":"흐름이 잠시 멈췄다가 새로 이어지는 날이에요. 변화가 와도 놀라지 말고 새 출발의 신호로 받아들이세요. 다시 시작하기 좋은 때예요.",
+   "태":"새로운 생각이 씨앗처럼 자리를 잡는 날이에요. 바로 실행하기보다 적어 두고 키워 가기 좋은 때예요.",
+   "양":"보호받으며 차분히 준비하는 날이에요. 서두르지 말고 배우고 쉬며 힘을 기르세요. 몸도 마음도 조금씩 자라는 하루예요."};
   var SJ_JS=[11,6,2,9,2,9,5,0,8,3]; // 천간별 장생 지지
   function sjUnseong(s,b){var js=SJ_JS[s];return SJ_UN[(s%2===0)?((b-js+12)%12):((js-b+12)%12)];}
   // 신살 — 룩업 테이블 (일간·삼합 기준)
@@ -232,11 +232,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return {A:A,B:B,mix:mix,steps:steps,score:score};}
   // 점수대별 유형과 풀이 문장(90/75/55/35 — build_site.js 의 점수대별 표와 같아야 한다)
   function nmBand(s){
-    return s>=90?{type:"운명형",msg:"운명이라 불러도 될 점수일세! 오늘 바로 연락해 보게.",good:"서로의 리듬이 거의 같네. 말하지 않아도 다음 행동이 짐작되니 함께 있는 시간이 참 편안하지.",care:"너무 닮아서 새로움이 줄 수 있으니, 둘 다 미뤄 두던 일을 함께 해 보면 새 기운이 생기네.",tip:"이 정도로 잘 맞으면 표현을 아끼기 쉽네. 당연한 것도 말로 확인하는 습관이 이 관계를 오래 지켜 주지."}
-    : s>=75?{type:"안정형",msg:"아주 잘 어울리는 짝이야. 함께 있으면 웃음이 끊이지 않겠네.",good:"기본 호흡이 잘 맞는 조합일세. 큰 갈등 없이 오래 이어지는 사이야.",care:"무난함에 익숙해지면 서로의 변화를 놓치기 쉬우니, 눈여겨보고 한마디 건네 보게.",tip:"가끔 새로운 것을 함께 해 보게. 이 조합은 자극이 조금만 더해져도 다시 반짝이네."}
-    : s>=55?{type:"성장형",msg:"함께 무르익는 궁합일세. 반은 하늘이, 반은 두 사람이 만들어 가네.",good:"처음엔 낯설어도 시간이 지날수록 서로에게 맞춰지는 조합일세.",care:"맞춰 가는 동안 한쪽이 더 양보한다고 느낄 수 있으니 고마운 마음을 자주 말해 주게.",tip:"서로 다른 점은 고치려 들지 말고 규칙으로 정해 보게. 이 조합은 대화의 양이 좋은 결과를 만드네."}
-    : s>=35?{type:"밀당형",msg:"밀고 당기는 재미가 있는 사이야. 다름이 매력이 될 걸세.",good:"끌리는 힘과 서로를 궁금해하는 힘이 함께 있네. 지루할 틈이 없는 조합이야.",care:"감정의 폭이 커서 뜨거울 때와 식을 때의 온도차가 있으니, 그럴 땐 잠깐 쉬었다 이야기해 보게.",tip:"화가 난 상태에서는 결론을 내지 말고 마음이 가라앉은 뒤에 말하게. 이 조합은 타이밍만 맞춰도 훨씬 좋아지네."}
-    : {type:"도전형",msg:"불꽃이 튀는 짝일세! 다른 만큼 더 끌리는 법이지.",good:"서로 완전히 다른 결을 가진 조합일세. 배울 것이 많은 만큼 함께 자라기 좋은 사이야.",care:"기본 바탕이 달라 같은 말도 다르게 들릴 수 있으니, 뜻을 한 번 더 물어보는 습관이 도움이 되네.",tip:"이 놀이의 점수는 낮아도 실제 관계와는 별개일세. 다른 만큼 서로에게 없는 것을 건네 줄 수 있지."};}
+    return s>=90?{type:"운명형",msg:"운명이라 불러도 될 점수예요! 오늘 바로 연락해 보세요.",good:"서로의 리듬이 거의 같아요. 말하지 않아도 다음 행동이 짐작되니 함께 있는 시간이 참 편안해요.",care:"너무 닮아서 새로움이 줄 수 있으니, 둘 다 미뤄 두던 일을 함께 해 보면 새 기운이 생겨요.",tip:"이 정도로 잘 맞으면 표현을 아끼기 쉬워요. 당연한 것도 말로 확인하는 습관이 이 관계를 오래 지켜 줘요."}
+    : s>=75?{type:"안정형",msg:"아주 잘 어울리는 짝이에요. 함께 있으면 웃음이 끊이지 않겠어요.",good:"기본 호흡이 잘 맞는 조합이에요. 큰 갈등 없이 오래 이어지는 사이에요.",care:"무난함에 익숙해지면 서로의 변화를 놓치기 쉬우니, 눈여겨보고 한마디 건네 보세요.",tip:"가끔 새로운 것을 함께 해 보세요. 이 조합은 자극이 조금만 더해져도 다시 반짝여요."}
+    : s>=55?{type:"성장형",msg:"함께 무르익는 궁합이에요. 반은 하늘이, 반은 두 사람이 만들어 가요.",good:"처음엔 낯설어도 시간이 지날수록 서로에게 맞춰지는 조합이에요.",care:"맞춰 가는 동안 한쪽이 더 양보한다고 느낄 수 있으니 고마운 마음을 자주 말해 주세요.",tip:"서로 다른 점은 고치려 들지 말고 규칙으로 정해 보세요. 이 조합은 대화의 양이 좋은 결과를 만들어요."}
+    : s>=35?{type:"밀당형",msg:"밀고 당기는 재미가 있는 사이에요. 다름이 매력이 될 거예요.",good:"끌리는 힘과 서로를 궁금해하는 힘이 함께 있어요. 지루할 틈이 없는 조합이에요.",care:"감정의 폭이 커서 뜨거울 때와 식을 때의 온도차가 있으니, 그럴 땐 잠깐 쉬었다 이야기해 보세요.",tip:"화가 난 상태에서는 결론을 내지 말고 마음이 가라앉은 뒤에 말해 보세요. 이 조합은 타이밍만 맞춰도 훨씬 좋아져요."}
+    : {type:"도전형",msg:"불꽃이 튀는 짝이에요! 다른 만큼 더 끌리는 법이에요.",good:"서로 완전히 다른 결을 가진 조합이에요. 배울 것이 많은 만큼 함께 자라기 좋은 사이에요.",care:"기본 바탕이 달라 같은 말도 다르게 들릴 수 있으니, 뜻을 한 번 더 물어보는 습관이 도움이 돼요.",tip:"이 놀이의 점수는 낮아도 실제 관계와는 별개예요. 다른 만큼 서로에게 없는 것을 건네 줄 수 있어요."};}
   /*NM-END*/
   /* 궁합 깊이 있는 풀이 — 원고 D(content_gunghap.js → gh/deep.json)에서 두 사람의 명식에 맞는 문장을 골라 잇는 순수 함수.
      엔진에 둔 이유: verify.js 가 무작위 쌍으로 검사한다. 이름 토큰은 {B:이/가} 꼴(받침 있으면 앞, 없으면 뒤)로 조사를 맞춘다 */
@@ -383,7 +383,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       box.innerHTML='<h3>나와 사주가 닮은 유명인</h3>'+rows.map(function(x){return '<div class="exbox" style="margin-top:8px"><b>'+x.r[0]+'</b> <span style="color:var(--muted);font-size:13px">'+x.r[2]+' · '+x.r[1]+'</span><span style="float:right;font-weight:700">닮은 정도 '+x.s+'점</span><p style="margin:6px 0 0;font-size:14px">'+(x.why.length?x.why.join(" · "):"전체 기운의 짜임이 비슷함")+'</p></div>';}).join("")+
         '<button type="button" class="ttibtn sj-celeb-share" style="margin-top:10px">닮은 유명인 친구한테 자랑하기</button>'+'<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">유명인은 태어난 시각을 모르는 경우가 많아 연·월·일 세 기둥만 비교했어요. 같은 일간 30점·일주 20점·태어난 계절 20점·오행 구성 30점으로 매겼고, 생일은 위키데이터 공개 자료예요. 재미로 봐 주세요.</p>';
       var sb=box.querySelector(".sj-celeb-share");if(sb&&rows[0]){var idle=sb.textContent;sb.addEventListener("click",function(){try{track("share_click",{tool:"celeb"});}catch(e){}
-        shareOut(sb,"동네보살 — 사주 닮은 유명인","내 사주가 "+rows[0].r[0]+josa(rows[0].r[0],"랑/이랑")+" "+rows[0].s+"점 닮았대! 너는 누구랑 닮았는지 봐 봐 → "+location.origin+"/saju.html?from=share",idle);});}}
+        shareOut(sb,"동네보살 — 사주 닮은 유명인","내 사주가 "+rows[0].r[0]+josa(rows[0].r[0],"랑/이랑")+" "+rows[0].s+"점 닮았대요! 너는 누구랑 닮았는지 봐 봐 → "+location.origin+"/saju.html?from=share",idle);});}}
     if(SJ_CELEB){draw();return;}
     if(typeof fetch==="function")fetch("sj/celeb.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){SJ_CELEB=j;draw();}}).catch(function(){});}
   // 분야별 대운 그래프(2026-10-09, 경쟁 서비스 벤치마킹) — 대운마다 0~100 참고 점수.
@@ -462,7 +462,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "문창귀인":"학문과 글재주의 별이에요. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나요.",
    "도화살":"매력과 인기의 별이에요. 사람을 끄는 힘이 강해 예술·연예·서비스·영업 쪽에서 강점이 돼요.",
    "역마살":"이동과 변화의 별이에요. 해외든 출장이든 이사든 유통이든, 움직이는 일에서 기회가 열려요.",
-   "화개살":"혼자 깊어지는 시간과 예술의 별이에요. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려.",
+   "화개살":"혼자 깊어지는 시간과 예술의 별이에요. 혼자 깊이 파고드는 힘이 있어 연구·종교·예술·전문직에 어울려요.",
    "양인살":"승부에 강한 기운이에요. 결단력과 추진력이 뛰어나니 차분히 벼려서 쓰면 남을 지키는 힘이 돼요.",
    "백호대살":"강렬한 기운의 별이에요. 승부처에서 힘을 내니 건강과 안전만 곁들여 챙기면 든든해요.",
    "괴강살":"우두머리의 기운이에요. 카리스마와 리더십이 강해 이끄는 자리에서 빛나요.",
@@ -657,7 +657,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       // 상위 %는 자랑할 만할 때만(60% 안). 평범한 값은 사주 한 장 요약처럼 싣지 않는다
       (o.pct&&o.pct.v<=60?'<div class="ss-pcs"><div class="ss-pc"><b>상위 <em>'+o.pct.v+'</em>%</b><span>'+escH(o.pct.t)+'</span></div></div><p class="ss-note">'+escH(o.pct.n)+'</p>':'')+
       '<div class="ss-h"><b>四軸</b> 어디에 힘이 실렸나</div>'+svg+
-      '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'일세.</p>'+
+      '<p class="ss-line">가장 힘 있는 쪽은 '+escH(mx[0])+'('+mx[1]+'점)'+(mx!==mn?', 공을 들이면 좋은 쪽은 '+escH(mn[0])+'('+mn[1]+'점)':'')+'이에요.</p>'+
       '<div class="ss-spoon"><b>풀이 한 스푼</b>'+escH(o.spoon)+'</div><button type="button" class="ss-save">이 요약 이미지로 저장</button></div>';}
   /* 웹툰 칸 — 풀이 덩어리 사이에 아기보살이 말풍선으로 길을 잡아 준다. 라벨 첫머리로 자리를 찾고, 못 찾으면 그 칸은 건너뛴다 */
   function sjToonSaju(o){
@@ -827,7 +827,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function paint(){var c={맞음:0,애매:0,다름:0};
       box.querySelectorAll(".yr.past").forEach(function(r){var v=mine[r.dataset.y];
         r.querySelectorAll(".yr-fb span").forEach(function(s){s.classList.toggle("on",s.dataset.v===v);});if(v)c[v]++;});
-      var n=c.맞음+c.애매+c.다름;sum.textContent=n?"적어 둔 "+n+"해 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름+". 이 기록은 이 기기에만 있네.":"";}
+      var n=c.맞음+c.애매+c.다름;sum.textContent=n?"적어 둔 "+n+"해 가운데 맞았다 "+c.맞음+" · 애매 "+c.애매+" · 달랐다 "+c.다름+". 이 기록은 이 기기에만 있어요.":"";}
     box.addEventListener("click",function(e){var s=e.target.closest(".yr-fb span");if(!s)return;var yy=s.closest(".yr").dataset.y;
       mine[yy]=mine[yy]===s.dataset.v?undefined:s.dataset.v;all[bkey]=mine;try{localStorage.setItem("dnbs_yfb",JSON.stringify(all));}catch(_){}paint();});
     paint();}
@@ -838,11 +838,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       var n=(el.querySelector(".gh-nick").value||"").trim().slice(0,10);
       fetch("/api/invite",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({p:[P.y.s,P.y.b,P.m.s,P.m.b,P.d.s,P.d.b],g:g,n:n})})
       .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(j){busy=false;track("invite_make",{});
-        var url=location.origin+"/gunghap.html?i="+j.id,msg=(n?n+josa(n,"가/이"):"친구가")+" 동네보살에서 우리 사주 궁합 보자고 보냈어. 생일만 넣으면 돼!";
-        out.innerHTML='링크를 만들었네. 7일 동안 열리네.<br><a href="'+url+'">'+url+'</a>';
+        var url=location.origin+"/gunghap.html?i="+j.id,msg=(n?n+josa(n,"가/이"):"친구가")+" 동네보살에서 우리 사주 궁합 보자고 보냈어요. 생일만 넣으면 돼요!";
+        out.innerHTML='링크를 만들었어요. 7일 동안 열려요.<br><a href="'+url+'">'+url+'</a>';
         if(navigator.share)navigator.share({title:"우리 궁합 보자",text:msg,url:url}).catch(function(){});
-        else if(navigator.clipboard)navigator.clipboard.writeText(msg+" "+url).then(function(){out.insertAdjacentHTML("beforeend","<br>주소를 복사했네. 카톡에 붙여 넣게.");},function(){});})
-      .catch(function(){busy=false;out.textContent="링크를 만들지 못했네. 잠시 뒤 다시 눌러 보게.";});}
+        else if(navigator.clipboard)navigator.clipboard.writeText(msg+" "+url).then(function(){out.insertAdjacentHTML("beforeend","<br>주소를 복사했어요. 카톡에 붙여 넣으세요.");},function(){});})
+      .catch(function(){busy=false;out.textContent="링크를 만들지 못했어요. 잠시 뒤 다시 눌러 보세요.";});}
     b.addEventListener("click",make);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();make();}});}
   function bindAiCopy(el,text){
     var b=el.querySelector(".ai-copy"),msg=el.querySelector(".ai-done");if(!b)return;
@@ -919,13 +919,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sgDeep(a,b,D){var k=(b-a+12)%12,dist=Math.min(k,12-k),ea=Math.min(a%4,b%4),eb=Math.max(a%4,b%4),rA=ST_RULER[a],rB=ST_RULER[b],
       rFit=(ST_ELE_RULERS[ST_ELE[b%4]].indexOf(rA)>=0?1:0)+(ST_ELE_RULERS[ST_ELE[a%4]].indexOf(rB)>=0?1:0),P=D.pair[Math.min(a,b)+"-"+Math.max(a,b)];
     return {secs:[
-      {k:"core",h:"두 사람은 이런 사이야",p:[P.core]},
+      {k:"core",h:"두 사람은 이런 사이에요",p:[P.core]},
       {k:"good",h:"함께하면 더 빛나는 순간",p:[P.good]},
       {k:"el",h:"원소로 보면 — "+ST_ELE[a%4]+" × "+ST_ELE[b%4],p:[D.el[ST_ELE[ea]+"-"+ST_ELE[eb]]]},
       {k:"asp",h:"하늘에서의 거리 — "+sgAng(dist),p:[D.asp[dist]]},
       {k:"ruler",h:"수호성으로 보면",p:[ghFill(D.ruler[rFit],{ra:rA,rb:rB})],n:a===b?ST_KO[a]+"의 수호성은 "+rA+"입니다.":ST_KO[a]+"의 수호성은 "+rA+", "+ST_KO[b]+"의 수호성은 "+rB+"입니다."},
-      {k:"tip",h:"이렇게 하면 더 좋아지네",p:[P.tip]}],dist:dist,rFit:rFit};}
-  /* 공망 찾기 깊이 풀이 — 원고 D(content_gongmang.js → gm/deep.json)에서 자네 순·남는 두 글자·비어 있는 자리·채워지는 해에 맞는 글을 골라 잇는 순수 함수.
+      {k:"tip",h:"이렇게 하면 더 좋아져요",p:[P.tip]}],dist:dist,rFit:rFit};}
+  /* 공망 찾기 깊이 풀이 — 원고 D(content_gongmang.js → gm/deep.json)에서 내 순·남는 두 글자·비어 있는 자리·채워지는 해에 맞는 글을 골라 잇는 순수 함수.
      P 사주 기둥, G = sjGongmang(일주), Y = sjGongmang(연주), year 는 채워지는 해를 세기 시작할 양력 해. 엔진 옆에 둔 이유: verify.js 가 60일주 × 시각 유무로 검사한다 */
   function gmDeep(P,G,Y,year,D){
     function nm(b){return SJ_B[b]+"("+SJ_BH.charAt(b)+")";}
@@ -941,11 +941,11 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적어요. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
         (yh.length?'내 사주 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'예요.':'내 사주 다른 자리 중에는 거기 드는 글자가 없어요.');
     return {secs:[
-      {k:"intro",h:"공망이 뭐야?",p:[ghFill(D.intro,{sun:G.sun,start:SJ_S[0]+SJ_B[G.start],end:SJ_S[9]+SJ_B[(G.start+9)%12],ea:e1,eb:e2})]},
+      {k:"intro",h:"공망이 뭐예요?",p:[ghFill(D.intro,{sun:G.sun,start:SJ_S[0]+SJ_B[G.start],end:SJ_S[9]+SJ_B[(G.start+9)%12],ea:e1,eb:e2})]},
       {k:"two",h:"내 공망 두 글자 — "+e1+" · "+e2,p:[B1.gist.replace(e1,'<b>'+e1+'</b>')+' '+B1.empty,B2.gist.replace(e2,'<b>'+e2+'</b>')+' '+B2.empty]},
       {k:"pos",h:"내 사주에서 비어 있는 자리",p:pos,n:P.h?"":D.nohour},
       {k:"years",h:"공망이 채워지는 해",p:[D.years.head,lines.join("<br>"),D.years.tail]},
-      {k:"read",h:"공망은 이렇게 읽으면 편하네",p:D.read.slice()},
+      {k:"read",h:"공망은 이렇게 읽으면 편해요",p:D.read.slice()},
       {k:"year",h:"연주 기준으로도 보면(참고)",p:[yearNote]}]};}
   /* 토정비결 결과 구성 — 원고 g(content_tojeong.js → tj/<괘>.json)로 한눈에·총운·분야별·실천·달 표·달별 풀이를 만든다.
      Y 볼 해, cur 이번 달(음력, 없으면 0), starts[m] = [양력 월, 일] 그 음력 달이 시작하는 날. 순수 함수 — verify.js 가 144괘 전부로 검사한다 */
@@ -954,9 +954,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     secs.push({k:"sum",h:"올해 한눈에",p:['<span class="tj-sum">'+g.sum+'</span>','<b class="tj-l">옛 그림 풀이</b>'+g.image]});
     secs.push({k:"gen",h:Y+"년 총운",p:[g.chongun]});
     secs.push({k:"area",h:"분야별로 보면",p:['<b class="tj-l">돈</b>'+g.money,'<b class="tj-l">일</b>'+g.work,'<b class="tj-l">사람·사랑</b>'+g.love,'<b class="tj-l">몸과 마음</b>'+g.health]});
-    secs.push({k:"tips",h:"이렇게 하면 더 좋아지네",list:g.tips.slice()});
+    secs.push({k:"tips",h:"이렇게 하면 더 좋아져요",list:g.tips.slice()});
     for(m=1;m<=12;m++){var f=g.flow.charAt(m-1),st=starts&&starts[m];cells.push({m:m,f:f,lab:TJ_SHORT[f],d:st?st[0]+"."+st[1]+"~":"",cur:m===cur});}
-    secs.push({k:"grid",h:"달마다 흐름 한눈에",grid:cells,n:"칸 아래 날짜는 그 음력 달이 시작하는 양력 날짜일세. 달마다 자세한 풀이는 아래에 있네."});
+    secs.push({k:"grid",h:"달마다 흐름 한눈에",grid:cells,n:"칸 아래 날짜는 그 음력 달이 시작하는 양력 날짜예요. 달마다 자세한 풀이는 아래에 있어요."});
     for(i=1;i<=12;i++)order.push(i);if(cur)order=[cur].concat(order.filter(function(x){return x!==cur;}));
     order.forEach(function(mo){var st=starts&&starts[mo],t=g.months[mo],sp=/^(.+?[.!?])\s+([\s\S]*)$/.exec(t);
       secs.push({k:"m"+mo,month:true,h:(mo===cur?"이번 달 — ":"")+"음력 "+mo+"월"+(st?" (양력 "+st[0]+"월 "+st[1]+"일부터)":"")+" · "+TJ_FLOW[g.flow.charAt(mo-1)],p:sp?[sp[1],sp[2]]:[t]});});
@@ -970,13 +970,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
   function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
     return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
-  // 띠·별자리 운세 맨 위에 붙이는 "자네 개인 오늘" — 생일을 모르면 빈 문자열
+  // 띠·별자리 운세 맨 위에 붙이는 "내 개인 오늘" — 생일을 모르면 빈 문자열
   function tfPersonalBox(birth){
     var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";
     var t=tfToday(+p[0],+p[1],+p[2]);
-    return '<div class="tf-me"><div class="tf-me-k">자네 개인 오늘 운세 <span>오늘의 운세 기준</span></div>'+
+    return '<div class="tf-me"><div class="tf-me-k">내 개인 오늘 운세 <span>오늘의 운세 기준</span></div>'+
       '<div class="tf-me-v">'+t.score+'<small>점 · '+t.grade+' · '+t.rel+'의 날</small></div>'+
-      '<p>아래는 같은 무리로 태어난 사람 모두에게 똑같이 나오는 공통 흐름일세. 자네 하루의 기준은 개인 운세야. 둘이 엇갈리면 개인 쪽을 따르게. <a href="todayfortune.html">개인 운세 자세히 →</a></p></div>';}
+      '<p>아래는 같은 무리로 태어난 사람 모두에게 똑같이 나오는 공통 흐름이에요. 내 하루의 기준은 개인 운세예요. 둘이 엇갈리면 개인 쪽을 따르세요. <a href="todayfortune.html">개인 운세 자세히 →</a></p></div>';}
   function track(ev,p){try{if(typeof gtag==="function")gtag("event",ev,p||{});}catch(e){}try{navigator.sendBeacon("/api/hit",JSON.stringify(ev==="js_error"&&p?{e:ev,m:p.m,f:p.f,p:location.pathname}:{e:ev}));}catch(e){}}
   // P2-4 최소 에러 모니터링 — 외부 서비스 없이 GA4 이벤트로만 수집
   if(typeof window!=="undefined"){
@@ -995,16 +995,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function diaryAdd(e){try{var a=JSON.parse(localStorage.getItem("dnbs_diary")||"[]"),n=new Date(),k=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");
     var old=a.filter(function(x){return x.d===k&&x.t===e.t;})[0];e.d=k;if(old&&old.v)e.v=old.v;
     a=a.filter(function(x){return !(x.d===k&&x.t===e.t);});a.unshift(e);localStorage.setItem("dnbs_diary",JSON.stringify(a.slice(0,120)));}catch(_){}}
-  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'<span>이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀네. 며칠 뒤 맞았는지 눌러 보게.</span></p>';}
+  function diaryNote(){return '<p class="diary-note">'+bosalImg("diary","dn-bosal","")+'<span>이 결과는 <a href="diary.html">운세 일기</a>에 적어 뒀어요. 며칠 뒤 맞았는지 눌러 보세요.</span></p>';}
   /* 아기보살 — 동네보살의 얼굴. 자세별 그림(img/bosal/<자세>.webp)을 자리마다 골라 쓴다.
      점수로 고를 때: 85 이상 만세(cheer), 60 이상 미소(smile), 그 아래 걱정하며 토닥(worry) */
   function bosalImg(pose,cls,alt){return '<img class="bosal'+(cls?" "+cls:"")+'" src="img/bosal/'+pose+'.webp" alt="'+(alt||"아기보살")+'" loading="lazy" decoding="async" onerror="this.remove()">';}
   function bosalPose(score){return score>=85?"cheer":score>=60?"smile":"worry";}
   function bosalSay(pose,html){return '<div class="bosal-say">'+bosalImg(pose,"bs-av")+'<div class="bs-b">'+html+'</div></div>';}
-  var BOSAL_LINE=[[85,"좋은 날일세! 오늘은 자네가 먼저 움직여도 되네."],[75,"괜찮은 흐름이야. 하던 일에 힘을 실어 보게."],[60,"무난한 날일세. 서두르지만 않으면 되네."],[0,"천천히 가면 더 좋은 날이네. 아래 '조언'부터 먼저 읽고 가게."]];
+  var BOSAL_LINE=[[85,"좋은 날이에요! 오늘은 먼저 움직여도 돼요."],[75,"괜찮은 흐름이에요. 하던 일에 힘을 실어 보세요."],[60,"무난한 날이에요. 서두르지만 않으면 돼요."],[0,"천천히 가면 더 좋은 날이에요. 아래 '조언'부터 먼저 읽고 가세요."]];
   function askWait(msg){
-    return '<div class="ask-wait">'+bosalImg("smile","aw-bosal","자네를 기다리는 아기보살")+'<div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤네.")+'</div>'+
-      '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르게.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나오네.</div></div>';}
+    return '<div class="ask-wait">'+bosalImg("smile","aw-bosal","나를 기다리는 아기보살")+'<div class="ic">🔮</div><div class="t">'+(msg||"아직 안 물어봤어요.")+'</div>'+
+      '<div class="d">생년월일을 맞춘 뒤 위 버튼을 누르세요.<br>같은 날 같은 생일이면 몇 번을 눌러도 같은 답이 나와요.</div></div>';}
   var ASK_GANJI="甲乙丙丁戊己庚辛壬癸子丑寅卯辰巳午未申酉戌亥";
   // 버튼을 누른 뒤 결과까지 약 1초. 릴이 돌고 짚는 순서가 한 줄씩 지나간다.
   function askThink(out,btn,steps,done){
@@ -1080,21 +1080,21 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     return {n:n,fresh:true};}
   function streakHtml(s){
     var cal="";for(var i=0;i<7;i++)cal+='<i class="'+(i<Math.min(s.n,7)?"on":"")+'"></i>';
-    var msg=s.n<=1?"오늘부터 세어 보겠네. 내일도 오게.":
-      s.n<7?"자네, <b>"+s.n+"일</b> 연속으로 물어보러 왔군.":
-      "<b>"+s.n+"일</b> 연속일세. 이쯤이면 습관이야.";
+    var msg=s.n<=1?"오늘부터 세어 볼게요. 내일도 오세요.":
+      s.n<7?"<b>"+s.n+"일</b> 연속으로 물어보러 왔군요.":
+      "<b>"+s.n+"일</b> 연속이에요. 이쯤이면 습관이에요.";
     return '<div class="streak"><span>🔥</span><span>'+msg+'</span><span class="cal">'+cal+'</span></div>';}
   // ---------- 오늘의 부적 ----------
   // 하루 한 번만 열린다. 같은 날 다시 눌러도 같은 문장이 나오도록 날짜+점수로 뽑는다.
   var BUJEOK=[
-   ["막힌 문 앞에서 돌아서지 말 것","오늘 한 번 더 두드리면 열리는 문이 있네. 두 번은 말고 한 번만 더 하게."],
-   ["작게 시작한 것을 끝까지","크게 벌인 것보다 작게 끝낸 것이 오늘 자네를 살리네."],
-   ["말보다 한 박자 늦게","오늘 참은 한마디가 이번 주를 조용하게 만드네."],
-   ["먼저 연락하는 쪽이 이긴다","자존심은 내일도 쓸 수 있네. 오늘은 관계를 먼저 놓게."],
-   ["지갑은 닫고 귀는 열고","오늘 들어온 이야기는 값이 나가고, 오늘 나간 돈은 값이 없네."],
-   ["몸이 먼저 보낸 신호를 믿게","오늘 피곤한 건 게을러서가 아닐세. 일찍 눕게."],
-   ["아는 사람에게 물을 것","혼자 사흘 걸릴 일이 오늘은 한 통이면 풀리네."],
-   ["오늘 적어둔 것이 내일의 증거","머리에만 두지 말고 날짜 찍히는 곳에 남기게."]];
+   ["막힌 문 앞에서 돌아서지 말 것","오늘 한 번 더 두드리면 열리는 문이 있어요. 두 번은 말고 한 번만 더 해요."],
+   ["작게 시작한 것을 끝까지","크게 벌인 것보다 작게 끝낸 것이 오늘 나를 살려요."],
+   ["말보다 한 박자 늦게","오늘 참은 한마디가 이번 주를 조용하게 만들어요."],
+   ["먼저 연락하는 쪽이 이긴다","자존심은 내일도 쓸 수 있어요. 오늘은 관계를 먼저 놓으세요."],
+   ["지갑은 닫고 귀는 열고","오늘 들어온 이야기는 값이 나가고, 오늘 나간 돈은 값이 없어요."],
+   ["몸이 먼저 보낸 신호를 믿으세요","오늘 피곤한 건 게을러서가 아니에요. 일찍 누우세요."],
+   ["아는 사람에게 물을 것","혼자 사흘 걸릴 일이 오늘은 한 통이면 풀려요."],
+   ["오늘 적어둔 것이 내일의 증거","머리에만 두지 말고 날짜 찍히는 곳에 남기세요."]];
   function bujeokHtml(score,grade){
     var p=loadPrefs(),now=new Date(),key=now.getFullYear()+"-"+(now.getMonth()+1)+"-"+now.getDate();
     var idx=(now.getDate()+now.getMonth()*31+score)%BUJEOK.length,b=BUJEOK[idx];
@@ -1102,7 +1102,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(first)savePrefs({bjDay:key});
     return '<div class="bujeok">'+bosalImg("talisman","bj-bosal","부적을 든 아기보살")+'<div class="k">오늘의 부적 · '+(grade||"")+'</div>'+
       '<div class="w">'+b[0]+'</div><div class="m">'+b[1]+'</div>'+
-      '<div class="m" style="margin-top:12px;opacity:.6">'+(first?"오늘 몫은 이걸로 다 썼네. 내일 새로 한 장 나오네.":"오늘은 이미 받아 갔네. 부적은 하루 한 장일세.")+'</div></div>';}
+      '<div class="m" style="margin-top:12px;opacity:.6">'+(first?"오늘 몫은 이걸로 다 썼어요. 내일 새로 한 장 나와요.":"오늘은 이미 받아 갔어요. 부적은 하루 한 장이에요.")+'</div></div>';}
   // 결과 렌더 후 한 번에 거는 마무리 연출. o={score,grade,streak,bujeok}
   function askFx(el,o){
     var out=el.querySelector("#out");if(!out)return;o=o||{};
@@ -1110,7 +1110,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(o.sumO){out.insertAdjacentHTML("afterbegin",sumCard(o.sumO));var so=o.sumO,mx=so.axes.reduce(function(m,a){return a[1]>m[1]?a:m;});
       bindSave(el,{btn:".sj-sum .ss-save",ev:"sum_img",file:"한장요약",draw:function(cb){var bx=out.querySelector(".sj-sum"),tx=function(q){var n=bx&&bx.querySelector(q);return n?n.textContent:"";};
         cb(sumCanvas({ttl:so.ttl,sub:so.sub,arch:tx(".ss-arch-t")||so.arch,archd:tx(".ss-arch-d")||so.archd,chips:bx?[].map.call(bx.querySelectorAll(".ss-chips span"),function(n){return n.textContent;}):so.chips,
-        radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)일세.",
+        radar:{lab:so.axes.map(function(a){return a[0];}),val:so.axes.map(function(a){return a[1];}),top:100},line:"가장 힘 있는 쪽은 "+mx[0]+"("+mx[1]+"점)이에요.",
         pcts:so.pct&&so.pct.v<=60?[[so.pct.v,so.pct.t]]:[]}));}});}
     if(o.bujeok){
       // 공유 버튼 '앞'에 넣는다. parentNode 기준으로 넣으면 #out 밖으로 빠져나간다
@@ -1132,7 +1132,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var btn=el.querySelector("#go"),out=el.querySelector("#out");
     if(out)out.innerHTML=askWait(waitMsg);
     if(btn)btn.addEventListener("click",function(){if(seer)seerThink(out,btn,steps,go,seer);else askThink(out,btn,steps,go);});}
-  /* 꼬리질문 — 결과 뒤에 보살이 "더 궁금한 게 있나? 어떤 내용이야?" 하고 묻는다. 칩을 누르면 답이 나오고,
+  /* 꼬리질문 — 결과 뒤에 보살이 "더 궁금한 게 있나요? 어떤 내용이에요?" 하고 묻는다. 칩을 누르면 답이 나오고,
      그 답에서 이어지는 다음 질문을 또 내민다(pool[k].next). 처음 묻는 화면(재물·일 고르기, 타로 고민 고르기)은 그대로 두고 그 뒤에만 붙는다.
      cfg: {tool, intro, first:[키], skip:[이미 물은 키], load:function(cb), pool:{키:{label, next:[키], ans:function(){return html;}}}} */
   function tailAsk(host,cfg){
@@ -1148,7 +1148,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         (more?'<span class="tail-chip tail-more" role="button" tabindex="0" data-more="1">다른 것도 물어볼래</span>':"");}
     function offer(ids){
       var r=rest();
-      if(!r.length){chips.innerHTML='<p class="tail-end">궁금한 건 여기까지 다 짚었네. 다른 걸 또 보고 싶으면 위에서 다시 물어보게.</p>';return;}
+      if(!r.length){chips.innerHTML='<p class="tail-end">궁금한 건 여기까지 다 짚었어요. 다른 걸 또 보고 싶으면 위에서 다시 물어보세요.</p>';return;}
       var list=(ids||[]).filter(function(k){return cfg.pool[k]&&!asked[k];}).slice(0,3);
       if(!list.length)list=r.slice(0,3);
       draw(list,r.length>list.length);}
@@ -1165,7 +1165,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         var h="";try{h=q.ans();}catch(err){h="";}
         setTimeout(function(){
           slot.className="tail-a";
-          slot.innerHTML=h||'<p>이 물음에 답할 글을 아직 못 불러왔네. 잠시 뒤에 다시 물어보게.</p>';
+          slot.innerHTML=h||'<p>이 물음에 답할 글을 아직 못 불러왔어요. 잠시 뒤에 다시 물어보세요.</p>';
           if(typeof plainWords==="function")try{plainWords(slot);}catch(err){}
           try{slot.scrollIntoView({behavior:RMq?"auto":"smooth",block:"nearest"});}catch(err){}
           offer(q.next);},RMq?0:800);}
@@ -1178,7 +1178,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
     out.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
       '<img src="img/mascot-serious.webp" alt="진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
-      '<p class="tr-seer-t">'+(o.title||"보살이 짚어 보는 중일세")+'</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
+      '<p class="tr-seer-t">'+(o.title||"보살이 짚어 보는 중이에요")+'</p><p class="tr-seer-s" aria-live="polite"></p><div class="tr-seer-bar"><i></i></div></div>';
     try{out.scrollIntoView({behavior:"smooth",block:"center"});}catch(e){}
     var sEl=out.querySelector(".tr-seer-s"),bar=out.querySelector(".tr-seer-bar i");
     bar.style.transition="width "+total+"ms linear";
@@ -1277,7 +1277,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
          마크업째 훑으면 문장 끝을 못 찾는다. 뽑은 만큼은 텍스트 노드에서 지워 중복을 없앤다. */
       var key="",first=sec.querySelector("p");
       if(first){
-        /* <br>은 textContent에서 사라져 "…있네.기운이…"처럼 두 문장이 붙는다.
+        /* <br>은 textContent에서 사라져 "…있어요.기운이…"처럼 두 문장이 붙는다.
            그러면 첫 문장 찾기가 문장 경계를 놓치고 두 문장을 한꺼번에 집어 올린다.
            훑을 때는 <br>을 줄바꿈으로 세고, 지울 때는 글자 노드에서만 뺀다. */
         var segs=[],scan="";
@@ -1588,15 +1588,15 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     function fromSolar(){var v=inp.value||"";if(!/^\d{4}-\d{2}-\d{2}$/.test(v))return;var p=v.split("-");
       whenLib(function(K){var cal=new K();if(!cal.setSolarDate(+p[0],+p[1],+p[2]))return;var L=cal.getLunarCalendar();
         busy=true;q(".lp-y").value=L.year;q(".lp-m").value=L.month;q(".lp-d").value=L.day;q(".lp-l").checked=!!L.intercalation;busy=false;
-        note.textContent="지금 넣은 양력 "+(+p[0])+"년 "+(+p[1])+"월 "+(+p[2])+"일은 음력 "+L.year+"년 "+L.month+"월"+(L.intercalation?"(윤달)":"")+" "+L.day+"일일세. 음력 생일이 다르면 이 칸을 고치게. 고치면 바로 위 양력 칸이 바뀌네.";});}
+        note.textContent="지금 넣은 양력 "+(+p[0])+"년 "+(+p[1])+"월 "+(+p[2])+"일은 음력 "+L.year+"년 "+L.month+"월"+(L.intercalation?"(윤달)":"")+" "+L.day+"일이에요. 음력 생일이 다르면 이 칸을 고치세요. 고치면 바로 위 양력 칸이 바뀌어요.";});}
     // 음력 칸 → 위 양력 칸
     function apply(){
       whenLib(function(K){
         var y=+q(".lp-y").value,m=+q(".lp-m").value,d=+q(".lp-d").value,leap=q(".lp-l").checked,cal=new K();
-        if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없네. 날짜나 윤달 표시를 다시 보게.";return;}
+        if(!y||!cal.setLunarDate(y,m,d,leap)){note.textContent="그 해에는 음력 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일이 없어요. 날짜나 윤달 표시를 다시 보세요.";return;}
         var sl=cal.getSolarCalendar(),v=sl.year+"-"+String(sl.month).padStart(2,"0")+"-"+String(sl.day).padStart(2,"0");
         busy=true;inp.value=v;inp.dispatchEvent(new Event("input",{bubbles:true}));inp.dispatchEvent(new Event("change",{bubbles:true}));busy=false;
-        note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+sl.year+"년 "+sl.month+"월 "+sl.day+"일일세. 위 생년월일 칸에 이 날짜를 넣었네.";});}
+        note.textContent="음력 "+y+"년 "+m+"월"+(leap?"(윤달)":"")+" "+d+"일은 양력 "+sl.year+"년 "+sl.month+"월 "+sl.day+"일이에요. 위 생년월일 칸에 이 날짜를 넣었어요.";});}
     lp.addEventListener("toggle",function(){if(lp.open)fromSolar();});
     // 음력 칸을 고치면 잠깐 뒤 자동으로 넣는다(연도는 네 자리가 될 때까지 기다린다)
     function auto(e){if(busy||!e.target.closest(".lp-row")||e.target===go)return;
@@ -1823,7 +1823,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function goodsRow(e,lab){return cpRow(EL_GOODS[e],(lab||'나를 받쳐 주는 '+e+' 기운 물건')+' — 쿠팡에서 바로 보기');}
   function cpRow(items,title){if(!document.querySelector(".cpx"))return "";   // 맨 위 대가 문구(.cpx)가 없는 쪽(일진 60쪽 등)엔 싣지 않는다 — 쿠팡 표시 가이드
     return '<div class="sj-goods"><style>.sj-goods{margin:10px 0 2px}.sj-goods b{display:block;font-size:13px;margin-bottom:6px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods small{display:block;font-size:11px;opacity:.65}</style><b>'+title+'</b>'+
-    items.map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받네.</small></div>';}
+    items.map(function(g){return '<a href="https://link.coupang.com/a/'+g[1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+g[0]+' →</a>';}).join("")+'<small>쿠팡 파트너스 링크라 구매 시 동네보살이 수수료를 받아요.</small></div>';}
   // 공유 글을 내보내는 공통 끝: 기기 공유창 → 클립보드 → 옛 복사 순. url 키를 함께 주면 대상 앱이 링크만 집어가고 text 를 버리므로 본문에 url 을 녹여 통째로 넘긴다
   function shareOut(b,title,full,idle){
     function done(){b.textContent="복사됨! 카톡에 붙여넣으세요";setTimeout(function(){b.textContent=idle;},2200);}
