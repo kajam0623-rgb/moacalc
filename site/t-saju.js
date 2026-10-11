@@ -504,7 +504,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<br><br>'+[sinsal.slice(0,2).map(function(x){return (CS&&CS.sin&&CS.sin[x])||SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return (CS&&CS.miss&&CS.miss[x])||MISS[x];}).join(" ")].filter(Boolean).join(" ")+
         (sinsal.length||gZero.length?'<br><br>':'')+
         '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있어요. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
-      var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — '+(nmH?nmH+josa(nmH,"를 /을 "):"")+'한마디로 정리하면</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
+      var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — '+(nmH?nmH+josa(nmH,"를 /을 "):"")+'한마디로 정리하면</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH,G:G,cnt:cnt,mb:p.m.b},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
       var ILG_HEAD=["곧게 뻗는 큰 나무처럼 든든한 사람","바람에도 꺾이지 않는 풀꽃처럼 유연한 사람","온 세상을 비추는 해처럼 밝은 사람","어둠을 밝히는 촛불처럼 따뜻한 사람","넓고 든든한 산처럼 믿음직한 사람","곡식을 키우는 밭처럼 품이 넓은 사람","잘 벼린 쇠처럼 결단력 있는 사람","잘 다듬은 보석처럼 섬세한 사람","넓게 흐르는 큰 강처럼 깊은 사람","스며드는 빗물처럼 지혜로운 사람"];
       var headTxt=ILG_HEAD[ds]+"<br>"+(st.strong?"힘이 넉넉해 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운으로 풀어 갈 때 빛나는 사주":({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운을 곁에 둘수록 더 크게 피는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+

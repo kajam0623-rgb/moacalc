@@ -1826,6 +1826,15 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var N=f.nm?f.nm+josa(f.nm,"는/은"):"",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,2),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
     p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
+    // 2026-10-11 '왜 이렇게 보냐면' — 이 사람의 실제 값(태어난 계절·가장 많은 기운·비어 있는 기운·힘의 세기)을 한 흐름으로 엮는다(같은 조각을 받는 사람이 겹치지 않게)
+    if(f.G&&f.cnt){var GK=["관성","재성","식상","인성","비겁"],top=GK.reduce(function(a,b){return (f.G[b]||0)>(f.G[a]||0)?b:a;}),ELW=["나무","불","흙","쇠","물"],
+      ss=["겨울","겨울","봄","봄","봄","여름","여름","여름","가을","가을","가을","겨울"][f.mb],emp=f.cnt.map(function(n,i){return n?null:ELW[i];}).filter(Boolean),
+      WHY={비겁:["내 힘으로 밀고 나가는 힘이 세서, 스스로 정하고 이끄는 자리에서 빛나요.","곁에 나와 닮은 사람이 많아, 함께할 때 힘이 붙어요."],
+        식상:["넉넉한 힘을 말과 재주로 풀어낼 때 가장 잘 풀려요.","재주가 많은 대신 힘이 쉽게 빠지니, 쉬어 가며 하나씩 꺼내면 좋아요."],
+        재성:["힘이 넉넉해 돈과 일을 크게 굴려도 잘 버텨요.","돈과 일이 많이 오가는 만큼 지치기 쉬우니, 지킬 만큼만 쥐면 좋아요."],
+        관성:["책임이 큰 자리에서 오히려 실력이 드러나요.","책임이 자주 몰려오니 혼자 다 지지 말고 나눠 맡을 때 잘 풀려요."],
+        인성:["생각과 배움이 깊어, 배운 것을 밖으로 꺼내 쓸 때 빛나요.","도와주는 사람과 배움이 곁에 많아, 기대며 클수록 좋아요."]};
+      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, 여덟 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.'+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong?0:1]);}
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
