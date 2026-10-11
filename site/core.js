@@ -1814,10 +1814,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       [/인연이 조금 늦게 닿아요/g,"마음 맞는 사람을 천천히 알아보는 편이에요"],[/소개팅/g,"새로운 만남"],[/새 연애/g,"새로운 만남"]];if(age>=55)R=R1;
     var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t;
     while((t=w.nextNode())){var v=t.nodeValue,o=v;R.forEach(function(r){v=v.replace(r[0],r[1]);});if(v!==o)t.nodeValue=v;}
-    var NEW=/만남의 자리|사람 만나는 자리|인연이 싹|소개|새 인연|새로운 인연|연애 감정|인연이 움직|설레는 만남|썸/;
+    var NEW=/만남의 자리|사람 만나는 자리|인연이 싹|소개|새 인연|새로운 인연|연애 감정|설레는 만남|썸/;
     [].forEach.call(root.querySelectorAll(".fold-lab,.sj-sec > h3"),function(h){if(!/애정운$/.test(h.textContent.trim()))return;var box=h.closest("details,.sj-sec");if(!box||box.querySelector(".age-note"))return;
       var tw=document.createTreeWalker(box,NodeFilter.SHOW_TEXT,null,false),tn;while((tn=tw.nextNode())){if(tn.parentElement&&tn.parentElement.closest("summary"))continue;
-        var ps=tn.nodeValue.split(/(?<=[.!?])\s+/),keep=ps.filter(function(x){return !NEW.test(x);});if(keep.length!==ps.length)tn.nodeValue=keep.join(" ");}
+        var ps=tn.nodeValue.split(/(?<=[.!?])\s+/),keep=ps.filter(function(x){return !(NEW.test(x)&&/[.!?]$/.test(x.trim()));});if(keep.length!==ps.length)tn.nodeValue=keep.join(" ");}
       var body=box.querySelector(".fold-body")||box;var n=document.createElement("p");n.className="age-note";n.textContent="지금 나이에는 새 만남보다 곁에 있는 짝·가족·벗과의 관계로 읽으면 더 잘 맞아요.";body.insertBefore(n,body.firstChild);});}
   /* 결과 전체 중복 걷기(2026-10-11 검수: '적어 두세요'·'몫 나누기'가 한 결과에 5번). 같은 문장은 두 번째부터 빼고,
      같은 처방 낱말은 결과 전체에서 2번까지만 남긴다. 제목·요약 줄·근거 주석은 손대지 않는다 */
@@ -1831,8 +1831,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         if(seen[n]){ch=true;drop=true;return;}seen[n]=1;
         var hit=KEYS.filter(function(k){return x.indexOf(k)>=0;}),over=hit.some(function(k){return (cnt[k]||0)>=2;});
         if(over&&/[.!?]$/.test(x.trim())){ch=true;drop=true;return;}hit.forEach(function(k){cnt[k]=(cnt[k]||0)+1;});out.push(x);});
-      var nv=(ch?out.join(" "):t.nodeValue).replace(/든든(해요|한|하게|해져요|하고)/g,function(m,e){cnt.dd=(cnt.dd||0)+1;if(cnt.dd<=3)return m;return ({"해요":"마음이 놓여요","한":"믿음직한","하게":"넉넉하게","해져요":"마음이 놓여요","하고":"믿음직하고"})[e];})
-        .replace(/(^|[^가-힣(·])([목화토금수]) 기운/g,function(m,a,e){return a+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운";});
+      var nv=(ch?out.join(" "):t.nodeValue).replace(/(^|[^가-힣(·])([목화토금수]) 기운/g,function(m,a,e){return a+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+" 기운";});
       if(nv!==t.nodeValue)t.nodeValue=nv;});}
   /* 성향 다수결(2026-10-12 구조 개편 1단계). 결과 하나 안에서 반대 성향 문장 쌍을 세고, 적은 쪽 문장(과 이어지는 지시어 문장)을 본문에서 뺀다.
      같으면 둘 다 둔다. 제목·요약 줄·근거 주석·한 장 요약은 건드리지 않는다 */
