@@ -1825,13 +1825,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
-    p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
+    p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
     p.push('<b>이것만 챙기면 더 좋아져요</b> — '+D.care[f.wolTg]);
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
     p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg].replace(/^올해는 /,"")+' '+D.fit[fk]);
-    p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
+    p.push('<b>정리하면</b> — '+(N?N+' ':'')+D.close[sk]);
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){

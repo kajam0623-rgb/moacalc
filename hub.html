@@ -2601,13 +2601,13 @@
     p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
-    p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
+    p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
     p.push('<b>이것만 챙기면 더 좋아져요</b> — '+D.care[f.wolTg]);
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
     p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg].replace(/^올해는 /,"")+' '+D.fit[fk]);
-    p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
+    p.push('<b>정리하면</b> — '+(N?N+' ':'')+D.close[sk]);
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){
@@ -3660,7 +3660,7 @@
         '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있어요. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
       var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — '+(nmH?nmH+josa(nmH,"를 /을 "):"")+'한마디로 정리하면</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
       var ILG_HEAD=["곧게 뻗는 큰 나무처럼 든든한 사람","바람에도 꺾이지 않는 풀꽃처럼 유연한 사람","온 세상을 비추는 해처럼 밝은 사람","어둠을 밝히는 촛불처럼 따뜻한 사람","넓고 든든한 산처럼 믿음직한 사람","곡식을 키우는 밭처럼 품이 넓은 사람","잘 벼린 쇠처럼 결단력 있는 사람","잘 다듬은 보석처럼 섬세한 사람","넓게 흐르는 큰 강처럼 깊은 사람","스며드는 빗물처럼 지혜로운 사람"];
-      var headTxt=ILG_HEAD[ds]+"<br>"+(st.strong?"힘이 넉넉해 "+yEl+" 기운으로 풀어 갈 때 빛나는 사주":yEl+" 기운을 곁에 둘수록 더 크게 피는 사주");
+      var headTxt=ILG_HEAD[ds]+"<br>"+(st.strong?"힘이 넉넉해 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운으로 풀어 갈 때 빛나는 사주":({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운을 곁에 둘수록 더 크게 피는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
         (nm?'<div style="color:var(--fun-ink);font-size:14px;font-weight:800;margin-bottom:6px">'+escH(nm)+' 님의 사주</div>':'')+
         '<div style="font-size:19px;font-weight:800;line-height:1.45">'+headTxt+'</div>'+
