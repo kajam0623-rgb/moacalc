@@ -223,8 +223,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (nearY("지출")?" 돈 쓸 일이 늘기 쉬운 해는 <b>"+nearY("지출")+"</b>이니 미리 여유를 두면 든든해요.":"")+
         (hTg?P+HOUR_MONEY[hTg]:"");
       var jobBase=G.관성===0?"일·자리 기운이 드러나 있지 않아요. 남이 정한 규칙에 매이면 답답해서 오래 못 버티는 사람이에요. <b>전문 기술이든 프리랜서든 자기 사업이든</b>, 스스로 규칙을 정하는 자리에서 실력이 나와요."
-        :G.관성>=3?"일·자리 기운이 <b>강하네</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 커요. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아요."
-        :G.식상>=3?"재주와 표현 기운이 <b>발달했네</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이에요. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞아요."
+        :G.관성>=3?"일·자리 기운이 <b>강해요</b>. 책임을 맡고 자리를 지키는 힘이 있는데 그만큼 부담도 커요. 역할과 권한이 분명한 조직에서 실력으로 인정받는 쪽이 잘 맞아요."
+        :G.식상>=3?"재주와 표현 기운이 <b>발달했어요</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이에요. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞아요."
         :"일·자리 기운이 알맞아요. <b>회사에서도, 혼자서도</b> 해낼 수 있는 사람이에요. 역할이 분명하고 성과가 눈에 보이는 자리에서 만족이 크겠어요.";
       var job=verdict("job",jBk,jobBase)+ilg("job")+P+
         "여덟 글자 가운데 일을 맡아 지키는 힘이 "+G.관성+"칸, 만들어 내놓는 힘이 "+G.식상+"칸, 배워서 쌓는 힘이 "+G.인성+"칸이에요. 칸이 많은 쪽이 편하게 쓰는 힘이에요."+P+
@@ -349,12 +349,11 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var seJd=sjJdKST(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0);
       var seBefore=seJd<sjIpchun(nowD.getFullYear());
       var seYear=seBefore?nowD.getFullYear()-1:nowD.getFullYear();
-      var seSec='<div class="sj-sec"><h3>올해 흐름 (세운) — '+seYear+' '+
-        SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</h3>'+
-        '<p>올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+') 기운이에요. 나에게는 <b>'+seTg+'</b>에 해당해요.<br><br>'+
+      // 2026-10-11 '올해 흐름' 칸은 아래 '해마다 흐름' 맨 앞 단락으로 합쳤다(같은 해를 두 번 말하던 중복)
+      var seSec='<p><b>올해 '+seYear+' '+SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</b> — 올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+seEl+') 기운이에요. 나에게는 <b>'+seTg+'</b>에 해당해요.<br><br>'+
         (seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해예요. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
         '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 그해 글자를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
-        (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p></div>';
+        (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p>';
 
       // 십성 분포는 숫자만 나열돼 있었다. 어느 축으로 사는 사람인지까지 읽어준다
       var GRP_MEAN={비겁:"내 힘과 사람",식상:"표현과 재능",재성:"현실 감각과 돈",관성:"책임과 자리",인성:"배움과 받는 힘"};
@@ -601,7 +600,6 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
         '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>'+
         monthSec()+
-        seSec+
         (function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var rows="";
           /* 해마다 영역 표시. 한 줄 십성 풀이만으로는 "언제 무엇을"에 답이 안 됐다.
@@ -620,12 +618,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
               '<p>'+DUTXT[ytg].split(".")[0]+'.</p>'+
               (yt.length?'<div class="yr-tags">'+yt.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+
               (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
-          return '<div class="sj-sec sj-years"><h3>인생 시기표 — '+(nowY-5)+'~'+(nowY+5)+'년</h3><p>'+planTxt+
+          return '<div class="sj-sec sj-years"><h3>해마다 흐름 — 올해와 앞뒤 5년</h3>'+seSec+'<p>'+planTxt+
             '<br><span style="color:var(--muted);font-size:12.5px">그해 하늘 글자가 나에게 어떤 기운인지, 그해 띠 글자가 태어난 날·달 글자와 부딪히거나 붙는지, 역마·도화 자리인지로 표시했습니다. 인연은 연애·결혼뿐 아니라 동업·귀인처럼 사람이 드는 일을 함께 뜻합니다.</span></p><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 나에게 무엇이 되는지 늘어놓았어요. 지난 해는 실제로 어땠는지 눌러 두세요. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워져요.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})()+
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름 (대운) · '+(fwd?"순행":"역행")+'</h3><div class="sj-daeun">'+duHtml+'</div>'+
-        '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운이에요. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p></div>'+
-        (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);
-          return '<div class="sj-sec"><h3>분야별 대운 흐름</h3>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">대운 글자가 나에게 필요한 기운(용신)인지, 그 분야를 맡은 별(재물은 재성, 애정은 배우자 별, 학업·일은 인성·관성)인지로 매긴 참고 점수예요. 보라색 칸이 지금 대운이에요.</p></div>';})()+
+        '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운이에요. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p>'+
+        (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);   // 분야별 그래프도 같은 칸 안에(따로 칸을 두면 같은 10년을 두 번 말함)
+          return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 보라색 칸이 지금 10년이에요.</p></div>';})()+
         sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
         sjAiHtml()+
         closing+

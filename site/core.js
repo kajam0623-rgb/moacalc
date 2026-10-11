@@ -1793,7 +1793,14 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       while((tn=w.nextNode())){
         if(tn.parentElement&&tn.parentElement.closest(".gh-note,.note"))continue;
         var s=tn.nodeValue,m=/자네(는|가|를|와|에게는|에게|의|도|만|한테|께)?(?![가-힣])/.exec(s);
-        if(m){tn.nodeValue=s.slice(0,m.index)+n+(m[1]?(JO[m[1]]?josa(n,JO[m[1]]):m[1]):"")+s.slice(m.index+m[0].length);sec.classList.add("nm-done");return;}}});}
+        if(m){tn.nodeValue=s.slice(0,m.index)+n+(m[1]?(JO[m[1]]?josa(n,JO[m[1]]):m[1]):"")+s.slice(m.index+m[0].length);sec.classList.add("nm-done");return;}}});
+    // 2026-10-11 해요체로 바꾸며 '자네'가 사라져 위 치환은 거의 안 걸린다 → 칸 제목에 이름을 붙인다('민지 님의 재물운'). 문장 속엔 끼우지 않는다(조사가 틀리기 쉬움)
+    [].forEach.call(root.querySelectorAll(".sj-sec > h3"),function(h){if(h.getAttribute("data-nm"))return;var t=h.firstChild;if(!t||t.nodeType!==3)return;var v=t.nodeValue;
+      if(/^(재물운|직업운|애정운|건강운|타고난 성격|타고난 그릇 모양|눈에 띄는 기운|다섯 기운의 균형|달마다 흐름|해마다 흐름|10년마다 바뀌는 흐름)/.test(v))t.nodeValue=n+"의 "+v;
+      else if(/^내 /.test(v))t.nodeValue=n+"의 "+v.slice(2);
+      else if(/^나와 /.test(v))t.nodeValue=n+josa(n,"와/과")+" "+v.slice(3);
+      else if(/^나를 /.test(v))t.nodeValue=n+josa(n,"를/을")+" "+v.slice(3);
+      else return;h.setAttribute("data-nm","1");});}
   /* 사주 종합 — 원고 D(content_saju_easy.js → sj/easy.json)에서 이 사람의 일간·힘의 세기·짜임(월지 십성)·눈에 띄는 별·비어 있는 기운·지금의 큰 흐름과 올해로 쉬운 문장을 골라 잇는다.
      f = {ds,strong,yong:용신 오행 이름,wolTg,sin:[신살 이름],miss:[비어 있는 십성 무리],duTg,seTg,duOk,seOk,nm:"민지 님"|""}. 문단(HTML) 배열을 돌려준다. 순수 함수 — verify 가 무작위 명식으로 검사한다 */
   var SJ_MISS_LAB={재성:"돈",관성:"일과 책임",인성:"배움과 도움",식상:"재주와 표현",비겁:"동료와 자립"};
@@ -1802,9 +1809,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,2),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
     p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
-    p.push('<b>이렇게 하면 술술 풀리네</b> — '+D.good[f.wolTg]+' '+D.strat[sk]);
+    p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]+' '+D.strat[sk]);
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
-    p.push('<b>이것만 챙기면 더 좋아지네</b> — '+D.care[f.wolTg]);
+    p.push('<b>이것만 챙기면 더 좋아져요</b> — '+D.care[f.wolTg]);
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
