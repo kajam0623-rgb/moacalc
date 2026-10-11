@@ -496,7 +496,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 조합 파일의 종합 원고(s)가 있으면 그걸 쓰고, 없으면 아래 조립 문장으로
       var CS=CB&&CB.s,fitK=duOk&&seOk?"both":duOk?"du":seOk?"se":"none";
       var p1=CS&&CS.p1&&CS.p1[st.strong?"strong":"weak"];
-      var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑에서는 /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일에서는 /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':"";
+      var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑(에서는|할 때는) /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일(에서는|할 때는) /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':"";
       var synthOld='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 한마디로 정리하면</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 나를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가요. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 내 길이에요. '+

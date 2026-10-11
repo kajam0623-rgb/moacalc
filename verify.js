@@ -625,7 +625,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   { const EL5 = ["목", "화", "토", "금", "수"], base = { ds: 0, strong: true, yong: "목", wolTg: "비견", sin: [], miss: [], duTg: "비견", seTg: "비견", duOk: false, seOk: false, nm: "" }, L = f => sjEasy(f, SE).map(x => x.replace(/<[^>]+>/g, "")).join("\n").replace(/\s+/g, "").length, L0 = L(base);
     let exact = L0; [["ds", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]], ["strong", [true, false]], ["yong", EL5], ["wolTg", TG], ["duTg", TG], ["seTg", TG]].forEach(([k, vs]) => { exact += Math.min(...vs.map(v => L({ ...base, [k]: v }))) - L0; });
     exact += Math.min(...[[false, false], [true, false], [false, true], [true, true]].map(v => L({ ...base, duOk: v[0], seOk: v[1] }))) - L0;
-    t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 예전 종합(공백 빼고 약 450자)의 1.5배를 넘는 700자 이상, 평균 950자 이상", exact >= 700 && minL >= exact && sumL / 3000 >= 950, true); }
+    t("쉬운 종합: 글자 수(공백 제외) 이론상 최소 " + exact + " · 무작위 최소 " + minL + " · 평균 " + Math.round(sumL / 3000) + " · 최대 " + maxL + " — 600자 이상, 평균 850자 이상(중복 걷어 낸 뒤)", exact >= 600 && minL >= exact && sumL / 3000 >= 850, true); }
   // 이름 부르기: 엄마·아빠는 님을 더 붙이지 않고 이름에는 님을 붙이며, 결과 글의 섹션마다 첫 '자네'를 바꾼다(조사는 받침대로)
   t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon(""), nmHon("남친"), nmHon("딸")].join("|"), "민지 님|민지 님|엄마|이수현씨|||남친|딸");
   { const sj = toolBlock("saju");
