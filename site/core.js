@@ -316,7 +316,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   function sjChar(p,D){
     var st=sjStrength(p),mb=p.m.b,sea=mb>=2&&mb<=4?"봄":mb>=5&&mb<=7?"여름":mb>=8&&mb<=10?"가을":"겨울",cnt=ghTg(p),ord=["비","식","재","관","인"],best="비",i;
     for(i=1;i<5;i++)if(cnt[ord[i]]>cnt[best])best=ord[i];
-    return [D.core[p.d.s],D.power[st.strong?"strong":"weak"][SJ_ES[p.d.s]],D.season[sea],D.group[best],D.love[p.d.s],D.work[p.d.s],D.rest[p.d.s]];}
+    return [D.core[p.d.s],st.ratio>=0.45&&st.ratio<=0.55?"타고난 힘이 고르게 짜여 있어 혼자서도 잘 서고, 좋은 사람을 만나면 더 크게 자라요.":D.power[st.strong?"strong":"weak"][SJ_ES[p.d.s]],D.season[sea],D.group[best],D.love[p.d.s],D.work[p.d.s],D.rest[p.d.s]];}
   /* 신년운세 깊이 풀이 — 원고 D(content_newyear.js → ny/deep.json). 그 해(입춘~입춘)의 열두 달을 세워 달마다 십성·일지와의 합충·용신 적합을 보고,
      항목별(재물·일·사랑·건강)·곁에 둘 것·약속을 고른다. 해의 오행에 기대지 않고 십성 관계로만 써서 어느 해에 보아도 맞는다. 순수 함수 — verify 가 무작위 생일로 검사한다 */
   var NY_TERM=["입춘","경칩","청명","입하","망종","소서","입추","백로","한로","입동","대설","소한"];
@@ -1170,6 +1170,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
           slot.className="tail-a";
           slot.innerHTML=h||'<p>이 물음에 답할 글을 아직 못 불러왔어요. 잠시 뒤에 다시 물어보세요.</p>';
           if(typeof plainWords==="function")try{plainWords(slot);}catch(err){}
+          try{sjTextFix(slot,false);}catch(err){}
           try{slot.scrollIntoView({behavior:RMq?"auto":"smooth",block:"nearest"});}catch(err){}
           offer(q.next);},RMq?0:800);}
       if(cfg.load)cfg.load(run);else run();});
@@ -1804,6 +1805,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 이름을 물었으면 결과에서 그 이름으로 부른다("민지 님"). 엄마·아빠처럼 이미 호칭이면 님을 더 붙이지 않는다
   function nmHon(n){n=String(n||"").trim();if(!n)return "";return /(님|씨|엄마|아빠|어머니|아버지|할머니|할아버지|언니|오빠|누나|형|동생|이모|삼촌|고모|남편|아내|남친|여친|아들|딸|친구)$/.test(n)?n:n+" 님";}
   // 결과 글의 섹션마다 첫 "자네"를 이름으로 바꾼다(한 섹션에 한 번). 조사는 이름의 받침에 맞춘다. 종합(.sj-synth)은 글 쓸 때 이미 이름을 넣는다
+  function sjTextFix(root,six){if(!root||typeof document==="undefined")return;var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null,false),t,J={"이에요":"예요","이니":"니","이라":"라","이고":"고","이며":"며"};
+    while((t=w.nextNode())){var v=t.nodeValue,o=v;v=v.replace(/올해\((\d{4}년)\)(이에요|이니|이라|이고|이며)/g,function(m,y,j){return "올해("+y+")"+J[j];});
+      if(six&&!(t.parentElement&&t.parentElement.closest("h3,summary,.fold-lab")))v=v.replace(/여덟 글자/g,"여섯 글자");if(v!==o)t.nodeValue=v;}}
   function nmSwap(root,n){if(!root||!n||typeof document==="undefined")return;var JO={"는":"는/은","가":"가/이","를":"를/을","와":"와/과"};
     [].forEach.call(root.querySelectorAll(".sj-sec,.tf-me"),function(sec){
       if(sec.classList.contains("sj-synth")||sec.classList.contains("nm-done"))return;
@@ -1821,11 +1825,12 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       else return;h.setAttribute("data-nm","1");});}
   /* 사주 종합 — 원고 D(content_saju_easy.js → sj/easy.json)에서 이 사람의 일간·힘의 세기·짜임(월지 십성)·눈에 띄는 별·비어 있는 기운·지금의 큰 흐름과 올해로 쉬운 문장을 골라 잇는다.
      f = {ds,strong,yong:용신 오행 이름,wolTg,sin:[신살 이름],miss:[비어 있는 십성 무리],duTg,seTg,duOk,seOk,nm:"민지 님"|""}. 문단(HTML) 배열을 돌려준다. 순수 함수 — verify 가 무작위 명식으로 검사한다 */
+  var DU_NM={"비견":"자립과 동료","겁재":"사람과 어울림","식신":"표현과 결실","상관":"변화와 도전","편재":"큰돈과 기회","정재":"안정과 축적","편관":"큰 과제와 시험","정관":"명예와 자리","편인":"공부와 전환","정인":"귀인과 문서"};   // 10년 흐름 이름 — 종합·한눈에·10년 칸이 같은 이름을 쓴다
   var SJ_MISS_LAB={재성:"돈",관성:"일과 책임",인성:"배움과 도움",식상:"재주와 표현",비겁:"동료와 자립"};
   function sjEasy(f,D){
     var N=f.nm?f.nm+josa(f.nm,"는/은"):"",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,2),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
-    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
+    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+(f.mid?'돕는 기운과 덜어 내는 기운이 고르게 짜인 사주라, 어떤 자리에서도 제 몫을 해내요.':D.str[sk])+' '+D.gy[f.wolTg]);
     // 2026-10-11 '왜 이렇게 보냐면' — 이 사람의 실제 값(태어난 계절·가장 많은 기운·비어 있는 기운·힘의 세기)을 한 흐름으로 엮는다(같은 조각을 받는 사람이 겹치지 않게)
     if(f.G&&f.cnt){var GK=["관성","재성","식상","인성","비겁"],top=GK.reduce(function(a,b){return (f.G[b]||0)>(f.G[a]||0)?b:a;}),ELW=["나무","불","흙","쇠","물"],
       ss=["겨울","겨울","봄","봄","봄","여름","여름","여름","가을","가을","가을","겨울"][f.mb],emp=f.cnt.map(function(n,i){return n?null:ELW[i];}).filter(Boolean),
@@ -1834,7 +1839,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         재성:["힘이 넉넉해 돈과 일을 크게 굴려도 잘 버텨요.","돈과 일이 많이 오가는 만큼 지치기 쉬우니, 지킬 만큼만 쥐면 좋아요."],
         관성:["책임이 큰 자리에서 오히려 실력이 드러나요.","책임이 자주 몰려오니 혼자 다 지지 말고 나눠 맡을 때 잘 풀려요."],
         인성:["생각과 배움이 깊어, 배운 것을 밖으로 꺼내 쓸 때 빛나요.","도와주는 사람과 배움이 곁에 많아, 기대며 클수록 좋아요."]};
-      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, 여덟 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.'+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong?0:1]);}
+      p.push('<b>왜 이렇게 보냐면</b> — '+ss+'에 태어났고, 여덟 글자 가운데 '+SJ_MISS_LAB[top]+'의 기운이 가장 많아요.'+(emp.length?' 반대로 '+emp.join("·")+' 기운은 비어 있어요.':'')+' 그래서 '+WHY[top][f.strong||f.mid?0:1]);}
     p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀려요</b> — '+D.good[f.wolTg]);   // D.strat 은 '쉽게 말하면'·'정리하면'과 같은 말이라 뺌(2026-10-11 중복)
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[f.yong]||f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
@@ -1842,8 +1847,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
-    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg].replace(/^올해는 /,"")+' '+D.fit[fk]);
-    p.push('<b>정리하면</b> — '+(N?N+' ':'')+D.close[sk]);
+    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+(DU_NM[f.duTg]||du[0])+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg].replace(/^올해는 /,"")+' '+D.fit[fk]);
+    p.push('<b>정리하면</b> — '+(N?N+' ':'')+(f.mid?'고르게 짜인 힘을 어디에 쓸지만 정하면 어디서든 든든한 사람이에요.':D.close[sk]));
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
   function saveScore(el,file,tool,ident,score,grade,headline,body,pose,badge){
