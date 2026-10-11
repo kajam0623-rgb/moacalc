@@ -24,8 +24,8 @@ TOOLS.push({id:"gongmang",cat:"재미·운세",icon:"",name:"공망 찾기",desc
         return '<p><b>'+x[0]+' '+nm(x[1])+'</b> — '+q[1]+'<br>'+q[2]+'</p>';}).join("")
         :'<p>연지·월지'+(P.h?'·시지':'')+' 어디에도 공망 글자가 없네. 일주 기준으로는 공망에 든 자리가 없으니 이 부분은 크게 마음 쓰지 않아도 되네.'+(P.h?'':' 태어난 시각을 넣으면 시지까지 살펴 주겠네.')+'</p>';
       var yh=[["월지",P.m.b],["일지",P.d.b]].concat(P.h?[["시지",P.h.b]]:[]).filter(function(x){return Y.empty.indexOf(x[1])>=0;});
-      var yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적네. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
-        (yh.length?'자네 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'일세.':'자네 다른 자리 중에는 거기 드는 글자가 없네.');
+      var yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적어요. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
+        (yh.length?'내 사주 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'예요.':'내 사주 다른 자리 중에는 거기 드는 글자가 없어요.');
       el.querySelector("#out").innerHTML=
       '<div class="tf-id">'+ilju+'일주 · '+G.sun+'</div>'+
       '<div class="tf-hl">자네 공망은 '+nm(G.empty[0])+' · '+nm(G.empty[1])+'일세.</div>'+

@@ -198,6 +198,8 @@ t("첫 화면 후킹(정체성+헤드라인이 점수 위)", tfSrc.indexOf('tf-i
 // ── T2 페르소나: 보살 문체 ──
 // 풀이 원고에 존댓말이 섞이면 화자가 둘로 갈라진다. 계산 근거 고지(note·회색 주석)는 존댓말 유지이므로 데이터만 검사한다.
 const JONDAE = /습니다|합니다|하세요|입니다|십시오/;
+// 2026-10-11 해요체로 바꾼 원고의 '말투 어긋남' = 보살 어미가 남은 것(사용자 결정: 보살 말투 폐기)
+const TONE_BAD = /자네|일세|걸세|하게[.!]|하네[.!?]|[가-힣]네[.!?]|보게[.!]|두게[.!]|말게[.!]/;
 const BOSAL = /일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./;
 const tfBody = Object.values(TFTXT).flatMap(a => [a[1],a[2],a[3],a[4],a[6],a[7],a[8]]);
 const tfHead = Object.values(TFTXT).map(a => a[9]);
@@ -277,10 +279,10 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 조합 원고는 보살 말투", cells.filter(c => c && JONDAE.test(F.map(f => c[f]).join(" "))).length, 0);
   const VD = require("./content_saju_verdict.js"), BK = { money: ["none","mid","many"], job: ["none","many","craft","mid"], love: ["none","mid","many"] };
   t("사주 판정 문장: 일간×갈래 첫 문장 · 격국×갈래 설명 전부", Object.entries(BK).every(([a, bs]) => IL.every(i => bs.every(k => VD[a].head[i] && VD[a].head[i][k])) && TGS.every(tg => bs.every(k => VD[a].follow[tg] && VD[a].follow[tg][k]))), true);
-  t("사주 판정 문장은 보살 말투", Object.values(VD).flatMap(o => [...Object.values(o.head), ...Object.values(o.follow)].flatMap(Object.values)).filter(x => JONDAE.test(x)).length, 0);
+  t("사주 판정 문장은 해요체(보살 어미 0)", Object.values(VD).flatMap(o => [...Object.values(o.head), ...Object.values(o.follow)].flatMap(Object.values)).filter(x => TONE_BAD.test(x)).length, 0);
   const SY = require("./content_saju_synth.js"), GRPS = ["비겁","식상","재성","관성","인성"], SINS = ["천을귀인","문창귀인","도화살","역마살","화개살","양인살","백호대살","괴강살"];
   t("사주 종합 원고: 일간×격국×강약 200 · 빈 기운 50 · 신살 80 · 지금 흐름 40", IL.every(i => SY[i] && TGS.every(tg => SY[i].synth[tg] && SY[i].synth[tg].strong && SY[i].synth[tg].weak) && GRPS.every(k => SY[i].miss[k]) && SINS.every(k => SY[i].sin[k])) && TGS.every(tg => ["both","du","se","none"].every(k => SY.nowfit[tg] && SY.nowfit[tg][k])), true);
-  t("사주 종합 원고는 보살 말투", JSON.stringify(SY).match(/습니다|합니다|입니다|하세요|십시오/g), null);
+  t("사주 종합 원고는 해요체(보살 어미 0)", JSON.stringify(SY).match(new RegExp(TONE_BAD.source, "g")), null);
   t("달마다 흐름: 열두 달 · 십성 10종 문장 · 절기 시작일 표시", toolBlock("saju").includes("function monthSec()") && toolBlock("saju").includes("monthSec()+") && (toolBlock("saju").match(/"(비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인)":\["[^"]+달/g) || []).length === 10, true);
   t("태어난 시각이 재물·애정·시기·한눈에 풀이에 들어간다", ["HOUR_MONEY[hTg]", "HOUR_LOVE[hTg]", 'T.push("집안")', "태어난 시각 자리</b> —"].every(x => toolBlock("saju").includes(x)), true);
   t("홈 h1에 title 검색어(무료사주·사주풀이·오늘의 운세·궁합·타로)", (h => ["무료사주","사주풀이","오늘의 운세","궁합","타로"].every(k => h.includes(k)))((bs.match(/<h1 class="hero-h">([\s\S]*?)<\/h1>/) || ["",""])[1].replace(/&nbsp;/g, " ")), true);
@@ -557,7 +559,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     t("궁합 점수 분포(무작위 3000쌍): 중앙값 72~80 · 노력형 35% 이하 · 신중 10% 이하 · 천생연분 10~30% (" + med + " · " + pEf.toFixed(0) + "% · " + pCa.toFixed(0) + "% · " + pTop.toFixed(0) + "%)", med >= 72 && med <= 80 && pEf <= 35 && pCa <= 10 && pTop >= 10 && pTop <= 30, true); }
 }
 // 사주 결과 "타고난 성격": 원고 칸이 다 있고 무작위 명식 3000개에서 네 조각이 모두 나오며 문체 규칙을 지킨다
-{ const SC = require("./content_saju_char.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/;
+{ const SC = require("./content_saju_char.js"), JOND = TONE_BAD;
   t("사주 성격 원고: 일간 10(성격·사랑·일·쉼) · 힘의 세기 2×5 · 계절 4 · 십성 무리 5 칸이 모두 채워져 있다", [SC.core.length === 10 && SC.core.every(x => x.length > 60) && SC.love.length === 10 && SC.work.length === 10 && SC.rest.length === 10, SC.power.strong.length === 5 && SC.power.weak.length === 5, ["봄", "여름", "가을", "겨울"].every(k => SC.season[k]), ["비", "식", "재", "관", "인"].every(k => SC.group[k])].join(","), "true,true,true,true");
   { const { note, ...body } = SC; t("사주 성격 원고: 풀이 본문은 보살 말투(존댓말 어미 0)", JOND.test(JSON.stringify(body)) ? "혼입" : "0", "0"); }
   let badC = 0, minC = 1e9, maxC = 0; for (let i = 0; i < 3000; i++) { const y = 1930 + Math.floor(Math.random() * 86), m = 1 + Math.floor(Math.random() * 12), d = 1 + Math.floor(Math.random() * 28), h = i % 3 ? null : Math.floor(Math.random() * 24);
@@ -597,7 +599,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     t("신년운세 도구가 깊이 풀이 원고(ny/deep.json)를 받아 자리(#nydeep)에 채우고 결과 칸은 접지 않는다",
       [nyb.includes('fetch("ny/deep.json")'), nyb.includes('<div id="nydeep"></div>'), nyb.includes("nyLast={me:me,YR:YR,YW:YW};fillNy();"), !/<div class="sj-sec"><h3>/.test(nyb), bs.includes('"ny","deep.json"'), /nyDeep/.test(bs)].join(","), "true,true,true,true,true,true"); } }
 // 사주 쉬운 종합(content_saju_easy.js → sjEasy): 원고 칸 · 문체(보살 말투·긍정·쉬운 말) · 무작위 명식 3000개 · 이름 부르기 · 도구 배선
-{ const SE = require("./content_saju_easy.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/,
+{ const SE = require("./content_saju_easy.js"), JOND = TONE_BAD,
     NEG = /위험|흉|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길|불운/, HARD = /격국|용신|신강|신약|십성|비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|일간|월지|지지/;
   const TG = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"], SINK = ["천을귀인", "문창귀인", "도화살", "역마살", "화개살", "양인살", "백호대살", "괴강살"], GRPK = ["재성", "관성", "인성", "식상", "비겁"];
   t("쉬운 종합 원고: 일간 10 · 힘 2 · 짜임 10(좋은 방식·챙길 것) · 별 8 · 비어 있는 기운 5 · 큰 흐름 10 · 올해 10 · 받침 4 · 맺음 2가 모두 채워져 있다",
@@ -615,7 +617,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const ps = sjEasy(f, SE), txt = ps.map(x => x.replace(/<[^>]+>/g, "")).join("\n"), len = txt.replace(/\s+/g, "").length; minL = Math.min(minL, len); maxL = Math.max(maxL, len); sumL += len;
     if (/[{}]/.test(txt)) cnt.token++; if (/undefined|NaN|null/.test(txt)) cnt.undef++; if (JOND.test(txt)) cnt.jondae++; if (NEG.test(txt)) cnt.neg++;
     if (ps.length < 8 || ps.length > 12) cnt.paras++;
-    const first = ps[0].replace(/<[^>]+>/g, ""); if (nm ? !first.startsWith("쉽게 말하면 — " + nm + josa(nm, "는/은") + " ") : !first.startsWith("쉽게 말하면 — 자네는 ")) cnt.josa++; }
+    const first = ps[0].replace(/<[^>]+>/g, ""); if (nm ? !first.startsWith("쉽게 말하면 — " + nm + josa(nm, "는/은") + " ") : /^쉽게 말하면 — (자네|당신)/.test(first)) cnt.josa++; }
   t("쉬운 종합: 무작위 3000명(이름 없음·민지 님·엄마 …) — 남은 토큰·undefined·존댓말 혼입·겁주는 말·문단 수·이름 조사 오류가 모두 0", JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, paras: 0, neg: 0 }));
   // 글자 수의 최솟값은 무작위가 아니라 계산으로 잡는다(항목마다 문장이 이어 붙는 합이라 차원별 최솟값의 합이 곧 전체 최솟값 — 무작위 표본은 그보다 작을 수 없다)
   { const EL5 = ["목", "화", "토", "금", "수"], base = { ds: 0, strong: true, yong: "목", wolTg: "비견", sin: [], miss: [], duTg: "비견", seTg: "비견", duOk: false, seOk: false, nm: "" }, L = f => sjEasy(f, SE).map(x => x.replace(/<[^>]+>/g, "")).join("\n").replace(/\s+/g, "").length, L0 = L(base);
@@ -646,15 +648,15 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
 { const NEG = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|망하|망한|화근|재난|불길한|불길함|불운|파탄|파산|몰락|이혼|사별|단명|요절|횡액|관재|기운이 얇|기운이 약|복이 없|팔자가 사납|팔자가 세/,
     HARD = /격국|용신|십성|신강|신약|일간|월지|천간|비견|겁재|식신|상관|편재|정재|편관|정관|편인|정인|인성|재성|관성|식상|비겁/, JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요|드립니다|주세요/;
   const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
-  const scan = (label, o, opts = {}) => { const a = strs(o); let jo = 0, ng = 0, hd = 0; a.forEach(s => { if (JOND.test(s)) jo++; if (NEG.test(s)) ng++; if (!opts.allowHard && HARD.test(s.replace(/\([^)]*\)/g, ""))) hd++; });
+  const scan = (label, o, opts = {}) => { const a = strs(o); let jo = 0, ng = 0, hd = 0; a.forEach(s => { if ((opts.newTone ? TONE_BAD : JOND).test(s)) jo++; if (NEG.test(s)) ng++; if (!opts.allowHard && HARD.test(s.replace(/\([^)]*\)/g, ""))) hd++; });
     t(label + ": 문자열 " + a.length + "개 — 존댓말·겁주는 말·어려운 용어가 모두 0", jo + "," + ng + "," + hd, "0,0,0"); };
   const CB = require("./content_saju_combo.js"), TGK = ["bigyeon", "geopjae", "siksin", "sanggwan", "pyeonjae", "jeongjae", "pyeongwan", "jeonggwan", "pyeonin", "jeongin"];
   t("사주 조합 원고: 일간 10 × 짜임 10 × 5칸(core·money·job·love·health)이 모두 있다", Object.keys(CB).length === 10 && Object.values(CB).every(g => TGK.every(k => g[k] && ["core", "money", "job", "love", "health"].every(f => g[k][f] && g[k][f].length > 150))), true);
   scan("사주 조합 원고", CB);
-  { const V = require("./content_saju_verdict.js"); scan("사주 판정 문장", V);
+  { const V = require("./content_saju_verdict.js"); scan("사주 판정 문장", V, { newTone: true });
     t("사주 판정 문장: head 는 한 문장(핵심 요약)·follow 와 이어 읽는다", ["money", "job", "love"].every(a => Object.values(V[a].head).every(h => Object.values(h).every(s => s.length >= 20 && s.length <= 90 && (s.match(/[.!?]/g) || []).length <= 2))), true); }
-  scan("사주 여덟 글자 자리 풀이", require("./content_saju_gung.js"));
-  scan("사주 꼬리질문 답", require("./content_saju_q.js"));
+  scan("사주 여덟 글자 자리 풀이", require("./content_saju_gung.js"), { newTone: true });
+  scan("사주 꼬리질문 답", require("./content_saju_q.js"), { newTone: true });
   scan("오늘의 운세 꼬리질문 답", require("./content_today_q.js"));
   { const src2 = inner.slice(inner.indexOf("{id:\"todayfortune\"")), code = src2.slice(src2.indexOf("var TXT="), src2.indexOf("el.innerHTML=")), tfl = (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0], R = new Function(tfl + "\n" + code + "\nreturn {TXT:TXT,TF_LINE:TF_LINE};")();
     scan("오늘의 운세 그날 기운 원고(TXT·한 줄 요약)", { a: Object.values(R.TXT).map(v => v.filter(x => typeof x === "string")), b: R.TF_LINE });
@@ -712,7 +714,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const f = flat(d, "", {}), bad = Object.entries(f).filter(([k, v]) => !skip.test(k) && (NEGX.test(v) || JONDX.test(v))).map(([k]) => k);
     t(nm + " 풀이: 겁주는 말·존댓말 어미 0 (문자열 " + Object.keys(f).length + "개)" + (bad.length ? " — " + bad.slice(0, 3).join(",") : ""), bad.length, 0); }); }
 // 공망 찾기 깊이 풀이(content_gongmang.js → gmDeep): 원고 칸 · 문체 · 60일주 × 시각 유무 × 여러 해 · 도구 배선
-{ const GD = require("./content_gongmang.js"), JOND = /습니다|합니다|입니다|하세요|십시오|해요|이에요|예요/, NEGG = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/;
+{ const GD = require("./content_gongmang.js"), JOND = TONE_BAD, NEGG = /위험|흉(?!내|터)|불행|재앙|사고(?!력)|실패|나쁜|불길한|불운/;
   const strs = o => { const a = []; (function w(x) { if (typeof x === "string") a.push(x); else if (x && typeof x === "object") Object.values(x).forEach(w); })(o); return a; };
   t("공망 원고: 땅 글자 12개의 뜻·비었을 때 · 연월시 자리 3 · 없을 때·날 자리·채워지는 해·읽는 법이 모두 채워져 있다",
     [GD.branch.length === 12 && GD.branch.every(b => b.gist.length > 30 && b.empty.length > 80), ["y", "m", "h"].every(k => GD.pos[k] && GD.pos[k].length > 100), GD.filled.length > 60 && GD.none.length > 100 && GD.nohour.length > 10, GD.years.head.length > 30 && GD.years.tail.length > 60, GD.read.length === 3 && GD.read.every(x => x.length > 80), ["{sun}", "{start}", "{end}", "{ea}", "{eb}"].every(k => GD.intro.includes(k))].join(","), "true,true,true,true,true,true");
@@ -958,7 +960,7 @@ t("사주 결과는 느린 등장(slowReveal)", /slowReveal\(outEl\)/.test(sajuT
 const GUNG = require("./content_saju_gung.js"), TEN = ["비견","겁재","식신","상관","편재","정재","편관","정관","편인","정인"];
 const gungLines = ["year","month","day","hour"].flatMap(k => TEN.map(tg => GUNG[k] && GUNG[k][tg]));
 t("사주 자리 읽기 원고 4자리 × 10십성", gungLines.filter(x => typeof x === "string" && x.replace(/\s/g, "").length >= 110).length, 40);
-t("사주 자리 읽기 원고는 보살 말투", gungLines.filter(x => /습니다|합니다|하세요|입니다|십시오/.test(x) || !/일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)).length, 0);
+t("사주 자리 읽기 원고는 해요체(보살 어미 0)", gungLines.filter(x => TONE_BAD.test(x)).length, 0);
 t("사주 자리 읽기 원고가 사주 청크에 주입됨", /c\.id === "saju" \? "var SAJU_GUNG="/.test(bs), true);
 t("사주 새 풀이(오행 3종·신강 구간) 보살 말투", (() => { const d = new Function(sajuToolSrc.slice(sajuToolSrc.indexOf("var EL_HI="), sajuToolSrc.indexOf("var EL_TITLE=")) + "return [].concat(Object.values(EL_HI),Object.values(EL_LO),Object.values(EL_FILL),[0.8,0.6,0.4,0.1].map(strengthBand));")();
   return d.length === 19 && d.every(x => !/습니다|합니다|하세요|입니다|십시오/.test(x) && /일세|걸세|하게|게\.|네\.|야\.|지\.|어\.|해\.|워\./.test(x)); })(), true);

@@ -936,13 +936,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       lines=[],i,y,br,st;
     pos.push(D.filled);
     for(i=0;i<12;i++){y=year+i;br=((y-4)%12+12)%12;st=((y-4)%10+10)%10;
-      if(G.empty.indexOf(br)>=0)lines.push('<b>'+y+'년 '+SJ_S[st]+SJ_B[br]+'년('+SJ_SH.charAt(st)+SJ_BH.charAt(br)+')</b> — '+nm(br)+' 글자가 들어오네.');}
+      if(G.empty.indexOf(br)>=0)lines.push('<b>'+y+'년 '+SJ_S[st]+SJ_B[br]+'년('+SJ_SH.charAt(st)+SJ_BH.charAt(br)+')</b> — '+nm(br)+' 글자가 들어와요.');}
     var yh=[["월지",P.m.b],["일지",P.d.b]].concat(P.h?[["시지",P.h.b]]:[]).filter(function(x){return Y.empty.indexOf(x[1])>=0;}),
-      yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적네. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
-        (yh.length?'자네 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'일세.':'자네 다른 자리 중에는 거기 드는 글자가 없네.');
+      yearNote='연주('+SJ_S[P.y.s]+SJ_B[P.y.b]+') 기준으로 보는 학파도 있어 참고로 적어요. 이쪽은 '+nm(Y.empty[0])+'·'+nm(Y.empty[1])+' 두 글자가 비는데, '+
+        (yh.length?'내 사주 자리 중 거기 든 글자는 '+yh.map(function(x){return x[0]+" "+SJ_B[x[1]];}).join(", ")+'예요.':'내 사주 다른 자리 중에는 거기 드는 글자가 없어요.');
     return {secs:[
       {k:"intro",h:"공망이 뭐야?",p:[ghFill(D.intro,{sun:G.sun,start:SJ_S[0]+SJ_B[G.start],end:SJ_S[9]+SJ_B[(G.start+9)%12],ea:e1,eb:e2})]},
-      {k:"two",h:"자네 공망 두 글자 — "+e1+" · "+e2,p:[B1.gist.replace(e1,'<b>'+e1+'</b>')+' '+B1.empty,B2.gist.replace(e2,'<b>'+e2+'</b>')+' '+B2.empty]},
+      {k:"two",h:"내 공망 두 글자 — "+e1+" · "+e2,p:[B1.gist.replace(e1,'<b>'+e1+'</b>')+' '+B1.empty,B2.gist.replace(e2,'<b>'+e2+'</b>')+' '+B2.empty]},
       {k:"pos",h:"내 사주에서 비어 있는 자리",p:pos,n:P.h?"":D.nohour},
       {k:"years",h:"공망이 채워지는 해",p:[D.years.head,lines.join("<br>"),D.years.tail]},
       {k:"read",h:"공망은 이렇게 읽으면 편하네",p:D.read.slice()},
@@ -1798,17 +1798,17 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
      f = {ds,strong,yong:용신 오행 이름,wolTg,sin:[신살 이름],miss:[비어 있는 십성 무리],duTg,seTg,duOk,seOk,nm:"민지 님"|""}. 문단(HTML) 배열을 돌려준다. 순수 함수 — verify 가 무작위 명식으로 검사한다 */
   var SJ_MISS_LAB={재성:"돈",관성:"일과 책임",인성:"배움과 도움",식상:"재주와 표현",비겁:"동료와 자립"};
   function sjEasy(f,D){
-    var N=f.nm?f.nm+josa(f.nm,"는/은"):"자네는",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
+    var N=f.nm?f.nm+josa(f.nm,"는/은"):"",sk=f.strong?"strong":"weak",du=D.du[f.duTg],se=D.se[f.seTg],fk=f.duOk&&f.seOk?"both":f.duOk?"du":f.seOk?"se":"none",Yo=SJ_YONG[f.yong],
       sn=(f.sin||[]).filter(function(k){return D.sin[k];}).slice(0,2),ms=(f.miss||[]).filter(function(k){return D.miss[k];}).slice(0,2),p=[];
-    p.push('<b>쉽게 말하면</b> — '+N+' '+D.il[f.ds]+'일세. '+D.str[sk]+' '+D.gy[f.wolTg]);
-    p.push('<b>대표 강점</b> — '+D.str3[f.ds]+'일세.');
+    p.push('<b>쉽게 말하면</b> — '+(N?N+' ':'')+D.il[f.ds]+josa(D.il[f.ds],"예요/이에요")+'. '+D.str[sk]+' '+D.gy[f.wolTg]);
+    p.push('<b>대표 강점</b> — '+D.str3[f.ds]+josa(D.str3[f.ds],"예요/이에요")+'.');
     p.push('<b>이렇게 하면 술술 풀리네</b> — '+D.good[f.wolTg]+' '+D.strat[sk]);
     p.push('<b>네 가지 한눈에</b><br><b>일</b> — '+D.work[f.wolTg]+'<br><b>돈</b> — '+D.money[f.wolTg]+'<br><b>사람</b> — '+D.people[f.ds]+'<br><b>몸과 마음</b> — '+ghFill(D.body,{E:f.yong,color:Yo.color,season:Yo.season,act:Yo.act}));
     p.push('<b>이것만 챙기면 더 좋아지네</b> — '+D.care[f.wolTg]);
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
-    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>일세. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg]+' '+D.fit[fk]);
+    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+du[0]+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+du[1]+' 올해는 '+se[1]+' '+D.seTip[f.seTg]+' '+D.fit[fk]);
     p.push('<b>정리하면</b> — '+N+' '+D.close[sk]);
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)
