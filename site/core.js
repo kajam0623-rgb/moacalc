@@ -681,25 +681,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // P: [[라벨 첫머리, 포즈, 대사]] — 라벨은 접힌 칸(.fold-lab)이나 덩어리 제목(h3)에서 찾는다
   /* 결과를 장으로 나눈다 — 첫 장만 보이고, 버튼을 눌러야 다음 장이 열린다. C=[[경계 웹툰 칸 이름, 장 제목, 버튼 글]]
      경계는 sjToon 이 단 data-k. 못 찾은 경계는 건너뛴다. 다음 장 버튼은 앞 장 끝에 둬서 앞 장이 닫혀 있으면 같이 숨는다 */
-  function sjChapters(out,C){
-    if(!out||typeof document==="undefined")return;
-    var M=[];C.forEach(function(c){var t=out.querySelector('.sj-toon[data-k="'+c[0]+'"]');if(!t)return;while(t.parentNode&&t.parentNode!==out)t=t.parentNode;if(t.parentNode)M.push({n:t,c:c});});
-    var total=M.length+1,wraps=[];
-    M.forEach(function(m,i){
-      var w=document.createElement("div");w.className="sj-chap";w.hidden=true;out.insertBefore(w,m.n);
-      var stop=M[i+1]?M[i+1].n:null,n=m.n;while(n&&n!==stop){var nx=n.nextSibling;w.appendChild(n);n=nx;}
-      var b=document.createElement("div");b.className="sj-next";
-      b.innerHTML='<button type="button" class="sj-next-b"><small>'+(i+2)+' / '+total+'</small><b>'+escH(m.c[1])+'</b><span>'+escH(m.c[2])+'</span></button>'+
-        (i<M.length-1?'<button type="button" class="sj-next-all">남은 이야기 한 번에 다 보기</button>':'');
-      if(i)wraps[i-1].appendChild(b);else out.insertBefore(b,w);
-      wraps.push(w);
-      b.querySelector(".sj-next-b").addEventListener("click",function(){w.hidden=false;b.remove();track("chap_"+(i+2));
-        try{w.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});
-      var all=b.querySelector(".sj-next-all");
-      if(all)all.addEventListener("click",function(){track("chap_all");[].forEach.call(out.querySelectorAll(".sj-chap"),function(x){x.hidden=false;});
-        [].forEach.call(out.querySelectorAll(".sj-next"),function(x){x.remove();});try{w.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}});});
-    // 공유·저장 버튼은 장 밖 맨 끝에 둬서 첫 장만 보고도 쓸 수 있게 한다
-    wraps.forEach(function(w){[].slice.call(w.children).forEach(function(n){if(n.matches(".share-btn,.save-btn,.sh-acts,.ss-acts-n"))out.appendChild(n);});});}
   function sjToon(out,P){
     if(!out||!P||typeof document==="undefined")return;
     var labs=[].slice.call(out.querySelectorAll(".fold-lab,h3"));
