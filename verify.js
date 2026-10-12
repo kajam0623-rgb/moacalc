@@ -146,8 +146,8 @@ t("타로 78장 (메이저 22 · 마이너 56)", tarotData.M.length, 78);
 t("타로 아트 매핑 78장", Object.keys(tarotData.ART).length, 78);
 t("타로 상징 스토리 78개", tarotData.STORY.length === 78 && tarotData.STORY.every(s => s.length >= 25), true);
 t("타로 카드 오행 78장 (0~4)", tarotData.CARD_EL.length === 78 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
-t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.qs.every(q => q.sp.length >= 1 && q.sp.length <= 3 &&
-  q.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined))), true);
+t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.sp.length >= 1 && tp.sp.length <= 3 &&
+  tp.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined)), true);
 const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","exam","family","friend","health","day"];
 t("타로 고민 키는 원고 topic 키와 일치", tarotData.TOPICS.map(tp => tp.k).join(","), TOPIC_K.join(","));
 t("타로 풀이 원고 78장 · 자리 9 · 고민 8×정역 · 한마디", TREAD.length === 78 && TREAD.every((c, i) => c.no === i &&
@@ -155,7 +155,7 @@ t("타로 풀이 원고 78장 · 자리 9 · 고민 8×정역 · 한마디", TRE
   TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
 const bosalLines = readLines.concat(TREAD.flatMap(c => [c.desc.up, c.desc.rev]), tarotData.EL_LINE, [tarotData.EL_MIX], tarotData.STAGE, tarotData.REVL, tarotData.CLOSE, [].concat(...tarotData.REL), [].concat(...Object.values(tarotData.YN_LINE)),
-  tarotData.TOPICS.flatMap(tp => [tp.hi].concat(tp.qs.map(q => q.say))));
+  tarotData.TOPICS.flatMap(tp => [tp.hi, tp.say]));
 // 2026-10-11: 원고 파일(content_tarot_read)과 hub 타로 대화(tarotData) 모두 해요체 — 둘을 나눠 본다
 const tarotHubLines = bosalLines.slice(readLines.length + TREAD.length * 2);
 t("타로 원고(content_tarot_read)는 해요체(보살 어미 0)", readLines.concat(TREAD.flatMap(c => [c.desc.up, c.desc.rev])).filter(x => TONE_BAD.test(x)).length, 0);
