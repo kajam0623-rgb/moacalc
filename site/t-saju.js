@@ -17,7 +17,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     var ELDESC={목:"성장·시작·따뜻함",화:"열정·표현·확산",토:"신용·중재·안정",금:"결단·원칙·마무리",수:"지혜·유연·깊이"};
     var EL_EN={목:"wood",화:"fire",토:"earth",금:"metal",수:"water"};
     // 오행 균형 풀이 — 가장 센 기운일 때, 가장 모자랄 때, 채우는 법
-    var EL_HI={목:"나무 기운이 두터우면 뻗어 나가려는 힘과 자존심이 세요. 새 일을 벌이는 데 거침이 없으니, 벌여 놓은 것을 거두는 시간을 따로 정해 두면 더 알차요.",
+    var EL_HI={목:"나무 기운이 두터우면 새 일을 벌일 기회가 자주 와요. 벌여 놓은 것을 거두는 시간을 따로 정해 두면 더 알차요.",
       화:"불 기운이 두터우면 말과 표정에 힘이 실려 사람이 모여요. 열기가 오래가니 쉬어 가는 틈을 두면 더 빛나요.",
       토:"흙 기운이 두터우면 버티는 힘과 믿음이 쌓여요. 한 번씩 새 문을 열어 두면 더 넓어져요.",
       금:"쇠 기운이 두터우면 맺고 끊는 일이 잘 풀려요. 마무리할 때 한마디 부드러운 말을 곁들이면 더 큰 신뢰가 돼요.",
@@ -35,7 +35,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 신강·신약이 얼마나 치우쳤는지 — 돕는 기운 비율 구간
     function strengthBand(r){
       return r>=0.7?"돕는 기운이 칠 할을 넘어 힘이 아주 넉넉한 편이에요. 스스로 밀고 가는 힘이 강하니 그 힘을 덜어 쓸 곳(일·취미·운동)을 마련해 두면 더 좋아요."
-        :r>=0.5?"힘이 넉넉한 쪽이되 지나치지 않아요. 스스로 서는 힘이 있으면서도 남과 어울릴 여지가 남아 균형 잡힌 짜임이에요."
+        :r>=0.5?"힘이 넉넉한 쪽이되 지나치지 않아요. 밀고 나갈 힘이 있으면서도 기댈 여지가 남아 균형 잡힌 짜임이에요."
         :r>=0.3?"채워 가며 크는 쪽이지만 크게 기울지는 않았어요. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이에요."
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편이에요. 섬세하고 눈치가 빠른 사람이라, 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피어요.";}
     // 일간 열 개 별명(2026-10-11 검수: 을목에도 '곧게 자라는 사람'이 붙어 같은 결과의 덩굴·풀꽃 풀이와 어긋났음)
@@ -101,7 +101,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 정확한 시각을 적으면 시진 칸도 그 시각(표준시)이 속한 시진으로 맞춰 보여 준다
     function syncT(){var B=birthIn();if(!B.exact)return;var m=B.h*60+B.mi;el.querySelector("#t").value=m>=1410?"23":String(Math.floor(((m+30)%1440)/120)*2);}
     function comboKey(){var dv=el.querySelector("#d").value.split("-");if(dv.length<3||!+dv[0])return "";
-      var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1");
+      var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1");if(B.h==null)pp.m=sjPillars(B.y,B.mo,B.d,12,0,false).m;   /* go() 와 같은 12시 기준 */
       return ILGAN_EN[pp.d.s]+"-"+TG_EN[sjTenGod(pp.d.s,SJ_BMAIN[pp.m.b])];}
     function prefetch(){var k=comboKey();if(!k||k in COMBO)return;COMBO[k]=null;
       fetch("sj/"+k+".json").then(function(r){return r.ok?r.json():null;}).then(function(j){COMBO[k]=j;}).catch(function(){delete COMBO[k];});}
@@ -114,6 +114,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
       var p=sjPillars(B.y,B.mo,B.d,h,B.mi,corr),ds=p.d.s;
+      /* 시각 모름이면 해·달 기둥도 낮 12시로 센다 — 경고문·계산 근거·대운 시작이 모두 12시 기준인데 기둥만 0시로 세어
+         절기 당일(입하 07:10 등) 태어난 사람의 달 기둥이 어긋났음(2026-10-12 검수: 2003-05-06 이 병진월로 나옴) */
+      if(h==null){var pN=sjPillars(B.y,B.mo,B.d,12,0,false);p.y=pN.y;p.m=pN.m;p.tti=pN.tti;}
       // 2026-10-11 절기가 바뀌는 날 + 시각 모름 → 오전·오후에 따라 달(해) 기둥이 달라진다고 맨 위에 알린다(검수: 정오로 정해 버리고 말이 없었음)
       var termWarn="";if(h==null){var q0=sjPillars(B.y,B.mo,B.d,0,0,false),q1=sjPillars(B.y,B.mo,B.d,23,59,false);
         if(q0.m.s!==q1.m.s||q0.m.b!==q1.m.b){var tmw=sjMonthTerms(sjJdKST(B.y,B.mo,B.d,23,59)),hm=sjKst(tmw.prev).slice(-5),yrCh=q0.y.b!==q1.y.b;
@@ -204,7 +207,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         "식신":"태어난 시각 자리(말년 자리)에 꾸준히 만들어 내는 기운이 있어 나이 들수록 손맛과 솜씨가 꾸준한 벌이가 돼요. 좋아하는 일을 작게라도 이어 가세요.",
         "상관":"태어난 시각 자리(말년 자리)에 튀는 재주가 있어 늦게까지 말과 생각으로 돈을 불러요. 가르치거나 알리는 일로 벌이를 넓혀 볼 만해요.",
         "편재":"태어난 시각 자리(말년 자리)에 크게 도는 돈 기운이 있어 늦게 큰 목돈이 오갈 수 있는 짜임이에요. 들어온 돈의 절반은 손대지 않는 곳에 묶어 두면 오래 든든해요.",
-        "정재":"태어난 시각 자리(말년 자리)에 꾸준한 돈 기운이 앉아 갈수록 살림이 차곡차곡 불어나요. 젊어서 부어 둔 것이 늦게 효자 노릇을 해요.",
+        "정재":"태어난 시각 자리(말년 자리)에 꾸준한 돈 기운이 앉아 있어, 나이 들어 갈수록 살림이 차곡차곡 불어나요. 젊어서 부어 둔 것이 늦게 효자 노릇을 해요.",
         "편관":"태어난 시각 자리(말년 자리)에 밀어붙이는 기운이 있어 늦게까지 책임이 무거운 자리가 돈을 가져와요. 몸이 편한 만큼만 맡는 선을 정해 두면 오래 벌 수 있어요.",
         "정관":"태어난 시각 자리(말년 자리)에 반듯한 자리 기운이 있어 늦게까지 이름과 자리를 지키는 쪽으로 돈이 들어와요. 오래 몸담을 곳을 아끼세요.",
         "편인":"태어난 시각 자리(말년 자리)에 남다른 재주 기운이 있어 나이 들어 익힌 특별한 기술이 벌이가 돼요. 남들이 안 하는 분야를 하나 깊게 파 두세요.",
@@ -524,7 +527,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<b>일간</b> 나를 뜻하는 글자 · <b>신강·신약</b> 타고난 힘이 넉넉한 편·채워 가며 크는 편 · <b>용신</b> 나에게 필요한 기운 · <b>대운</b> 10년 단위 흐름 · <b>세운</b> 그해의 흐름<br>'+
         '<b>비겁</b> 경쟁·자립 · <b>식상</b> 재주·표현 · <b>재성</b> 돈 · <b>관성</b> 일·책임 · <b>인성</b> 배움·도움 · <b>격국</b> 타고난 그릇의 모양</p></div>';
       var closing='<div class="sj-sec"><h3>맺는 말</h3><p>'+
-        (MID?'고르게 짜인 사람이에요. 혼자서도 잘 서고 사람과도 잘 어울리는 힘이 함께 있어요. 한쪽으로 치우치지 않으니 상황에 맞춰 힘을 골라 쓰면 돼요.'
+        (MID?'고르게 짜인 사람이에요. 밀고 나갈 때와 기댈 때를 함께 아는 힘이 있어요.'
           :st.strong?'힘이 넉넉한 사람이에요. 스스로 서는 힘이 있어 맡은 일을 끝까지 해내요. 그 힘을 쓸 곳만 잘 정하면 어디서든 든든한 사람이 돼요.'
           :'곁의 힘을 잘 받아 쓰는 사주예요. 든든한 사람과 자리를 곁에 두면 타고난 힘이 훨씬 크게 피어요.')+
         '<br><br>'+
@@ -610,7 +613,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+ST_TITLE[ds][0]+'</div>'+
         '<p>'+ST_TITLE[ds][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.</p></div></div>'+
         headline+F(synth)+F(charSec)+F(hourH)+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+F(secFortune)+focusBlock()+
-        F(monthH)+
+        (function(){PF.noKw=1;var r=F(monthH);PF.noKw=0;return r;})()+
         F((function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var rows="";
           /* 해마다 영역 표시. 한 줄 십성 풀이만으로는 "언제 무엇을"에 답이 안 됐다.
@@ -634,7 +637,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec"><h3>10년마다 바뀌는 흐름</h3><div class="sj-daeun">'+duHtml+'</div>'+
         '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운이에요. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p>'+
         (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);   // 분야별 그래프도 같은 칸 안에(따로 칸을 두면 같은 10년을 두 번 말함)
-          return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 보라색 칸이 지금 10년이에요.</p></div>';})()+
+          return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 보라색 칸이 지금 10년이에요. 10년 흐름의 나이는 태어난 해를 한 살로 세는 나이(세는나이)예요.</p></div>';})()+
         // 2026-10-11 순서: 한마디·성격·네 갈래 운 → 시기(달·해·10년) → 왜 그렇게 읽었나(그릇·신살·유명인·자리·받쳐 주는 기운·오행·축)
         F(coreH)+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
