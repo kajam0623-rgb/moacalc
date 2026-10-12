@@ -35,7 +35,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 신강·신약이 얼마나 치우쳤는지 — 돕는 기운 비율 구간
     function strengthBand(r){
       return r>=0.7?"돕는 기운이 칠 할을 넘어 힘이 아주 넉넉한 편이에요. 스스로 밀고 가는 힘이 강하니 그 힘을 덜어 쓸 곳(일·취미·운동)을 마련해 두면 더 좋아요."
-        :r>=0.5?"힘이 넉넉한 쪽이되 지나치지 않아요. 밀고 나갈 힘이 있으면서도 기댈 여지가 남아 균형 잡힌 짜임이에요."
+        :r>=0.5?"힘이 넉넉한 쪽이되 지나치지 않아 균형 잡힌 짜임이에요."
         :r>=0.3?"채워 가며 크는 쪽이지만 크게 기울지는 않았어요. 좋은 사람과 환경을 만나면 금세 힘이 붙는 짜임이에요."
         :"돕는 기운이 삼 할 아래라 채워 가며 크는 편이에요. 기댈 사람과 쉬어 갈 자리를 곁에 두면 훨씬 크게 피어요.";}
     // 일간 열 개 별명(2026-10-11 검수: 을목에도 '곧게 자라는 사람'이 붙어 같은 결과의 덩굴·풀꽃 풀이와 어긋났음)
@@ -593,12 +593,12 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 신살은 종합에 하나만 말하고, 이 칸은 나머지를 푼다(같은 기운을 두 번 말하던 중복)
       var synSin=SJE&&SJE.sin?sinsal.filter(function(k){return SJE.sin[k];})[0]:null,sinRest=sinsal.filter(function(k){return k!==synSin;});
       var sinH=sinRest.length?'<div class="sj-sec"><h3>눈에 띄는 기운 '+sinsal.length+'가지</h3><p>'+conceptArt(ART_SINSAL[sinRest[0]],sinRest[0])+(synSin?'<b>'+sjSinLink(synSin,SJE.sin[synSin][0])+'</b> — 위 종합에서 풀었어요.<br><br>':'')+sinRest.map(function(s){return '<b>'+sjSinLink(s,SJE&&SJE.sin&&SJE.sin[s]?SJE.sin[s][0]:s)+'</b> — '+SJ_SINSAL_DESC[s];}).join("<br><br>")+'</p></div>'
-        :synSin?'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>'+conceptArt(ART_SINSAL[synSin],synSin)+'눈에 띄는 기운은 위 종합에서 말한 <b>'+sjSinLink(synSin,SJE.sin[synSin][0])+'</b> 하나예요. 그 밖에 따로 튀는 기운이 없는 담백한 짜임이라 오행과 십성의 흐름이 그대로 드러나요.</p></div>'
+        :synSin?'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>'+conceptArt(ART_SINSAL[synSin],synSin)+'눈에 띄는 기운은 위 종합에서 푼 <b>'+sjSinLink(synSin,SJE.sin[synSin][0])+'</b> 하나예요. 그 밖에 따로 튀는 기운이 없는 담백한 짜임이라 오행과 십성의 흐름이 그대로 드러나요.</p></div>'
         :'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>따로 튀는 기운이 없는 담백한 구조예요. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나요.</p></div>';
       var elH='<div class="sj-sec"><h3>나에게 필요한 기운 — '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+'</h3><p>'+strengthBand(st.ratio)+' '+yongWhy+'<br><br>'+
         '옷이나 물건은 <b>'+Y.color+'</b> 쪽으로, 이사나 사무실은 <b>'+Y.dir+'</b> 방향으로 잡으세요. 큰일은 '+Y.season+'에 벌이면 결이 맞고, 지칠 땐 '+Y.act+'으로 기운을 돌리세요.</p></div>'+
         '<div class="sj-sec"><h3>다섯 기운의 균형</h3>'+sjOhaengSvg(cnt,SJ_ES[ds],SJ_EL.indexOf(yEl))+'<p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mxAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+' 기운이 가장 강하고 '+mnAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mnAll[mnAll.length-1]],"가/이")+' 상대적으로 적은 편이에요. 강한 기운은 나의 재능이고, 지나칠 때만 조금 조절해 주면 돼요. '+(mn===yEl?'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운이 바로 나에게 필요한 기운이에요. 조금씩 곁에 두면 균형이 잡혀요.':'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운도 조금씩 보태면 좋지만, 가장 먼저 챙길 건 필요한 기운 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl],"예요/이에요")+'.')+
-        '<br><br>여덟 글자를 오행별로 세어 보면 '+SJ_EL.map(function(e,i){return e+' '+cnt[i];}).join(" · ")+', 이렇게 나와요. '+(mxAll.length>=3?'':EL_HI[mx])+
+        '<br><br>여덟 글자를 오행별로 세어 보면 '+SJ_EL.map(function(e,i){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+' '+cnt[i];}).join(" · ")+', 이렇게 나와요. '+(mxAll.length>=3?'':EL_HI[mx])+
         '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운은 한 자리도 들지 않았어요. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
         '<div class="sj-sec"><h3>내 삶이 도는 축</h3><p>'+gTxt+'<br><br>'+
         '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
