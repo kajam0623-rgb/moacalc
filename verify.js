@@ -268,7 +268,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("사주 종합 풀이: 일간 결 10 · 이기는 방식 10", arr("STYLE")+"/"+arr("WIN"), "10/10");
   const stg = sj.slice(sj.indexOf("var STAGE={"), sj.indexOf("};", sj.indexOf("var STAGE={")));
   t("사주 종합 풀이: 격국 무대 십성 10개", (stg.match(/"[^"]+":/g) || []).length, 10);
-  t("사주 종합·성격 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+F(synth)+F(charSec)+F(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance"), true);
+  t("사주 종합·성격 풀이가 결과 맨 위(한눈에 앞)에 붙음", sj.includes("headline+F(synth)+FA(charSec)+FA(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance"), true);
   t("인생 시기표 영역 표시·앞으로 10년 요약 배선", sj.includes("yr-tags") && sj.includes("planTxt") && sj.includes('TAGS=["인연","이동","일","문서","돈","지출","집안"]'), true);
 }
 
@@ -358,8 +358,8 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   t("예전에 저장된 생년월일은 core 가 지운다", /\["birth","birthHour","birthTime","gender","name","partnerBirth","partnerGender"\]\.forEach\(function\(k\)\{if\(k in c\)\{delete c\[k\]/.test(src), true);
   t("궁합 결과도 두 사람 명식 표부터 나온다", /innerHTML=\s*'<div class="gh-myeong">/.test(toolBlock("gunghap")) && toolBlock("gunghap").includes('sjGridHtml(A,') && toolBlock("gunghap").includes('sjGridHtml(B,'), true);
   // 2026-10: 맨 위는 '이 정보로 풀었습니다' 확인 카드와 '한 장 요약'(sjSumHtml), 그 바로 아래가 명식 표다 — 명식 표는 여전히 풀이보다 먼저
-  t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+F(synth)+F(charSec)+F(hourH)"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
-  t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+F(synth)+F(charSec)+F(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
+  t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+F(synth)+FA(charSec)+FA(hourH)"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
+  t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+F(synth)+FA(charSec)+FA(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
   t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
 
@@ -568,7 +568,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const p = sjPillars(y, m, d, h, 30, true), r = sjChar(p, SC), len = r.join("").replace(/\s+/g, "").length; minC = Math.min(minC, len); maxC = Math.max(maxC, len);
     if (r.length !== 7 || r.some((x, k) => (!x && k !== 3) || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
   t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 180), "0|true");
-  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+F(synth)+F(charSec)+F(hourH)+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
+  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+F(synth)+FA(charSec)+FA(hourH)+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
 // 신년운세 깊이 풀이(content_newyear.js → nyDeep): 원고 칸 · 월주 손계산 · 무작위 생일 3000개 · 도구 배선
 { const NY = require("./content_newyear.js"), JOND = TONE_BAD;
   const RELS = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];

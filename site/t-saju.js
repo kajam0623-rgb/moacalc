@@ -223,7 +223,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :G.식상>=3?"재주와 표현 기운이 <b>발달했어요</b>. 시키는 대로 하는 일보다 <b>기획하고 만들어 내는 일</b>에서 빛나는 사람이에요. 창작이든 교육이든 영업이든, 결과를 스스로 만드는 자리가 맞아요."
         :"일·자리 기운이 알맞아요. <b>회사에서도, 혼자서도</b> 해낼 수 있는 사람이에요. 역할이 분명하고 성과가 눈에 보이는 자리에서 만족이 크겠어요.";
       var job=verdict("job",jBk,jobBase)+ilg("job")+P+
-        "여덟 글자 가운데 일을 맡아 지키는 힘이 "+G.관성+"칸, 만들어 내놓는 힘이 "+G.식상+"칸, 배워서 쌓는 힘이 "+G.인성+"칸이에요. "+(Math.max(G.관성,G.식상,G.인성)===0?"세 힘 모두 사주 글자에 드러나지 않아, 해마다 드는 운에서 그때그때 빌려 쓰는 편이에요.":(function(){var L=[["일을 맡아 지키는 힘",G.관성],["만들어 내놓는 힘",G.식상],["배워서 쌓는 힘",G.인성]].sort(function(a,b){return b[1]-a[1];});return L[0][1]===L[1][1]?(L[1][1]===L[2][1]?"세 힘이 고르게 들어 있어 상황에 맞춰 골라 쓰면 돼요.":"가장 많은 쪽은 "+L[0][0]+"과 "+L[1][0]+"으로 칸 수가 같아요."):"그중 "+L[0][0]+"이 가장 편하게 쓰는 힘이에요.";})())+P+
+        "여덟 글자 가운데 일을 맡아 지키는 힘이 "+G.관성+"칸, 만들어 내놓는 힘이 "+G.식상+"칸, 배워서 쌓는 힘이 "+G.인성+"칸이에요. "+(Math.max(G.관성,G.식상,G.인성)===0?"세 힘 모두 사주 글자에 드러나지 않아, 해마다 드는 운에서 그때그때 빌려 쓰는 편이에요.":(function(){var L=[["일을 맡아 지키는 힘",G.관성],["만들어 내놓는 힘",G.식상],["배워서 쌓는 힘",G.인성]].sort(function(a,b){return b[1]-a[1];});return L[0][1]===L[1][1]?(L[1][1]===L[2][1]?"세 힘이 고르게 들어 있어 상황에 맞춰 골라 쓰면 돼요.":"이 세 힘 가운데 "+L[0][0]+"과 "+L[1][0]+"이 칸 수가 같아요."):"이 세 힘 가운데 "+L[0][0]+"이 가장 편하게 쓰는 힘이에요.";})())+P+
         "사주의 짜임으로 보면 내가 빛나는 자리는 <b>"+STAGE[wolTg]+"</b>"+josa(STAGE[wolTg],"예요/이에요")+". "+(cnt[SJ_EL.indexOf(yEl)]?"그 자리에서 필요한 기운("+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+")까지 살리고 싶다면 ":"사주에 비어 있어 채우면 좋은 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운을 곁에 두려면 ")+Y.job+" 쪽과 손잡는 일이 힘이 돼요."+
         (nearY("일")?P+"일과 자리에 변화가 오는 가장 가까운 해는 <b>"+nearY("일")+"</b>이에요."
           +(nearY("문서")?" 시험·계약·자격 쪽은 <b>"+nearY("문서")+"</b>에 힘이 실려요.":""):"");
@@ -255,7 +255,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         return e===yEl?"필요한 기운 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl],"와/과")+" 같은 기운이라 <b>순하게 풀리는 "+u+"</b>"+josa(u,"예요/이에요")+"."
           // u가 "구간"이면 받침이 있고 "해"면 없다. 조사를 박아두면 "해이야"가 나온다
           :e===y2El?"두 번째로 필요한 기운 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[y2El]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[y2El],"와/과")+" 같은 기운이라 <b>도움이 붙는 "+u+"</b>"+josa(u,"예요/이에요")+"."
-          :(u==="해"?"다만 필요한 기운과는 결이 다른 해라, <b>하나씩 다지며 가면</b> 든든해요."
+          :(u==="해"?"필요한 기운과는 결이 다른 해라, <b>하나씩 다지며 가면</b> 든든해요."
             :"필요한 기운과는 결이 다른 "+u+josa(u,"라/이라")+" <b>한 번에 다 걸기보다 다져 가는 때</b>예요.");}
       function fitTag(e){return e===yEl?"순하게 풀리는 구간":e===y2El?"도움이 붙는 구간":"다지는 구간";}
       var duDetail=duList.map(function(dd){
@@ -457,17 +457,17 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           "정재":["차곡차곡 쌓는 달이에요.","성실히 한 만큼 남으니 저축을 한 칸 늘려 보세요.","작은 지출이 모여 새니 가계부를 한 번 들여다보세요."],
           "편관":["일이 몰아치고 시험받는 달이에요.","버티면 급이 오르는 달이니 어려운 일을 맡아 보세요.","무리하면 몸이 먼저 지치니 약속을 줄이고 잠을 지키세요."],
           "정관":["자리와 이름이 드러나는 달이에요.","인정받을 기회가 오니 맡은 일을 반듯하게 마무리하세요.","규칙과 절차에 걸리기 쉬우니 서류를 꼼꼼히 챙기세요."],
-          "편인":["생각이 깊어지고 방향을 바꾸고 싶은 달이에요.","새로 배우는 데 속도가 붙으니 공부를 시작해 보세요.","마음이 이리저리 흔들리니 큰 결정은 다음 달로 미루세요."],
+          "편인":["생각이 깊어지고 방향을 바꾸고 싶은 달이에요.","새로 배우는 데 속도가 붙으니 공부를 시작해 보세요.","마음이 이리저리 흔들리기 쉬우니 큰 결정 앞에서 하루만 더 살펴보세요."],
           "정인":["도움과 문서가 드는 달이에요.","어른의 조언과 계약에 볕이 드니 도장 찍을 일은 이달에 하세요.","기대기만 하면 늘어지니 받은 도움을 바로 실행으로 옮기세요."]};
         var now=new Date(),rows="",score=[],MSEEN={};
         for(var i=0;i<12;i++){
           var dt=new Date(now.getFullYear(),now.getMonth()+i,20),Y=dt.getFullYear(),M=dt.getMonth()+1;
           var mp=sjPillars(Y,M,20,12,0,false).m,tg=sjTenGod(ds,mp.s),el=SJ_EL[SJ_ES[mp.s]];
-          var fit=el===yEl?2:el===y2El?1:0,T=tagsFor(mp.s,mp.b);
+          var fit=el===yEl?2:el===y2El&&y2El!==SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))]?1:0,T=tagsFor(mp.s,mp.b);
           var chung=Math.abs(mp.b-p.d.b)===6,hap=sjYukhap(p.d.b)===mp.b||(mp.b%4===p.d.b%4&&mp.b!==p.d.b);
           var mt=sjMonthTerms(sjJdKST(Y,M,20,12,0)),st0=sjKst(mt.prev).replace(/^\d+년 /,"").replace(/ \d\d:\d\d$/,"");
           var sc=fit*2+(T.some(function(t){return t==="돈"||t==="일"||t==="문서"||t==="인연";})?1:0)-(chung?2:0)-(T.indexOf("지출")>=0?1:0);
-          score.push({m:M,y:Y,sc:sc,tg:tg,i:i,T:T});
+          score.push({m:M,y:Y,sc:sc,tg:tg,i:i,T:T,ch:chung});
           rows+='<div class="yr'+(i===0?' now':'')+'"><div class="yr-h"><b>'+M+'월</b><span>'+SJ_S[mp.s]+SJ_B[mp.b]+'월 · '+tg+(chung?' · 일지와 충':hap?' · 일지와 합':'')+'</span><small>'+st0+' '+mt.prevName+'부터</small></div>'+
             '<p>'+(function(){   // 같은 역할의 달·같은 덧말은 처음 한 번만 풀고 다음부터는 짧게(2026-10-12 검수: 열두 달에 같은 문장이 되풀이)
               var prev=score.slice(0,-1).filter(function(x){return x.tg===tg;})[0],adv=fit===2?MTG[tg][1]:fit===1?MTG[tg][1]:MTG[tg][2],t;
@@ -521,7 +521,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 한눈에 보기 — 결과 맨 위에서 용어 없이 세 줄로 요약한다
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+ST_TITLE[ds][1]+'이에요. '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.<br>'+
-        '<b>나에게 필요한 기운</b> — '+yEl+' 기운이에요. '+Y.color+' 계열, '+Y.dir+' 방향이 내 편이에요.<br>'+
+        '<b>나에게 필요한 기운</b> — '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운이에요.<br>'+
         '<b>지금 10년 흐름</b> — '+span(duNow)+', '+DU_NAME[duNow.tg]+'의 시기예요.<br>'+
         (p.h?'<b>태어난 시각 자리</b> — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+'), 말년과 자녀 복을 보여 주는 자리예요.'
             :'<b>태어난 시각</b> — 모르는 채로 봤어요. 시각을 넣으면 말년·자녀 풀이와 오행이 더 또렷해져요.')+'</p></div>';
@@ -531,7 +531,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var closing='<div class="sj-sec"><h3>맺는 말</h3><p>'+
         (MID?'고르게 짜인 사람이에요. 밀고 나갈 때와 기댈 때를 함께 아는 힘이 있어요.'
           :st.strong?'힘이 넉넉한 사람이에요. 그 힘을 쓸 곳만 잘 정하면 어디서든 든든한 사람이 돼요.'
-          :'곁의 힘을 잘 받아 쓰는 사주예요. 든든한 사람과 자리를 곁에 두면 타고난 힘이 훨씬 크게 피어요.')+
+          :'채워 가며 크는 사주예요. 좋은 자리를 만나면 타고난 힘이 훨씬 크게 피어요.')+
         '<br><br>'+
         (MID?'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두고, 상황에 맞춰 힘을 골라 쓰면 어디서든 제 몫을 해요.'
           :st.strong
@@ -597,13 +597,13 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :'<div class="sj-sec"><h3>눈에 띄는 기운</h3><p>따로 튀는 기운이 없는 담백한 구조예요. 큰 기복 없이 제 걸음을 지키는 편이고, 오행과 십성의 흐름이 그대로 드러나요.</p></div>';
       var elH='<div class="sj-sec"><h3>나에게 필요한 기운 — '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+'</h3><p>'+strengthBand(st.ratio)+' '+yongWhy+'<br><br>'+
         '옷이나 물건은 <b>'+Y.color+'</b> 쪽으로, 이사나 사무실은 <b>'+Y.dir+'</b> 방향으로 잡으세요. 큰일은 '+Y.season+'에 벌이면 결이 맞고, 기운을 북돋우고 싶을 땐 '+Y.act+josa(Y.act,"가/이")+' 도움이 돼요.</p></div>'+
-        '<div class="sj-sec"><h3>다섯 기운의 균형</h3>'+sjOhaengSvg(cnt,SJ_ES[ds],SJ_EL.indexOf(yEl))+'<p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mxAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+' 기운이 가장 강하고 '+mnAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mnAll[mnAll.length-1]],"가/이")+' 상대적으로 적은 편이에요. 강한 기운은 나의 재능이고, 지나칠 때만 조금 조절해 주면 돼요. '+(mn===yEl?'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운이 바로 나에게 필요한 기운이에요. 조금씩 곁에 두면 균형이 잡혀요.':'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운도 조금씩 보태면 좋지만, 가장 먼저 챙길 건 필요한 기운 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl],"예요/이에요")+'.')+
+        '<div class="sj-sec"><h3>다섯 기운의 균형</h3>'+sjOhaengSvg(cnt,SJ_ES[ds],SJ_EL.indexOf(yEl))+'<p>'+conceptArt(ART_SAENG[SJ_EL.indexOf(mn)],mn+josa(mn,"를/을")+" 낳는 상생")+mxAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+' 기운이 가장 강하고 '+mnAll.map(function(e){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e];}).join("·")+(cMn===0?' 기운은 비어 있어요':josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mnAll[mnAll.length-1]],"가/이")+' 상대적으로 적은 편이에요')+'. 강한 기운은 나의 재능이고, 지나칠 때만 조금 조절해 주면 돼요. '+(mn===yEl?'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운이 바로 나에게 필요한 기운이에요. 조금씩 곁에 두면 균형이 잡혀요.':'덜 채워진 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운도 조금씩 보태면 좋지만, 가장 먼저 챙길 건 필요한 기운 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+josa(({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl],"예요/이에요")+'.')+
         '<br><br>여덟 글자를 오행별로 세어 보면 '+SJ_EL.map(function(e,i){return ({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[e]+' '+cnt[i];}).join(" · ")+', 이렇게 나와요. '+(mxAll.length>=3?'':EL_HI[mx])+
-        '<br><br>'+(cnt[SJ_EL.indexOf(mn)]===0?({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn]+' 기운은 한 자리도 들지 않았어요. ':'')+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
+        '<br><br>'+EL_LO[mn]+'<br><br>'+EL_FILL[mn]+'</p></div>'+
         '<div class="sj-sec"><h3>내 삶이 도는 축</h3><p>'+gTxt+'<br><br>'+
         '<span class="sj-cnt">비겁 '+G.비겁+' · 식상 '+G.식상+' · 재성 '+G.재성+' · 관성 '+G.관성+' · 인성 '+G.인성+'</span>'+
         '<br><span style="color:var(--muted);font-size:12.5px">비겁은 자립심, 식상은 표현·재능, 재성은 현실 감각, 관성은 책임·조직, 인성은 학문·수용력을 뜻합니다.</span></p></div>';
-      PF.ax=sjAxes([synth,charSec,hourH,secFortune,monthH,coreH,sinH,gungH,elH,closing].join(" "),PF);if(ilUn==="건록"||ilUn==="제왕"){PF.ax[12]=0;PF.ax[13]=0;}var F=function(x){return sjFit(x,PF);};
+      PF.ax=sjAxes([synth,charSec,hourH,secFortune,monthH,coreH,sinH,gungH,elH,closing].join(" "),PF);if(ilUn==="건록"||ilUn==="제왕"){PF.ax[13]=0;PF.ax[14]=0;}var F=function(x){return sjFit(x,PF);},FA=function(x){PF.advLim=1;var r=sjFit(x,PF);PF.advLim=0;return r;};   /* FA = 문단마다 처방 하나 */
       el.querySelector("#out").innerHTML=
         // 이 정보로 풀었다 — 넣은 값을 먼저 되보여 준다(잘못 넣었으면 바로 알 수 있게). 생일은 서버로 가지 않는다
         '<div class="sj-confirm"><div class="k">이 정보로 풀었습니다</div><b>양력 '+y+'년 '+mo+'월 '+d+'일 · '+(B.exact?B.exact+' (적어 주신 시각)':h==null?'태어난 시각 모름':escH(tLab))+' · '+(male?'남':'여')+'</b>'+
@@ -614,7 +614,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-char"><img src="img/char/el-'+EL_EN[SJ_EL[SJ_ES[ds]]]+'-'+(male?"m":"f")+'.webp" alt="'+SJ_EL[SJ_ES[ds]]+' 오행 캐릭터" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
         '<div class="cap"><div class="t">'+SJ_EL[SJ_ES[ds]]+'('+SJ_SH[ds]+') 일간 · '+(male?"남":"여")+'</div><div class="n">'+ST_TITLE[ds][0]+'</div>'+
         '<p>'+ST_TITLE[ds][1]+' · '+ELDESC[SJ_EL[SJ_ES[ds]]]+'의 기운을 타고났어요.</p></div></div>'+
-        headline+F(synth)+F(charSec)+F(hourH)+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+F(secFortune)+focusBlock()+
+        headline+F(synth)+FA(charSec)+FA(hourH)+'<div class="tail-wrap fold-skip" id="tailbox"></div>'+glance+FA(secFortune)+focusBlock()+
         (function(){PF.noKw=1;var r=F(monthH);PF.noKw=0;return r;})()+
         F((function(){ // 인생 시기표 — 올해 앞뒤 5년. 지난 해는 실제로 어땠는지 기기에만 적어 두게 한다
           var rows="";
@@ -641,15 +641,15 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);   // 분야별 그래프도 같은 칸 안에(따로 칸을 두면 같은 10년을 두 번 말함)
           return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 보라색 칸이 지금 10년이에요. 10년 흐름의 나이는 태어난 해를 한 살로 세는 나이(세는나이)예요.</p></div>';})()+
         // 2026-10-11 순서: 한마디·성격·네 갈래 운 → 시기(달·해·10년) → 왜 그렇게 읽었나(그릇·신살·유명인·자리·받쳐 주는 기운·오행·축)
-        F(coreH)+
+        FA(coreH)+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
-        F(sinH)+
+        FA(sinH)+
         '<div class="sj-sec" id="sjceleb"></div>'+
-        F(gungH)+
+        FA(gungH)+
         F(elH)+
         sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
         sjAiHtml()+
-        F(closing)+
+        FA(closing)+
         shareBtn()+
         // 저장·소장 경로. 브라우저 인쇄 대화상자에서 "PDF로 저장"을 고르면 파일이 된다
         '<div style="text-align:center;margin:18px 0 4px">'+
