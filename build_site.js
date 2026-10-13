@@ -3330,6 +3330,25 @@ ${ORG_LD}
 ${crumbLd(crumbs)}</head><body>
 <div class="wrap">`;
 const DREAM_NOTE = '<p class="note">해몽은 조상들이 꿈에 붙여 온 민간의 풀이입니다. 앞날을 정해 주지 않으니 좋은 꿈은 하루를 여는 기분으로, 언짢은 꿈은 한 번 더 조심하라는 신호 정도로 가볍게 받아들이세요. 같은 꿈이 오래 반복되거나 잠을 크게 설친다면 전문가와 상담해 보시길 권합니다.</p>';
+// 꿈해몽 저장·공유(2026-10-13 사용자: 꿈해몽에도 저장 공유) — 공유는 띠 궁합과 같은 작은 스크립트(TTI_SHARE_JS), 저장은 캔버스로 1080×1350 카드(그림·제목·길흉·보살 한마디)를 만들어 공유창(파일) 또는 내려받기
+const DREAM_SAVE_JS = `<script>(function(){function ev(n){try{navigator.sendBeacon("/api/hit",JSON.stringify({e:n}))}catch(e){}}
+function wrap(x,t,w){var o=[],l="";String(t).split(" ").forEach(function(wd){var c=l?l+" "+wd:wd;if(l&&x.measureText(c).width>w){o.push(l);l=wd;}else l=c;});if(l)o.push(l);return o;}
+function draw(b,img){var W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d"),F="Pretendard,'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif",y=110;
+x.fillStyle="#141824";x.fillRect(0,0,W,H);
+if(img){var ih=Math.round(W*9/16),sw=img.naturalWidth,sh=Math.round(sw*9/16);x.drawImage(img,0,Math.max(0,(img.naturalHeight-sh)/2),sw,sh,0,0,W,ih);var g=x.createLinearGradient(0,ih-220,0,ih);g.addColorStop(0,"rgba(20,24,36,0)");g.addColorStop(1,"#141824");x.fillStyle=g;x.fillRect(0,ih-220,W,220);y=ih+30;}
+x.textAlign="center";x.fillStyle="#e6b25a";x.font="800 30px "+F;x.fillText("동네보살 꿈해몽",W/2,y);y+=78;
+x.fillStyle="#fff";x.font="900 62px "+F;wrap(x,b.dataset.title,W-140).slice(0,2).forEach(function(l){x.fillText(l,W/2,y);y+=76;});
+if(b.dataset.kind){x.font="800 30px "+F;var kw=x.measureText(b.dataset.kind).width+48;x.fillStyle=b.dataset.kc||"#7a6b45";x.beginPath();if(x.roundRect)x.roundRect(W/2-kw/2,y-10,kw,52,26);else x.rect(W/2-kw/2,y-10,kw,52);x.fill();x.fillStyle="#fff";x.fillText(b.dataset.kind,W/2,y+27);y+=92;}
+x.fillStyle="#efe3c9";x.font="500 36px "+F;var L=wrap(x,b.dataset.text,W-170),n=Math.max(2,Math.floor((H-170-y)/56));if(L.length>n){L=L.slice(0,n);L[n-1]=L[n-1].replace(/.$/,"…");}L.forEach(function(l){x.fillText(l,W/2,y);y+=56;});
+x.fillStyle="#e6b25a";x.font="800 36px "+F;x.fillText("동네보살",W/2,H-92);x.fillStyle="#bba98a";x.font="600 26px "+F;x.fillText("dongnebosal.com",W/2,H-50);return c;}
+function save(b){ev("image_save");var idle=b.textContent;b.textContent="그림 만드는 중…";var go=function(img){draw(b,img).toBlob(function(bl){b.textContent=idle;if(!bl)return;var name=(b.dataset.file||"dongnebosal-dream")+".png",f=null;try{f=new File([bl],name,{type:"image/png"})}catch(e){}
+if(f&&navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f],title:b.dataset.title}).catch(function(){});return;}
+var a=document.createElement("a");a.href=URL.createObjectURL(bl);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},2000);},"image/png");};
+var ready=(document.fonts&&document.fonts.ready)||Promise.resolve();ready.then(function(){if(!b.dataset.img)return go(null);var im=new Image();im.onload=function(){go(im)};im.onerror=function(){go(null)};im.src=b.dataset.img;});}
+function bind(){[].forEach.call(document.querySelectorAll("[data-dsave]"),function(b){if(b.__d)return;b.__d=1;b.addEventListener("click",function(){save(b)});});}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",bind);else bind();})();</script>`;
+const dreamShareRow = (title, text, file, sv) => `<div class="ttishare">` + (sv ? `<button type="button" class="ttibtn" data-dsave="1" data-file="${esc(file.replace(/\.html$/, ""))}" data-title="${esc(sv.title)}" data-kind="${esc(sv.kind || "")}" data-kc="${esc(DREAM_KIND[sv.kind] || "")}" data-text="${esc(sv.text)}" data-img="${esc(sv.img || "")}">이미지로 저장</button>` : "") +
+  ttiBtn("이 해몽 공유하기", "share_click", title, text, `${DOMAIN}/${file}?from=share`) + ttiBtn("친구에게 \"꿈 풀어 볼래?\" 보내기", "invite_make", "꿈해몽 같이 보자", "간밤에 꾼 꿈 기억나? 동네보살에서 풀어 봐:", `${DOMAIN}/dream.html?from=share`) + `</div>` + TTI_SHARE_JS + (sv ? DREAM_SAVE_JS : "");
 function dreamHubPage(){
   const url = `${DOMAIN}/dream.html`, title = `꿈해몽 풀이 사전 — 동물·사람·돈·태몽 ${DREAM_N}가지`;
   const desc = `돼지꿈, 뱀꿈, 이빨 빠지는 꿈부터 태몽까지 ${DREAM_N}가지 꿈을 12갈래로 나눠 풀었습니다. 꿈에 나온 것을 검색하면 길몽·흉몽과 보살의 풀이를 바로 볼 수 있습니다.`;
@@ -3340,6 +3359,7 @@ function dreamHubPage(){
 <input type="search" id="dq" placeholder="예: 돼지, 이빨, 물, 돌아가신 할머니" aria-label="꿈 검색" style="width:100%;padding:14px 16px;font-size:16px;border-radius:12px;border:1px solid var(--line-2);background:var(--surface);color:inherit;margin-bottom:6px">
 <p id="dqn" style="font-size:13px;color:var(--muted);margin:0 0 14px"></p>
 <div id="dlist">${DREAM.map(c=>`<section class="guide dm-g"><h2><a href="dream-${c.id}.html">${c.ko}</a> <small style="color:var(--muted);font-weight:600">${c.items.length}가지</small></h2><div class="sibs">${c.items.map(e=>`<a href="${dreamItemUrl(e.k)}" data-t="${esc(e.title.replace(/ ?꿈$/,""))}">${esc(e.title)} ${dreamBadge(e.kind)}</a>`).join("")}</div></section>`).join("")}</div>
+${dreamShareRow("꿈해몽 풀이 사전", `꿈해몽 ${DREAM_N}가지 — 간밤에 꾼 꿈, 동네보살에서 풀어 보기:`, "dream.html")}
 ${DREAM_NOTE}
 ${footer}
 </div>
@@ -3364,7 +3384,7 @@ function dreamDeepPage(d) {
 <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${esc(d.kw)} 해몽 ${dreamBadge(e.kind)}</h1>
 ${x.imgAlt ? `<figure style="margin:0 0 16px"><img src="img/dream/${d.k}.webp" width="1120" height="630" alt="${esc(dreamImgAlt(d))}" decoding="async" style="width:100%;height:auto;border-radius:14px;display:block"></figure>` : ""}
 <div class="intro" style="margin:0 0 18px">${para(d.lead)}</div>
-<section class="guide dm-e"><h2>동네보살 한마디</h2><p>${esc(e.text)}</p></section>
+<section class="guide dm-e"><h2>동네보살 한마디</h2><p>${esc(e.text)}</p>${dreamShareRow(`${d.kw} 해몽`, `${d.kw} — ${e.text.split(".")[0]}. 동네보살 풀이 보기:`, `dream-${d.k}.html`, { title: `${d.kw} 해몽`, kind: e.kind, text: e.text, img: x.imgAlt ? `img/dream/${d.k}.webp` : "" })}</section>
 <section class="guide"><h2>${esc(d.kw)}, 장면별 풀이</h2>${d.cases.concat(x.more || []).map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")}</section>
 <section class="guide"><h2>마음 쪽에서 보면</h2><div class="intro" style="margin-top:0">${para(d.mind)}</div></section>
 ${x.old ? `<section class="guide"><h2>옛 해몽에서는</h2><div class="intro" style="margin-top:0">${para(x.old)}</div></section>` : ""}
@@ -3387,6 +3407,7 @@ function dreamCatPage(c){
 <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${c.ko} 해몽</h1>
 <div class="intro" style="margin:0 0 18px">${para(c.intro)}</div>
 <div class="sibs" style="margin-bottom:18px">${c.items.map(e=>`<a href="#${e.k}">${esc(e.title)}</a>`).join("")}</div>
+${dreamShareRow(`${c.ko} 해몽`, `${c.ko} 해몽 ${c.items.length}가지 — ${names} 꿈 풀이, 동네보살에서 보기:`, `dream-${c.id}.html`)}
 ${c.items.map(e=>`<section class="guide dm-e" id="${e.k}"><h2>${esc(e.title)} ${dreamBadge(e.kind)}</h2><p>${esc(e.text)}</p>${DREAM_DEEP_K.has(e.k)?`<p style="margin-top:8px"><a href="dream-${e.k}.html">${esc(e.title)} 장면별 풀이 자세히 →</a></p>`:""}</section>`).join("")}
 ${DREAM_NOTE}
 <section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs">${DREAM.map(x=>x.id===c.id?`<span class="cur">${x.ko}</span>`:`<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
