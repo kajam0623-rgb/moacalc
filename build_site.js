@@ -2648,7 +2648,7 @@ const colFig = (en, i) => (COLIMG.figs[en] || []).map((f, k) => ({ ...f, n: k + 
 const CB_DIM = { s: [600, 400], l: [1000, 666], w: [900, 600] };
 function columnBento() {
   const by = Object.fromEntries(COLUMN_PAGES.map(c => [c.en, c]));
-  const order = COLIMG.tiles.filter(t => by[t[0]]).concat(COLUMN_PAGES.filter(c => !COLIMG.tiles.some(t => t[0] === c.en)).map(c => [c.en, "s", [.3, .05, .7, .4]]));
+  const order = COLIMG.tiles.filter(t => by[t[0]]);   // 홈 격자는 정해 둔 14칸(20칸 꽉 참)만. 새 칼럼은 "전체 보기"·관련 칩으로 잇는다(2026-10-13, 칸을 덧붙이면 그리드가 넘쳤다)
   return `<div class="cbwrap"><div class="colbento">` + order.map(([en, sz, face, at]) => { const c = by[en], big = sz !== "s", [w, h] = CB_DIM[sz], pos = at || COLIMG.tilePos(face, sz);
     return `<a class="cb cb-${sz}" href="column-${c.en}.html"><img src="img/col/tile-${c.en}.webp" alt="" width="${w}" height="${h}" loading="lazy" decoding="async" style="object-position:${pos};transform-origin:${pos}">` +
       `<span class="cb-t"><b>${esc(big ? c.title : c.crumb)}</b>${big ? `<i>${esc(c.lead)}</i>` : ""}</span></a>`; }).join("") +
