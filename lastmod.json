@@ -652,7 +652,7 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "7b84ae55",
+  "h": "8052498e",
   "d": "2026-10-13"
  },
  "installment.html": {
@@ -680,7 +680,7 @@
   "d": "2026-09-16"
  },
  "lunar.html": {
-  "h": "ffdafc14",
+  "h": "8098cf27",
   "d": "2026-10-13"
  },
  "manse-2020-01.html": {
@@ -1548,35 +1548,35 @@
   "d": "2026-10-13"
  },
  "column.html": {
-  "h": "b3199003",
+  "h": "6b071e93",
   "d": "2026-10-13"
  },
  "column-birth-time-unknown.html": {
-  "h": "c62a6c6b",
+  "h": "892cdd82",
   "d": "2026-10-13"
  },
  "column-new-year-start.html": {
-  "h": "f4951100",
+  "h": "5ec4a3e7",
   "d": "2026-10-13"
  },
  "column-star-cusp.html": {
-  "h": "abdf3586",
+  "h": "01be9384",
   "d": "2026-10-13"
  },
  "column-daeun-reading.html": {
-  "h": "7ee6e321",
+  "h": "e7b565ed",
   "d": "2026-10-13"
  },
  "column-tti-vs-saju-gunghap.html": {
-  "h": "db879056",
+  "h": "172eefba",
   "d": "2026-10-13"
  },
  "column-tarot-vs-saju.html": {
-  "h": "511590a5",
+  "h": "36eccee3",
   "d": "2026-10-13"
  },
  "dict.html": {
-  "h": "509ea87f",
+  "h": "47f81206",
   "d": "2026-10-13"
  },
  "tarot-wands-ace.html": {
@@ -1856,31 +1856,31 @@
   "d": "2026-10-13"
  },
  "tojeong.html": {
-  "h": "72c705eb",
-  "d": "2026-10-10"
+  "h": "845a0efa",
+  "d": "2026-10-13"
  },
  "column-yearly-luck-table.html": {
-  "h": "879cebca",
+  "h": "c3400fac",
   "d": "2026-10-13"
  },
  "column-zodiac-move-years.html": {
-  "h": "d8e80f01",
+  "h": "e7bb0dc5",
   "d": "2026-10-13"
  },
  "column-sipseong-lookup-table.html": {
-  "h": "303ea16a",
+  "h": "14f7c30c",
   "d": "2026-10-13"
  },
  "column-online-saju-checklist.html": {
-  "h": "3cf4cae6",
+  "h": "8d7f20ed",
   "d": "2026-10-13"
  },
  "column-free-saju-result-items.html": {
-  "h": "ec77709d",
+  "h": "1a02371f",
   "d": "2026-10-13"
  },
  "column-saju-helper-guide.html": {
-  "h": "10be786d",
+  "h": "a6c1c00d",
   "d": "2026-10-13"
  },
  "learn.html": {
@@ -1916,7 +1916,7 @@
   "d": "2026-10-10"
  },
  "column-zodiac-2027.html": {
-  "h": "c63a89a2",
+  "h": "efd36cb8",
   "d": "2026-10-13"
  },
  "gongmang.html": {
@@ -1924,7 +1924,7 @@
   "d": "2026-10-10"
  },
  "column-gapja-60.html": {
-  "h": "c3c33da7",
+  "h": "43b89e98",
   "d": "2026-10-13"
  },
  "tti-gunghap.html": {
@@ -2776,15 +2776,19 @@
   "d": "2026-10-10"
  },
  "column-red-goat-2027.html": {
-  "h": "fc66234b",
+  "h": "71475118",
   "d": "2026-10-13"
  },
  "column-baby-tti-2027.html": {
-  "h": "0c114a41",
+  "h": "c44d76d8",
   "d": "2026-10-13"
  },
  "column-exam-luck-saju.html": {
-  "h": "2c72bd59",
+  "h": "b1fa20e9",
+  "d": "2026-10-13"
+ },
+ "column-tojeong-2027.html": {
+  "h": "4f921412",
   "d": "2026-10-13"
  }
 }
