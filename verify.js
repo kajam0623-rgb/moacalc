@@ -1349,6 +1349,20 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
       if (txt.replace(/\s/g, "").length < 700 || d.cases.length < 6 || d.faq.length < 4) short.push(d.k); });
     t("꿈 깊이 원고: 모든 문장이 존댓말로 끝나고 겁주는 말이 없다", bad.slice(0, 3).join(" | "), "");
     t("꿈 깊이 원고: 꿈마다 본문 700자·장면 6개·질문 4개 이상", short.join(","), "");
+    { // 보강분(content_dream_more.js, 2026-10-13): 출처 3개 이상·그림 webp·알트(키워드+동네보살)·본문 2,500자·존댓말
+      const MO = require("./content_dream_more.js"), DK = new Set(DD.map(d => d.k)), mb = [], ms = [];
+      Object.entries(MO).forEach(([k, x]) => { const d = DD.find(y => y.k === k); if (!d) { mb.push(k + ":키없음"); return; }
+        const f = "img/dream/" + k + ".webp", head = fs.existsSync(f) ? fs.readFileSync(f).slice(8, 12).toString() : "";
+        if (!(x.src && x.src.length >= 3 && x.src.every(([t, u]) => t && u.startsWith("https://")))) mb.push(k + ":출처");
+        if (head !== "WEBP" || fs.statSync(f).size > 80 * 1024) mb.push(k + ":그림");
+        if (!x.imgAlt || !x.old || !x.sci) mb.push(k + ":칸");
+        const own = [x.old, x.sci, ...(x.more || []).map(c => c[1]), ...(x.faq || []).map(q => q[1])].join(" ");
+        NC.SENT(own).forEach(s => { if (NC.BAN.test(s) || !NC.END.test(s)) mb.push(k + ":" + s.slice(0, 20)); });
+        const all = [d.lead, d.mind, own, ...d.cases.map(c => c[1]), ...d.tips, ...d.faq.map(q => q[1])].join(" ");
+        const n = all.replace(/\s/g, "").length; if (n < 2500) ms.push(k + ":" + n); });
+      t("꿈 보강분: 출처 3개(https)·그림 webp 80KB 이하·옛 해몽/연구 칸·존댓말·금지어 0", mb.slice(0, 4).join(" | "), "");
+      t("꿈 보강분: 본문 2,500자(공백 제외) 이상", ms.join(","), "");
+      t("꿈 보강분: 그림 알트는 키워드 해몽 + 동네보살", [bs.includes("const dreamImgAlt = d => `${d.kw} 해몽 — ${DREAM_MORE[d.k].imgAlt} | 동네보살`;"), bs.includes("alt=\"${esc(dreamImgAlt(d))}\"")].join(","), "true,true"); }
     t("꿈 깊이 원고: 항목 키와 함께 볼 꿈 키가 모두 꿈해몽 사전에 있다", DD.flatMap(d => [d.k, ...d.rel]).filter(k => !keys.has(k)).join(","), "");
     t("꿈 깊이 배선: 페이지를 쓰고 사이트맵·허브 목록·분류 페이지에서 잇는다", [bs.includes('DREAM_DEEP.forEach(d=>fs.writeFileSync(path.join(OUT,"dream-"+d.k+".html"), dreamDeepPage(d)));'), bs.includes('DREAM_DEEP.map(d=>smUrl("dream-"+d.k+".html"))'), bs.includes('<a href="${dreamItemUrl(e.k)}" data-t='), bs.includes('장면별 풀이 자세히 →')].join(","), "true,true,true,true");
   }

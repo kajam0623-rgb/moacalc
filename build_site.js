@@ -3350,23 +3350,28 @@ q.addEventListener("input",run);})();</script>
 </body></html>`;
 }
 /* 꿈해몽 깊이 페이지 10(dream-<항목키>.html, 2026-10-08) — 원고 content_dream_deep.js. 분류 페이지의 짧은 풀이(보살 한마디)는 그대로 상자에 싣는다 */
-const DREAM_DEEP = require("./content_dream_deep.js");
+const DREAM_DEEP = require("./content_dream_deep.js"), DREAM_MORE = require("./content_dream_more.js");
 const DREAM_ITEM = {}; DREAM.forEach(c => c.items.forEach(e => { DREAM_ITEM[e.k] = { ...e, cat: c }; }));
 const DREAM_DEEP_K = new Set(DREAM_DEEP.map(d => d.k));
 const dreamItemUrl = k => DREAM_DEEP_K.has(k) ? `dream-${k}.html` : `dream-${DREAM_ITEM[k].cat.id}.html#${k}`;
+const dreamImgAlt = d => `${d.kw} 해몽 — ${DREAM_MORE[d.k].imgAlt} | 동네보살`;
 function dreamDeepPage(d) {
-  const e = DREAM_ITEM[d.k]; if (!e) throw new Error("꿈 항목 없음: " + d.k);
+  const x = DREAM_MORE[d.k] || {}, e = DREAM_ITEM[d.k]; if (!e) throw new Error("꿈 항목 없음: " + d.k);
   const url = `${DOMAIN}/dream-${d.k}.html`;
-  const faqLd = `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) })}</script>`;
+  const faqLd = `<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: d.faq.concat(x.faq || []).map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) })}</script>`;
   return dreamHead(url, d.title, d.desc, [["홈", DOMAIN + "/"], ["꿈해몽", DOMAIN + "/dream.html"], [e.cat.ko, `${DOMAIN}/dream-${e.cat.id}.html`], [d.kw, url]]).replace("</head>", faqLd + "</head>") + `
 <a class="back" href="dream-${e.cat.id}.html">← ${e.cat.ko} 해몽</a>
 <h1 style="font-size:28px;font-weight:900;letter-spacing:-1px;margin:0 0 10px">${esc(d.kw)} 해몽 ${dreamBadge(e.kind)}</h1>
+${x.imgAlt ? `<figure style="margin:0 0 16px"><img src="img/dream/${d.k}.webp" width="1120" height="630" alt="${esc(dreamImgAlt(d))}" decoding="async" style="width:100%;height:auto;border-radius:14px;display:block"></figure>` : ""}
 <div class="intro" style="margin:0 0 18px">${para(d.lead)}</div>
 <section class="guide dm-e"><h2>동네보살 한마디</h2><p>${esc(e.text)}</p></section>
-<section class="guide"><h2>${esc(d.kw)}, 장면별 풀이</h2>${d.cases.map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")}</section>
+<section class="guide"><h2>${esc(d.kw)}, 장면별 풀이</h2>${d.cases.concat(x.more || []).map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")}</section>
 <section class="guide"><h2>마음 쪽에서 보면</h2><div class="intro" style="margin-top:0">${para(d.mind)}</div></section>
+${x.old ? `<section class="guide"><h2>옛 해몽에서는</h2><div class="intro" style="margin-top:0">${para(x.old)}</div></section>` : ""}
+${x.sci ? `<section class="guide"><h2>연구로 보면</h2><div class="intro" style="margin-top:0">${para(x.sci)}</div></section>` : ""}
 <section class="guide"><h2>이 꿈을 꾼 날 해 볼 일</h2><ul>${d.tips.map(t => `<li>${esc(t)}</li>`).join("")}</ul></section>
-<section class="faq"><h2>자주 묻는 질문</h2>${d.faq.map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>
+<section class="faq"><h2>자주 묻는 질문</h2>${d.faq.concat(x.faq || []).map(([q, a]) => `<details><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>
+${x.src ? `<section class="guide"><h2>참고한 자료</h2><ol style="padding-left:20px;font-size:14px;line-height:1.7">${x.src.map(([t, u]) => `<li><a href="${esc(u)}" target="_blank" rel="noopener">${esc(t)}</a></li>`).join("")}</ol></section>` : ""}
 <section class="guide"><h2>함께 보는 꿈</h2><div class="sibs">${d.rel.map(k => `<a href="${dreamItemUrl(k)}">${esc(DREAM_ITEM[k].title)}</a>`).join("")}${DREAM_DEEP.map((_, j) => DREAM_DEEP[(DREAM_DEEP.indexOf(d) + 1 + j) % DREAM_DEEP.length]).filter(x => x.k !== d.k && !d.rel.includes(x.k)).slice(0, 6).map(x => `<a href="dream-${x.k}.html">${esc(x.kw)}</a>`).join("")}</div></section>
 ${DREAM_NOTE}
 <section class="guide"><h2>다른 꿈 찾아보기</h2><div class="sibs"><a href="dream.html">꿈해몽 찾기</a>${DREAM.map(x => `<a href="dream-${x.id}.html">${x.ko}</a>`).join("")}</div></section>
