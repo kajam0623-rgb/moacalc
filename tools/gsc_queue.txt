@@ -33,18 +33,18 @@
 # 요청됨 2026-10-12 https://dongnebosal.com/dream-animal-fish.html
 # 요청됨 2026-10-12 https://dongnebosal.com/dream-people-celebrity.html
 # 요청됨 2026-10-12 https://dongnebosal.com/dream-animal-spider.html
-https://dongnebosal.com/dream-action-falling.html
-https://dongnebosal.com/dream-people-baby.html
+# 요청됨 2026-10-13 https://dongnebosal.com/dream-action-falling.html
+# 요청됨 2026-10-13 https://dongnebosal.com/dream-people-baby.html
 
-https://dongnebosal.com/sinsal-gwaegang.html
-https://dongnebosal.com/sinsal-yangin.html
-https://dongnebosal.com/sinsal-baekho.html
-https://dongnebosal.com/sinsal-munchang.html
-https://dongnebosal.com/sinsal-hyeonchim.html
-https://dongnebosal.com/sinsal-hongyeom.html
-https://dongnebosal.com/sinsal-gwimun.html
-https://dongnebosal.com/sinsal-wonjin.html
-https://dongnebosal.com/ahopsu.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-gwaegang.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-yangin.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-baekho.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-munchang.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-hyeonchim.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-hongyeom.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-gwimun.html
+# 요청됨 2026-10-13 https://dongnebosal.com/sinsal-wonjin.html
+# 요청됨 2026-10-13 https://dongnebosal.com/ahopsu.html
 https://dongnebosal.com/bujeok.html
 https://dongnebosal.com/birthstone.html
 https://dongnebosal.com/dream-animal-crocodile.html
