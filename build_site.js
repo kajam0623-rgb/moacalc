@@ -4451,7 +4451,13 @@ function cpMid(m, f) {
   for (let k = at2.length - 1; k >= 0; k--) m = m.slice(0, at2[k]) + blocks[k] + m.slice(at2[k]);
   return m;
 }
+/* 색인 줄이기(2026-10-16): 구글이 "크롤링됨-미색인 146·발견됨-미색인 382" — 젊은 도메인에 같은 틀 페이지가 많아 걸러졌다. 검색 수요가 적은 틀 묶음은
+   사이트맵에서 빼고 noindex,follow (페이지·링크는 그대로). 띠 궁합 짝 78쪽, 타로 마이너 카드 56쪽 */
+const LOW_INDEX = /^(tti-pair-|tarot-(cups|pentacles|swords|wands)-)/;
 function placeAds() {
+  for (const f of fs.readdirSync(OUT)) { if (!f.endsWith(".html") || !LOW_INDEX.test(f)) continue;
+    const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
+    if (!/<meta name="robots"/.test(h.slice(0, h.indexOf("</head>")))) fs.writeFileSync(p, h.replace("</head>", '<meta name="robots" content="noindex, follow">\n</head>')); }
   const AD = ADSENSE_CLIENT ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : "";
   let on = 0, off = 0;
   for (const f of fs.readdirSync(OUT)) {
@@ -4539,6 +4545,7 @@ const rss = `<?xml version="1.0" encoding="UTF-8"?>` +
   `</channel></rss>`;
 fs.writeFileSync(path.join(OUT,"rss.xml"), rss);
 
+sitemap = sitemap.replace(/<url><loc>[^<]*\/([^\/<]+)<\/loc><lastmod>@@LASTMOD:[^@]*@@<\/lastmod><\/url>/g, (m, f) => LOW_INDEX.test(f) ? "" : m);
 const lastmod = fs.existsSync(LASTMOD_FILE) ? JSON.parse(fs.readFileSync(LASTMOD_FILE, "utf8")) : {};
 sitemap = sitemap.replace(/@@LASTMOD:([^@]*)@@/g, (_, p) => {
   const file = p || "index.html";
