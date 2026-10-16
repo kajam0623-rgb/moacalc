@@ -50,7 +50,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 시진마다 가운데 시각(짝수시 30분)을 값으로 둔다
     sjHourOpts(-1)+'</select>'+
     '<div style="margin-top:10px"><label for="tm">정확한 시각 (선택 · 출생증명서에 적힌 그대로 넣으면 옛 서머타임까지 맞춰 셉니다)</label><input type="text" id="tm" inputmode="numeric" maxlength="12" placeholder="예) 오후 2시 30분이면 1430 (모르면 비워 두세요)" autocomplete="off" value="" aria-describedby="tmerr tmsay"><p class="tf-err" id="tmerr" role="alert"></p><p class="tf-say" id="tmsay"></p></div>'+
-    '<div style="margin-top:10px"><label>진태양시 보정</label><select id="c"><option value="1">적용 (−30분, 한국 표준)</option><option value="0">안 함</option></select></div></div>'+
+    '<div style="margin-top:10px"><label for="c">진태양시 보정 (경도만 반영)</label><select id="c"><option value="1">적용 (태어난 지역 기준)</option><option value="0">안 함</option></select><p class="tf-say">시진의 시간 범위는 기존 −30분 기준이에요. 경계 근처라면 정확한 시각을 넣어 주세요.</p></div></div>'+
+    '<div class="wz-s" data-q="어느 지역에서 태어났나요? 건너뛰면 서울 기준으로 봐요."><label for="region">태어난 지역 (선택)</label><select id="region"><option value="">선택 안 함 (서울 기준)</option>'+
+    SJ_REGIONS.map(function(r){return '<option value="'+r[0]+'">'+r[0]+'</option>';}).join("")+'<option value="unknown">해외/모름</option></select><button type="button" id="region-skip">건너뛰기 (서울 기준)</button></div>'+
     '<div class="wz-s" data-q="10년 흐름의 방향을 보려면 성별이 필요해요."><label>성별 (대운 방향)</label><select id="g"><option value="m" selected>남</option><option value="f">여</option></select></div>'+
     '<div class="wz-s" data-q="뭐라고 불러 드릴까요? 비워 둬도 돼요.">'+
     // 무엇을 물으러 왔는지를 받는다. 생일만 받으면 결과는 조회가 되고,
@@ -74,6 +76,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var seenStep={};
       W.querySelector(".wz-next").addEventListener("click",function(){i=Math.min(S.length-1,i+1);if(!seenStep[i]){seenStep[i]=1;track("wz_"+(i+1));}show();var f=S[i].querySelector("input,select");if(f&&f.type!=="date")try{f.focus({preventScroll:true});}catch(e){}});
       W.querySelector(".wz-prev").addEventListener("click",function(){i=Math.max(0,i-1);show();});
+      W.querySelector("#region-skip").addEventListener("click",function(){W.querySelector("#region").value="";i=Math.min(S.length-1,S.indexOf(W.querySelector("#region").closest(".wz-s"))+1);show();W.querySelector("#g").focus();});
       W.querySelector(".wz-all").addEventListener("click",function(){all=!all;if(all)track("wz_all");show();});
       W.querySelector("#nm").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();W.querySelector(".wz-next").click();}});
       // 주제 입구(saju.html?q=money 등): 그 물음을 미리 골라 두고, 맨 위에 무엇을 풀어 줄지 한 줄로 약속한다(계산은 같다)
@@ -97,7 +100,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
     // 정확한 시각을 적으면 시진 칸도 그 시각(표준시)이 속한 시진으로 맞춰 보여 준다
     function syncT(){var B=birthIn();if(!B.exact)return;var m=B.h*60+B.mi;el.querySelector("#t").value=m>=1410?"23":String(Math.floor(((m+30)%1440)/120)*2);}
     function comboKey(){var dv=el.querySelector("#d").value.split("-");if(dv.length<3||!+dv[0])return "";
-      var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1");if(B.h==null)pp.m=sjPillars(B.y,B.mo,B.d,12,0,false).m;   /* go() 와 같은 12시 기준 */
+      var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1"?sjRegion(el.querySelector("#region").value).min:0);if(B.h==null)pp.m=sjPillars(B.y,B.mo,B.d,12,0,false).m;   /* go() 와 같은 12시 기준 */
       return ILGAN_EN[pp.d.s]+"-"+TG_EN[sjTenGod(pp.d.s,SJ_BMAIN[pp.m.b])];}
     function prefetch(){var k=comboKey();if(!k)return Promise.resolve(null);
       return Promise.all([sjJson("sj/char.json"),sjJson("sj/easy.json"),sjJson("sj/ilju.json"),sjJson("sj/"+k+".json")]).then(function(j){
@@ -108,10 +111,10 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
       syncT();
       track("fortune_view",{tool:"saju"});track("saju_go");
-      var B=birthIn(),h=B.h,corr=el.querySelector("#c").value==="1",male=el.querySelector("#g").value==="m";
+      var B=birthIn(),h=B.h,corr=el.querySelector("#c").value==="1",region=sjRegion(el.querySelector("#region").value),male=el.querySelector("#g").value==="m";
       var qsel=el.querySelector("#q"),Q=qsel?qsel.value:"all";
       if(!y){return;}
-      var p=sjPillars(B.y,B.mo,B.d,h,B.mi,corr),ds=p.d.s;
+      var p=sjPillars(B.y,B.mo,B.d,h,B.mi,corr?region.min:0),ds=p.d.s;
       /* 시각 모름이면 해·달 기둥도 낮 12시로 센다 — 경고문·계산 근거·대운 시작이 모두 12시 기준인데 기둥만 0시로 세어
          절기 당일(입하 07:10 등) 태어난 사람의 달 기둥이 어긋났음(2026-10-12 검수: 2003-05-06 이 병진월로 나옴) */
       if(h==null){var pN=sjPillars(B.y,B.mo,B.d,12,0,false);p.y=pN.y;p.m=pN.m;p.tti=pN.tti;}
@@ -128,10 +131,11 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 대운
       var DA=sjDaeunStart(p,male,sjJdKST(B.y,B.mo,B.d,h==null?12:h,h==null?0:B.mi)),fwd=DA.fwd,days=DA.days,su=DA.su,m60=DA.m60;
       var duHtml="",duList=[];for(var i2=1;i2<=8;i2++){var kk=((m60+(fwd?i2:-i2))%60+60)%60;
-        var dTg=sjTenGod(ds,kk%10),dAge=su+10*(i2-1);
+        var dTg=sjTenGod(ds,kk%10),dSu=su+10*(i2-1),dStart=sjDaeunDate(DA.start,120*(i2-1)),dEnd=sjDaeunDate(DA.start,120*i2),dAge=new Date(dStart).getUTCFullYear()-y+1;
+        // 대운수(N세 대운)는 기존 반올림 값, 나이 범위·그래프·요약은 시작 연도 기준 세는나이로 통일한다.
         // el: 대운 천간의 오행. 용신과 맞는 구간인지 판정하는 데 쓴다
-        duList.push({age:dAge,g:SJ_SH[kk%10]+SJ_BH[kk%12],tg:dTg,el:SJ_EL[SJ_ES[kk%10]],s:kk%10,b:kk%12});
-        duHtml+='<div class="sj-du"><div class="a">'+dAge+'세</div><div class="g">'+SJ_SH[kk%10]+SJ_BH[kk%12]+'</div><div class="a" style="color:var(--fun-ink);margin-top:3px">'+dTg+'</div></div>';}
+        duList.push({age:dAge,su:dSu,start:dStart,end:dEnd,g:SJ_SH[kk%10]+SJ_BH[kk%12],tg:dTg,el:SJ_EL[SJ_ES[kk%10]],s:kk%10,b:kk%12});
+        duHtml+='<div class="sj-du"><div class="a">'+dAge+'세부터</div><div class="g">'+SJ_SH[kk%10]+SJ_BH[kk%12]+'</div><div class="a" style="color:var(--fun-ink);margin-top:3px">'+dTg+'</div><div class="a">'+sjDaeunYm(dStart)+'부터</div></div>';}
       // 십성 카운트
       var tgc={};chars.forEach(function(c,ci){if(!(ci===2)){var g1=sjTenGod(ds,c.s);tgc[g1]=(tgc[g1]||0)+1;}var g2=sjTenGod(ds,SJ_BMAIN[c.b]);tgc[g2]=(tgc[g2]||0)+1;});
       var tgTop=Object.entries(tgc).sort(function(a,b){return b[1]-a[1];}).slice(0,3).map(function(x){return x[0]+" "+x[1];}).join(" · ");
@@ -157,7 +161,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
          전부 계산에서 나온 값이다. 새로 지어낸 해석이 아니다. */
       var P="<br><br>";
       // 운세 본문에서 "지금 어느 때인가"를 쓰려면 현재 대운이 먼저 있어야 한다
-      var duNow=duList.filter(function(d){return d.age<=(new Date().getFullYear()-y+1);}).pop()||duList[0];
+      var duTime=Date.now()+9*3600000,duActive=duList.filter(function(d){return d.start<=duTime&&duTime<d.end;})[0],duNow=duActive||duList[duTime<DA.start?0:duList.length-1];
+      var duStatus=duActive?"":duTime<DA.start?"아직 첫 대운이 들어오기 전이에요. "+sjDaeunIntro(DA)+".":"표에 나온 여덟 구간을 모두 지났어요.";
       var duG=grp(duNow.tg);   // 지금 대운이 어느 십성 무리인지
       var DU_NAME=DU_NM;
       var DUTXT_NAME=function(tg){return DU_NAME[tg];};
@@ -212,7 +217,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         "정인":"태어난 시각 자리(말년 자리)에 받쳐 주는 기운이 있어 늦게는 문서와 자격, 아랫사람의 도움이 살림을 받쳐요. 증서와 계약서를 잘 챙겨 두세요."};
       var nearY=function(t){var v=plan[t][0];return v?(v===nowY?v+"년(올해)":v+"년"):"";};
       var money=verdict("money",mBk,moneyBase)+ilg("money")+P+
-        "10년마다 바뀌는 큰 흐름으로 보면 지금은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있어요. "+DU_MONEY[duG]+
+        (duActive?"10년마다 바뀌는 큰 흐름으로 보면 지금은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기에 있어요. "+DU_MONEY[duG]:duStatus)+
         (nearY("돈")?" 해마다 드는 운으로 보면 돈이 크게 움직이는 가장 가까운 해는 <b>"+nearY("돈")+"</b>이에요.":"")+
         (plan.지출.filter(function(v){return v>nowY;})[0]?" 씀씀이를 챙기면 좋은 해는 <b>"+plan.지출.filter(function(v){return v>nowY;})[0]+"년</b>이니 미리 여유를 두면 든든해요.":"")+
         (hTg&&PF.age>=35?P+HOUR_MONEY[hTg]:"");   // 35세 미만에게 '늦은 나이의 돈'은 먼 이야기 — 시각 칸에서만
@@ -232,9 +237,9 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         :"배우자를 뜻하는 기운이 알맞아 <b>연애도 결혼도 안정적인</b> 사주예요. 생활 리듬이 맞는 사람과 오래가요.";
       var SR=PF.age>=45&&ILG&&ILG.love_sr,love=(SR?ILG.love_sr:verdict("love",spouseN===0?"none":spouseN>=3?"many":"mid",loveBase)+ilg("love"))+P+
         "배우자 자리(태어난 날의 아래 글자)에 "+SJ_B[p.d.b]+"("+SJ_BH[p.d.b]+")"+josa(SJ_B[p.d.b],"가/이")+" 앉았어요. 어떤 짝과 잘 맞는지는 아래 ‘어느 자리가 무엇인가’ 칸의 태어난 날 자리에서 풀어 드려요."+P+
-        "지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기예요. "+(duG===spouseG
+        (duActive?"지금 10년 흐름은 <b>"+DUTXT_NAME(duNow.tg)+"</b>의 시기예요. "+(duG===spouseG
           ?(SR?"짝과 가족 사이에 함께 정할 일이 늘어나는 시기예요. 큰일일수록 둘이 먼저 이야기해 두면 좋아요.":"배우자를 뜻하는 기운이 들어와 있는 시기라 인연이 움직이기 쉬워요. 사람 만나는 자리에 자주 나가 보세요.")
-          :"")+
+          :""):duStatus)+
         (nearY("인연")?" 해마다 드는 운으로 보면 사람 인연이 움직이는 가장 가까운 해는 <b>"+nearY("인연")+"</b>이에요"+(plan.인연[1]?". 그다음은 "+plan.인연[1]+"년이에요.":"."):SR?" 앞으로 10년은 사람 일이 크게 출렁이지 않으니, 가까운 사람과의 시간을 차곡차곡 챙겨 보세요.":" 앞으로 10년 안에는 해마다 드는 운에서도 인연이 크게 튀는 해가 없으니, 사람 만나는 자리를 먼저 만들어 보세요.");   // 자녀 이야기는 '태어난 시각' 칸 한곳(시지 기준)에서만
       var mnW=({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mn],mxW=({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mx];
       var health=(CB&&CB.health?CB.health+P:ILG&&ILG.health?ILG.health[SK]+P:"")+(function(){var mxH=mxAll.length>=3?"":mxAll.filter(function(e){return e!==yEl;})[0]||"",mxHW=mxH?({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[mxH]:"";
@@ -257,8 +262,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
             :"필요한 기운과는 결이 다른 "+u+josa(u,"라/이라")+" <b>한 번에 다 걸기보다 다져 가는 때</b>예요.");}
       function fitTag(e){return e===yEl?"순하게 풀리는 구간":e===y2El?"도움이 붙는 구간":"다지는 구간";}
       var duDetail=duList.map(function(dd){
-        var cur=dd.age===duNow.age,past=dd.age+9<new Date().getFullYear()-y+1;   // 지난 10년은 지난 일로(2026-10-12 검수: 지난 대운을 현재형으로 말함)
-        return '<p style="margin:0 0 12px">'+(cur?'▶ ':'')+'<b>'+dd.age+'세 ~ '+(dd.age+9)+'세</b> · '+dd.g+' · '+dd.tg+' ('+dd.el+')'+
+        var cur=dd===duActive,past=dd.end<=duTime;   // 현재·과거 판정은 반올림 나이가 아니라 실제 교운일로 한다.
+        return '<p style="margin:0 0 12px">'+(cur?'▶ ':'')+'<b>'+span(dd)+'</b> · '+dd.g+' · '+dd.tg+' ('+dd.el+')'+
           (cur?' <b style="color:var(--fun-ink)">지금 여기</b>':past?' · 지나온 10년':' · '+fitTag(dd.el))+'<br>'+(cur?'바로 위 10년 흐름 칸에 풀어 두었어요.':past?DU_NM[dd.tg]+'의 시기였어요.':DUTXT[dd.tg])+'</p>';}).join("");
 
       /* 물음에 답하는 자리.
@@ -275,13 +280,14 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         health:{t:"건강",grp:[],why:"몸은 나에게 필요한 기운이 채워지는 때에 편해지는 법이에요.",
           plan:"그 전까지가 고비예요. 무리를 줄이고 잠을 먼저 지키세요."}
       };
-      function span(dd){return dd.age+"세~"+(dd.age+9)+"세";}
+      function span(dd){return "시작 세는나이 "+dd.age+"세 ("+sjDaeunYm(dd.start)+"부터)";}
       // 큰 흐름이 지났을 때, 지금 구간이 무엇에 좋은지로 답을 돌려주기 위한 표
       var GRP_GOOD={비겁:"사람과 자립",식상:"만들어 내놓는 일",재성:"재물",관성:"자리와 이름",인성:"배움과 문서"};
       function focusBlock(qk){
         qk=qk||Q;
         if(!QMETA[qk])return "";
-        var M=QMETA[qk], nowAge=new Date().getFullYear()-y+1;
+        var M=QMETA[qk];
+        if(!duActive)return '<div class="sj-sec"><h3>'+M.t+'의 시기</h3><p>'+duStatus+'</p></div>';
         var inGrp=function(dd){return M.grp.indexOf(grp(dd.tg))>=0;};
         var inYong=function(dd){return dd.el===yEl||dd.el===y2El;};
         /* 조건을 느슨하게 잡으면 여덟 구간이 전부 "좋은 때"로 나온다. 그건 답이 아니다.
@@ -291,10 +297,10 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         var loose=duList.filter(function(dd){return M.grp.length?inGrp(dd):inYong(dd);});
         var pool=both.length?both:loose;
         // 앞에서부터 자르면 다 지나간 어린 시절 구간만 뽑힌다. 아직 남은 때를 먼저 보여준다
-        var future=pool.filter(function(dd){return dd.age+9>=nowAge;});
+        var future=pool.filter(function(dd){return dd.end>duTime;});
         var pick=(future.length?future:pool).slice(0,3), tight=both.length>0;
-        var nowIn=pool.some(function(dd){return dd.age===duNow.age;});
-        var next=pool.filter(function(dd){return dd.age>nowAge;})[0];   // 아직 시작 안 한 구간만
+        var nowIn=pool.some(function(dd){return dd===duActive;});
+        var next=pool.filter(function(dd){return dd.start>duTime;})[0];   // 아직 시작 안 한 구간만
         return '<div class="sj-sec" style="border:1px solid var(--fun-ink);border-radius:12px;padding:14px 16px">'+
           '<h3 style="margin-top:0">물어본 것 — '+M.t+'</h3>'+
           '<p>지금은 <b>'+span(duNow)+'</b>, 10년 흐름으로 보면 '+DU_NAME[duNow.tg]+'의 시기예요. '+
@@ -336,7 +342,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var nowD=new Date();
       var seP=sjPillars(nowD.getFullYear(),nowD.getMonth()+1,nowD.getDate(),12,0,false);
       var seTg=sjTenGod(ds,seP.y.s), seEl=SJ_EL[SJ_ES[seP.y.s]];
-      var topEl=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],duOk=duNow.el===yEl||(duNow.el===y2El&&y2El!==topEl), seOk=seEl===yEl||(seEl===y2El&&y2El!==topEl);   // 종합·해마다·10년 칸이 같은 결론을 쓰게(3차 검수)
+      var topEl=SJ_EL[cnt.indexOf(Math.max.apply(null,cnt))],duOk=!!duActive&&(duNow.el===yEl||(duNow.el===y2El&&y2El!==topEl)), seOk=seEl===yEl||(seEl===y2El&&y2El!==topEl);   // 종합·해마다·10년 칸이 같은 결론을 쓰게(3차 검수)
       var NOWFIT=duOk&&seOk?"큰 흐름도 올해도 나를 받쳐 주니 미뤄 둔 일을 꺼내 볼 때예요."
         :duOk?"큰 흐름이 받쳐 주니 올해 막히는 일은 잠깐 걸리는 턱이에요."
         :seOk?"큰 흐름은 다지는 때지만 올해만큼은 한 걸음 내디뎌 볼 만해요."
@@ -349,7 +355,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var seYear=seBefore?nowD.getFullYear()-1:nowD.getFullYear();
       // 2026-10-11 '올해 흐름' 칸은 아래 '해마다 흐름' 맨 앞 단락으로 합쳤다(같은 해를 두 번 말하던 중복)
       var seSec='<p><b>올해 '+seYear+' '+SJ_S[seP.y.s]+SJ_B[seP.y.b]+'('+SJ_SH[seP.y.s]+SJ_BH[seP.y.b]+')년</b> — 올해 하늘 글자는 '+SJ_S[seP.y.s]+'('+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[seEl]+') 기운이에요. 나에게는 <b>'+seTg+'</b>에 해당해요.<br><br>'+
-        (SJE&&SJE.se&&SJE.se[seTg]?SJE.se[seTg][1]+' ':seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해예요. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
+        (SJE&&SJE.se&&SJE.se[seTg]?SJE.se[seTg][1]+' ':duActive&&seTg===duNow.tg?'지금 10년 흐름과 같은 기운이 올해 한 번 더 겹치니, 그 결이 더 짙게 드러나는 해예요. ':DUTXT[seTg]+' ')+duFit(seEl,"해")+
         '<br><span style="color:var(--muted);font-size:12.5px">오늘 날짜로 그해 글자를 다시 세워 구했습니다. 해는 양력 1월이 아니라 입춘을 기준으로 바뀝니다.'+
         (seBefore?' 지금은 '+nowD.getFullYear()+'년이지만 아직 입춘 전이라 '+seYear+'년 간지로 봅니다.':'')+'</span></p>';
 
@@ -507,8 +513,8 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         (st.strong?'힘이 넉넉하니 그 판을 직접 쥐고 흔들어도 버텨요.':'다만 힘을 채워 가며 크는 중이니 그 자리에 혼자 서지 말고, 기댈 조직과 사람부터 만들어 두세요.'))+
         '<br><br>'+[sinsal.slice(0,2).map(function(x){return (CS&&CS.sin&&CS.sin[x])||SIN_SYN[x];}).join(" "),gZero.slice(0,2).map(function(x){return (CS&&CS.miss&&CS.miss[x])||MISS[x];}).join(" ")].filter(Boolean).join(" ")+
         (sinsal.length||gZero.length?'<br><br>':'')+
-        '지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있어요. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT)+'</p></div>';
-      var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — '+(nmH?nmH+josa(nmH,"를 /을 "):"")+'한마디로 정리하면</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH,G:G,cnt:cnt,mb:p.m.b,mid:MID},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
+        (duActive?'지금은 <b>'+DU_NAME[duNow.tg]+'</b>의 10년 가운데 <b>'+DU_NAME[seTg]+'</b>의 해를 지나고 있어요. '+((CS&&CS.now&&CS.now[fitK])||NOWFIT):duStatus)+'</p></div>';
+      var nmH=nmHon(nm),synth=SJE?'<div class="sj-sec sj-synth fold-skip"><h3>종합 — '+(nmH?nmH+josa(nmH,"를 /을 "):"")+'한마디로 정리하면</h3>'+sjEasy({ds:ds,strong:st.strong,yong:yEl,wolTg:wolTg,sin:sinsal,miss:gZero,duTg:duNow.tg,duStatus:duStatus,duSpan:span(duNow),seTg:seTg,duOk:duOk,seOk:seOk,nm:nmH,G:G,cnt:cnt,mb:p.m.b,mid:MID},SJE).map(function(x){return '<p>'+x+'</p>';}).join("")+'<p class="gh-note">'+SJE.note+'</p></div>':synthOld;
       var ILG_HEAD=["곧게 뻗는 큰 나무처럼 든든한 사람","바람에도 꺾이지 않는 풀꽃처럼 유연한 사람","온 세상을 비추는 해처럼 밝은 사람","어둠을 밝히는 촛불처럼 따뜻한 사람","넓고 든든한 산처럼 믿음직한 사람","곡식을 키우는 밭처럼 품이 넓은 사람","잘 벼린 쇠처럼 결단력 있는 사람","잘 다듬은 보석처럼 섬세한 사람","넓게 흐르는 큰 강처럼 깊은 사람","스며드는 빗물처럼 지혜로운 사람"];
       var headTxt=ILG_HEAD[ds]+"<br>"+(st.strong?"힘이 넉넉해 "+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운으로 풀어 갈 때 빛나는 사주":({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+" 기운을 곁에 둘수록 더 크게 피는 사주");
       var headline='<div style="text-align:center;margin:6px 0 18px">'+
@@ -520,7 +526,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var glance='<div class="sj-sec sj-glance"><h3>한눈에 보기</h3><p>'+
         '<b>타고난 성향</b> — '+ST_TITLE[ds][1]+'이에요. 내 글자는 '+ELDESC[SJ_EL[SJ_ES[ds]]]+josa(ELDESC[SJ_EL[SJ_ES[ds]]],"를/을")+' 뜻하는 기운이에요.<br>'+
         '<b>나에게 필요한 기운</b> — '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운이에요.<br>'+
-        '<b>지금 10년 흐름</b> — '+span(duNow)+', '+DU_NAME[duNow.tg]+'의 시기예요.<br>'+
+        '<b>지금 10년 흐름</b> — '+(duActive?span(duNow)+', '+DU_NAME[duNow.tg]+'의 시기예요.':duStatus)+'<br>'+
         (p.h?'<b>태어난 시각 자리</b> — '+SJ_S[p.h.s]+SJ_B[p.h.b]+'('+SJ_SH[p.h.s]+SJ_BH[p.h.b]+'), 말년과 자녀 복을 보여 주는 자리예요.'
             :'<b>태어난 시각</b> — 모르는 채로 봤어요. 시각을 넣으면 말년·자녀 풀이와 오행이 더 또렷해져요.')+'</p></div>';
       var glossary='<div class="sj-sec sj-gloss"><h3>아래에 나오는 낱말 풀이</h3><p>아래에는 명리 용어가 나옵니다. 뜻은 이렇습니다.<br>'+
@@ -535,7 +541,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           :st.strong
           ?'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두고, 넘치는 힘은 밖으로 쓸 길을 열어 두면 짐이 아니라 든든한 연장이 돼요.'
           :'필요한 '+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[yEl]+' 기운을 곁에 두세요. 도움은 청하되 마지막 결정은 내 손으로 내리면 힘이 두 배로 서요.')+
-        '<br><br>지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(function(){var k=SJE&&SJE.str3&&SJE.str3[ds]?String(SJE.str3[ds]).split(/,s*/)[0]:"",o=k?' 타고난 '+k+josa(k,"를/을"):' 내 강점을';return duOk?o+' 이 흐름에 얹으면 힘이 가장 잘 실려요.':o+(PF.age>=60?' 지금 하나씩 다져 두면 그 힘이 오래 곁에 남아요.':' 지금 하나씩 다져 두면 다음 흐름에서 크게 쓰여요.');})()+
+        '<br><br>'+(duActive?'지금은 <b>'+(DU_NM[duNow.tg]||duNow.tg)+'의 10년</b>을 지나고 있어요.'+(function(){var k=SJE&&SJE.str3&&SJE.str3[ds]?String(SJE.str3[ds]).split(/,s*/)[0]:"",o=k?' 타고난 '+k+josa(k,"를/을"):' 내 강점을';return duOk?o+' 이 흐름에 얹으면 힘이 가장 잘 실려요.':o+(PF.age>=60?' 지금 하나씩 다져 두면 그 힘이 오래 곁에 남아요.':' 지금 하나씩 다져 두면 다음 흐름에서 크게 쓰여요.');})():duStatus)+
         '<br><br>여기 적힌 건 타고난 결이에요. 결을 알면 거스르지 않고 편하게 탈 수 있어요. 오늘 하루도 잘 살아 내세요.</p></div>';
       /* 꼬리질문. 시기는 앞으로 10년 해마다 드는 운을 이 사주와 맞춰 고르고, 문장은 그해의 십성별 원고(sj/q.json)에서 가져온다 */
       var TQ=null;
@@ -582,7 +588,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var tailPool={};Object.keys(TL).forEach(function(k){tailPool[k]={label:TL[k],next:TN[k],ans:QMETA[k]?function(){return focusBlock(k);}:function(){return tqAns(k);}};});
       var tailCfg={tool:"saju",intro:"여기까지 읽고 더 궁금한 게 있나요?<br>어떤 게 궁금해요?",first:["money","quit","marry","month"],skip:QMETA[Q]?[Q]:[],load:tqLoad,pool:tailPool};
       var tSel=el.querySelector("#t"),tLab=tSel&&tSel.selectedOptions&&tSel.selectedOptions[0]?tSel.selectedOptions[0].textContent:"";
-      var TRAITS=sjTraits({age:nowY-y+1,tgc:tgc,ratio:st.ratio,gyeok:gyeok,cnt:cnt,yong:SJ_EL.indexOf(yEl),yEl:yEl,du:duList,ilUn:ilUn});   // 한 장 요약의 특징 칩
+      var TRAITS=sjTraits({age:nowY-y+1,duTime:duTime,tgc:tgc,ratio:st.ratio,gyeok:gyeok,cnt:cnt,yong:SJ_EL.indexOf(yEl),yEl:yEl,du:duList,ilUn:ilUn});   // 한 장 요약의 특징 칩
       /* 2026-10-12 구조 개편: 풀이 칸을 먼저 다 만든 뒤, 이 사람의 성향 축(sjAxes)을 정하고 모든 칸을 sjFit 으로 거른다(칸끼리 반대말·힘·나이 어긋남을 조립에서 없앰) */
       var hourH=hourSec(),monthH=monthSec(),gungH=gungSec(),coreH='<div class="sj-sec"><h3>타고난 그릇 모양</h3><p>'+conceptArt(ART_GYEOK[gyeok],gyeok)+''+SJ_GYEOK_DESC[gyeok]+'<br><br>'+(CB&&CB.core?CB.core:'이 틀은 내가 무엇을 담고 사는 사람인지를 말해 줘요. '+
         (st.strong?'힘이 넉넉하니 이 틀을 크게 벌려 써도 버텨요. 판을 키우는 쪽이 맞아요.'
@@ -627,17 +633,17 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           for(var yy=nowY-5;yy<=nowY+5;yy++){var age=yy-y+1;if(age<1)continue;
             var yp=sjPillars(yy,7,1,null,0,false).y,ytg=sjTenGod(ds,yp.s),db=p.d.b,yb=yp.b,yt=yTags(yy);
             var rel=Math.abs(yb-db)===6?"일지와 충":sjYukhap(db)===yb?"일지와 육합":(yb%4===db%4&&yb!==db)?"일지와 삼합":"";
-            var du=duList.filter(function(x){return x.age<=age;}).pop();
+            var yearAt=yy===nowY?duTime:Date.UTC(yy,6,1),du=duList.filter(function(x){return x.start<=yearAt&&yearAt<x.end;})[0];   // 다른 해는 7월 1일 기준
             rows+='<div class="yr'+(yy===nowY?' now':yy<nowY?' past':'')+'" data-y="'+yy+'"><div class="yr-h"><b>'+yy+'</b><span>'+SJ_S[yp.s]+SJ_B[yb]+'년 · '+ytg+(rel?' · '+rel:'')+'</span><small>'+age+'세'+(du?' · '+du.g+' 대운':'')+'</small></div>'+
               '<p>'+DU_NM[ytg]+'의 해'+(yy<nowY?'였어요':'예요')+'.</p>'+
               (yt.length?'<div class="yr-tags">'+yt.map(function(t){return '<span class="yt yt-'+t+'">'+t+'</span>';}).join("")+'</div>':'')+
               (yy<nowY?'<div class="yr-fb"><span data-v="맞음">맞았다</span><span data-v="애매">애매</span><span data-v="다름">달랐다</span></div>':'')+'</div>';}
           return '<div class="sj-sec sj-years"><h3>해마다 흐름 — 올해와 앞뒤 5년</h3>'+seSec+'<p>'+planTxt+
             '<br><span style="color:var(--muted);font-size:12.5px">그해 하늘 글자가 나에게 어떤 기운인지, 그해 띠 글자가 태어난 날·달 글자와 부딪히거나 붙는지, 역마·도화 자리인지로 표시했습니다. 인연은 연애·결혼뿐 아니라 동업·귀인처럼 사람이 드는 일을 함께 뜻합니다.</span></p><p>'+bosalImg("scroll","bs-side","두루마리를 펼친 아기보살")+'해마다 바뀌는 하늘 글자가 나에게 무엇이 되는지 늘어놓았어요. 지난 해는 실제로 어땠는지 눌러 두세요. 이 기기에만 남고, 맞은 해가 쌓이면 앞으로의 해도 가늠하기 쉬워져요.</p><div class="yrs">'+rows+'</div><p class="yr-sum"></p></div>';})())+
-        '<div class="sj-sec"><h3>10년마다 바뀌는 흐름</h3><div class="sj-daeun">'+duHtml+'</div>'+
-        '<p style="margin-top:12px">지금은 <b>'+duNow.age+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운이에요. '+DUTXT[duNow.tg]+' '+duFit(duNow.el)+'</p>'+
-        (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duNow);   // 분야별 그래프도 같은 칸 안에(따로 칸을 두면 같은 10년을 두 번 말함)
-          return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 보라색 칸이 지금 10년이에요. 10년 흐름의 나이는 태어난 해를 한 살로 세는 나이(세는나이)예요.</p></div>';})()+
+        '<div class="sj-sec"><h3>10년마다 바뀌는 흐름</h3><p>'+sjDaeunIntro(DA)+'.'+(h==null?' 시각을 몰라 정오 기준으로 계산했어요.':'')+'</p><p class="gh-note">나이는 태어난 해를 한 살로 세는 세는나이예요. 옛 책식으로 반올림한 대운수는 '+su+([2,4,5,9].indexOf(su)>=0?'예요':'이에요')+'.</p><div class="sj-daeun">'+duHtml+'</div>'+
+        '<p style="margin-top:12px">'+(duActive?'지금은 <b>'+duNow.su+'세 '+duNow.g+' ('+duNow.tg+')</b> 대운이에요. '+span(duNow)+'. '+DUTXT[duNow.tg]+' '+duFit(duNow.el):duTime<DA.start?'아직 첫 대운이 들어오기 전이에요.':'표에 나온 여덟 구간을 모두 지났어요.')+'</p>'+
+        (function(){var S=sjDuScores(duList,ds,p.d.b,yEl,y2El,male),ni=duList.indexOf(duActive);   // 분야별 그래프도 같은 칸 안에(따로 칸을 두면 같은 10년을 두 번 말함)
+          return '<p style="margin:14px 0 4px"><b>분야별로 보면</b></p>'+sjDuChart(duList,S,ni)+'<p style="color:var(--muted);font-size:12.5px;margin-top:6px">10년마다 바뀌는 글자가 나에게 필요한 기운인지, 그 분야(돈·사랑·건강·일)를 맡은 기운인지로 매긴 참고 점수예요. 지금 구간이 있으면 보라색으로 표시해요. 아래 숫자는 시작 나이와 연월이에요. 10년 흐름의 나이는 태어난 해를 한 살로 세는 나이(세는나이)예요.</p></div>';})()+
         // 2026-10-11 순서: 한마디·성격·네 갈래 운 → 시기(달·해·10년) → 왜 그렇게 읽었나(그릇·신살·유명인·자리·받쳐 주는 기운·오행·축)
         FA(coreH)+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
@@ -645,7 +651,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec" id="sjceleb"></div>'+
         FA(gungH)+
         F(elH)+
-        sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,clock:B.clock,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
+        sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,clock:B.clock,corr:corr,region:region,male:male,p:p,su:su,days:days,fwd:fwd,da:DA})+
         sjAiHtml()+
         FA(closing)+
         shareBtn()+

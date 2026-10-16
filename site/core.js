@@ -115,6 +115,15 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     ["입하",45],["소만",60],["망종",75],["하지",90],["소서",105],["대서",120],
     ["입추",135],["처서",150],["백로",165],["추분",180],["한로",195],["상강",210],
     ["입동",225],["소설",240],["대설",255],["동지",270],["소한",285],["대한",300]];
+  // 시·도 대표 도시의 시청 경도(동경, 소수 둘째 자리). 도 전체의 출생지를 대신하는 근삿값이다.
+  var SJ_REGIONS=[["서울","서울",126.98],["부산","부산",129.08],["대구","대구 동인청사",128.60],["인천","인천",126.71],
+    ["광주","광주",126.85],["대전","대전",127.38],["울산","울산",129.31],["세종","세종",127.29],
+    ["경기","수원",127.03],["강원","춘천",127.73],["충북","청주",127.49],["충남","천안",127.11],
+    ["전북","전주",127.15],["전남","목포",126.39],["경북","안동",128.73],["경남","창원",128.68],["제주","제주",126.53]];
+  function sjRegion(key){
+    if(key==="unknown")return {name:"해외/모름",city:"",longitude:null,min:-30};
+    var r=SJ_REGIONS[0];for(var i=0;i<SJ_REGIONS.length;i++)if(SJ_REGIONS[i][0]===key){r=SJ_REGIONS[i];break;}
+    return {name:r[0],city:r[1],longitude:r[2],min:Math.round((r[2]-135)*400)/100};}
   function sjPillars(y,mo,d,h,mi,tCorr){
     var jd=sjJdKST(y,mo,d,h,mi);
     var yy=(jd<sjIpchun(y))?y-1:y;
@@ -123,7 +132,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var ms=((ys%5)*2+2+mIdx)%10,mb=(mIdx+2)%12;
     var dayN=sjJdn(y,mo,d),di=(((dayN-2451545)+54)%60+60)%60,ds=di%10,db=di%12;
     var hp=null;
-    if(h!=null&&h!==""){var t=(+h)*60+(+mi||0)-(tCorr?30:0),t2=((t%1440)+1440)%1440;
+    // 숫자는 경도 보정 분(부호 포함), 기존 도구의 true/false는 종전 −30/0분을 유지한다.
+    if(h!=null&&h!==""){var t=(+h)*60+(+mi||0)+(typeof tCorr==="number"?tCorr:tCorr?-30:0),t2=((t%1440)+1440)%1440;
       var hIdx=Math.floor(((t2+60)%1440)/120);
       // 밤 23시 이후(야자시): 일주는 당일 유지, 시 천간은 다음 날 자시의 것(야자시·정자시 어느 쪽이든 시주는 같다)
       var hd=(ds+Math.floor((t+60)/1440))%10;
@@ -412,13 +422,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       S.money.push(m);S.love.push(l);S.health.push(h);S.work.push(w);S.all.push(Math.round((m+l+h+w)/4));});
     return S;}
   function sjDuChart(du,S,nowI){
-    var W=320,H=150,L=24,R=10,T=12,B=26,n=du.length,X=function(i){return L+(W-L-R)*i/(n-1);},Y=function(v){return T+(H-T-B)*(100-v)/100;};
+    var W=360,H=164,L=24,R=20,T=12,B=40,n=du.length,X=function(i){return L+(W-L-R)*i/(n-1);},Y=function(v){return T+(H-T-B)*(100-v)/100;};
     var band=nowI>=0?'<rect x="'+(X(nowI)-(W-L-R)/(n-1)/2).toFixed(1)+'" y="'+T+'" width="'+((W-L-R)/(n-1)).toFixed(1)+'" height="'+(H-T-B)+'" class="du-now"/>':"";
     var grid=[25,50,75].map(function(v){return '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" class="du-g"/><text x="2" y="'+(Y(v)+4)+'" class="du-t">'+v+'</text>';}).join("");
     var lines=SJ_DU_K.map(function(k,ki){var pts=S[k[0]].map(function(v,i){return X(i).toFixed(1)+","+Y(v).toFixed(1);}).join(" ");
       return '<g class="du-s du-'+k[0]+(ki===0?' on':'')+'"><polygon points="'+X(0).toFixed(1)+','+Y(0)+' '+pts+' '+X(n-1).toFixed(1)+','+Y(0)+'" class="du-a"/><polyline points="'+pts+'" class="du-l"/>'+
         S[k[0]].map(function(v,i){return '<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(v).toFixed(1)+'" r="3.2" class="du-d"/>';}).join("")+'</g>';}).join("");
-    var xl=du.map(function(d,i){return '<text x="'+X(i).toFixed(1)+'" y="'+(H-8)+'" text-anchor="middle" class="du-t'+(i===nowI?' now':'')+'">'+d.age+'세</text>';}).join("");
+    var xl=du.map(function(d,i){var dt=new Date(d.start);return '<text x="'+X(i).toFixed(1)+'" y="'+(H-22)+'" text-anchor="middle" class="du-t'+(i===nowI?' now':'')+'">'+d.age+'세<tspan x="'+X(i).toFixed(1)+'" dy="14" style="font-size:8px">'+dt.getUTCFullYear()+'.'+(dt.getUTCMonth()+1)+'</tspan></text>';}).join("");
     return '<style>.du-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}.du-wrap .du-tabs button{padding:7px 12px;border:1px solid var(--line)!important;border-radius:999px;background:var(--card,#fff)!important;color:var(--ink,#222)!important;font-size:13.5px;font-weight:600;box-shadow:none!important}.du-wrap .du-tabs button.on{background:#f0a020!important;border-color:#f0a020!important;color:#fff!important;font-weight:700}'+
       '.du-svg{width:100%;height:auto}.du-g{stroke:var(--line);stroke-width:1}.du-t{font-size:10px;fill:var(--muted)}.du-t.now{fill:#d07a00;font-weight:700}.du-now{fill:#7b6cf6;opacity:.09}.du-s{display:none}.du-s.on{display:inline}.du-l{fill:none;stroke:#f0a020;stroke-width:2.4;stroke-linejoin:round}.du-a{fill:#f0a020;opacity:.1}.du-d{fill:#f0a020}</style>'+
       '<div class="du-wrap"><div class="du-tabs">'+SJ_DU_K.map(function(k,ki){return '<button type="button"'+(ki===0?' class="on"':'')+' onclick="sjDuTab(this,\''+k[0]+'\')">'+k[1]+'</button>';}).join("")+'</div>'+
@@ -458,7 +468,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(gj&&gw)t.push(["모은 것이 자리가 되는 사주","돈의 기운이 자리·명예의 기운을 낳는 짜임이에요. 모은 것이 이름과 자리로 이어지기 쉬워요."]);
     if(o.cnt[o.yong]>=2)t.push(["필요한 기운을 품고 난 사주","나에게 필요한 기운("+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[SJ_EL[o.yong]]+")이 사주 글자 안에 "+o.cnt[o.yong]+"자리 들어 있어요. 밖에서 새로 찾기보다 이미 가진 그 기운을 키워 쓰면 되는 사주예요."]);   // 1자리면 '가장 먼저 챙길 건 필요한 기운'과 부딪혀 2자리부터(2026-10-12 검수)
     if(o.cnt.every(function(x){return x>0;}))t.push(["다섯 기운을 다 갖춘 사주","나무·불·흙·쇠·물 다섯 기운이 모두 사주에 있어요. 기운이 한 바퀴 돌며 서로 이어 주는 구조예요."]);
-    var sw=o.du.filter(function(d){return (d.age>=20||(o.age&&d.age<=o.age&&o.age<=d.age+9))&&d.age<=59&&d.el===o.yEl&&!(o.age&&d.age+9<o.age);});if(sw.length)t.push(["한창때 순풍이 부는 사주",sw.map(function(d){return d.age+"~"+(d.age+9)+"세";}).join("·")+"에 필요한 기운("+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[o.yEl]+")의 10년 흐름(대운)이 들어와요. "+(o.age&&sw.some(function(d){return d.age<=o.age&&o.age<=d.age+9;})?"지금이 바로 바람이 등 뒤에서 부는 때예요.":"그때가 되면 바람이 등 뒤에서 부는 셈이에요.")]);
+    function duCurrent(d){return o.duTime!=null?d.start<=o.duTime&&o.duTime<d.end:o.age&&d.age<=o.age&&o.age<=d.age+9;}
+    var sw=o.du.filter(function(d){return (d.age>=20||duCurrent(d))&&d.age<=59&&d.el===o.yEl&&!(o.duTime!=null?d.end<=o.duTime:o.age&&d.age+9<o.age);});if(sw.length)t.push(["한창때 순풍이 부는 사주",sw.map(function(d){return "세는나이 "+d.age+"세부터";}).join("·")+" 필요한 기운("+({목:"나무",화:"불",토:"흙",금:"쇠",수:"물"})[o.yEl]+")의 10년 흐름(대운)이 들어와요. "+(sw.some(duCurrent)?"지금이 바로 바람이 등 뒤에서 부는 때예요.":"그때가 되면 바람이 등 뒤에서 부는 셈이에요.")]);
     if(o.ilUn==="건록"||o.ilUn==="제왕")t.push(["뚝심 있는 사주","나를 뜻하는 글자가 기운이 한창 오른 자리("+o.ilUn+")에 앉아, 마음먹은 일에 힘을 싣기 좋은 자리예요."]);
     // 칩 이름은 쉬운 말, 옛 용어는 풀이 끝에 작게(사용자 "설명이 너무 어렵다" 2026-10-10)
     var OLD={"타고난 큰 틀":o.gyeok,"힘이 반반인 사주":"중화","인정받으며 크는 사주":"관인상생","재주가 돈이 되는 사주":"식상생재","모은 것이 자리가 되는 사주":"재생관","필요한 기운을 품고 난 사주":"용신이 원국에 있음","다섯 기운을 다 갖춘 사주":"오행구족","한창때 순풍이 부는 사주":"용신 대운","뚝심 있는 사주":"건록·제왕"};
@@ -507,16 +518,27 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   var SJ_JJG=[[[8,10],[9,20]],[[9,9],[7,3],[5,18]],[[4,7],[2,7],[0,16]],[[0,10],[1,20]],[[1,9],[9,3],[4,18]],[[4,7],[6,7],[2,16]],
     [[2,10],[5,9],[3,11]],[[3,9],[1,3],[5,18]],[[4,7],[8,7],[6,16]],[[6,10],[7,20]],[[7,9],[3,3],[4,18]],[[4,7],[0,7],[8,16]]];
   /* 대운 시작 — 남자·양년(연간이 짝수 번호) 또는 여자·음년은 순행, 그 반대는 역행.
-     태어난 순간에서 다음(순행)·이전(역행) 절기까지의 날수를 3으로 나눈 값이 첫 대운의 나이(1~10세). 0.25일 단위로 센다.
+     월이 바뀌는 절입 순간까지 분 단위로 센다. 3일=1년, 1일=4개월, 2시간=10일(환산 한 달=30일).
+     su는 종전 반올림·1~10 제한을 유지한 대운수이며 실제 세는나이와 구분한다.
      m60 은 월주가 60갑자에서 몇 번째인지(대운 간지는 여기서 한 칸씩 앞뒤로 간다) */
   function sjDaeunStart(p,male,jd0){
     var fwd=(p.y.s%2===0)===male;
-    function mIdxOf(jd){return Math.floor((((sjSunLong(jd)-315)%360)+360)%360/30);}
-    var base=mIdxOf(jd0),days=30;
-    for(var t=0.25;t<=32;t+=0.25){if(mIdxOf(jd0+(fwd?t:-t))!==base){days=t;break;}}
+    var birth=new Date(Math.round((jd0-2440587.5)*86400000)+9*3600000),y=birth.getUTCFullYear(),termJd=null,gap=Infinity;
+    for(var yy=y-1;yy<=y+1;yy++)for(var i=0;i<SJ_TERM.length;i+=2){
+      var jd=sjTermJd(yy,SJ_TERM[i][1]),dt=(jd-jd0)*(fwd?1:-1);
+      // 절입 순간과 정확히 같으면 양쪽 모두 0. 부동소수점 오차(1ms 미만)만 허용한다.
+      if(dt>=-1e-8&&dt<gap){gap=Math.max(0,dt);termJd=jd;}}
+    var minutes=Math.round(gap*1440),days=minutes/1440,years=Math.floor(minutes/4320),months=Math.floor(minutes%4320/360),spanDays=Math.floor(minutes%360/12),spanMinutes=minutes%12*120;
     var su=Math.max(1,Math.min(10,Math.round(days/3)));
     var m60=0;for(var k=0;k<60;k++)if(k%10===p.m.s&&k%12===p.m.b){m60=k;break;}
-    return {fwd:fwd,days:days,su:su,m60:m60};}
+    return {fwd:fwd,days:days,su:su,m60:m60,termJd:termJd,years:years,months:months,spanDays:spanDays,spanMinutes:spanMinutes,
+      start:sjDaeunDate(birth.getTime(),years*12+months,spanDays,spanMinutes)};}
+  // 달력의 연·월을 먼저 더한다. 월말·윤일은 도착 월의 말일로 맞춘 뒤 일·분을 더한다(KST 달력을 UTC 슬롯에 담음).
+  function sjDaeunDate(ms,months,days,minutes){var t=new Date(ms),d=t.getUTCDate();t.setUTCDate(1);t.setUTCMonth(t.getUTCMonth()+months);
+    var last=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()+1,0)).getUTCDate();t.setUTCDate(Math.min(d,last));
+    t.setUTCDate(t.getUTCDate()+(days||0));t.setUTCMinutes(t.getUTCMinutes()+(minutes||0));return t.getTime();}
+  function sjDaeunYm(ms){var t=new Date(ms);return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월";}
+  function sjDaeunIntro(da){return "첫 대운은 "+da.years+"년 "+da.months+"개월 뒤인 "+sjDaeunYm(da.start)+" 무렵부터 들어와요";}
   // 격국 — 월지 본기의 십성으로 판정
   var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
   var SJ_GYEOK_DESC={
@@ -787,14 +809,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     li.push("<b>월주 "+G(p.m)+"</b> — 태어난 순간 태양의 황경은 "+mt.L.toFixed(2)+"°입니다. 달은 절기로 바뀌므로 "+mt.prevName+"("+sjKst(mt.prev)+")부터 "+mt.nextName+"("+sjKst(mt.next)+") 전까지가 이 달입니다.");
     li.push("<b>일주 "+G(p.d)+"</b> — 날짜는 자정에 바뀝니다. 밤 11시 이후(야자시)에 태어나도 일주는 그날 것을 쓰고, 시주만 다음 날 자시로 잡습니다. 밤 자시에 일주까지 다음 날로 넘기는 만세력(정자시)도 있어, 그런 곳과는 일주가 다를 수 있습니다.");
     li.push(o.h==null?"<b>시주</b> — 태어난 시각을 모른다고 하셔서 시주를 빼고 여섯 글자로 봤습니다.":
-      "<b>시주 "+G(p.h)+"</b> — "+(o.exact?"적어 주신 시각을 지금 한국 표준시로 맞추면 "+String(o.h).padStart(2,"0")+":"+String(o.mi).padStart(2,"0")+"이고, 이 시각으로 정했습니다.":"고르신 시진으로 정했습니다.")+" 한국 표준시는 동경 135°에 맞춰져 서울의 실제 해 시각보다 약 30분 빠릅니다. 진태양시 보정은 "+(o.corr?"적용했습니다.":"끄셨습니다."));
+      "<b>시주 "+G(p.h)+"</b> — "+(o.exact?"적어 주신 시각을 지금 한국 표준시로 맞추면 "+String(o.h).padStart(2,"0")+":"+String(o.mi).padStart(2,"0")+"예요.":"고르신 시진의 대표 시각으로 정했어요."));
+    var region=o.region||sjRegion("");
+    li.push("<b>진태양시 보정</b> — 태어난 지역은 "+region.name+(region.longitude==null?"(기존 기준)":"("+region.city+" 시청, 동경 "+region.longitude+"°)")+"이고, "+(o.corr?region.min+"분을 적용해요.":"보정을 꺼서 0분을 적용해요. 이 지역의 보정값은 "+region.min+"분이에요.")+(region.longitude==null?" 경도를 몰라 기존 −30분 기준을 유지해요.":" 표준시 기준 경도 135°와의 차이에 4분을 곱한 지역 평균 태양시예요.")+" 계절에 따른 해 시각 차이(균시차)는 더하지 않아요."+(o.h==null?" 시각을 몰라 시주는 계산하지 않았어요.":""));
     if(o.exact&&o.sh){
       li.push("<b>출생 당시 시계</b> — 이 날짜는 "+(sh.std830&&sh.dst?"표준시가 UTC+8:30이었고 서머타임도 시행 중이어서":sh.std830?"표준시가 UTC+8:30이어서":"서머타임 기간이어서")+" 적어 주신 "+o.exact+"에서 "+(o.sh>0?o.sh+"분을 빼":(-o.sh)+"분을 더해")+" 지금 한국 표준시로 바꿔 계산했습니다."+(sh.dst&&o.y<1962?" 1948~1960년 서머타임 기간은 기록마다 며칠씩 다릅니다.":""));
     }else if(sh.min!==0){
       var why=sh.std830&&sh.dst?"당시 표준시가 UTC+8:30이었고 서머타임(1시간 당김)도 시행 중이었습니다."
         :sh.std830?"당시 표준시가 지금보다 30분 늦은 UTC+8:30이었습니다.":"서머타임(시계를 1시간 당김)이 시행 중이었습니다.";
       li.push("<b>출생 당시 시계</b> — 이 날짜는 "+why+" 출생증명서에 적힌 시각은 지금 시계로 치면 "+(sh.min>0?sh.min+"분 앞선":(-sh.min)+"분 늦은")+" 시각입니다. 시진을 고를 때는 적힌 시각에서 "+(sh.min>0?sh.min+"분을 빼고":(-sh.min)+"분을 더해")+" 고르세요."+(sh.dst&&o.y<1962?" 1948~1960년 서머타임 기간은 기록마다 며칠씩 다릅니다.":"")+" 위의 정확한 시각 칸에 적힌 그대로 넣으시면 자동으로 맞춥니다.");}
-    if(o.su)li.push("<b>대운</b> — "+(o.fwd?"순행":"역행")+"입니다(연간이 "+(p.y.s%2===0?"양":"음")+"이고 "+(o.male?"남":"여")+"자). 태어난 때부터 "+(o.fwd?"다음":"이전")+" 절기까지 "+(Math.round(o.days*4)/4)+"일이라, 3일을 1년으로 쳐서 "+o.su+"세에 첫 대운이 시작됩니다."+(o.h==null?" 시각을 몰라 정오로 보고 셌습니다.":""));
+    if(o.da){var da=o.da,dt=new Date(da.start);li.push("<b>대운</b> — "+(o.fwd?"앞으로 세는 순행":"뒤로 세는 역행")+"이에요. 태어난 때부터 "+(o.fwd?"다음":"이전")+" 달의 시작 절기("+sjKst(da.termJd)+")까지 "+Math.round(da.days*1440)+"분이에요. 3일은 1년, 1일은 4개월, 2시간은 10일로 바꿔 "+da.years+"년 "+da.months+"개월 "+da.spanDays+"일"+(da.spanMinutes?" "+(da.spanMinutes/60)+"시간":"")+"을 출생일에 더했어요. 첫 시작은 "+sjDaeunYm(da.start)+" "+dt.getUTCDate()+"일 무렵이에요. 기간을 반올림한 이름은 "+o.su+"세 대운이고, 실제 나이와는 구분해요."+(o.h==null?" 시각을 몰라 정오로 보고 셌어요.":""));}
     return '<div class="sj-sec sj-basis"><h3>이 결과는 이렇게 계산했습니다</h3><p>'+bosalImg("point","bs-side","계산을 짚어 주는 아기보살")+li.join("<br><br>")+
       '<br><br><span style="color:var(--muted);font-size:12.5px">절기 시각은 태양 황경을 VSOP87 행성 이론으로 직접 계산한 값이며, 영국·미국 천문력 자료로 만든 공식 절기표와 1분 안에서 맞습니다. 절기 바로 1~2분 안에 태어났다면 만세력마다 월주가 갈릴 수 있습니다. 이 계산을 한 단계씩 따라 해 보고 싶으시면 <a href="learn.html">명리학 배우기</a>로 가 보세요.</span></p></div>';}
   /* AI에게 물어보기 — 범용 AI는 만세력을 자주 틀린다. 계산이 끝난 값만 담은 질문문을 복사해 넘긴다.
@@ -809,7 +833,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       "- 오행 개수: "+SJ_EL.map(function(e,i){return e+" "+o.cnt[i];}).join(", "),
       "- 십성 분포: 비겁 "+o.G.비겁+", 식상 "+o.G.식상+", 재성 "+o.G.재성+", 관성 "+o.G.관성+", 인성 "+o.G.인성,
       "- 격국: "+o.gyeok+(o.sinsal.length?" · 신살: "+o.sinsal.join(", "):""),
-      "- 대운("+(o.fwd?"순행":"역행")+", 대운수 "+o.su+"): "+o.duList.map(function(x){return x.age+"세 "+x.g+"("+x.tg+")";}).join(" → "),
+      "- 대운("+(o.fwd?"순행":"역행")+", 대운수 "+o.su+"): "+o.duList.map(function(x){return "세는나이 "+x.age+"세 "+x.g+"("+x.tg+")";}).join(" → "),
       "- 올해 "+now.getFullYear()+"년 세운: "+H(yp)+"("+sjTenGod(ds,yp.s)+")",
       "",
       "질문: [여기에 궁금한 것을 적으세요. 예) 올해 이직해도 될까요? 어떤 일이 잘 맞나요?]",
@@ -1938,7 +1962,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     p.push('<b>오늘부터 해 볼 작은 습관</b> — '+D.habit[f.ds]);
     sn.forEach(function(k){p.push('<b>'+sjSinLink(k,D.sin[k][0])+'</b> — '+D.sin[k][1]);});
     ms.forEach(function(k){p.push('<b>채우면 좋은 자리 · '+SJ_MISS_LAB[k]+'</b> — '+D.miss[k]);});
-    p.push('<b>지금 시기</b> — 10년마다 바뀌는 큰 흐름(대운)은 <b>'+(DU_NM[f.duTg]||du[0])+'</b>의 시기, 올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+D.fit[fk].replace(/^게다가 /,""));   // 그해·10년의 결 풀이는 '해마다 흐름'·'10년' 칸 한곳에서(같은 해를 두 번 다른 말로 풀어 엇갈렸음)
+    p.push('<b>지금 시기</b> — '+(f.duStatus?f.duStatus+' ': '10년마다 바뀌는 큰 흐름(대운)은 <b>'+(DU_NM[f.duTg]||du[0])+'</b>의 시기'+(f.duSpan?' ('+f.duSpan+')':'')+', ')+'올해는 <b>'+se[0]+'</b>'+josa(se[0],"예요/이에요")+'. '+(f.duStatus?'':D.fit[fk].replace(/^게다가 /,"")));   // 그해·10년의 결 풀이는 '해마다 흐름'·'10년' 칸 한곳에서(같은 해를 두 번 다른 말로 풀어 엇갈렸음)
     p.push('<b>정리하면</b> — '+(N?N+' ':'')+(f.mid?'고르게 짜인 힘을 어디에 쓸지만 정하면 어디서든 든든한 사람이에요.':D.close[sk]));
     return p;}
   // 점수·등급·한 줄 결론·첫 문장으로 만드는 저장 카드. 생년월일·이름은 이미지에 넣지 않는다(카드는 SNS에 그대로 올라간다)

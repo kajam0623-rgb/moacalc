@@ -40,8 +40,8 @@ ctx.askWire = (el, go) => { ctx.__go = go; };
 const tool = vm.runInContext("(" + blk + ")", ctx);
 
 // 한 사람의 결과 HTML. h = 시각 "14"(그 시 30분), "03:30" 또는 null, g = "m"|"f"
-function renderSaju(date, h, g, nm) {
-  const vals = { "#d": date, "#t": "", "#tm": h != null ? (String(h).includes(":") ? h : h + "30") : "", "#c": "1", "#g": g || "m", "#nm": nm || "", "#q": "all" };
+function renderSaju(date, h, g, nm, region) {
+  const vals = { "#d": date, "#t": "", "#tm": h != null ? (String(h).includes(":") ? h : h + "30") : "", "#c": "1", "#region": region || "", "#g": g || "m", "#nm": nm || "", "#q": "all" };
   const el = stub(vals);
   tool.render(el);
   (el.querySelector("#d").on.change || []).forEach(f => f());   // prefetch — 조합 원고(sj/<일간>-<십성>.json)를 받아 둔다(가짜 fetch 는 바로 끝난다)

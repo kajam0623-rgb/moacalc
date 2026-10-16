@@ -17,6 +17,57 @@ function t(name, got, want) {
 }
 const G = i => SJ_S[i.s] + SJ_B[i.b];
 
+// 절입 시각을 분으로 고정하고 손으로 환산: 4320분=1년, 360분=1개월, 12분=1일.
+const daeunCases = [
+  { birth:[1990,3,15,14,30], male:true, term:[1990,4,5,10,13], gap:29983, span:[6,11,8,840], start:"1997-02-24T04:30:00.000Z", su:7 },
+  { birth:[1990,3,15,14,30], male:false, term:[1990,3,6,5,19], gap:13511, span:[3,1,15,1320], start:"1993-05-01T12:30:00.000Z", su:3 },
+  { birth:[2000,2,4,22,0], male:false, term:[2000,2,4,21,40], gap:20, span:[0,0,1,960], start:"2000-02-06T14:00:00.000Z", su:1 }
+];
+daeunCases.forEach((v,i) => {
+  const jd=sjJdKST(...v.birth), da=sjDaeunStart(sjPillars(...v.birth,false),v.male,jd);
+  t(`교운 사례 ${i+1}: 절입 고정 시각 오차 1분 미만`,Math.abs(da.termJd-sjJdKST(...v.term))*1440<1,true);
+  t(`교운 사례 ${i+1}: 출생~절입 분 차이`,Math.round(da.days*1440),v.gap);
+  t(`교운 사례 ${i+1}: 년·개월·일·잔여분 손계산`,JSON.stringify([da.years,da.months,da.spanDays,da.spanMinutes]),JSON.stringify(v.span));
+  t(`교운 사례 ${i+1}: 달력에 더한 교운 날짜(KST 슬롯)`,new Date(da.start).toISOString(),v.start);
+  t(`교운 사례 ${i+1}: 기존 반올림 대운수`,da.su,v.su);
+});
+// 29983=6*4320+11*360+8*12+7, 13511=3*4320+360+15*12+11, 20=12+8.
+const onTerm=sjTermJd(2000,315), onTermP=sjPillars(2000,2,4,22,0,false);
+[true,false].forEach(male => t(`절입 순간과 정확히 같을 때 ${male?"순행":"역행"} 간격`,sjDaeunStart(onTermP,male,onTerm).days,0));
+t("월말 교운 덧셈은 도착 월 말일",new Date(sjDaeunDate(Date.UTC(2000,0,31),1)).toISOString(),"2000-02-29T00:00:00.000Z");
+t("윤일에서 10년 뒤 교운",new Date(sjDaeunDate(Date.UTC(2000,1,29),120)).toISOString(),"2010-02-28T00:00:00.000Z");
+t("시도 선택은 17개",SJ_REGIONS.length,17);
+[["서울",-32.08],["부산",-23.68],["제주",-33.88],["",-32.08],["unknown",-30]].forEach(v => t(`지역 보정 분: ${v[0]||"기본 서울"}`,sjRegion(v[0]).min,v[1]));
+t("서울과 기존 -30분 차이는 2분 4.8초",Math.round(Math.abs(sjRegion("").min+30)*60*10)/10,124.8);
+[[23,30,"자","해"],[1,30,"축","자"]].forEach(v => {
+  const busan=sjPillars(1990,3,15,v[0],v[1],sjRegion("부산").min),jeju=sjPillars(1990,3,15,v[0],v[1],sjRegion("제주").min);
+  t(`${v[0]}:${v[1]} 부산 시지`,SJ_B[busan.h.b],v[2]);
+  t(`${v[0]}:${v[1]} 제주 시지`,SJ_B[jeju.h.b],v[3]);
+  t(`${v[0]}:${v[1]} 지역 보정은 연월일주를 바꾸지 않음`,[G(busan.y),G(busan.m),G(busan.d)].join(),[G(jeju.y),G(jeju.m),G(jeju.d)].join());
+});
+
+// 실제 결과 조립도 교운 직전/직후에 같은 구간을 가리켜야 한다(UTC+9 시계).
+{ const R=require("./tools/sajucheck/render.js"), realDate=R.ctx.Date;
+  const renderAt=when => {
+    const fixed=Date.parse(when);
+    R.ctx.Date=class extends Date { constructor(...args){super(...(args.length?args:[fixed]));} static now(){return fixed;} };
+    return R.renderSaju("1990-03-15","14:30","m","","부산");
+  };
+  try {
+    const before=renderAt("2017-02-23T19:29:59Z"),after=renderAt("2017-02-23T19:30:00Z");
+    const glance=h => h.match(/<b>지금 10년 흐름<\/b>[^<]+/)[0];
+    t("교운 직전 한눈에: 2007년 2월 시작 구간",glance(before).includes("세는나이 18세 (2007년 2월부터)"),true);
+    t("교운 순간 한눈에: 2017년 2월 시작 구간",glance(after).includes("세는나이 28세 (2017년 2월부터)"),true);
+    t("교운 순간 차트 강조도 28세로 전환",/class="du-t now">28세/.test(after)&&/class="du-t now">18세/.test(before),true);
+    t("대운 첫 시작 안내문",after.includes("첫 대운은 6년 11개월 뒤인 1997년 2월 무렵부터 들어와요"),true);
+    t("여덟 대운의 시작 연월 표시",(after.match(/년 2월부터<\/div>/g)||[]).length,8);
+    t("지역 근거에 부산·실제 분·균시차 제외 표시",after.includes("부산(부산 시청, 동경 129.08°)이고, -23.68분")&&after.includes("균시차)는 더하지 않아요"),true);
+    const early=renderAt("1995-01-01T00:00:00Z"),late=renderAt("2080-01-01T00:00:00Z");
+    t("첫 교운 전: 시작 전 안내·차트 현재 구간 없음",glance(early).includes("아직 첫 대운")&&!early.includes('class="du-now"'),true);
+    t("여덟 구간 뒤: 종료 안내·차트 현재 구간 없음",glance(late).includes("여덟 구간을 모두 지났어요")&&!late.includes('class="du-now"'),true);
+  } finally { R.ctx.Date=realDate; }
+}
+
 // 도메인이 어긋나면 canonical·OG·sitemap이 전부 엉뚱한 곳을 가리킨다
 t("DOMAIN 상수는 프로토콜 포함·끝 슬래시 없음", /const DOMAIN = "https:\/\/[a-z0-9.-]+"/.test(bs) && !/const DOMAIN = "[^"]*\/";/.test(bs), true);
 
@@ -156,7 +207,7 @@ for (const [y, deg, want, nm] of [[2026, 315, "2026-02-04 05:02", "입춘"], [20
 // 밤 자시: 1990-03-15(기묘일) 23:30 → 시주 병자(다음 날 경진일의 자시), 새벽 00:30 → 갑자
 t("밤 자시 시 천간은 다음 날 기준(병자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 23, 30, true).h), "2-0");
 t("새벽 자시는 그날 기준(갑자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 0, 30, true).h), "0-0");
-t("정확한 시각 칸이 서머타임·UTC+8:30을 되돌려 쓴다", ["function birthIn()", "krClockShift(y,mo,d,+tm.slice(0,2),+tm.slice(3,5))", 'id="tm"', "sjPillars(B.y,B.mo,B.d,h,B.mi,corr)"].every(x => src.includes(x)), true);
+t("정확한 시각 칸이 서머타임·UTC+8:30을 되돌려 쓴다", ["function birthIn()", "krClockShift(y,mo,d,+tm.slice(0,2),+tm.slice(3,5))", 'id="tm"', "sjPillars(B.y,B.mo,B.d,h,B.mi,corr?region.min:0)"].every(x => src.includes(x)), true);
 // 시각은 ±5분 허용 (포스텔러 화면값은 분 단위)
 const bkMin = (o => o.h*60+o.mi)(kst(sjTermJd(2026, 165)));
 t("2026 백로 시각 23:40 ±5분", Math.abs(bkMin - (23*60+40)) <= 5, true);
@@ -907,7 +958,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjJson","sjMonthPick","sjFit","sjOldW","sjAxes","sjDedupe","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjRegion","sjDaeunDate","sjDaeunYm","sjDaeunIntro","sjJson","sjMonthPick","sjFit","sjOldW","sjAxes","sjDedupe","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 // ── 사주 '한 사람 이야기'(2026-10-12 구조 개편): 실제 도구를 가짜 화면으로 무작위 3000명 그려, 조립된 본문에 칸끼리 반대 성향·힘의 세기와 반대인 말·
 //    나이에 안 맞는 말(45+ 새 만남, 35 미만 노후·교육비, 55+ 월급·부모님)·같은 문장 반복이 하나도 없어야 한다(tools/sajucheck)
 { const SC = require("./tools/sajucheck/scan.js"), r = SC.run(3000, 1012);
