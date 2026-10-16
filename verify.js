@@ -59,6 +59,91 @@ for (const y of [2000, 2026, 2030]) {
   const diffMin = Math.abs(sjTermJd(y, 315) - sjIpchun(y)) * 1440;
   t(`${y} 입춘: 일반 절기 함수가 sjIpchun과 1분 이내`, diffMin < 1, true);
 }
+// 캐시 없는 기존 이분법과 무작위 100쌍을 엄밀 비교하고, 두 번째 호출은 황경을 다시 재지 않는다.
+{ const uncached = (y, deg) => {
+    let approx = 79 + deg * 365.2422 / 360; if (approx > 365.2422) approx -= 365.2422;
+    let lo = sjJdKST(y, 1, 1, 0, 0) + approx - 5, hi = lo + 10;
+    const norm = x => ((x % 360) + 360) % 360;
+    for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (norm(sjSunLong(mid) - deg) < 180) hi = mid; else lo = mid; }
+    return (lo + hi) / 2;
+  };
+  let seed = 19870510, calls = 0;
+  const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
+  const sun = sjSunLong; sjSunLong = jd => { calls++; return sun(jd); };
+  for (let i = 0; i < 100; i++) {
+    const y = 1900 + Math.floor(random() * 201), deg = Math.floor(random() * 36000) / 100;
+    const expected = uncached(y, deg), actual = sjTermJd(y, deg), n = calls;
+    t(`절기 캐시 ${i + 1}: ${y}년 ${deg}도 값 동일·재계산 없음`, actual === expected && sjTermJd(y, deg) === expected && calls === n, true);
+  }
+  const ip = sjIpchun(2026), n = calls;
+  t("입춘 캐시도 값 동일·재계산 없음", sjIpchun(2026) === ip && calls === n, true);
+  sjSunLong = sun;
+}
+
+// 가상 시계로 단계 수가 달라도 완료 콜백은 3000ms에 한 번만 실행되는지 확인한다.
+{ const code = inner.slice(inner.indexOf("  function seerThink("), inner.indexOf("  // 긴 결과는"));
+  const run = (count, opts) => {
+    let now = 0, doneAt = [], timers = [];
+    const btn = { textContent: "풀이 보기" }, slot = { style: {} }, out = { querySelector: () => slot, scrollIntoView() {} };
+    const E = new Function("setTimeout", code + ";return seerThink;")((fn, ms) => timers.push({ at: now + ms, fn }));
+    E(out, btn, Array.from({ length: count }, (_, i) => "단계 " + i), () => doneAt.push(now), opts);
+    while (timers.length) { timers.sort((a, b) => a.at - b.at); const next = timers.shift(); now = next.at; next.fn(); }
+    return doneAt.join(",") + "|" + btn.disabled + "|" + btn.textContent;
+  };
+  for (const count of [0, 1, 3, 8, 11]) t(`사주 대기 ${count}단계도 총 3000ms`, run(count, { total: 3000 }), "3000|false|풀이 보기");
+  t("다른 도구의 최소 대기·단계별 600ms 유지", run(8, { min: 4200 }), "4800|false|풀이 보기");
+  t("사주 호출부 대기 3000ms", src.includes('{total:3000,title:"사주를 짚어 보는 중이에요"}'), true);
+}
+
+// 네이티브 Promise로 지연 응답·HTTP·네트워크·JSON 오류를 재현한다. 기존 동기 렌더 검사의 즉시 완료 모형과 별도로 검사한다.
+{ const runLoading = async function() {
+    const fs = require("fs"), path = require("path"), Module = require("module");
+    const file = path.resolve("tools/sajucheck/render.js"), mod = new Module(file, module);
+    mod.filename = file; mod.paths = Module._nodeModulePaths(path.dirname(file));
+    mod._compile(fs.readFileSync(file, "utf8") + "\nmodule.exports.fixture={tool,stub,J};", file);
+    const R = mod.exports, C = R.ctx, F = R.fixture, results = {};
+    C.Promise = Promise;
+    const flush = () => new Promise(resolve => setImmediate(resolve));
+    async function scenario(mode) {
+      C.SJ_JSON = {}; C.IL_DATA = null;
+      const calls = {}, held = {};
+      C.fetch = url => {
+        calls[url] = (calls[url] || 0) + 1;
+        const data = F.J[url] || [];
+        if (mode === "slow") return new Promise(resolve => { held[url] = () => resolve({ ok: true, json: () => Promise.resolve(data) }); });
+        if (mode === "fail" || calls[url] === 1) {
+          if (url === "sj/easy.json") return Promise.reject(new Error("offline"));
+          if (url === "sj/ilju.json") return Promise.resolve({ ok: true, json: () => Promise.reject(new Error("bad JSON")) });
+          return Promise.resolve({ ok: false });
+        }
+        return Promise.resolve({ ok: true, json: () => Promise.resolve(data) });
+      };
+      const el = F.stub({ "#d": "1987-05-10", "#tm": "00:30", "#t": "", "#c": "1", "#g": "m", "#nm": "", "#q": "all" });
+      F.tool.render(el);
+      const pending = C.__go();
+      if (mode === "slow") {
+        results.required = Object.keys(calls).length === 4;
+        results.shared = C.sjJson("sj/ilju.json") === C.sjJson("sj/ilju.json");
+        Object.keys(held).filter(url => url !== "sj/ilju.json").forEach(url => held[url]());
+        await flush();
+        results.waited = el.querySelector("#out").innerHTML === "";
+        held["sj/ilju.json"]();
+      }
+      await pending;
+      const html = el.querySelector("#out").innerHTML;
+      results[mode] = html.includes("타고난 성격") && !/undefined|NaN/.test(html) && Object.values(calls).every(n => n === (mode === "slow" ? 1 : 2));
+      if (mode === "slow") results.day = html.includes("일주 기미(己未)");
+      if (mode === "fail") results.fallback = html.includes("성격 설명을 불러오지 못했어요") && html.includes("재물운") && html.includes("직업운");
+    }
+    await scenario("slow"); await scenario("retry"); await scenario("fail");
+    console.log(JSON.stringify(results));
+  };
+  const r = require("child_process").spawnSync(process.execPath, ["-e", "(" + runLoading.toString() + ")().catch(e=>{console.error(e);process.exit(1);});"], { encoding: "utf8", timeout: 30000 });
+  t("필수 JSON 비동기 검사 정상 종료", r.status, 0);
+  if (r.status !== 0) console.log(r.stderr);
+  const checks = r.status === 0 ? JSON.parse(r.stdout) : {};
+  for (const key of ["required", "shared", "waited", "slow", "retry", "fail", "fallback", "day"]) t("필수 JSON 로딩·00:30 일주 회귀: " + key, checks[key], true);
+}
 // 외부 대조 — 포스텔러 만세력 2026년 9월 표시값 (스크린샷)
 t("2026 백로 날짜", fmtT(kst(sjTermJd(2026, 165))).slice(0,10), "2026-09-07");
 t("2026 추분 날짜", fmtT(kst(sjTermJd(2026, 180))).slice(0,10), "2026-09-23");
@@ -71,7 +156,7 @@ for (const [y, deg, want, nm] of [[2026, 315, "2026-02-04 05:02", "입춘"], [20
 // 밤 자시: 1990-03-15(기묘일) 23:30 → 시주 병자(다음 날 경진일의 자시), 새벽 00:30 → 갑자
 t("밤 자시 시 천간은 다음 날 기준(병자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 23, 30, true).h), "2-0");
 t("새벽 자시는 그날 기준(갑자)", (p => p.s + "-" + p.b)(sjPillars(1990, 3, 15, 0, 30, true).h), "0-0");
-t("정확한 시각 칸이 서머타임·UTC+8:30을 되돌려 쓴다", ["function birthIn()", "krClockShift(y,mo,d).min", 'id="tm"', "sjPillars(B.y,B.mo,B.d,h,B.mi,corr)"].every(x => src.includes(x)), true);
+t("정확한 시각 칸이 서머타임·UTC+8:30을 되돌려 쓴다", ["function birthIn()", "krClockShift(y,mo,d,+tm.slice(0,2),+tm.slice(3,5))", 'id="tm"', "sjPillars(B.y,B.mo,B.d,h,B.mi,corr)"].every(x => src.includes(x)), true);
 // 시각은 ±5분 허용 (포스텔러 화면값은 분 단위)
 const bkMin = (o => o.h*60+o.mi)(kst(sjTermJd(2026, 165)));
 t("2026 백로 시각 23:40 ±5분", Math.abs(bkMin - (23*60+40)) <= 5, true);
@@ -360,7 +445,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
   // 2026-10: 맨 위는 '이 정보로 풀었습니다' 확인 카드와 '한 장 요약'(sjSumHtml), 그 바로 아래가 명식 표다 — 명식 표는 여전히 풀이보다 먼저
   t("명식 표가 풀이보다 먼저 나오고, 그 위는 확인 카드와 한 장 요약뿐이다", (b => b.indexOf("sjGridHtml(p,") < b.indexOf("headline+F(synth)+FA(charSec)+FA(hourH)"))(toolBlock("saju").slice(toolBlock("saju").indexOf('el.querySelector("#out").innerHTML='))) && /innerHTML=\s*(?:\/\/[^\n]*\n\s*)?'<div class="sj-confirm">[\s\S]{0,700}?sjSumHtml\(\{[^}]*\}\)\+\s*sjGridHtml\(p,/.test(toolBlock("saju")), true);
   t("태어난 시각 칸이 종합·성격 바로 아래 늘 펼쳐져 있다", toolBlock("saju").includes("headline+F(synth)+FA(charSec)+FA(hourH)+'<div class=\"tail-wrap fold-skip\" id=\"tailbox\"></div>'+glance") && toolBlock("saju").includes('sj-hour fold-skip'), true);
-  t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('fetch("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
+  t("사주 도구가 조합 원고를 받아 쓴다(없으면 일간 원고로)", toolBlock("saju").includes('sjJson("sj/"+k+".json")') && toolBlock("saju").includes("CB&&CB[a]?P+CB[a]:ILG"), true);
 }
 
 { const mm = (y, m) => { const p = sjPillars(y, m, 20, 12, 0, false).m; return p.s + "-" + p.b; };
@@ -568,7 +653,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
     const p = sjPillars(y, m, d, h, 30, true), r = sjChar(p, SC), len = r.join("").replace(/\s+/g, "").length; minC = Math.min(minC, len); maxC = Math.max(maxC, len);
     if (r.length !== 7 || r.some((x, k) => (!x && k !== 3) || /undefined|\{|\}/.test(x)) || JOND.test(r.join(" "))) badC++; }
   t("사주 성격 섹션: 무작위 명식 3000개에서 네 조각이 모두 나오고 문체 이상이 없다 (글자 수 " + minC + "~" + maxC + ")", badC + "|" + (minC >= 180), "0|true");
-  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('fetch("sj/char.json")'), src.includes("headline+F(synth)+FA(charSec)+FA(hourH)+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
+  t("사주 도구가 성격 원고를 받아 종합 바로 뒤에 펼친 채로 넣는다", [src.includes('sjJson("sj/char.json")'), src.includes("headline+F(synth)+FA(charSec)+FA(hourH)+"), src.includes('sj-sec sj-persona fold-skip'), bs.includes('"sj","char.json"')].join(","), "true,true,true,true"); }
 // 신년운세 깊이 풀이(content_newyear.js → nyDeep): 원고 칸 · 월주 손계산 · 무작위 생일 3000개 · 도구 배선
 { const NY = require("./content_newyear.js"), JOND = TONE_BAD;
   const RELS = ["비견", "겁재", "식신", "상관", "편재", "정재", "편관", "정관", "편인", "정인"];
@@ -630,7 +715,7 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   t("이름 부르기(nmHon): 이름은 님을 붙이고 이미 호칭이면 그대로 둔다", [nmHon("민지"), nmHon("민지 님"), nmHon("엄마"), nmHon("이수현씨"), nmHon("  "), nmHon(""), nmHon("남친"), nmHon("딸")].join("|"), "민지 님|민지 님|엄마|이수현씨|||남친|딸");
   { const sj = toolBlock("saju");
     t("사주 도구: 쉬운 종합 원고(sj/easy.json)를 받아 종합을 쓰고, 못 받으면 예전 문장으로 대신하며, 결과의 섹션마다 이름을 부른다",
-      [sj.includes('fetch("sj/easy.json")'), sj.includes("synthOld"), sj.includes("sjEasy({ds:ds"), sj.includes("nmSwap(outEl,nmHon(nm))"), sj.includes("쉽게 말하면</b> — 태어난 시각은"), bs.includes('"sj","easy.json"')].join(","), "true,true,true,true,true,true"); } }
+      [sj.includes('sjJson("sj/easy.json")'), sj.includes("synthOld"), sj.includes("sjEasy({ds:ds"), sj.includes("nmSwap(outEl,nmHon(nm))"), sj.includes("쉽게 말하면</b> — 태어난 시각은"), bs.includes('"sj","easy.json"')].join(","), "true,true,true,true,true,true"); } }
 // 별자리 운세: 오늘의 달(hsMoon) — 미국 해군천문대(USNO) 삭·상현·보름·하현 99개(2026~27)와 대조 · 날마다 결이 바뀌는지 · 점수 분포
 { const P = "2026-01-03 10:03 F|2026-01-10 15:48 L|2026-01-18 19:52 N|2026-01-26 04:47 Q|2026-02-01 22:09 F|2026-02-09 12:43 L|2026-02-17 12:01 N|2026-02-24 12:27 Q|2026-03-03 11:38 F|2026-03-11 09:38 L|2026-03-19 01:23 N|2026-03-25 19:18 Q|2026-04-02 02:12 F|2026-04-10 04:51 L|2026-04-17 11:52 N|2026-04-24 02:32 Q|2026-05-01 17:23 F|2026-05-09 21:10 L|2026-05-16 20:01 N|2026-05-23 11:11 Q|2026-05-31 08:45 F|2026-06-08 10:00 L|2026-06-15 02:54 N|2026-06-21 21:55 Q|2026-06-29 23:56 F|2026-07-07 19:29 L|2026-07-14 09:43 N|2026-07-21 11:05 Q|2026-07-29 14:36 F|2026-08-06 02:21 L|2026-08-12 17:37 N|2026-08-20 02:46 Q|2026-08-28 04:18 F|2026-09-04 07:51 L|2026-09-11 03:27 N|2026-09-18 20:44 Q|2026-09-26 16:49 F|2026-10-03 13:25 L|2026-10-10 15:50 N|2026-10-18 16:12 Q|2026-10-26 04:12 F|2026-11-01 20:28 L|2026-11-09 07:02 N|2026-11-17 11:48 Q|2026-11-24 14:53 F|2026-12-01 06:08 L|2026-12-09 00:52 N|2026-12-17 05:42 Q|2026-12-24 01:28 F|2026-12-30 18:59 L|2027-01-07 20:24 N|2027-01-15 20:34 Q|2027-01-22 12:17 F|2027-01-29 10:55 L|2027-02-06 15:56 N|2027-02-14 07:58 Q|2027-02-20 23:23 F|2027-02-28 05:16 L|2027-03-08 09:29 N|2027-03-15 16:25 Q|2027-03-22 10:44 F|2027-03-30 00:54 L|2027-04-06 23:51 N|2027-04-13 22:56 Q|2027-04-20 22:27 F|2027-04-28 20:18 L|2027-05-06 10:58 N|2027-05-13 04:44 Q|2027-05-20 10:59 F|2027-05-28 13:58 L|2027-06-04 19:40 N|2027-06-11 10:56 Q|2027-06-19 00:44 F|2027-06-27 04:54 L|2027-07-04 03:02 N|2027-07-10 18:39 Q|2027-07-18 15:45 F|2027-07-26 16:55 L|2027-08-02 10:05 N|2027-08-09 04:54 Q|2027-08-17 07:29 F|2027-08-25 02:27 L|2027-08-31 17:41 N|2027-09-07 18:31 Q|2027-09-15 23:03 F|2027-09-23 10:20 L|2027-09-30 02:36 N|2027-10-07 11:47 Q|2027-10-15 13:47 F|2027-10-22 17:29 L|2027-10-29 13:36 N|2027-11-06 08:00 Q|2027-11-14 03:26 F|2027-11-21 00:48 L|2027-11-28 03:24 N|2027-12-06 05:22 Q|2027-12-13 16:09 F|2027-12-20 09:11 L|2027-12-27 20:12 N".split("|"), WANT = { N: 0, Q: 90, F: 180, L: 270 }, jdUT = (y, m, d, h, mi) => Date.UTC(y, m - 1, d, h, mi) / 86400000 + 2440587.5;
   let worst = 0; P.forEach(x => { const m = /^(\d+)-(\d+)-(\d+) (\d+):(\d+) (\w)$/.exec(x), jd = jdUT(+m[1], +m[2], +m[3], +m[4], +m[5]); worst = Math.max(worst, Math.abs(((hsMoonLong(jd) - sjSunLong(jd) - WANT[m[6]]) % 360 + 540) % 360 - 180)); });
@@ -822,7 +907,7 @@ const sipsSrc = bs.slice(bs.indexOf("function sipseongPage"), bs.indexOf("const 
 t("십성 페이지 조사는 josa() 사용", !/\$\{s\.(?:ko|pair)\}(?:은|는|이|가|과|와)[\s`]/.test(sipsSrc), true);
 
 // ── 도구 스크립트 정적 검사: 정의되지 않은 헬퍼 호출 (렌더 중단 버그 방지) ──
-const HELPERS = ["sjMonthPick","sjFit","sjOldW","sjAxes","sjDedupe","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
+const HELPERS = ["sjJson","sjMonthPick","sjFit","sjOldW","sjAxes","sjDedupe","sjTextFix","bindSumShare","cpRow","goodsRow","sjTraits","sjOhaengSvg","sjSinLink","sjCelebFill","sjDuScores","sjDuChart","tjDeep","tjSecHtml","gmDeep","sgDeep","sgAng","zfDeep","zfYear","hsMoon","hsMoonLong","hsDeep","hsSecHtml","hsWeekSec","hsGrade","nmHon","nmSwap","sjSumHtml","sjToon","sjToonSaju","sumCard","ghPct","GH_PCT","sjMonthSvg","sjPct","sjPcList","sumCanvas","plainTxt","sjChapters","tfPct","tfScore","sjEasy","clockParse","clockSay","sjGongmang","subBal","sjChar","nyDeep","nySecHtml","ghDeep","ghFill","ghYear","nmJ","nmChar","nmCalc","nmBand","bdParse","bdFmt","bdBind","saveScore","ymd3","num","won","comma","bindMoney","progressive","earnedDed","incomeTaxMonthly","sjPillars","sjHourOpts","sjGridHtml","tailAsk","sjDaeunStart","sjTenGod","sjJdKST","sjSunLong","sjJdn","sjIpchun","sjStrength","sjUnseong","sjSinsal","sjSamhap","sjYukhap","zoCard","stOf","stCard","escH","josa","loadPrefs","savePrefs","track","rateBar","shareBtn","bindShare","fortuneCard","bindSave","wrapText","birthDial","conceptArt","askWire","askFx","askWait","askThink","seerThink","slowReveal","foldAll","plainWords","reveal","countUp","fillBars","gradeFx","bumpStreak","streakHtml","bujeokHtml","tfGrade","tfToday","tfPersonalBox","lunarPick","krClockShift","sjKst","sjMonthTerms","sjBasisHtml","sjAiPrompt","sjAiHtml","bindAiCopy","bindYearFb","bindInvite","zfRel","zfScore","zfRank","peopleChips","hsScore","hsRank","bosalImg","bosalPose","bosalSay","diaryAdd","diaryNote"];
 // ── 사주 '한 사람 이야기'(2026-10-12 구조 개편): 실제 도구를 가짜 화면으로 무작위 3000명 그려, 조립된 본문에 칸끼리 반대 성향·힘의 세기와 반대인 말·
 //    나이에 안 맞는 말(45+ 새 만남, 35 미만 노후·교육비, 55+ 월급·부모님)·같은 문장 반복이 하나도 없어야 한다(tools/sajucheck)
 { const SC = require("./tools/sajucheck/scan.js"), r = SC.run(3000, 1012);
@@ -962,8 +1047,8 @@ t("만세력 입구·보는법 페이지 생성 배선", /manseHubPage\(\)/.test
 t("만세력 입구·보는법 사이트맵 포함", /smUrl\("manse\.html"\)/.test(bs) && /smUrl\("manse-howto\.html"\)/.test(bs), true);
 t("월별 만세력의 상위는 무료 만세력", /parent:"manse\.html", parentName:"무료 만세력"/.test(bs), true);
 t("만세력 보는법 예시 조사는 josa() 사용", /\)\$\{josa\(E\.SJ_EL\[E\.SJ_ES\[ds\]\],"이\/가"\)\} 이 사람 자신/.test(bs), true);
-// 사주도 진지한 보살 로딩(최소 4초 이상)과 느린 등장을 쓴다
-t("사주 물어보기는 보살 로딩 옵션으로 배선", /askWire\(el,go,\[[\s\S]*?\{min:(\d+)/.test(sajuToolSrc) && +sajuToolSrc.match(/\{min:(\d+)/)[1] >= 4000, true);
+// 사주도 진지한 보살 로딩(총 3초)과 느린 등장을 쓴다
+t("사주 물어보기는 보살 로딩 옵션으로 배선", /askWire\(el,go,\[[\s\S]*?\{total:3000,/.test(sajuToolSrc), true);
 t("사주 결과는 느린 등장(slowReveal)", /slowReveal\(outEl\)/.test(sajuToolSrc), true);
 const GUNG = require("./content_saju_gung.js"), TEN = ["비견","겁재","식신","상관","편재","정재","편관","정관","편인","정인"];
 const gungLines = ["year","month","day","hour"].flatMap(k => TEN.map(tg => GUNG[k] && GUNG[k][tg]));
@@ -997,11 +1082,39 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
 { const hs = inner.slice(inner.indexOf("  var KR_DST="), inner.indexOf("  /* 계산 근거"));
   const E = new Function("sjSunLong","sjTermJd","SJ_TERM", hs + "; return {krClockShift, sjMonthTerms, sjKst};")(sjSunLong, sjTermJd, SJ_TERM);
   t("시계 보정 1987-07-01 서머타임 +60분", E.krClockShift(1987,7,1).min, 60);
-  t("시계 보정 1987-05-10 서머타임 첫날 +60분", E.krClockShift(1987,5,10).min, 60);
+  t("시계 보정 1987-05-10 서머타임 첫날 +60분", E.krClockShift(1987,5,10,3,30).min, 60);
   t("시계 보정 1987-10-11 해제일 0분", E.krClockShift(1987,10,11).min, 0);
   t("시계 보정 1958-01-15 UTC+8:30 −30분", E.krClockShift(1958,1,15).min, -30);
   t("시계 보정 1958-07-01 UTC+8:30+서머타임 +30분", E.krClockShift(1958,7,1).min, 30);
   t("시계 보정 1990-07-01 없음", E.krClockShift(1990,7,1).min, 0);
+  for (const [label, args, min] of [
+    ["1987 시작 전 00:30", [1987,5,10,0,30], 0],
+    ["1987 시작 직전 01:59", [1987,5,10,1,59], 0],
+    ["1987 시작 경계 02:00", [1987,5,10,2,0], 60],
+    ["1987 시작 후 03:30", [1987,5,10,3,30], 60],
+    ["1987 종료 중복 전 01:59", [1987,10,11,1,59], 60],
+    ["1987 종료 중복 02:00 표준시", [1987,10,11,2,0], 0],
+    ["1987 종료 중복 02:30 표준시", [1987,10,11,2,30], 0],
+    ["1987 종료 직후 03:00", [1987,10,11,3,0], 0],
+    ["1988 시작 전 00:30", [1988,5,8,0,30], 0],
+    ["1988 시작 후 03:30", [1988,5,8,3,30], 60],
+    ["1988 종료 중복 02:30 표준시", [1988,10,9,2,30], 0],
+    ["1955 시작 직전", [1955,5,4,23,59], -30],
+    ["1955 시작 자정", [1955,5,5,0,0], 30],
+    ["1955 종료 중복 전", [1955,9,8,22,59], 30],
+    ["1955 종료 중복 23:00 표준시", [1955,9,8,23,0], -30],
+    ["1955 종료 자정", [1955,9,9,0,0], -30],
+    ["1948 시작 직전", [1948,5,31,23,59], 0],
+    ["1948 시작 자정", [1948,6,1,0,0], 60],
+    ["1948 종료 중복 23:00 표준시", [1948,9,12,23,0], 0],
+    ["1954 표준시 전환 중복 전", [1954,3,20,23,29], 0],
+    ["1954 표준시 전환 중복 23:30", [1954,3,20,23,30], -30],
+    ["1954 표준시 전환 자정", [1954,3,21,0,0], -30],
+    ["1961 표준시 전환 직전", [1961,8,9,23,59], -30],
+    ["1961 표준시 전환 자정", [1961,8,10,0,0], 0]
+  ]) t("시계 보정 " + label, E.krClockShift(...args).min, min);
+  const shift = E.krClockShift(1987,5,10,0,30).min;
+  t("1987-05-10 00:30은 기미일 유지", G(sjPillars(1987,5,10,0,30-shift,true).d), "기미");
   const mt = E.sjMonthTerms(sjJdKST(1992,6,18,8,30));
   t("1992-06-18 월주 구간 망종~소서", mt.prevName + "~" + mt.nextName, "망종~소서");
   t("1992 망종 절입일 6월 5일", E.sjKst(mt.prev).startsWith("1992년 6월 5일 "), true); }

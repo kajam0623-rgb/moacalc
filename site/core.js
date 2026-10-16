@@ -92,20 +92,24 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     [289,5.844,6283.076,35,0,0,17,5.49,12566.15,3,5.2,155.42,1,4.72,3.52,1,5.3,18849.23,1,5.97,242.73],
     [114,3.142,0,8,4.13,6283.08,1,3.84,12566.15],[1,3.14,0]];
   function sjJdKST(y,mo,d,h,mi){return sjJdn(y,mo,d)-0.5+((h||0)+(mi||0)/60-9)/24;} // KST→UT 포함 JD
+  // 같은 해·황경의 순수 계산은 재사용한다. 두 탐색의 반복 횟수와 정밀도는 그대로 둔다.
+  var SJ_TERM_CACHE={},SJ_IPCHUN_CACHE={};
   function sjIpchun(y){ // y년 입춘(황경 315°) KST JD
+    if(y in SJ_IPCHUN_CACHE)return SJ_IPCHUN_CACHE[y];
     var lo=sjJdKST(y,2,2,0,0),hi=sjJdKST(y,2,7,0,0);
     for(var i=0;i<40;i++){var mid=(lo+hi)/2,L=sjSunLong(mid);
       (L>=315&&L<330)?hi=mid:lo=mid;}
-    return (lo+hi)/2;}
+    return SJ_IPCHUN_CACHE[y]=(lo+hi)/2;}
   // 24절기 일반형 — 황경 deg 에 태양이 닿는 순간(KST JD). sjIpchun(315°)의 일반화.
   // 315°(입춘)처럼 연초 근사일이 한 해를 넘기는 값은 한 해 빼준다.
   function sjTermJd(y,deg){
+    var key=y+","+deg;if(key in SJ_TERM_CACHE)return SJ_TERM_CACHE[key];
     var approx=79+deg*365.2422/360; if(approx>365.2422)approx-=365.2422;
     var lo=sjJdKST(y,1,1,0,0)+approx-5, hi=lo+10;
     var norm=function(x){return ((x%360)+360)%360;};
     for(var i=0;i<60;i++){var mid=(lo+hi)/2;
       (norm(sjSunLong(mid)-deg)<180)?hi=mid:lo=mid;}
-    return (lo+hi)/2;}
+    return SJ_TERM_CACHE[key]=(lo+hi)/2;}
   // 절기 24개 — [이름, 황경]. 입춘(315°)부터 한 해가 시작한다.
   var SJ_TERM=[["입춘",315],["우수",330],["경칩",345],["춘분",0],["청명",15],["곡우",30],
     ["입하",45],["소만",60],["망종",75],["하지",90],["소서",105],["대서",120],
@@ -751,13 +755,18 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   /* 출생 당시 한국 시계가 지금 표준시(UTC+9)와 몇 분 달랐나.
      IANA tzdb Asia/Seoul·Rule ROK 기준: 1954-03-21~1961-08-10 표준시 UTC+8:30, 서머타임 +1시간.
      1987·88년 기간은 tzdb·국가기록원·언론 기록이 같다. 1948~60년 기간은 tzdb 날짜를 쓰되
-     국가기록원은 "1949~1961년, 대개 5~9월"로만 적어 기록마다 조금 다르다. [시작일, 끝나는 날(그날 0시에 해제)] */
-  var KR_DST=[["1948-06-01","1948-09-13"],["1949-04-03","1949-09-11"],["1950-04-01","1950-09-10"],["1951-05-06","1951-09-09"],
-    ["1955-05-05","1955-09-09"],["1956-05-20","1956-09-30"],["1957-05-05","1957-09-22"],["1958-05-04","1958-09-21"],
-    ["1959-05-03","1959-09-20"],["1960-05-01","1960-09-18"],["1987-05-10","1987-10-11"],["1988-05-08","1988-10-09"]];
-  function krClockShift(y,m,d){
-    var k=y+"-"+String(m).padStart(2,"0")+"-"+String(d).padStart(2,"0"),dst=false,std830=k>="1954-03-21"&&k<"1961-08-10";
-    KR_DST.forEach(function(r){if(k>=r[0]&&k<r[1])dst=true;});
+     국가기록원은 "1949~1961년, 대개 5~9월"로만 적어 기록마다 조금 다르다.
+     https://data.iana.org/time-zones/tzdb/asia — [시작 현지 시각, 종료 직전 현지 시각]. 24:00은 다음 날 00:00으로 적는다. */
+  var KR_DST=[["1948-06-01T00:00","1948-09-13T00:00"],["1949-04-03T00:00","1949-09-11T00:00"],["1950-04-01T00:00","1950-09-10T00:00"],["1951-05-06T00:00","1951-09-09T00:00"],
+    ["1955-05-05T00:00","1955-09-09T00:00"],["1956-05-20T00:00","1956-09-30T00:00"],["1957-05-05T00:00","1957-09-22T00:00"],["1958-05-04T00:00","1958-09-21T00:00"],
+    ["1959-05-03T00:00","1959-09-20T00:00"],["1960-05-01T00:00","1960-09-18T00:00"],["1987-05-10T02:00","1987-10-11T03:00"],["1988-05-08T02:00","1988-10-09T03:00"]];
+  function krClockShift(y,m,d,h,mi){
+    var k=Date.UTC(y,m-1,d,h==null?12:h,mi||0),dst=false;
+    // 1954년 자정에 23:30으로 되돌린 30분은 변경 후 UTC+8:30으로 해석한다. 1961년 전환도 현지 자정이다.
+    var std830=k>=Date.UTC(1954,2,20,23,30)&&k<Date.UTC(1961,7,10);
+    KR_DST.forEach(function(r){
+      // 종료 때 반복되는 한 시간은 표준시로 해석하므로 종료 직전 시각에서 60분을 뺀다.
+      if(k>=Date.parse(r[0]+"Z")&&k<Date.parse(r[1]+"Z")-3600000)dst=true;});
     return {min:(std830?-30:0)+(dst?60:0),dst:dst,std830:std830};}
   function sjKst(jd){var t=new Date(Math.round((jd-2440587.5)*86400000)+9*3600000);
     return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월 "+t.getUTCDate()+"일 "+String(t.getUTCHours()).padStart(2,"0")+":"+String(t.getUTCMinutes()).padStart(2,"0");}
@@ -771,7 +780,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   /* 계산 근거 — 결과가 어떤 계산에서 나왔는지 존댓말로 밝힌다(풀이는 보살 말투, 근거 고지는 존댓말).
      o: {y,mo,d,h,corr,male,p,su,days,fwd} */
   function sjBasisHtml(o){
-    var p=o.p,jdB=sjJdKST(o.y,o.mo,o.d,o.h==null?12:o.h,o.h==null?0:o.mi),ip=sjIpchun(o.y),mt=sjMonthTerms(jdB),sh=krClockShift(o.y,o.mo,o.d);
+    var p=o.p,jdB=sjJdKST(o.y,o.mo,o.d,o.h==null?12:o.h,o.h==null?0:o.mi),ip=sjIpchun(o.y),mt=sjMonthTerms(jdB),sh=o.clock||krClockShift(o.y,o.mo,o.d,o.h,o.mi);
     var G=function(x){return SJ_S[x.s]+SJ_B[x.b]+"("+SJ_SH[x.s]+SJ_BH[x.b]+")";};
     var li=[];
     li.push("<b>연주 "+G(p.y)+"</b> — 사주의 해는 1월 1일이 아니라 입춘에 바뀝니다. "+o.y+"년 입춘은 "+sjKst(ip)+"이고, 태어난 때가 그 "+(jdB<ip?"전이라 "+(o.y-1)+"년의 간지를 씁니다.":"뒤라 "+o.y+"년의 간지를 씁니다."));
@@ -1164,10 +1173,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
           offer(q.next);},RMq?0:800);}
       if(cfg.load)cfg.load(run);else run();});
     offer(cfg.first);}
-  // 풀이가 긴 도구 — 진지한 보살이 짚어 보는 시간을 최소 o.min 동안 둔다. 짧으면 긴 풀이가 가볍게 읽힌다
+  // 풀이가 긴 도구 — o.total이 있으면 단계 수와 무관하게 그 시간을 나눠 쓴다. 나머지는 기존 최소 시간을 둔다.
   function seerThink(out,btn,steps,done,o){
     o=o||{};
-    var total=Math.max(o.min||4000,steps.length*600),per=total/steps.length,n=0,was=btn?btn.textContent:"";
+    var total=o.total||Math.max(o.min||4000,steps.length*600),per=total/Math.max(1,steps.length),n=0,was=btn?btn.textContent:"";
     if(btn){btn.disabled=true;btn.textContent="보살이 짚어 보는 중…";}
     out.innerHTML='<div class="tr-seer"><div class="tr-aura"></div>'+
       '<img src="img/mascot-serious.webp" alt="진지하게 들여다보는 동네보살" width="335" height="560" onerror="this.remove()">'+
@@ -1176,10 +1185,13 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var sEl=out.querySelector(".tr-seer-s"),bar=out.querySelector(".tr-seer-bar i");
     bar.style.transition="width "+total+"ms linear";
     setTimeout(function(){bar.style.width="100%";},40);
-    (function tick(){
-      if(n<steps.length){sEl.textContent=steps[n++];setTimeout(tick,per);return;}
+    function finish(){
       if(btn){btn.disabled=false;btn.textContent=was;}
-      done();})();}
+      done();}
+    if(o.total)setTimeout(finish,total);
+    (function tick(){
+      if(n<steps.length){sEl.textContent=steps[n++];if(!o.total||n<steps.length)setTimeout(tick,per);return;}
+      if(!o.total)finish();})();}
   // 긴 결과는 앞 몇 덩어리만 차례로 띄우고, 나머지는 스크롤해 닿을 때 떠오르게 한다.
   // 스무 덩어리를 전부 줄 세워 띄우면 끝까지 기다리다 지친다
   function slowReveal(out,first,gap){
@@ -1971,6 +1983,16 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
      생일·이름은 카드 이미지에도 공유 링크에도 넣지 않는다. 일주 번호 k: k%10 이 일간, k%12 가 일지(일주 페이지 순서와 같다) */
   function ilKey(ds,db){for(var k=ds;k<60;k+=10)if(k%12===db)return k;return -1;}
   var IL_DATA=null;
+  // 필수 원고는 진행 중인 요청까지 공유한다. HTTP·네트워크·JSON 오류는 한 번만 재시도한 뒤 기본 풀이를 쓴다.
+  var SJ_JSON={};
+  function sjJson(url){
+    if(url in SJ_JSON)return SJ_JSON[url];
+    function load(retry){
+      if(typeof fetch!=="function")return Promise.resolve(null);
+      return fetch(url).then(function(r){return r.ok?r.json():null;}).then(function(j){
+        return j|| (retry?null:load(1));
+      }).catch(function(){return retry?null:load(1);});}
+    return SJ_JSON[url]=load(0);}
   function iljuCardKey(host,k,sea){
     if(!host||k<0||typeof fetch!=="function")return;
     function paint(J){var o=J[k];if(!o||host.querySelector(".ilc"))return;
@@ -1988,7 +2010,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       box.querySelector(".ilc-share").addEventListener("click",function(){var b=this;track("share_click",{tool:location.pathname});
         shareOut(b,o.ko+"일주","나는 "+o.ko+"일주("+o.han+") — "+o.t+". 내 일주는 뭘까? 동네보살에서 확인: "+location.origin+"/ilju-"+o.en+".html?from=share","친구에게 알려주기");});}
     if(IL_DATA)return paint(IL_DATA);
-    fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;paint(j);}}).catch(function(){});}
+    sjJson("sj/ilju.json").then(function(j){if(j){IL_DATA=j;paint(j);}else host.innerHTML='<p class="note">일주 설명을 불러오지 못했어요. 위의 기본 풀이를 참고해 주세요.</p>';});}
   function iljuCard(host,y,m,d){var p=sjPillars(y,m,d,null,0,false);iljuCardKey(host,ilKey(p.d.s,p.d.b));}
 
   // ---------- TOOLS ----------

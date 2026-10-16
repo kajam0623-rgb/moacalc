@@ -85,27 +85,25 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       el._wz=function(n){var k=S.indexOf(n.closest(".wz-s"));if(k>=0){i=k;show();}};
       show();})();
     function P(p){return SJ_SH[p.s]+SJ_BH[p.b];}
-    // 조합 원고(일간×격국) — sj/<일간>-<십성>.json. 버튼을 누르는 순간 받기 시작하면 짚어 보는 4초 안에 도착한다.
-    // 못 받으면 예전 일간×강약 원고(SAJU_ILG)로 대신한다
-    // 타고난 성격 원고(sj/char.json) — 결과가 그려질 때 도착해 있으면 섹션을 넣고, 못 받았으면 그 섹션만 뺀다
-    var SJC=null;if(typeof fetch==="function")fetch("sj/char.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)SJC=j;}).catch(function(){});
-    // 쉬운 종합 원고(sj/easy.json) — 못 받으면 예전 조립 문장(synthOld)으로 대신한다
-    var SJE=null;if(typeof fetch==="function")fetch("sj/easy.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j)SJE=j;}).catch(function(){});
+    // 성격·종합·일주·조합 원고를 함께 기다린다. 재시도 후에도 없으면 기본 풀이로 대신한다.
+    var SJC=null,SJE=null;
     var COMBO={},TG_EN={"비견":"bigyeon","겁재":"geopjae","식신":"siksin","상관":"sanggwan","편재":"pyeonjae","정재":"jeongjae","편관":"pyeongwan","정관":"jeonggwan","편인":"pyeonin","정인":"jeongin"};
     /* 계산에 쓸 태어난 때. 정확한 시각을 적으면 그 날짜의 시계(1948~61년 서머타임·1954~61년 UTC+8:30, 1987~88년 서머타임)를
        지금 한국 표준시로 되돌려 쓰고, 비우면 고른 시진의 가운데 시각을 쓴다 */
     function birthIn(){var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2],tm=(function(r){return r.ok?r.v:"";})(clockParse(el.querySelector("#tm").value)),tv=el.querySelector("#t").value;
-      if(tm&&y){var sh=krClockShift(y,mo,d).min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
-        return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,exact:tm};}
+      if(tm&&y){var clock=krClockShift(y,mo,d,+tm.slice(0,2),+tm.slice(3,5)),sh=clock.min,t=new Date(Date.UTC(y,mo-1,d,+tm.slice(0,2),+tm.slice(3,5)-sh));
+        return {y:t.getUTCFullYear(),mo:t.getUTCMonth()+1,d:t.getUTCDate(),h:t.getUTCHours(),mi:t.getUTCMinutes(),sh:sh,clock:clock,exact:tm};}
       var h=tv===""?null:+tv;return {y:y,mo:mo,d:d,h:h,mi:h==null?0:30,sh:0,exact:""};}
     // 정확한 시각을 적으면 시진 칸도 그 시각(표준시)이 속한 시진으로 맞춰 보여 준다
     function syncT(){var B=birthIn();if(!B.exact)return;var m=B.h*60+B.mi;el.querySelector("#t").value=m>=1410?"23":String(Math.floor(((m+30)%1440)/120)*2);}
     function comboKey(){var dv=el.querySelector("#d").value.split("-");if(dv.length<3||!+dv[0])return "";
       var B=birthIn(),pp=sjPillars(B.y,B.mo,B.d,B.h,B.mi,el.querySelector("#c").value==="1");if(B.h==null)pp.m=sjPillars(B.y,B.mo,B.d,12,0,false).m;   /* go() 와 같은 12시 기준 */
       return ILGAN_EN[pp.d.s]+"-"+TG_EN[sjTenGod(pp.d.s,SJ_BMAIN[pp.m.b])];}
-    function prefetch(){var k=comboKey();if(!k||k in COMBO)return;COMBO[k]=null;
-      fetch("sj/"+k+".json").then(function(r){return r.ok?r.json():null;}).then(function(j){COMBO[k]=j;}).catch(function(){delete COMBO[k];});}
-    function go(){
+    function prefetch(){var k=comboKey();if(!k)return Promise.resolve(null);
+      return Promise.all([sjJson("sj/char.json"),sjJson("sj/easy.json"),sjJson("sj/ilju.json"),sjJson("sj/"+k+".json")]).then(function(j){
+        SJC=j[0];SJE=j[1];IL_DATA=j[2];COMBO[k]=j[3];return k;});}
+    function go(){return prefetch().then(function(k){if(!k)return;if(k!==comboKey())return go();draw();});}
+    function draw(){
       var dv=el.querySelector("#d").value.split("-"),y=+dv[0],mo=+dv[1],d=+dv[2];
       var nm=(el.querySelector("#nm").value||"").trim().slice(0,10);
       syncT();
@@ -502,7 +500,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       // 조합 파일의 종합 원고(s)가 있으면 그걸 쓰고, 없으면 아래 조립 문장으로
       var CS=CB&&CB.s,fitK=duOk&&seOk?"both":duOk?"du":seOk?"se":"none";
       var p1=CS&&CS.p1&&CS.p1[st.strong?"strong":"weak"];
-      var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑(에서는|할 때는) /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일(에서는|할 때는) /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':"";
+      var charSec=SJC?'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격</h3>'+(function(cs){return '<p>'+cs[0]+'</p><p>'+cs.slice(1,4).join(" ")+'</p><p><b>사랑할 때</b> '+cs[4].replace(/^사랑(에서는|할 때는) /,"")+'</p><p><b>일할 때</b> '+cs[5].replace(/^일(에서는|할 때는) /,"")+'</p><p><b>지쳤을 때</b> '+cs[6].replace(/^지치면 /,"")+'</p>';})(sjChar(p,SJC))+'<p class="gh-note">'+SJC.note+'</p></div>':'<div class="sj-sec sj-persona fold-skip"><h3>타고난 성격</h3><p>성격 설명을 불러오지 못했어요. 아래의 일간과 오행 풀이를 참고해 주세요.</p></div>';
       var synthOld='<div class="sj-sec sj-synth fold-skip"><h3>종합 — 한마디로 정리하면</h3><p>'+(p1||
         '타고난 결은 <b>'+STYLE[ds]+'</b> 사람인데, 사주의 틀(격국)은 나를 <b>'+STAGE[wolTg]+'</b>'+josa(STAGE[wolTg],"로/으로")+' 데려가요. '+
         '그 자리에서 남처럼 싸우려 들지 말고 <b>'+WIN[ds]+'</b> 이기는 게 내 길이에요. '+
@@ -647,7 +645,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         '<div class="sj-sec" id="sjceleb"></div>'+
         FA(gungH)+
         F(elH)+
-        sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
+        sjBasisHtml({y:B.y,mo:B.mo,d:B.d,h:h,mi:B.mi,exact:B.exact,sh:B.sh,clock:B.clock,corr:corr,male:male,p:p,su:su,days:days,fwd:fwd})+
         sjAiHtml()+
         FA(closing)+
         shareBtn()+
@@ -670,7 +668,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
           radar:{lab:["자아","표현","재물","명예","학문"],val:vals,top:Math.max(3,Math.max.apply(null,vals))},
           pcts:sjPcList(G,!!p.h).map(function(q){return [q.v,PL[q.k]+" "+q.c+"칸"];})}));}});bindSumShare(el);
       (function(k){function fill(J){var o=J&&J[k],box=el.querySelector(".sj-sum");if(!o||!box)return;var noSea=function(x){return String(x).replace(/(한겨울|늦겨울|초겨울|겨울|한여름|늦여름|초여름|여름|이른 봄|늦봄|봄날|봄|초가을|늦가을|가을)(의|날)?\s+/g,"");};box.querySelector(".ss-arch-t").textContent=noSea(o.t);box.querySelector(".ss-arch-d").textContent=o.ko+"일주("+o.han+") · "+noSea(o.d).replace(/이 사람은 /g,"");}
-        if(IL_DATA)fill(IL_DATA);else if(typeof fetch==="function")fetch("sj/ilju.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){IL_DATA=j;fill(j);}}).catch(function(){});})(ilKey(p.d.s,p.d.b));
+        if(IL_DATA)fill(IL_DATA);})(ilKey(p.d.s,p.d.b));
       bindShare(el,"사주팔자","내 일간은 "+SJ_S[ds]+"("+SJ_SH[ds]+") "+SJ_EL[SJ_ES[ds]]+" · "+(st.strong?"신강":"신약")+" · 용신 "+yEl+" — 오행은 "+mx+josa(mx,"가/이")+" 가장 강합니다. 동네보살에서 확인:");
       // 저장 카드: 오행 캐릭터 그림 + 명식 여덟 글자 + 오행 분포 + 핵심 문장 + 본문 200자 내외.
       // 본문은 결과에 이미 있는 글(일간 성격·적성 두 문단 + 맺는 말 첫머리)을 이어 붙인다
@@ -706,7 +704,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       [].forEach.call(outEl.querySelectorAll("details.fold"),function(d){var l=d.querySelector(".fold-lab");if(l&&l.textContent.indexOf("올해 흐름")===0)d.open=true;});fillBars(outEl);slowReveal(outEl);
       try{outEl.scrollIntoView({behavior:"smooth",block:"start"});}catch(e){}}
     askWire(el,go,["생년월일로 사주 여덟 글자를 세우는 중","태어난 달의 절기를 해의 자리로 재는 중","나를 뜻하는 글자의 힘을 재어 보는 중","나를 받쳐 줄 기운을 고르는 중","타고난 그릇과 눈에 띄는 기운을 짚는 중","10년마다 바뀌는 흐름 여덟 구간을 펼치는 중","올해 흐름을 겹쳐 보는 중","맺음말을 고르는 중"],
-      "사주를 아직 안 뽑았어요.",{min:4200,title:"사주를 짚어 보는 중이에요"});birthDial(el,"#d");
+      "사주를 아직 안 뽑았어요.",{total:3000,title:"사주를 짚어 보는 중이에요"});birthDial(el,"#d");
     el.querySelector("#go").addEventListener("click",prefetch);el.querySelector("#d").addEventListener("change",prefetch);
     // 정확한 시각 칸 — 4자리면 콜론만 이어 주고 0930·930·9:30·오후 2시 30분을 모두 읽는다. 못 읽으면 이유를 밝히고 결과로 가지 않는다
     var tmEl=el.querySelector("#tm"),tmErr=el.querySelector("#tmerr"),tmSay=el.querySelector("#tmsay");
