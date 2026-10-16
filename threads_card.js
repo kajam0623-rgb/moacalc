@@ -11,10 +11,12 @@ const path = require("path");
 
 const src = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8");
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-eval(inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")));
-eval(inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS")));
+const engine = require("./engine/saju.js"), names = Object.keys(engine);
+const { sjPillars, sjTenGod, SJ_S, SJ_B, SJ_SH, SJ_BH, SJ_TTI, SJ_EL, SJ_ES } = engine;
 const tfSrc = inner.slice(inner.indexOf('{id:"todayfortune"'));
-eval(tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")));
+// 원고 조립만 hub.html에서 읽고 계산은 공용 엔진을 주입한다.
+const TXT = new Function(...names, inner.slice(inner.indexOf("var num="), inner.indexOf("var TOOLS=")) + "\n" +
+  tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")) + "\nreturn TXT;")(...names.map(n => engine[n]));
 
 // 십성·일간을 일상어로 옮긴다. 카드는 이 사이트를 처음 보는 사람에게 간다 —
 // "편관"이라고 쓰면 아무도 못 읽는다. 용어는 근거로 작게만 붙인다.

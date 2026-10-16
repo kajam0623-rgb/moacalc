@@ -1,8 +1,5 @@
 // 신살 엔진 손 검산(2026-10-09) — sjSinsal 결과를 사람이 손으로 따진 값과 대조한다. 실행: node tools/sinsal_check.js
-const fs = require("fs"), path = require("path");
-const src = fs.readFileSync(path.join(__dirname, "..", "hub.html"), "utf8");
-const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-eval(inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")));
+const { SJ_S, SJ_B, sjPillars, sjSinsal } = require("../engine/saju.js");
 const gz = p => ["y", "m", "d", "h"].filter(k => p[k]).map(k => SJ_S[p[k].s] + SJ_B[p[k].b]).join(" ");
 const cases = [
   // [생년월일, 시(없으면 null), 반드시 있어야 할 신살, 없어야 할 신살]

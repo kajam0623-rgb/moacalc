@@ -21,13 +21,6 @@ TOOLS.push({id:"newyear",cat:"재미·운세",icon:"",name:"신년운세",desc:"
     // 깊이 있는 풀이 원고(ny/deep.json) — 결과가 그려진 뒤에 도착해도 자리(#nydeep)에 채운다
     var NYD=null,nyLast=null,nyDone=false;
     function fillNy(){var h=el.querySelector("#nydeep");if(!h||!NYD||!nyLast)return;h.innerHTML=nyDeep(nyLast.me,nyLast.YR,nyLast.YW,NYD).secs.map(nySecHtml).join("");if(nyDone)plainWords(h);}
-    /* 신년운세 점수 — 그 해 하늘 글자와 나(일간)의 관계 + 내 띠·일지가 그 해 땅 글자와 삼합·육합(+5)·충(-6). go 와 상위 %가 같이 쓴다 */
-    function nyScore(ds,yb,db,YS,YB){
-      var sc={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[sjTenGod(ds,YS)];
-      [yb,db].forEach(function(b){if(b%4===YB%4&&b!==YB||sjYukhap(b)===YB)sc+=5;else if(Math.abs(b-YB)===6)sc-=6;});
-      return Math.max(40,Math.min(97,sc));}
-    // 상위 N%: 60갑자 일주 × 12띠(720가지, 같은 무게) 가운데 이 해 점수가 내 점수 이상인 비율
-    function nyPct(score,YS,YB){var t=0,c=0;for(var d=0;d<60;d++)for(var y=0;y<12;y++){t++;if(nyScore(d%10,y,d%12,YS,YB)>=score)c++;}return Math.max(1,Math.round(c/t*100));}
     if(typeof fetch==="function")fetch("ny/deep.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){NYD=j;fillNy();}}).catch(function(){});
     function go(){
       var dv=el.querySelector("#d").value.split("-");if(dv.length<3)return;

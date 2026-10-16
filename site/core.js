@@ -1,72 +1,17 @@
-var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
-  var won=function(n){return Math.round(n).toLocaleString("ko-KR");};
-  var comma=function(n){return num(n).toLocaleString("ko-KR");};
-  function bindMoney(root){root.querySelectorAll("input.money").forEach(function(el){
-    el.addEventListener("input",function(){var v=num(this.value);this.value=v?v.toLocaleString("ko-KR"):"";if(this._cb)this._cb();});});}
-
+/* 공용 사주 계산 엔진. DOM·원고 조립 없이 브라우저 전역과 CommonJS에서 같은 구현을 쓴다. */
+(function(root,factory){
+  var api=factory();
+  if(typeof module==="object"&&module.exports)module.exports=api;
+  else for(var name in api)if(Object.prototype.hasOwnProperty.call(api,name))root[name]=api[name];
+})(typeof window!=="undefined"?window:this,function(){
   // ---------- 만세력 엔진 (태양황경 기반: 절기·연/월/일/시주) ----------
   var SJ_S=["갑","을","병","정","무","기","경","신","임","계"],SJ_SH="甲乙丙丁戊己庚辛壬癸";
   var SJ_B=["자","축","인","묘","진","사","오","미","신","유","술","해"],SJ_BH="子丑寅卯辰巳午未申酉戌亥";
   var SJ_TTI=["쥐","소","호랑이","토끼","용","뱀","말","양","원숭이","닭","개","돼지"];
-  var ZO_EN=["rat","ox","tiger","rabbit","dragon","snake","horse","goat","monkey","rooster","dog","pig"];
-  var ZO_TRAIT=["재치와 기민함으로 기회를 먼저 잡는 기질","묵묵히 쌓아 끝내 이루는 뚝심","두려움 없이 앞장서는 용기와 카리스마","섬세한 배려와 부드러운 지혜","큰 그림을 그리는 스케일과 존재감","깊이 통찰하고 조용히 움직이는 영민함","자유롭고 활동적인 추진력","온화한 감성과 예술적 감각","영리한 임기응변과 재주","분명한 기준과 성실한 자기관리","의리와 신의로 사람을 얻는 힘","넉넉한 인심과 복을 부르는 여유"];
-  function zoCard(b,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
-    '<div class="cap"><div class="t">'+(label||"나의 띠")+'</div><div class="n">'+SJ_TTI[b]+'띠</div><p>'+ZO_TRAIT[b]+'</p></div></div>';}
-  // ── 서양 점성술(태양 별자리) ──
-  var ST_KO=["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","궁수자리","염소자리","물병자리","물고기자리"];
-  var ST_EN=["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
-  var ST_SYM=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
-  var ST_RANGE=["3.21~4.19","4.20~5.20","5.21~6.21","6.22~7.22","7.23~8.22","8.23~9.22","9.23~10.22","10.23~11.21","11.22~12.21","12.22~1.19","1.20~2.18","2.19~3.20"];
-  var ST_ELE=["불","흙","공기","물"]; // 별자리 index%4
-  var ST_RULER=["화성","금성","수성","달","태양","수성","금성","화성","목성","토성","토성","목성"]; // 전통 지배성
-  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자예요. 속도가 곧 무기예요.","한번 정하면 끝까지 지키는 뚝심이 있어요. 감각과 실속을 함께 챙겨요.","호기심과 말솜씨가 살아 있는 전달자예요. 사람과 정보가 늘 모여들어요.","마음의 온도를 먼저 읽는 보호자예요. 내 사람에게는 한없이 깊어요.","존재만으로 무대를 만드는 사람이에요. 인정받을 때 가장 빛나요.","작은 어긋남을 먼저 알아보는 정밀한 눈을 가졌어요. 완성도가 곧 자존심이에요.","균형과 관계를 조율하는 사람이에요. 아름다움과 공정함을 함께 봐요.","한 번 파고들면 끝을 보는 집중력이 있어요. 겉과 속의 깊이가 남달라요.","시야가 넓고 낙천적인 탐험가예요. 자유로울 때 가장 신나요.","시간을 자기 편으로 만드는 전략가예요. 늦어도 결국 올라서요.","남과 다른 각도로 보는 혁신가예요. 규칙보다 이유를 먼저 물어요.","경계 없이 스며드는 공감력이 있어요. 예술과 직관이 강점이에요."];
-  var ST_ELE_RULERS={"불":["태양","화성","목성"],"흙":["금성","수성","토성"],"공기":["수성","금성","토성"],"물":["달","화성","목성"]};
-  var WD_KO=["일","월","화","수","목","금","토"];
-  var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
-  function stOf(y,m,d){return Math.floor(sjSunLong(sjJdKST(y,m,d,12,0))/30);} // 태양황경으로 별자리 판정
-  /* 달의 자리 — 하루 낮 12시(KST) 기준. 황경은 Meeus(Astronomical Algorithms 47장)의 큰 항 30여 개로 구하고,
-     미국 해군천문대의 삭·상현·보름·하현 99개(2026~27)와 0.04° 안(위상 시각으로 5분 안)으로 맞는다.
-     하루의 결이 태양(한 달에 한 번 별자리를 옮긴다)이 아니라 달(2~3일마다 옮긴다)에서 나오게 하려는 것 */
-  var ST_MASP=[[86,[4,2,4,-2]],[72,[0,2,4,2]],[84,[8,6,6,0]],[60,[-8,-6,-4,-6]],[90,[8,6,8,4]],[64,[-4,0,-4,-6]],[70,[4,2,2,0]]]; // 달과 내 별자리의 각도(0~6) → [기본점수,[애정·재물·일·건강 보정]]
-  function hsMoonLong(jd){var T=(jd-2451545)/36525,T2=T*T,R=Math.PI/180,
-      Lp=218.3164477+481267.88123421*T-0.0015786*T2,D=297.8501921+445267.1114034*T-0.0018819*T2,M=357.5291092+35999.0502909*T-0.0001536*T2,
-      Mp=134.9633964+477198.8675055*T+0.0087414*T2,F=93.2720950+483202.0175233*T-0.0036539*T2,E=1-0.002516*T-0.0000074*T2,A1=119.75+131.849*T,A2=53.09+479264.290*T;
-    function S(x){return Math.sin(x*R);}
-    var s=6.288774*S(Mp)+1.274027*S(2*D-Mp)+0.658314*S(2*D)+0.213618*S(2*Mp)-0.185116*E*S(M)-0.114332*S(2*F)+0.058793*S(2*D-2*Mp)+0.057066*E*S(2*D-M-Mp)+0.053322*S(2*D+Mp)
-      +0.045758*E*S(2*D-M)-0.040923*E*S(M-Mp)-0.034720*S(D)-0.030383*E*S(M+Mp)+0.015327*S(2*D-2*F)-0.012528*S(Mp+2*F)+0.010980*S(Mp-2*F)+0.010675*S(4*D-Mp)+0.010034*S(3*Mp)
-      +0.008548*S(4*D-2*Mp)-0.007888*E*S(2*D+M-Mp)-0.006766*E*S(2*D+M)-0.005163*S(D-Mp)+0.004987*E*S(D+M)+0.004036*E*S(2*D-M+Mp)+0.003994*S(2*Mp+2*D)+0.003861*S(4*D)
-      +0.003665*S(2*D-3*Mp)+0.003958*S(A1)+0.001962*S(Lp-F)+0.000318*S(A2);
-    return ((Lp+s)%360+360)%360;}
-  // 달의 별자리(sign 0~11)·태양과의 각(el)·모양(phase 0 삭 … 4 보름 … 7 그믐)·밝기(illum %)
-  function hsMoon(y,m,d){var jd=sjJdKST(y,m,d,12,0),ml=hsMoonLong(jd),el=((ml-sjSunLong(jd))%360+360)%360;
-    return {sign:Math.floor(ml/30),el:el,phase:Math.floor(((el+22.5)%360)/45),illum:Math.round((1-Math.cos(el*Math.PI/180))/2*100)};}
-  function stCard(i,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
-    '<div class="cap"><div class="t">'+(label||"나의 별자리")+'</div><div class="n">'+ST_SYM[i]+' '+ST_KO[i]+'</div><p>'+ST_TRAIT[i]+'</p></div></div>';}
-  // 태양의 각도 관계(어스펙트) — 거리 0~6, [기본점수, 이름, 총운, 애정, 재물·일, 조언, [애정·재물·일·건강 보정]]
-  var ST_ASP=[
-   [88,"합(0°)","태양이 내 별자리 위를 지나는 시기입니다. 존재감이 커지고, 내가 먼저 움직일수록 일이 풀립니다.","먼저 다가가는 쪽이 유리합니다. 표현을 아끼면 기회가 지나갑니다.","새로 시작하는 일에 힘이 실립니다. 다만 혼자 다 하려다 지칠 수 있습니다.","올해의 방향을 다시 세우기 좋은 때입니다. 하고 싶은 것을 문장으로 적어두세요.",[6,2,4,-2]],
-   [72,"세미섹스타일(30°)","크게 흔들리지 않는 잔잔한 흐름입니다. 무리하지 않으면 손해도 없습니다.","익숙한 사이에서 편안함을 느낍니다. 새 인연은 서두르지 마세요.","작은 정리와 마무리에 좋은 날입니다.","오늘은 확장보다 정돈입니다. 미뤄둔 일 하나만 끝내세요.",[0,2,4,2]],
-   [84,"섹스타일(60°)","기회가 손 닿는 곳에 놓입니다. 다만 스스로 손을 뻗어야 잡히는 종류입니다.","소개·모임·연락에서 좋은 흐름이 옵니다.","제안·협업·부수입에 유리합니다. 연락을 미루지 마세요.","오늘 온 연락은 흘려보내지 마세요. 답장 하나가 흐름을 바꿉니다.",[8,6,6,0]],
-   [58,"스퀘어(90°)","마찰이 있는 대신 성장이 있는 날입니다. 부딪히는 지점이 곧 더 크게 자랄 자리입니다.","말투 하나로 오해가 생기기 쉽습니다. 한 박자 늦게 답하세요.","일정이 밀리거나 예산이 어긋날 수 있습니다. 여유분을 두세요.","오늘의 짜증은 방향이 아니라 속도의 문제입니다. 잠시 멈추면 보입니다.",[-8,-6,-4,-6]],
-   [90,"트라인(120°)","같은 원소끼리 흐르는 순풍입니다. 애쓰지 않아도 일이 매끄럽게 이어집니다.","자연스러운 만남과 화해에 좋습니다. 오래된 인연이 다시 닿습니다.","하던 일에서 결실이 보입니다. 큰 결정을 내리기에도 무난합니다.","순풍일수록 방심하기 쉽습니다. 오늘 얻은 것을 기록해두세요.",[8,6,8,4]],
-   [62,"퀸컹스(150°)","서로 결이 다른 기운이 겹칩니다. 조정과 타협이 필요한 하루입니다.","상대의 방식이 낯설게 느껴집니다. 고치려 들지 마세요.","계획과 현실의 간격이 드러납니다. 일정부터 다시 짜세요.","오늘은 정답보다 조율입니다. 한 가지는 양보하세요.",[-4,0,-4,-6]],
-   [66,"오포지션(180°)","태양이 정반대에 섭니다. 관계와 균형이 하루의 주제가 됩니다.","상대를 통해 나를 봅니다. 갈등이 있다면 오늘이 풀 기회입니다.","혼자보다 둘이 낫습니다. 계약·협상은 조건을 문서로 남기세요.","맞은편에 있는 사람이 오늘의 거울입니다. 반발보다 관찰을.",[4,2,2,0]]];
   var SJ_ES=[0,0,1,1,2,2,3,3,4,4]; // 천간 오행(목화토금수=01234)
   var SJ_EB=[4,2,0,0,2,1,1,2,3,3,2,4]; // 지지 오행
   var SJ_BMAIN=[9,5,0,1,4,2,3,5,6,7,4,8]; // 지지 본기 천간 idx
   var SJ_EL=["목","화","토","금","수"];
-  // 일간 정체성 1줄 압축판 — 오늘의 운세 첫 화면용 (saju ILGAN 장문과 별개)
-  var SJ_ILGAN_ID=[
-   "甲(갑) — 하늘로 곧게 크는 큰 나무.",
-   "乙(을) — 바위를 감아 오르는 덩굴의 유연함.",
-   "丙(병) — 숨김없이 내리쬐는 태양.",
-   "丁(정) — 어둠을 밝히는 촛불의 온기.",
-   "戊(무) — 흔들리지 않는 큰 산의 흙.",
-   "己(기) — 곡식을 기르는 밭의 흙.",
-   "庚(경) — 벼려서 날을 세우는 무쇠.",
-   "辛(신) — 다듬어 빛나는 보석의 금.",
-   "壬(임) — 바다처럼 깊고 넓게 흐르는 물.",
-   "癸(계) — 스며들어 적시는 빗물과 이슬."];
   // 오행별 전통 상징 — [행운색, 방위, 행운숫자]
   var SJ_LUCK=[["청록·초록","동쪽","3·8"],["빨강·자주","남쪽","2·7"],["노랑·베이에요","중앙","5·10"],["흰색·은색","서쪽","4·9"],["검정·남색","북쪽","1·6"]];
   var SJ_HOUR=["23~01시","01~03시","03~05시","05~07시","07~09시","09~11시","11~13시","13~15시","15~17시","17~19시","19~21시","21~23시"];
@@ -156,14 +101,374 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var yong2= strong ? (de+2)%5 : de;          // 보조: 신강→재성 / 신약→비겁
     return {strong:strong,ratio:ratio,yong:yong,yong2:yong2,de:de};
   }
+  // 십이운성 — 일간이 각 지지에서 갖는 기운의 단계 (양간 순행 / 음간 역행)
+  var SJ_UN=["장생","목욕","관대","건록","제왕","쇠","병","사","묘","절","태","양"];
+  var SJ_JS=[11,6,2,9,2,9,5,0,8,3]; // 천간별 장생 지지
+  function sjUnseong(s,b){var js=SJ_JS[s];return SJ_UN[(s%2===0)?((b-js+12)%12):((js-b+12)%12)];}
+  // 신살 — 룩업 테이블 (일간·삼합 기준)
+  var SJ_CHEONEUL={0:[1,7],4:[1,7],6:[1,7],1:[0,8],5:[0,8],2:[11,9],3:[11,9],8:[5,3],9:[5,3],7:[6,2]};
+  var SJ_MUNCHANG=[5,6,8,9,8,9,11,0,2,3];
+  // 공망(空亡): 일주가 속한 순(旬)에서 짝을 얻지 못한 두 지지. start=순의 첫 지지(갑과 짝인 지지)
+  var SJ_SUN={0:"갑자순",10:"갑술순",8:"갑신순",6:"갑오순",4:"갑진순",2:"갑인순"};
+  function sjGongmang(s,b){var st=(b-s+12)%12;return {sun:SJ_SUN[st],start:st,empty:[(st+10)%12,(st+11)%12]};}
+  // 종합 점수와 네 항목 점수의 평균이 어긋나 보이지 않게: 항목 사이 벌어진 폭은 두고 평균만 종합 점수에 맞춘다(각 30~99 안에서)
+  function subBal(score,vals){var n=vals.length,m=vals.reduce(function(a,b){return a+b;},0)/n,
+    raw=vals.map(function(v){return score+v-m;}),
+    out=raw.map(function(v){return Math.max(30,Math.min(99,Math.round(v)));}),
+    diff=score*n-out.reduce(function(a,b){return a+b;},0),k=0,
+    ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
+    while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
+    return out;}
+  var GH_GRP={비견:"비",겁재:"비",식신:"식",상관:"식",편재:"재",정재:"재",편관:"관",정관:"관",편인:"인",정인:"인"};
+  function ghTg(p){var ds=p.d.s,c={재:0,관:0,식:0,인:0,비:0}; // 일간을 뺀 천간과 지지 본기의 십성 무리별 개수
+    [p.y.s,p.m.s].concat(p.h?[p.h.s]:[]).forEach(function(s){c[GH_GRP[sjTenGod(ds,s)]]++;});
+    [p.y.b,p.m.b,p.d.b].concat(p.h?[p.h.b]:[]).forEach(function(b){c[GH_GRP[sjTenGod(ds,SJ_BMAIN[b])]]++;});
+    return c;}
+  function ghEl(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].concat(p.h?[p.h]:[]).forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
+  var GH_YB={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84};
+  // 그해 점수 — 신년운세 도구와 같은 식: 십성 기본점수 + 띠·일지와 태세의 삼합·육합 +5 / 충 -6, 40~97
+  function ghYear(p,Y){var ys=((Y-4)%10+10)%10,yb=((Y-4)%12+12)%12,rel=sjTenGod(p.d.s,ys),sc=GH_YB[rel];
+    [p.y.b,p.d.b].forEach(function(b){if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;});
+    return {rel:rel,score:Math.max(40,Math.min(97,sc))};}
+  var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
+  function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
+  var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
+  var SJ_BAEKHO=["갑진","을미","병술","정축","무진","임술","계축"],SJ_GWAEGANG=["경진","경술","임진","무술"];
+  function sjSeason(b){return [3,3,0,0,0,1,1,1,2,2,2,3][b];}
+  function sjCelebFeat(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return {ds:p.d.s,db:p.d.b,mb:p.m.b,el:c};}
+  // 분야별 대운 그래프(2026-10-09, 경쟁 서비스 벤치마킹) — 대운마다 0~100 참고 점수.
+  // 기본 50 + 대운 천간이 용신 15(보조 8)·지지가 용신 10(보조 5). 분야 별: 재물=재성+20·식상+10·비겁-10 / 애정=배우자 별(남 재성·여 관성)+20·일지와 합+10·충-10 /
+  // 건강=인성+10·비겁+5·일지와 충-15·편관-10 / 학업·일=인성+15·관성+15·식상+5. 지지는 본기 십성으로 절반만 센다. 종합=네 분야 평균
+  function sjDuScores(du,ds,dbr,yEl,y2El,male){
+    var G={비견:"비겁",겁재:"비겁",식신:"식상",상관:"식상",편재:"재성",정재:"재성",편관:"관성",정관:"관성",편인:"인성",정인:"인성"},S={all:[],money:[],love:[],health:[],work:[]};
+    var cl=function(v){return Math.max(5,Math.min(95,Math.round(v)));};
+    du.forEach(function(d){var gs=G[d.tg],gb=G[sjTenGod(ds,SJ_BMAIN[d.b])],es=SJ_EL[SJ_ES[d.s]],eb=SJ_EL[SJ_EB[d.b]];
+      var has=function(g){return (gs===g?1:0)+(gb===g?0.5:0);},base=50+(es===yEl?15:es===y2El?8:0)+(eb===yEl?10:eb===y2El?5:0);
+      var ch=Math.abs(d.b-dbr)===6,hp=sjYukhap(dbr)===d.b||(d.b%4===dbr%4&&d.b!==dbr);
+      var m=cl(base+20*has("재성")+10*has("식상")-10*has("비겁")),l=cl(base+20*has(male?"재성":"관성")+(hp?10:0)-(ch?10:0)),
+        h=cl(base+10*has("인성")+5*has("비겁")-(ch?15:0)-(d.tg==="편관"?10:0)),w=cl(base+15*has("인성")+15*has("관성")+5*has("식상"));
+      S.money.push(m);S.love.push(l);S.health.push(h);S.work.push(w);S.all.push(Math.round((m+l+h+w)/4));});
+    return S;}
+  // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
+  var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)
+  var SJ_HYEONCHIM_S=[0,7],SJ_HYEONCHIM_B=[3,6,8];   // 현침 글자: 천간 갑·신(辛), 지지 묘·오·신(申) — 사주에 2개 이상
+  var SJ_GWIMUN=[[0,9],[1,6],[2,7],[3,8],[4,11],[5,10]],SJ_WONJIN=[[0,7],[1,6],[2,9],[3,8],[4,11],[5,10]];  // 일지와 다른 지지의 짝
+  function sjSinsal(p){
+    var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
+    var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
+    if(bs.indexOf(SJ_MUNCHANG[ds])>=0)found.push("문창귀인");
+    var base=sjSamhap(p.y.b),base2=sjSamhap(p.d.b);
+    if(bs.indexOf(SJ_DOHWA[base])>=0||bs.indexOf(SJ_DOHWA[base2])>=0)found.push("도화살");
+    if(bs.indexOf(SJ_YEOKMA[base])>=0||bs.indexOf(SJ_YEOKMA[base2])>=0)found.push("역마살");
+    if(bs.indexOf(SJ_HWAGAE[base])>=0||bs.indexOf(SJ_HWAGAE[base2])>=0)found.push("화개살");
+    if(SJ_YANGIN[ds]!==undefined&&bs.indexOf(SJ_YANGIN[ds])>=0)found.push("양인살");
+    var dj=SJ_S[p.d.s]+SJ_B[p.d.b];
+    if(SJ_BAEKHO.indexOf(dj)>=0)found.push("백호대살");
+    if(SJ_GWAEGANG.indexOf(dj)>=0)found.push("괴강살");
+    if(bs.indexOf(SJ_HONGYEOM[ds])>=0)found.push("홍염살");
+    var ss=[p.y.s,p.m.s,p.d.s];if(p.h)ss.push(p.h.s);
+    if(ss.filter(function(x){return SJ_HYEONCHIM_S.indexOf(x)>=0;}).length+bs.filter(function(x){return SJ_HYEONCHIM_B.indexOf(x)>=0;}).length>=2)found.push("현침살");
+    var others=bs.slice();others.splice(2,1);   // 일지와 나머지 지지
+    var pair=function(T){return others.some(function(o){return T.some(function(t){return (t[0]===p.d.b&&t[1]===o)||(t[1]===p.d.b&&t[0]===o);});});};
+    if(pair(SJ_GWIMUN))found.push("귀문관살");
+    if(pair(SJ_WONJIN))found.push("원진살");
+    return found;
+  }
+  /* 지장간 — 지지 속에 숨은 천간. 지지마다 [천간 번호, 일수] 를 여기·중기·정기 순으로 둔다(일수 합 30).
+     마지막이 정기(본기)라 SJ_BMAIN 과 같다(verify 가 대조). 자·오·해 등 일부는 학파에 따라 적는 방식이 달라 동네보살은 널리 쓰는 표를 따른다 */
+  var SJ_JJG=[[[8,10],[9,20]],[[9,9],[7,3],[5,18]],[[4,7],[2,7],[0,16]],[[0,10],[1,20]],[[1,9],[9,3],[4,18]],[[4,7],[6,7],[2,16]],
+    [[2,10],[5,9],[3,11]],[[3,9],[1,3],[5,18]],[[4,7],[8,7],[6,16]],[[6,10],[7,20]],[[7,9],[3,3],[4,18]],[[4,7],[0,7],[8,16]]];
+  /* 대운 시작 — 남자·양년(연간이 짝수 번호) 또는 여자·음년은 순행, 그 반대는 역행.
+     월이 바뀌는 절입 순간까지 분 단위로 센다. 3일=1년, 1일=4개월, 2시간=10일(환산 한 달=30일).
+     su는 종전 반올림·1~10 제한을 유지한 대운수이며 실제 세는나이와 구분한다.
+     m60 은 월주가 60갑자에서 몇 번째인지(대운 간지는 여기서 한 칸씩 앞뒤로 간다) */
+  function sjDaeunStart(p,male,jd0){
+    var fwd=(p.y.s%2===0)===male;
+    var birth=new Date(Math.round((jd0-2440587.5)*86400000)+9*3600000),y=birth.getUTCFullYear(),termJd=null,gap=Infinity;
+    for(var yy=y-1;yy<=y+1;yy++)for(var i=0;i<SJ_TERM.length;i+=2){
+      var jd=sjTermJd(yy,SJ_TERM[i][1]),dt=(jd-jd0)*(fwd?1:-1);
+      // 절입 순간과 정확히 같으면 양쪽 모두 0. 부동소수점 오차(1ms 미만)만 허용한다.
+      if(dt>=-1e-8&&dt<gap){gap=Math.max(0,dt);termJd=jd;}}
+    var minutes=Math.round(gap*1440),days=minutes/1440,years=Math.floor(minutes/4320),months=Math.floor(minutes%4320/360),spanDays=Math.floor(minutes%360/12),spanMinutes=minutes%12*120;
+    var su=Math.max(1,Math.min(10,Math.round(days/3)));
+    var m60=0;for(var k=0;k<60;k++)if(k%10===p.m.s&&k%12===p.m.b){m60=k;break;}
+    return {fwd:fwd,days:days,su:su,m60:m60,termJd:termJd,years:years,months:months,spanDays:spanDays,spanMinutes:spanMinutes,
+      start:sjDaeunDate(birth.getTime(),years*12+months,spanDays,spanMinutes)};}
+  // 달력의 연·월을 먼저 더한다. 월말·윤일은 도착 월의 말일로 맞춘 뒤 일·분을 더한다(KST 달력을 UTC 슬롯에 담음).
+  function sjDaeunDate(ms,months,days,minutes){var t=new Date(ms),d=t.getUTCDate();t.setUTCDate(1);t.setUTCMonth(t.getUTCMonth()+months);
+    var last=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()+1,0)).getUTCDate();t.setUTCDate(Math.min(d,last));
+    t.setUTCDate(t.getUTCDate()+(days||0));t.setUTCMinutes(t.getUTCMinutes()+(minutes||0));return t.getTime();}
+  function sjDaeunYm(ms){var t=new Date(ms);return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월";}
+  function sjDaeunIntro(da){return "첫 대운은 "+da.years+"년 "+da.months+"개월 뒤인 "+sjDaeunYm(da.start)+" 무렵부터 들어와요";}
+  // 격국 — 월지 본기의 십성으로 판정
+  var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
+  function sjTenGod(dayS,otherS){ // 십성
+    var de=SJ_ES[dayS],oe=SJ_ES[otherS],same=(dayS%2)===(otherS%2);
+    if(de===oe)return same?"비견":"겁재";
+    if((de+1)%5===oe)return same?"식신":"상관";
+    if((de+2)%5===oe)return same?"편재":"정재";
+    if((oe+2)%5===de)return same?"편관":"정관";
+    return same?"편인":"정인";}
+  /* 사주 결과 '상위 N%' — 1950~2009년생 모든 날짜 × 12시진(262,980건; 시각 모름은 날짜 21,915건)을 이 엔진으로 돌려 센
+     십성 무리(비겁·식상·재성·관성·인성)별 칸 수 분포(h: 시각 있음 7칸, n: 시각 모름 5칸). 지어낸 순위가 아니다.
+     tools/sajupct/make_pct.js 가 만들고 verify.js 가 표본으로 다시 재서 맞춰 본다 */
+  var SJ_PCT={h:[[57009,95468,70369,30390,8131,1435,167,11],[58711,93694,69691,30357,8735,1601,181,10],[57355,94854,70340,30761,8187,1335,142,6],[55827,96037,71867,30102,7775,1262,106,4],[57820,94638,70081,30290,8436,1540,166,9]],
+    n:[[7334,8778,4449,1185,157,12,0,0],[7324,8790,4451,1176,163,11,0,0],[7335,8786,4451,1168,165,10,0,0],[7325,8801,4439,1169,171,10,0,0],[7328,8787,4465,1161,163,11,0,0]]};
+  var SJ_GRP5=["비겁","식상","재성","관성","인성"];
+  // 칸 수가 c 이상인 사람의 비율(%) = "상위 N%". 1 아래는 1로 둔다
+  function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
+  // 칸이 하나 이상인 무리 가운데 드문 순서로 셋. 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
+  function sjPcList(G,hasH){
+    return SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;})
+      .filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);}
+  /* 열두 달 가운데 힘이 실리는 달(점수 3 이상 가운데 높은 셋)·아낄 달(0 아래 가운데 낮은 둘) — 한 장 요약과 '달마다 흐름'이 같은 달을 말하게(2026-10-12 검수: 둘이 달랐음). 보여 줄 땐 달 순서 */
+  function sjMonthPick(M){var byI=function(a,b){return a.i-b.i;};
+    return {best:M.filter(function(x){return x.sc>=3&&!x.ch;}).sort(function(a,b){return b.sc-a.sc||a.i-b.i;}).slice(0,3).sort(byI),
+      worst:M.filter(function(x){return x.sc<0;}).sort(function(a,b){return a.sc-b.sc||a.i-b.i;}).slice(0,2).sort(byI)};}
+  // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
+  var GH_PCT=[0,0,0,0,0,0,0,0,227,0,0,142,0,200,0,244,767,0,137,1155,2993,638,0,1865,1137,2806,355,2208,7071,1180,1881,9940,11236,5851,767,5895,9585,10310,3961,3874,8049,11389,7415,6244,4925,6630,7618,2893,5936,9139,2851,4699,2301,5319,6481,1486,1381,2029,2099,4092,965,1938,1146,1106,5444];
+  function ghPct(sc){var t=0,c=0;for(var i=0;i<GH_PCT.length;i++){t+=GH_PCT[i];if(i+35>=sc)c+=GH_PCT[i];}return Math.max(1,Math.round(c/t*100));}
+  var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
+  function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
+  /* 오늘 점수 — (내 일간 ds, 내 일지 db, 필요한 기운 yong)과 오늘 일진 today 로 정해진다. tfToday 와 상위 %(tfPct)가 같이 쓴다 */
+  function tfScore(ds,db,yong,today){
+    var score=TF_BASE[sjTenGod(ds,today.d.s)],tB=today.d.b,art="";
+    if(db%4===tB%4&&db!==tB){score+=8;art="삼합";}
+    else if(Math.abs(db-tB)===6){score-=10;art="충";}
+    else if(sjYukhap(db)===tB){score+=6;art="육합";}
+    var todayEl=SJ_ES[today.d.s],yongHit=todayEl===yong,yongClash=(todayEl+2)%5===yong;
+    if(yongHit)score+=5;else if(yongClash)score-=3;
+    return {score:Math.max(35,Math.min(98,score)),art:art,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
+  function tfToday(y,m,d,now){
+    now=now||new Date();
+    var me=sjPillars(y,m,d,null,0,false),today=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
+    var st=sjStrength(me),r=tfScore(me.d.s,me.d.b,st.yong,today);
+    return {me:me,today:today,rel:sjTenGod(me.d.s,today.d.s),score:r.score,grade:tfGrade(r.score),art:r.art,st:st,todayEl:r.todayEl,yongHit:r.yongHit,yongClash:r.yongClash};}
+  // 1950~2009년생(시각 모름) 60일주 × 필요한 기운(목화토금수) 칸별 사람 수 — tools/sajupct/make_tf_pct.js 로 잰 값
+  var TF_PCT=[[0,178,0,0,187],[0,56,0,0,309],[184,0,181,0,0],[186,0,179,0,0],[0,131,0,234,0],[0,132,0,233,0],[0,0,269,0,96],[0,0,128,0,237],[183,0,0,182,0],[182,0,0,183,0],[0,55,0,0,310],[0,178,0,0,187],[303,0,62,0,0],[305,0,60,0,0],[0,269,0,96,0],[0,269,0,96,0],[0,0,130,0,235],[0,0,269,0,96],[58,0,0,307,0],[59,0,0,306,0],[0,56,0,0,309],[0,55,0,0,310],[305,0,60,0,0],[305,0,60,0,0],[0,268,0,97,0],[0,133,0,232,0],[0,0,269,0,96],[0,0,269,0,96],[59,0,0,306,0],[59,0,0,306,0],[0,56,0,0,309],[0,56,0,0,309],[307,0,59,0,0],[306,0,60,0,0],[0,135,0,231,0],[0,271,0,95,0],[0,0,274,0,92],[0,0,131,0,235],[57,0,0,309,0],[59,0,0,307,0],[0,56,0,0,310],[0,55,0,0,311],[183,0,183,0,0],[307,0,59,0,0],[0,270,0,96,0],[0,271,0,95,0],[0,0,129,0,237],[0,0,268,0,97],[180,0,0,185,0],[58,0,0,307,0],[0,174,0,0,191],[0,174,0,0,191],[305,0,60,0,0],[186,0,179,0,0],[0,132,0,233,0],[0,133,0,232,0],[0,0,127,0,238],[0,0,129,0,236],[58,0,0,307,0],[180,0,0,185,0]];
+  // 오늘 이 점수 이상인 사람의 비율(상위 N%) — 같은 날 모든 1950~2009년생을 같은 식으로 매긴 것
+  function tfPct(score,today){var t=0,c=0;for(var i=0;i<60;i++)for(var e=0;e<5;e++){var n=TF_PCT[i][e];if(!n)continue;t+=n;if(tfScore(i%10,i%12,e,today).score>=score)c+=n;}return Math.max(1,Math.round(c/t*100));}
+  /* 출생 당시 한국 시계가 지금 표준시(UTC+9)와 몇 분 달랐나.
+     IANA tzdb Asia/Seoul·Rule ROK 기준: 1954-03-21~1961-08-10 표준시 UTC+8:30, 서머타임 +1시간.
+     1987·88년 기간은 tzdb·국가기록원·언론 기록이 같다. 1948~60년 기간은 tzdb 날짜를 쓰되
+     국가기록원은 "1949~1961년, 대개 5~9월"로만 적어 기록마다 조금 다르다.
+     https://data.iana.org/time-zones/tzdb/asia — [시작 현지 시각, 종료 직전 현지 시각]. 24:00은 다음 날 00:00으로 적는다. */
+  var KR_DST=[["1948-06-01T00:00","1948-09-13T00:00"],["1949-04-03T00:00","1949-09-11T00:00"],["1950-04-01T00:00","1950-09-10T00:00"],["1951-05-06T00:00","1951-09-09T00:00"],
+    ["1955-05-05T00:00","1955-09-09T00:00"],["1956-05-20T00:00","1956-09-30T00:00"],["1957-05-05T00:00","1957-09-22T00:00"],["1958-05-04T00:00","1958-09-21T00:00"],
+    ["1959-05-03T00:00","1959-09-20T00:00"],["1960-05-01T00:00","1960-09-18T00:00"],["1987-05-10T02:00","1987-10-11T03:00"],["1988-05-08T02:00","1988-10-09T03:00"]];
+  function krClockShift(y,m,d,h,mi){
+    var k=Date.UTC(y,m-1,d,h==null?12:h,mi||0),dst=false;
+    // 1954년 자정에 23:30으로 되돌린 30분은 변경 후 UTC+8:30으로 해석한다. 1961년 전환도 현지 자정이다.
+    var std830=k>=Date.UTC(1954,2,20,23,30)&&k<Date.UTC(1961,7,10);
+    KR_DST.forEach(function(r){
+      // 종료 때 반복되는 한 시간은 표준시로 해석하므로 종료 직전 시각에서 60분을 뺀다.
+      if(k>=Date.parse(r[0]+"Z")&&k<Date.parse(r[1]+"Z")-3600000)dst=true;});
+    return {min:(std830?-30:0)+(dst?60:0),dst:dst,std830:std830};}
+  function sjKst(jd){var t=new Date(Math.round((jd-2440587.5)*86400000)+9*3600000);
+    return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월 "+t.getUTCDate()+"일 "+("0"+t.getUTCHours()).slice(-2)+":"+("0"+t.getUTCMinutes()).slice(-2);}
+  // 태어난 순간의 앞뒤 월 절기(황경 315+30k°) — 월주가 어느 절기부터 시작됐는지 보여 준다
+  function sjMonthTerms(jd){
+    var L=sjSunLong(jd),k=Math.floor((((L-315)%360)+360)%360/30),deg=(315+30*k)%360,y=new Date(Math.round((jd-2440587.5)*86400000)).getUTCFullYear();
+    var prev=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,deg);}).filter(function(j){return j<=jd;}).pop();
+    var nd=(deg+30)%360,next=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,nd);}).filter(function(j){return j>jd;})[0];
+    var nm=function(g){for(var i=0;i<SJ_TERM.length;i++)if(SJ_TERM[i][1]===g)return SJ_TERM[i][0];};
+    return {L:L,prev:prev,prevName:nm(deg),next:next,nextName:nm(nd)};}
+  var ZF_BASE={"삼합":88,"육합":84,"복음":74,"평":72,"해":60,"형":56,"충":52};
+  var ZF_TG={"식신":4,"정재":4,"정관":3,"정인":4,"편재":2,"비견":0,"상관":-3,"편인":-2,"겁재":-5,"편관":-5};
+  function zfRel(b,t){
+    if(Math.abs(b-t)===6)return"충";
+    var H=[[0,3],[2,5],[5,8],[8,2],[1,10],[10,7],[7,1]],i;
+    for(i=0;i<H.length;i++)if((H[i][0]===b&&H[i][1]===t)||(H[i][0]===t&&H[i][1]===b))return"형";
+    var Y=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
+    for(i=0;i<Y.length;i++)if((Y[i][0]===b&&Y[i][1]===t)||(Y[i][0]===t&&Y[i][1]===b))return"해";
+    if(b===t)return"복음";
+    if(b%4===t%4)return"삼합";
+    if(sjYukhap(b)===t)return"육합";
+    return"평";}
+  function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
+    return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
+  /* 띠별 운세 깊이 풀이 — 원고 D(content_zodiac_fortune.js → zf/deep.json)에서 오늘 일진과 내 띠의 관계(7)·오늘 하늘 글자의 역할(10)·띠(12)에 맞는 문장을 고른다.
+     순수 함수 — verify 가 12띠 × 60일진으로 검사한다. art 는 관계 그림(있으면 총운 첫 문단 앞에 붙는다) */
+  // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
+  function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
+    return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
+    /* 신년운세 점수 — 그 해 하늘 글자와 나(일간)의 관계 + 내 띠·일지가 그 해 땅 글자와 삼합·육합(+5)·충(-6). go 와 상위 %가 같이 쓴다 */
+    function nyScore(ds,yb,db,YS,YB){
+      var sc={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84}[sjTenGod(ds,YS)];
+      [yb,db].forEach(function(b){if(b%4===YB%4&&b!==YB||sjYukhap(b)===YB)sc+=5;else if(Math.abs(b-YB)===6)sc-=6;});
+      return Math.max(40,Math.min(97,sc));}
+    // 상위 N%: 60갑자 일주 × 12띠(720가지, 같은 무게) 가운데 이 해 점수가 내 점수 이상인 비율
+    function nyPct(score,YS,YB){var t=0,c=0;for(var d=0;d<60;d++)for(var y=0;y<12;y++){t++;if(nyScore(d%10,y,d%12,YS,YB)>=score)c++;}return Math.max(1,Math.round(c/t*100));}
+    function tjCalc(ly, lm, ld, Y, K, gz) {
+      var SS = [9, 8, 7, 6, 5, 9, 8, 7, 6, 5], SB = [9, 8, 7, 6, 5, 4, 9, 8, 7, 6, 5, 4];          // 선천수
+      var JS = [11, 10, 9, 8, 7, 11, 10, 9, 8, 7], JB = [9, 11, 8, 8, 11, 7, 7, 11, 10, 10, 11, 9]; // 중천수
+      var ys = ((Y - 4) % 10 + 10) % 10, yb = ((Y - 4) % 12 + 12) % 12;
+      var age = Y - ly + 1, taese = JS[ys] + JB[yb];
+      var cal = new K(), days = cal.getLunarMonthDays(Y, lm, false);
+      var ms = ((ys % 5) * 2 + 2 + lm - 1) % 10, mb = (lm + 1) % 12, wolgeon = SS[ms] + SB[mb];
+      var d = Math.min(ld, days); cal.setLunarDate(Y, lm, d, false);
+      var s = cal.getSolarCalendar(), g = gz(s.year, s.month, s.day), iljin = SS[g[0]] + JB[g[1]];
+      var up = (age + taese) % 8 || 8, mid = (days + wolgeon) % 6 || 6, low = (d + iljin) % 3 || 3;
+      return { code: "" + up + mid + low, age: age, ys: ys, yb: yb, taese: taese, days: days, ms: ms, mb: mb, wolgeon: wolgeon,
+        ds: g[0], db: g[1], iljin: iljin, clamp: d !== ld, solar: s };
+    }
+  return {
+    SJ_S:SJ_S,
+    SJ_SH:SJ_SH,
+    SJ_B:SJ_B,
+    SJ_BH:SJ_BH,
+    SJ_TTI:SJ_TTI,
+    SJ_ES:SJ_ES,
+    SJ_EB:SJ_EB,
+    SJ_BMAIN:SJ_BMAIN,
+    SJ_EL:SJ_EL,
+    SJ_LUCK:SJ_LUCK,
+    SJ_HOUR:SJ_HOUR,
+    sjYukhap:sjYukhap,
+    sjJdn:sjJdn,
+    sjSunLong:sjSunLong,
+    SJ_VSOP:SJ_VSOP,
+    sjJdKST:sjJdKST,
+    SJ_TERM_CACHE:SJ_TERM_CACHE,
+    SJ_IPCHUN_CACHE:SJ_IPCHUN_CACHE,
+    sjIpchun:sjIpchun,
+    sjTermJd:sjTermJd,
+    SJ_TERM:SJ_TERM,
+    SJ_REGIONS:SJ_REGIONS,
+    sjRegion:sjRegion,
+    sjPillars:sjPillars,
+    sjStrength:sjStrength,
+    SJ_UN:SJ_UN,
+    SJ_JS:SJ_JS,
+    sjUnseong:sjUnseong,
+    SJ_CHEONEUL:SJ_CHEONEUL,
+    SJ_MUNCHANG:SJ_MUNCHANG,
+    SJ_SUN:SJ_SUN,
+    sjGongmang:sjGongmang,
+    subBal:subBal,
+    GH_GRP:GH_GRP,
+    ghTg:ghTg,
+    ghEl:ghEl,
+    GH_YB:GH_YB,
+    ghYear:ghYear,
+    SJ_YANGIN:SJ_YANGIN,
+    sjSamhap:sjSamhap,
+    SJ_DOHWA:SJ_DOHWA,
+    SJ_YEOKMA:SJ_YEOKMA,
+    SJ_HWAGAE:SJ_HWAGAE,
+    SJ_BAEKHO:SJ_BAEKHO,
+    SJ_GWAEGANG:SJ_GWAEGANG,
+    sjSeason:sjSeason,
+    sjCelebFeat:sjCelebFeat,
+    sjDuScores:sjDuScores,
+    SJ_HONGYEOM:SJ_HONGYEOM,
+    SJ_HYEONCHIM_S:SJ_HYEONCHIM_S,
+    SJ_HYEONCHIM_B:SJ_HYEONCHIM_B,
+    SJ_GWIMUN:SJ_GWIMUN,
+    SJ_WONJIN:SJ_WONJIN,
+    sjSinsal:sjSinsal,
+    SJ_JJG:SJ_JJG,
+    sjDaeunStart:sjDaeunStart,
+    sjDaeunDate:sjDaeunDate,
+    sjDaeunYm:sjDaeunYm,
+    sjDaeunIntro:sjDaeunIntro,
+    SJ_GYEOK:SJ_GYEOK,
+    sjTenGod:sjTenGod,
+    SJ_PCT:SJ_PCT,
+    SJ_GRP5:SJ_GRP5,
+    sjPct:sjPct,
+    sjPcList:sjPcList,
+    sjMonthPick:sjMonthPick,
+    GH_PCT:GH_PCT,
+    ghPct:ghPct,
+    TF_BASE:TF_BASE,
+    tfGrade:tfGrade,
+    tfScore:tfScore,
+    tfToday:tfToday,
+    TF_PCT:TF_PCT,
+    tfPct:tfPct,
+    KR_DST:KR_DST,
+    krClockShift:krClockShift,
+    sjKst:sjKst,
+    sjMonthTerms:sjMonthTerms,
+    ZF_BASE:ZF_BASE,
+    ZF_TG:ZF_TG,
+    zfRel:zfRel,
+    zfScore:zfScore,
+    zfRank:zfRank,
+    nyScore:nyScore,
+    nyPct:nyPct,
+    tjCalc:tjCalc
+  };
+});
+
+var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
+  var won=function(n){return Math.round(n).toLocaleString("ko-KR");};
+  var comma=function(n){return num(n).toLocaleString("ko-KR");};
+  function bindMoney(root){root.querySelectorAll("input.money").forEach(function(el){
+    el.addEventListener("input",function(){var v=num(this.value);this.value=v?v.toLocaleString("ko-KR"):"";if(this._cb)this._cb();});});}
+
+  var ZO_EN=["rat","ox","tiger","rabbit","dragon","snake","horse","goat","monkey","rooster","dog","pig"];
+  var ZO_TRAIT=["재치와 기민함으로 기회를 먼저 잡는 기질","묵묵히 쌓아 끝내 이루는 뚝심","두려움 없이 앞장서는 용기와 카리스마","섬세한 배려와 부드러운 지혜","큰 그림을 그리는 스케일과 존재감","깊이 통찰하고 조용히 움직이는 영민함","자유롭고 활동적인 추진력","온화한 감성과 예술적 감각","영리한 임기응변과 재주","분명한 기준과 성실한 자기관리","의리와 신의로 사람을 얻는 힘","넉넉한 인심과 복을 부르는 여유"];
+  function zoCard(b,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/zo-'+ZO_EN[b]+'.webp" alt="'+SJ_TTI[b]+'띠" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+    '<div class="cap"><div class="t">'+(label||"나의 띠")+'</div><div class="n">'+SJ_TTI[b]+'띠</div><p>'+ZO_TRAIT[b]+'</p></div></div>';}
+  // ── 서양 점성술(태양 별자리) ──
+  var ST_KO=["양자리","황소자리","쌍둥이자리","게자리","사자자리","처녀자리","천칭자리","전갈자리","궁수자리","염소자리","물병자리","물고기자리"];
+  var ST_EN=["aries","taurus","gemini","cancer","leo","virgo","libra","scorpio","sagittarius","capricorn","aquarius","pisces"];
+  var ST_SYM=["♈","♉","♊","♋","♌","♍","♎","♏","♐","♑","♒","♓"];
+  var ST_RANGE=["3.21~4.19","4.20~5.20","5.21~6.21","6.22~7.22","7.23~8.22","8.23~9.22","9.23~10.22","10.23~11.21","11.22~12.21","12.22~1.19","1.20~2.18","2.19~3.20"];
+  var ST_ELE=["불","흙","공기","물"]; // 별자리 index%4
+  var ST_RULER=["화성","금성","수성","달","태양","수성","금성","화성","목성","토성","토성","목성"]; // 전통 지배성
+  var ST_TRAIT=["망설임 없이 먼저 뛰어드는 개척자예요. 속도가 곧 무기예요.","한번 정하면 끝까지 지키는 뚝심이 있어요. 감각과 실속을 함께 챙겨요.","호기심과 말솜씨가 살아 있는 전달자예요. 사람과 정보가 늘 모여들어요.","마음의 온도를 먼저 읽는 보호자예요. 내 사람에게는 한없이 깊어요.","존재만으로 무대를 만드는 사람이에요. 인정받을 때 가장 빛나요.","작은 어긋남을 먼저 알아보는 정밀한 눈을 가졌어요. 완성도가 곧 자존심이에요.","균형과 관계를 조율하는 사람이에요. 아름다움과 공정함을 함께 봐요.","한 번 파고들면 끝을 보는 집중력이 있어요. 겉과 속의 깊이가 남달라요.","시야가 넓고 낙천적인 탐험가예요. 자유로울 때 가장 신나요.","시간을 자기 편으로 만드는 전략가예요. 늦어도 결국 올라서요.","남과 다른 각도로 보는 혁신가예요. 규칙보다 이유를 먼저 물어요.","경계 없이 스며드는 공감력이 있어요. 예술과 직관이 강점이에요."];
+  var ST_ELE_RULERS={"불":["태양","화성","목성"],"흙":["금성","수성","토성"],"공기":["수성","금성","토성"],"물":["달","화성","목성"]};
+  var WD_KO=["일","월","화","수","목","금","토"];
+  var WD_RULER=["태양","달","화성","수성","목성","금성","토성"]; // 요일 지배성(칠요)
+  function stOf(y,m,d){return Math.floor(sjSunLong(sjJdKST(y,m,d,12,0))/30);} // 태양황경으로 별자리 판정
+  /* 달의 자리 — 하루 낮 12시(KST) 기준. 황경은 Meeus(Astronomical Algorithms 47장)의 큰 항 30여 개로 구하고,
+     미국 해군천문대의 삭·상현·보름·하현 99개(2026~27)와 0.04° 안(위상 시각으로 5분 안)으로 맞는다.
+     하루의 결이 태양(한 달에 한 번 별자리를 옮긴다)이 아니라 달(2~3일마다 옮긴다)에서 나오게 하려는 것 */
+  var ST_MASP=[[86,[4,2,4,-2]],[72,[0,2,4,2]],[84,[8,6,6,0]],[60,[-8,-6,-4,-6]],[90,[8,6,8,4]],[64,[-4,0,-4,-6]],[70,[4,2,2,0]]]; // 달과 내 별자리의 각도(0~6) → [기본점수,[애정·재물·일·건강 보정]]
+  function hsMoonLong(jd){var T=(jd-2451545)/36525,T2=T*T,R=Math.PI/180,
+      Lp=218.3164477+481267.88123421*T-0.0015786*T2,D=297.8501921+445267.1114034*T-0.0018819*T2,M=357.5291092+35999.0502909*T-0.0001536*T2,
+      Mp=134.9633964+477198.8675055*T+0.0087414*T2,F=93.2720950+483202.0175233*T-0.0036539*T2,E=1-0.002516*T-0.0000074*T2,A1=119.75+131.849*T,A2=53.09+479264.290*T;
+    function S(x){return Math.sin(x*R);}
+    var s=6.288774*S(Mp)+1.274027*S(2*D-Mp)+0.658314*S(2*D)+0.213618*S(2*Mp)-0.185116*E*S(M)-0.114332*S(2*F)+0.058793*S(2*D-2*Mp)+0.057066*E*S(2*D-M-Mp)+0.053322*S(2*D+Mp)
+      +0.045758*E*S(2*D-M)-0.040923*E*S(M-Mp)-0.034720*S(D)-0.030383*E*S(M+Mp)+0.015327*S(2*D-2*F)-0.012528*S(Mp+2*F)+0.010980*S(Mp-2*F)+0.010675*S(4*D-Mp)+0.010034*S(3*Mp)
+      +0.008548*S(4*D-2*Mp)-0.007888*E*S(2*D+M-Mp)-0.006766*E*S(2*D+M)-0.005163*S(D-Mp)+0.004987*E*S(D+M)+0.004036*E*S(2*D-M+Mp)+0.003994*S(2*Mp+2*D)+0.003861*S(4*D)
+      +0.003665*S(2*D-3*Mp)+0.003958*S(A1)+0.001962*S(Lp-F)+0.000318*S(A2);
+    return ((Lp+s)%360+360)%360;}
+  // 달의 별자리(sign 0~11)·태양과의 각(el)·모양(phase 0 삭 … 4 보름 … 7 그믐)·밝기(illum %)
+  function hsMoon(y,m,d){var jd=sjJdKST(y,m,d,12,0),ml=hsMoonLong(jd),el=((ml-sjSunLong(jd))%360+360)%360;
+    return {sign:Math.floor(ml/30),el:el,phase:Math.floor(((el+22.5)%360)/45),illum:Math.round((1-Math.cos(el*Math.PI/180))/2*100)};}
+  function stCard(i,label){return '<div class="sj-char"><img width="520" height="520" src="img/char/st-'+ST_EN[i]+'.webp" alt="'+ST_KO[i]+'" loading="lazy" onerror="this.closest(\'.sj-char\').remove()">'+
+    '<div class="cap"><div class="t">'+(label||"나의 별자리")+'</div><div class="n">'+ST_SYM[i]+' '+ST_KO[i]+'</div><p>'+ST_TRAIT[i]+'</p></div></div>';}
+  // 태양의 각도 관계(어스펙트) — 거리 0~6, [기본점수, 이름, 총운, 애정, 재물·일, 조언, [애정·재물·일·건강 보정]]
+  var ST_ASP=[
+   [88,"합(0°)","태양이 내 별자리 위를 지나는 시기입니다. 존재감이 커지고, 내가 먼저 움직일수록 일이 풀립니다.","먼저 다가가는 쪽이 유리합니다. 표현을 아끼면 기회가 지나갑니다.","새로 시작하는 일에 힘이 실립니다. 다만 혼자 다 하려다 지칠 수 있습니다.","올해의 방향을 다시 세우기 좋은 때입니다. 하고 싶은 것을 문장으로 적어두세요.",[6,2,4,-2]],
+   [72,"세미섹스타일(30°)","크게 흔들리지 않는 잔잔한 흐름입니다. 무리하지 않으면 손해도 없습니다.","익숙한 사이에서 편안함을 느낍니다. 새 인연은 서두르지 마세요.","작은 정리와 마무리에 좋은 날입니다.","오늘은 확장보다 정돈입니다. 미뤄둔 일 하나만 끝내세요.",[0,2,4,2]],
+   [84,"섹스타일(60°)","기회가 손 닿는 곳에 놓입니다. 다만 스스로 손을 뻗어야 잡히는 종류입니다.","소개·모임·연락에서 좋은 흐름이 옵니다.","제안·협업·부수입에 유리합니다. 연락을 미루지 마세요.","오늘 온 연락은 흘려보내지 마세요. 답장 하나가 흐름을 바꿉니다.",[8,6,6,0]],
+   [58,"스퀘어(90°)","마찰이 있는 대신 성장이 있는 날입니다. 부딪히는 지점이 곧 더 크게 자랄 자리입니다.","말투 하나로 오해가 생기기 쉽습니다. 한 박자 늦게 답하세요.","일정이 밀리거나 예산이 어긋날 수 있습니다. 여유분을 두세요.","오늘의 짜증은 방향이 아니라 속도의 문제입니다. 잠시 멈추면 보입니다.",[-8,-6,-4,-6]],
+   [90,"트라인(120°)","같은 원소끼리 흐르는 순풍입니다. 애쓰지 않아도 일이 매끄럽게 이어집니다.","자연스러운 만남과 화해에 좋습니다. 오래된 인연이 다시 닿습니다.","하던 일에서 결실이 보입니다. 큰 결정을 내리기에도 무난합니다.","순풍일수록 방심하기 쉽습니다. 오늘 얻은 것을 기록해두세요.",[8,6,8,4]],
+   [62,"퀸컹스(150°)","서로 결이 다른 기운이 겹칩니다. 조정과 타협이 필요한 하루입니다.","상대의 방식이 낯설게 느껴집니다. 고치려 들지 마세요.","계획과 현실의 간격이 드러납니다. 일정부터 다시 짜세요.","오늘은 정답보다 조율입니다. 한 가지는 양보하세요.",[-4,0,-4,-6]],
+   [66,"오포지션(180°)","태양이 정반대에 섭니다. 관계와 균형이 하루의 주제가 됩니다.","상대를 통해 나를 봅니다. 갈등이 있다면 오늘이 풀 기회입니다.","혼자보다 둘이 낫습니다. 계약·협상은 조건을 문서로 남기세요.","맞은편에 있는 사람이 오늘의 거울입니다. 반발보다 관찰을.",[4,2,2,0]]];
+  // 일간 정체성 1줄 압축판 — 오늘의 운세 첫 화면용 (saju ILGAN 장문과 별개)
+  var SJ_ILGAN_ID=[
+   "甲(갑) — 하늘로 곧게 크는 큰 나무.",
+   "乙(을) — 바위를 감아 오르는 덩굴의 유연함.",
+   "丙(병) — 숨김없이 내리쬐는 태양.",
+   "丁(정) — 어둠을 밝히는 촛불의 온기.",
+   "戊(무) — 흔들리지 않는 큰 산의 흙.",
+   "己(기) — 곡식을 기르는 밭의 흙.",
+   "庚(경) — 벼려서 날을 세우는 무쇠.",
+   "辛(신) — 다듬어 빛나는 보석의 금.",
+   "壬(임) — 바다처럼 깊고 넓게 흐르는 물.",
+   "癸(계) — 스며들어 적시는 빗물과 이슬."];
   var SJ_YONG={
    목:{color:"초록·청색",dir:"동쪽",season:"봄",job:"교육·기획·의료·목재·출판 등 자라나게 하는 일",act:"새로운 것을 배우고 시작하는 활동"},
    화:{color:"빨강·주황",dir:"남쪽",season:"여름",job:"방송·디자인·요식·에너지·마케팅 등 드러내는 일",act:"사람 앞에 나서고 표현하는 활동"},
    토:{color:"노랑·갈색",dir:"중앙",season:"환절기",job:"부동산·건축·중개·관리·농업 등 중심을 잡는 일",act:"신뢰를 쌓고 관계를 중재하는 활동"},
    금:{color:"흰색·금색",dir:"서쪽",season:"가을",job:"금융·법률·기계·의료기기·군경 등 정리하는 일",act:"규칙을 세우고 결단하는 활동"},
    수:{color:"검정·남색",dir:"북쪽",season:"겨울",job:"연구·유통·무역·수산·IT 등 흐르게 하는 일",act:"정보를 모으고 유연하게 움직이는 활동"}};
-  // 십이운성 — 일간이 각 지지에서 갖는 기운의 단계 (양간 순행 / 음간 역행)
-  var SJ_UN=["장생","목욕","관대","건록","제왕","쇠","병","사","묘","절","태","양"];
   var SJ_UN_DESC={
    "장생":"갓 태어난 아기처럼 새로 시작하는 맑은 기운이에요. 순수하고 앞으로 자랄 힘이 크며, 주변 사람들의 도움을 자연스럽게 받는 자리예요.",
    "목욕":"멋을 내고 감정이 풍부해지는 자리예요. 사람을 끄는 매력이 큰 만큼 기분에 따라 마음이 잘 흔들리기도 하니, 결정은 차분할 때 하면 좋아요.",
@@ -205,22 +510,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "절":"흐름이 잠시 멈췄다가 새로 이어지는 날이에요. 변화가 와도 놀라지 말고 새 출발의 신호로 받아들이세요. 다시 시작하기 좋은 때예요.",
    "태":"새로운 생각이 씨앗처럼 자리를 잡는 날이에요. 바로 실행하기보다 적어 두고 키워 가기 좋은 때예요.",
    "양":"보호받으며 차분히 준비하는 날이에요. 서두르지 말고 배우고 쉬며 힘을 기르세요. 몸도 마음도 조금씩 자라는 하루예요."};
-  var SJ_JS=[11,6,2,9,2,9,5,0,8,3]; // 천간별 장생 지지
-  function sjUnseong(s,b){var js=SJ_JS[s];return SJ_UN[(s%2===0)?((b-js+12)%12):((js-b+12)%12)];}
-  // 신살 — 룩업 테이블 (일간·삼합 기준)
-  var SJ_CHEONEUL={0:[1,7],4:[1,7],6:[1,7],1:[0,8],5:[0,8],2:[11,9],3:[11,9],8:[5,3],9:[5,3],7:[6,2]};
-  var SJ_MUNCHANG=[5,6,8,9,8,9,11,0,2,3];
-  // 공망(空亡): 일주가 속한 순(旬)에서 짝을 얻지 못한 두 지지. start=순의 첫 지지(갑과 짝인 지지)
-  var SJ_SUN={0:"갑자순",10:"갑술순",8:"갑신순",6:"갑오순",4:"갑진순",2:"갑인순"};
-  function sjGongmang(s,b){var st=(b-s+12)%12;return {sun:SJ_SUN[st],start:st,empty:[(st+10)%12,(st+11)%12]};}
-  // 종합 점수와 네 항목 점수의 평균이 어긋나 보이지 않게: 항목 사이 벌어진 폭은 두고 평균만 종합 점수에 맞춘다(각 30~99 안에서)
-  function subBal(score,vals){var n=vals.length,m=vals.reduce(function(a,b){return a+b;},0)/n,
-    raw=vals.map(function(v){return score+v-m;}),
-    out=raw.map(function(v){return Math.max(30,Math.min(99,Math.round(v)));}),
-    diff=score*n-out.reduce(function(a,b){return a+b;},0),k=0,
-    ord=raw.map(function(v,i){return i;}).sort(function(a,b){return diff>0?(raw[b]-out[b])-(raw[a]-out[a]):(out[b]-raw[b])-(out[a]-raw[a]);});
-    while(diff!==0&&k++<500){for(var j=0;j<n&&diff!==0;j++){var i=ord[j],s=diff>0?1:-1;if(out[i]+s>=30&&out[i]+s<=99){out[i]+=s;diff-=s;}}}
-    return out;}
   /*NM-BEGIN*/
   /* 이름 궁합(획수) — 순수 함수. 한글 획수는 사이트마다 다르다. 이 도구는 선분수(ㄱ=2·ㅎ=3) 기준이고,
      쌍자음·겹받침·복합 모음은 구성 자모를 더한다. 안내글의 예시 숫자는 build_site.js 가 이 블록을 읽어 같은 함수로 만든다 */
@@ -256,17 +545,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
      엔진에 둔 이유: verify.js 가 무작위 쌍으로 검사한다. 이름 토큰은 {B:이/가} 꼴(받침 있으면 앞, 없으면 뒤)로 조사를 맞춘다 */
   function ghJ(w,pair){var p=pair.split("/"),c=String(w).charCodeAt(String(w).length-1);return (c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28!==0)?p[0]:p[1];}
   function ghFill(s,map){return String(s).replace(/\{([A-Za-z]+)(?::([^}]+))?\}/g,function(m,k,j){var v=map[k];if(v==null)return m;var r=j?v+ghJ(v,j):v;return r==="나가"?"내가":r;});}   // '자네'→'나' 뒤로 '나가'가 생겼다
-  var GH_GRP={비견:"비",겁재:"비",식신:"식",상관:"식",편재:"재",정재:"재",편관:"관",정관:"관",편인:"인",정인:"인"};
-  function ghTg(p){var ds=p.d.s,c={재:0,관:0,식:0,인:0,비:0}; // 일간을 뺀 천간과 지지 본기의 십성 무리별 개수
-    [p.y.s,p.m.s].concat(p.h?[p.h.s]:[]).forEach(function(s){c[GH_GRP[sjTenGod(ds,s)]]++;});
-    [p.y.b,p.m.b,p.d.b].concat(p.h?[p.h.b]:[]).forEach(function(b){c[GH_GRP[sjTenGod(ds,SJ_BMAIN[b])]]++;});
-    return c;}
-  function ghEl(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].concat(p.h?[p.h]:[]).forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return c;}
-  var GH_YB={비견:74,겁재:62,식신:88,상관:70,편재:80,정재:85,편관:60,정관:86,편인:68,정인:84};
-  // 그해 점수 — 신년운세 도구와 같은 식: 십성 기본점수 + 띠·일지와 태세의 삼합·육합 +5 / 충 -6, 40~97
-  function ghYear(p,Y){var ys=((Y-4)%10+10)%10,yb=((Y-4)%12+12)%12,rel=sjTenGod(p.d.s,ys),sc=GH_YB[rel];
-    [p.y.b,p.d.b].forEach(function(b){if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;});
-    return {rel:rel,score:Math.max(40,Math.min(97,sc))};}
   // c: {nb:상대 이름(이미 이스케이프), grade:등급, axes:[[축이름,점수]×4], now:기준 연도}
   // 한 결과 안에서 같은 문장이 두 번 나오지 않게 — 뒤에 나온 같은 문장(14자 이상)을 뺀다. 정규식 뒷보기(lookbehind)는 옛 사파리에서 스크립트 전체를 깨뜨려 쓰지 않는다
   function noRepeat(secs){var seen={};function keep(s){var k=s.replace(/<[^>]+>/g,"").trim();if(k.length<14)return true;if(seen[k])return false;seen[k]=1;return true;}
@@ -383,15 +661,9 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     secs.push({k:"help",h:"곁에 둘 것 — 나를 받쳐 주는 기운",p:[ghFill(D.help,{Y:YW,E:yEl,color:Yo.color,dir:Yo.dir,season:Yo.season,job:Yo.job,act:Yo.act})],n:D.note.help});
     secs.push({k:"tip",h:"약속 세 가지",list:D.tip[rel].slice()});
     return {secs:secs,meta:{rel:rel,fit:fit,yong:yEl,months:months,best:best,worst:worst,events:evRows}};}
-  var SJ_YANGIN={0:3,2:6,4:6,6:9,8:0};
-  function sjSamhap(b){return b%4;} // 0:신자진 1:사유축 2:인오술 3:해묘미 (지지 index%4 그룹)
-  var SJ_DOHWA={2:3,0:9,1:6,3:0},SJ_YEOKMA={2:8,0:2,1:11,3:5},SJ_HWAGAE={2:10,0:4,1:1,3:7};
-  var SJ_BAEKHO=["갑진","을미","병술","정축","무진","임술","계축"],SJ_GWAEGANG=["경진","경술","임진","무술"];
   // 결과의 신살 이름 → 신살 설명 쪽(sinsal-<en>.html, 2026-10-09)
   var SJ_SINSAL_EN={"천을귀인":"cheoneul","문창귀인":"munchang","도화살":"dohwa","역마살":"yeokma","화개살":"hwagae","양인살":"yangin","백호대살":"baekho","괴강살":"gwaegang","홍염살":"hongyeom","현침살":"hyeonchim","귀문관살":"gwimun","원진살":"wonjin"};
   // 사주가 닮은 유명인(2026-10-09) — 연·월·일 세 기둥으로만 비교(유명인 태어난 시각을 모름). 데이터 sj/celeb.json = 위키데이터(CC0)
-  function sjSeason(b){return [3,3,0,0,0,1,1,1,2,2,2,3][b];}
-  function sjCelebFeat(p){var c=[0,0,0,0,0];[p.y,p.m,p.d].forEach(function(x){c[SJ_ES[x.s]]++;c[SJ_EB[x.b]]++;});return {ds:p.d.s,db:p.d.b,mb:p.m.b,el:c};}
   function sjCelebScore(a,b){var s=0,why=[],d=0,i;
     if(a.ds===b.ds){s+=30;why.push("같은 일간("+SJ_S[a.ds]+")");if(a.db===b.db){s+=20;why.push("일주까지 같음("+SJ_S[a.ds]+SJ_B[a.db]+")");}}
     else if(SJ_ES[a.ds]===SJ_ES[b.ds]){s+=15;why.push("같은 "+SJ_EL[SJ_ES[a.ds]]+" 일간");}
@@ -407,20 +679,7 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
         shareOut(sb,"동네보살 — 사주 닮은 유명인","내 사주가 "+rows[0].r[0]+josa(rows[0].r[0],"랑/이랑")+" "+rows[0].s+"점 닮았대요! 너는 누구랑 닮았는지 봐 봐 → "+location.origin+"/saju.html?from=share",idle);});}}
     if(SJ_CELEB){draw();return;}
     if(typeof fetch==="function")fetch("sj/celeb.json").then(function(r){return r.ok?r.json():null;}).then(function(j){if(j){SJ_CELEB=j;draw();}}).catch(function(){});}
-  // 분야별 대운 그래프(2026-10-09, 경쟁 서비스 벤치마킹) — 대운마다 0~100 참고 점수.
-  // 기본 50 + 대운 천간이 용신 15(보조 8)·지지가 용신 10(보조 5). 분야 별: 재물=재성+20·식상+10·비겁-10 / 애정=배우자 별(남 재성·여 관성)+20·일지와 합+10·충-10 /
-  // 건강=인성+10·비겁+5·일지와 충-15·편관-10 / 학업·일=인성+15·관성+15·식상+5. 지지는 본기 십성으로 절반만 센다. 종합=네 분야 평균
   var SJ_DU_K=[["all","종합"],["money","재물운"],["love","애정운"],["health","건강운"],["work","학업·일"]];
-  function sjDuScores(du,ds,dbr,yEl,y2El,male){
-    var G={비견:"비겁",겁재:"비겁",식신:"식상",상관:"식상",편재:"재성",정재:"재성",편관:"관성",정관:"관성",편인:"인성",정인:"인성"},S={all:[],money:[],love:[],health:[],work:[]};
-    var cl=function(v){return Math.max(5,Math.min(95,Math.round(v)));};
-    du.forEach(function(d){var gs=G[d.tg],gb=G[sjTenGod(ds,SJ_BMAIN[d.b])],es=SJ_EL[SJ_ES[d.s]],eb=SJ_EL[SJ_EB[d.b]];
-      var has=function(g){return (gs===g?1:0)+(gb===g?0.5:0);},base=50+(es===yEl?15:es===y2El?8:0)+(eb===yEl?10:eb===y2El?5:0);
-      var ch=Math.abs(d.b-dbr)===6,hp=sjYukhap(dbr)===d.b||(d.b%4===dbr%4&&d.b!==dbr);
-      var m=cl(base+20*has("재성")+10*has("식상")-10*has("비겁")),l=cl(base+20*has(male?"재성":"관성")+(hp?10:0)-(ch?10:0)),
-        h=cl(base+10*has("인성")+5*has("비겁")-(ch?15:0)-(d.tg==="편관"?10:0)),w=cl(base+15*has("인성")+15*has("관성")+5*has("식상"));
-      S.money.push(m);S.love.push(l);S.health.push(h);S.work.push(w);S.all.push(Math.round((m+l+h+w)/4));});
-    return S;}
   function sjDuChart(du,S,nowI){
     var W=360,H=164,L=24,R=20,T=12,B=40,n=du.length,X=function(i){return L+(W-L-R)*i/(n-1);},Y=function(v){return T+(H-T-B)*(100-v)/100;};
     var band=nowI>=0?'<rect x="'+(X(nowI)-(W-L-R)/(n-1)/2).toFixed(1)+'" y="'+T+'" width="'+((W-L-R)/(n-1)).toFixed(1)+'" height="'+(H-T-B)+'" class="du-now"/>':"";
@@ -475,10 +734,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var OLD={"타고난 큰 틀":o.gyeok,"힘이 반반인 사주":"중화","인정받으며 크는 사주":"관인상생","재주가 돈이 되는 사주":"식상생재","모은 것이 자리가 되는 사주":"재생관","필요한 기운을 품고 난 사주":"용신이 원국에 있음","다섯 기운을 다 갖춘 사주":"오행구족","한창때 순풍이 부는 사주":"용신 대운","뚝심 있는 사주":"건록·제왕"};
     return t.map(function(x){return [x[0],x[1]+' <small style="opacity:.6">옛 이름: '+OLD[x[0]]+'</small>'];});}
   function sjSinLink(name,label){var en=SJ_SINSAL_EN[name];return en?'<a href="sinsal-'+en+'.html">'+label+'</a>':label;}
-  // 2026-10-09 신살 4종 추가(검색 많은 순 현침·홍염·귀문·원진). 유파마다 표가 달라 널리 쓰는 것을 따른다 — content_sinsal.js 와 같은 값(빌드가 대조)
-  var SJ_HONGYEOM=[6,6,2,7,4,4,10,9,0,8];            // 일간별 홍염 지지(갑·을 오, 병 인, 정 미, 무·기 진, 경 술, 신 유, 임 자, 계 신)
-  var SJ_HYEONCHIM_S=[0,7],SJ_HYEONCHIM_B=[3,6,8];   // 현침 글자: 천간 갑·신(辛), 지지 묘·오·신(申) — 사주에 2개 이상
-  var SJ_GWIMUN=[[0,9],[1,6],[2,7],[3,8],[4,11],[5,10]],SJ_WONJIN=[[0,7],[1,6],[2,9],[3,8],[4,11],[5,10]];  // 일지와 다른 지지의 짝
   var SJ_SINSAL_DESC={
    "천을귀인":"사주에서 가장 좋은 길신이에요. 어려울 때 사람이 나타나 큰 고비를 넘기게 해주는 힘이 있어요.",
    "문창귀인":"학문과 글재주의 별이에요. 공부든 시험이든 글이든 기획이든, 머리 쓰는 자리에서 두각이 나요.",
@@ -492,55 +747,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "현침살":"바늘처럼 섬세한 손끝과 날카로운 눈의 별이에요. 의료·디자인·기술처럼 정교함이 필요한 일에서 두각이 나요.",
    "귀문관살":"남다른 직관과 섬세한 감수성의 별이에요. 예술·상담·연구에서 남이 못 보는 걸 읽어 내니 쉴 때는 푹 쉬세요.",
    "원진살":"가까운 사이일수록 서로 결이 달라 맞춰 가는 기운이에요. 말로 한 번 더 확인하는 습관이 관계를 오히려 단단하게 해요."};
-  function sjSinsal(p){
-    var ds=p.d.s,found=[],bs=[p.y.b,p.m.b,p.d.b];if(p.h)bs.push(p.h.b);
-    var ce=SJ_CHEONEUL[ds]||[];if(bs.some(function(b){return ce.indexOf(b)>=0;}))found.push("천을귀인");
-    if(bs.indexOf(SJ_MUNCHANG[ds])>=0)found.push("문창귀인");
-    var base=sjSamhap(p.y.b),base2=sjSamhap(p.d.b);
-    if(bs.indexOf(SJ_DOHWA[base])>=0||bs.indexOf(SJ_DOHWA[base2])>=0)found.push("도화살");
-    if(bs.indexOf(SJ_YEOKMA[base])>=0||bs.indexOf(SJ_YEOKMA[base2])>=0)found.push("역마살");
-    if(bs.indexOf(SJ_HWAGAE[base])>=0||bs.indexOf(SJ_HWAGAE[base2])>=0)found.push("화개살");
-    if(SJ_YANGIN[ds]!==undefined&&bs.indexOf(SJ_YANGIN[ds])>=0)found.push("양인살");
-    var dj=SJ_S[p.d.s]+SJ_B[p.d.b];
-    if(SJ_BAEKHO.indexOf(dj)>=0)found.push("백호대살");
-    if(SJ_GWAEGANG.indexOf(dj)>=0)found.push("괴강살");
-    if(bs.indexOf(SJ_HONGYEOM[ds])>=0)found.push("홍염살");
-    var ss=[p.y.s,p.m.s,p.d.s];if(p.h)ss.push(p.h.s);
-    if(ss.filter(function(x){return SJ_HYEONCHIM_S.indexOf(x)>=0;}).length+bs.filter(function(x){return SJ_HYEONCHIM_B.indexOf(x)>=0;}).length>=2)found.push("현침살");
-    var others=bs.slice();others.splice(2,1);   // 일지와 나머지 지지
-    var pair=function(T){return others.some(function(o){return T.some(function(t){return (t[0]===p.d.b&&t[1]===o)||(t[1]===p.d.b&&t[0]===o);});});};
-    if(pair(SJ_GWIMUN))found.push("귀문관살");
-    if(pair(SJ_WONJIN))found.push("원진살");
-    return found;
-  }
-  /* 지장간 — 지지 속에 숨은 천간. 지지마다 [천간 번호, 일수] 를 여기·중기·정기 순으로 둔다(일수 합 30).
-     마지막이 정기(본기)라 SJ_BMAIN 과 같다(verify 가 대조). 자·오·해 등 일부는 학파에 따라 적는 방식이 달라 동네보살은 널리 쓰는 표를 따른다 */
-  var SJ_JJG=[[[8,10],[9,20]],[[9,9],[7,3],[5,18]],[[4,7],[2,7],[0,16]],[[0,10],[1,20]],[[1,9],[9,3],[4,18]],[[4,7],[6,7],[2,16]],
-    [[2,10],[5,9],[3,11]],[[3,9],[1,3],[5,18]],[[4,7],[8,7],[6,16]],[[6,10],[7,20]],[[7,9],[3,3],[4,18]],[[4,7],[0,7],[8,16]]];
-  /* 대운 시작 — 남자·양년(연간이 짝수 번호) 또는 여자·음년은 순행, 그 반대는 역행.
-     월이 바뀌는 절입 순간까지 분 단위로 센다. 3일=1년, 1일=4개월, 2시간=10일(환산 한 달=30일).
-     su는 종전 반올림·1~10 제한을 유지한 대운수이며 실제 세는나이와 구분한다.
-     m60 은 월주가 60갑자에서 몇 번째인지(대운 간지는 여기서 한 칸씩 앞뒤로 간다) */
-  function sjDaeunStart(p,male,jd0){
-    var fwd=(p.y.s%2===0)===male;
-    var birth=new Date(Math.round((jd0-2440587.5)*86400000)+9*3600000),y=birth.getUTCFullYear(),termJd=null,gap=Infinity;
-    for(var yy=y-1;yy<=y+1;yy++)for(var i=0;i<SJ_TERM.length;i+=2){
-      var jd=sjTermJd(yy,SJ_TERM[i][1]),dt=(jd-jd0)*(fwd?1:-1);
-      // 절입 순간과 정확히 같으면 양쪽 모두 0. 부동소수점 오차(1ms 미만)만 허용한다.
-      if(dt>=-1e-8&&dt<gap){gap=Math.max(0,dt);termJd=jd;}}
-    var minutes=Math.round(gap*1440),days=minutes/1440,years=Math.floor(minutes/4320),months=Math.floor(minutes%4320/360),spanDays=Math.floor(minutes%360/12),spanMinutes=minutes%12*120;
-    var su=Math.max(1,Math.min(10,Math.round(days/3)));
-    var m60=0;for(var k=0;k<60;k++)if(k%10===p.m.s&&k%12===p.m.b){m60=k;break;}
-    return {fwd:fwd,days:days,su:su,m60:m60,termJd:termJd,years:years,months:months,spanDays:spanDays,spanMinutes:spanMinutes,
-      start:sjDaeunDate(birth.getTime(),years*12+months,spanDays,spanMinutes)};}
-  // 달력의 연·월을 먼저 더한다. 월말·윤일은 도착 월의 말일로 맞춘 뒤 일·분을 더한다(KST 달력을 UTC 슬롯에 담음).
-  function sjDaeunDate(ms,months,days,minutes){var t=new Date(ms),d=t.getUTCDate();t.setUTCDate(1);t.setUTCMonth(t.getUTCMonth()+months);
-    var last=new Date(Date.UTC(t.getUTCFullYear(),t.getUTCMonth()+1,0)).getUTCDate();t.setUTCDate(Math.min(d,last));
-    t.setUTCDate(t.getUTCDate()+(days||0));t.setUTCMinutes(t.getUTCMinutes()+(minutes||0));return t.getTime();}
-  function sjDaeunYm(ms){var t=new Date(ms);return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월";}
-  function sjDaeunIntro(da){return "첫 대운은 "+da.years+"년 "+da.months+"개월 뒤인 "+sjDaeunYm(da.start)+" 무렵부터 들어와요";}
-  // 격국 — 월지 본기의 십성으로 판정
-  var SJ_GYEOK={"비견":"건록격","겁재":"양인격","식신":"식신격","상관":"상관격","편재":"편재격","정재":"정재격","편관":"편관격","정관":"정관격","편인":"편인격","정인":"정인격"};
   var SJ_GYEOK_DESC={
    "건록격":"내 이름으로 일을 일구는 구조예요. 독립·전문직·자기 사업처럼 내 몫이 분명한 자리에서 기반이 쌓여요.",
    "양인격":"승부가 걸린 자리에서 힘이 붙는 구조예요. 평소엔 그 힘을 운동이나 전문 기술로 풀어 주면 좋아요.",
@@ -552,27 +758,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
    "정관격":"질서와 명예를 중히 여기는 구조예요. 원칙대로 갈 때 인정받으니 공직·대기업·전문 자격 쪽이 잘 맞아요.",
    "편인격":"독특한 관점과 직관의 구조예요. 남들이 안 보는 걸 보니 전문 연구·기술·예술처럼 깊이 파는 데서 빛나요.",
    "정인격":"배우고 품는 구조예요. 학문·교육·상담처럼 지식을 쌓아 나누는 일에서 인정받고 귀인의 도움도 따라요."};
-  function sjTenGod(dayS,otherS){ // 십성
-    var de=SJ_ES[dayS],oe=SJ_ES[otherS],same=(dayS%2)===(otherS%2);
-    if(de===oe)return same?"비견":"겁재";
-    if((de+1)%5===oe)return same?"식신":"상관";
-    if((de+2)%5===oe)return same?"편재":"정재";
-    if((oe+2)%5===de)return same?"편관":"정관";
-    return same?"편인":"정인";}
-  /* 사주 결과 '상위 N%' — 1950~2009년생 모든 날짜 × 12시진(262,980건; 시각 모름은 날짜 21,915건)을 이 엔진으로 돌려 센
-     십성 무리(비겁·식상·재성·관성·인성)별 칸 수 분포(h: 시각 있음 7칸, n: 시각 모름 5칸). 지어낸 순위가 아니다.
-     tools/sajupct/make_pct.js 가 만들고 verify.js 가 표본으로 다시 재서 맞춰 본다 */
-  var SJ_PCT={h:[[57009,95468,70369,30390,8131,1435,167,11],[58711,93694,69691,30357,8735,1601,181,10],[57355,94854,70340,30761,8187,1335,142,6],[55827,96037,71867,30102,7775,1262,106,4],[57820,94638,70081,30290,8436,1540,166,9]],
-    n:[[7334,8778,4449,1185,157,12,0,0],[7324,8790,4451,1176,163,11,0,0],[7335,8786,4451,1168,165,10,0,0],[7325,8801,4439,1169,171,10,0,0],[7328,8787,4465,1161,163,11,0,0]]};
-  var SJ_GRP5=["비겁","식상","재성","관성","인성"];
-  // 칸 수가 c 이상인 사람의 비율(%) = "상위 N%". 1 아래는 1로 둔다
-  function sjPct(gi,c,hasH){var a=SJ_PCT[hasH?"h":"n"][gi],t=0,s=0;for(var i=0;i<a.length;i++){t+=a[i];if(i>=c)s+=a[i];}return Math.max(1,Math.round(s/t*100));}
   /* 사주 결과 맨 위 '한 장 요약' — 일주 별명(sj/ilju.json 의 t, 결과가 뜬 뒤 채운다)·큰 일간 글자·칩·오행 칸·십성 별 그림·상위 N%·풀이 한 스푼.
      o: {p, cnt(오행 5), G(십성 무리 {비겁..}), strong, yEl, nm(호칭, 없으면 ""), hasH}. 문장은 보살 말투, 근거 주석만 존댓말 */
-  // 칸이 하나 이상인 무리 가운데 드문 순서로 셋. 평범한 값(상위 60% 밖)은 빼되, 하나도 없으면 가장 드문 하나는 보여 준다
-  function sjPcList(G,hasH){
-    return SJ_GRP5.map(function(k,i){return {k:k,c:G[k],v:sjPct(i,G[k],hasH)};}).filter(function(x){return x.c>0;}).sort(function(a,b){return a.v-b.v||b.c-a.c;})
-      .filter(function(x,i){return x.v<=60||i===0;}).slice(0,3);}
   /* 한 장 요약을 그림 한 장(1080 폭)으로 — 화면 카드와 같은 어두운 금빛. 생년월일은 싣지 않는다(공유 카드 규칙)
      d={ttl,sub,arch,archd,glyph:{ch,el},chips:[],five:[[목..수 개수]],radar:{lab:[],val:[],top},pcts:[[v,설명]],line} */
   function sumCanvas(d){
@@ -654,10 +841,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<div class="ss-spoon"><b>풀이 한 스푼</b>오행은 세상을 이루는 다섯 기운, 나무·불·흙·쇠·물이에요. 위 다섯 칸이 '+(who?who+josa(who,"가/이"):'내가')+' 타고난 기운의 균형이고, 별 모양 그림은 여덟 글자가 나·표현·재물·명예·학문 가운데 어디에 무게를 싣는지 보여 줘요.</div>'+
       '</div>';}
   /* 앞으로 열두 달 그래프 — 사주 '달마다 흐름'이 매긴 달 점수(MSC: [{y,m,sc}])를 꺾은선으로. 힘이 실리는 달(3점 이상) 금색, 아낄 달(0점 아래) 붉은 점 */
-  /* 열두 달 가운데 힘이 실리는 달(점수 3 이상 가운데 높은 셋)·아낄 달(0 아래 가운데 낮은 둘) — 한 장 요약과 '달마다 흐름'이 같은 달을 말하게(2026-10-12 검수: 둘이 달랐음). 보여 줄 땐 달 순서 */
-  function sjMonthPick(M){var byI=function(a,b){return a.i-b.i;};
-    return {best:M.filter(function(x){return x.sc>=3&&!x.ch;}).sort(function(a,b){return b.sc-a.sc||a.i-b.i;}).slice(0,3).sort(byI),
-      worst:M.filter(function(x){return x.sc<0;}).sort(function(a,b){return a.sc-b.sc||a.i-b.i;}).slice(0,2).sort(byI)};}
   function sjMonthSvg(M){
     if(!M||M.length<2)return "";
     var W=300,H=130,L=12,Rr=12,T=18,B=28,vs=M.map(function(x){return x.sc;}),hi=Math.max(4,Math.max.apply(null,vs)),lo=Math.min(-2,Math.min.apply(null,vs));
@@ -674,9 +857,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
       '<p class="ss-line">'+(best.length?'힘이 실리는 달은 <b>'+best.join("·")+'</b>':'크게 튀는 달 없이 고르게 가요')+(bad.length?', 몸과 돈을 아낄 달은 <b>'+bad.join("·")+'</b>이에요.':best.length?'이에요.':'.')+' 자세한 풀이는 아래 ‘달마다 흐름’에 있어요.</p>';}
   /* 궁합·신년운세용 한 장 요약 — 사주 것(sjSumHtml)과 같은 어두운 금빛 카드. 점수 축(0~100)을 별 그림으로.
      o={ttl,sub,arch,archd,chips:[],axes:[[이름,점수]],spoon} — 상위 %는 실측 분포가 없어 싣지 않는다 */
-  // 궁합 점수 분포(35~99점 칸별 개수) — tools/sajupct/make_gh_pct.js 로 1950~2009년생 짝 20만 쌍(시각 모름)을 같은 점수 함수로 돌린 값
-  var GH_PCT=[0,0,0,0,0,0,0,0,227,0,0,142,0,200,0,244,767,0,137,1155,2993,638,0,1865,1137,2806,355,2208,7071,1180,1881,9940,11236,5851,767,5895,9585,10310,3961,3874,8049,11389,7415,6244,4925,6630,7618,2893,5936,9139,2851,4699,2301,5319,6481,1486,1381,2029,2099,4092,965,1938,1146,1106,5444];
-  function ghPct(sc){var t=0,c=0;for(var i=0;i<GH_PCT.length;i++){t+=GH_PCT[i];if(i+35>=sc)c+=GH_PCT[i];}return Math.max(1,Math.round(c/t*100));}
   function sumCard(o){
     var A=o.axes,N=A.length,cx=130,cy=116,R=78,mx=A.reduce(function(m,x){return x[1]>m[1]?x:m;}),mn=A.reduce(function(m,x){return x[1]<m[1]?x:m;});
     var pt=function(k,r){var a=(-90+360/N*k)*Math.PI/180;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];};
@@ -752,53 +932,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     var cols=[["시각 자리",p.h?cell(p.h.s,p.h.b):'<div class="sj-cell"><div class="sj-han" style="opacity:.25">?</div><div class="sj-ko">시각 모름</div></div>'],
       [dayLabel,cell(p.d.s,p.d.b)],["달 자리",cell(p.m.s,p.m.b)],["해 자리",cell(p.y.s,p.y.b)]];
     return '<div class="sj-grid">'+cols.map(function(c){return '<div class="sj-col"><div class="h">'+c[0]+'</div>'+c[1]+'</div>';}).join("")+'</div>';}
-  var TF_BASE={"비견":78,"겁재":62,"식신":85,"상관":68,"편재":80,"정재":83,"편관":58,"정관":82,"편인":65,"정인":84};
   // 오늘의 운세 한 줄 요약(십성별) — 홈 오늘 카드와 오늘의 운세 결과가 같이 쓴다
   var TF_LINE={"비견":"내 걸음대로 가도 좋은 날. 돈은 각자 계산.","겁재":"마음 넉넉한 날. 쓸 한도만 정해 둘 것.","식신":"말도 복도 술술 풀리는 날. 담아 둔 말은 꺼낼 것.","상관":"아이디어 번뜩이는 날. 입만 한 박자 늦출 것.","편재":"큰돈과 기회가 오가는 날. 계산기부터 두드릴 것.","정재":"성실함이 돈이 되는 날. 확실한 쪽을 잡을 것.","편관":"도전이 오는 날. 정면으로 가되 몸은 아낄 것.","정관":"인정받는 날. 원칙대로 가는 게 지름길.","편인":"생각이 깊어지는 날. 결정은 내일로.","정인":"도움이 찾아오는 날. 혼자 애쓰지 말 것."};
-  function tfGrade(s){return s>=85?"대길":s>=75?"길":s>=60?"평온":"주의";}
-  /* 오늘 점수 — (내 일간 ds, 내 일지 db, 필요한 기운 yong)과 오늘 일진 today 로 정해진다. tfToday 와 상위 %(tfPct)가 같이 쓴다 */
-  function tfScore(ds,db,yong,today){
-    var score=TF_BASE[sjTenGod(ds,today.d.s)],tB=today.d.b,art="";
-    if(db%4===tB%4&&db!==tB){score+=8;art="삼합";}
-    else if(Math.abs(db-tB)===6){score-=10;art="충";}
-    else if(sjYukhap(db)===tB){score+=6;art="육합";}
-    var todayEl=SJ_ES[today.d.s],yongHit=todayEl===yong,yongClash=(todayEl+2)%5===yong;
-    if(yongHit)score+=5;else if(yongClash)score-=3;
-    return {score:Math.max(35,Math.min(98,score)),art:art,todayEl:todayEl,yongHit:yongHit,yongClash:yongClash};}
-  function tfToday(y,m,d,now){
-    now=now||new Date();
-    var me=sjPillars(y,m,d,null,0,false),today=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
-    var st=sjStrength(me),r=tfScore(me.d.s,me.d.b,st.yong,today);
-    return {me:me,today:today,rel:sjTenGod(me.d.s,today.d.s),score:r.score,grade:tfGrade(r.score),art:r.art,st:st,todayEl:r.todayEl,yongHit:r.yongHit,yongClash:r.yongClash};}
-  // 1950~2009년생(시각 모름) 60일주 × 필요한 기운(목화토금수) 칸별 사람 수 — tools/sajupct/make_tf_pct.js 로 잰 값
-  var TF_PCT=[[0,178,0,0,187],[0,56,0,0,309],[184,0,181,0,0],[186,0,179,0,0],[0,131,0,234,0],[0,132,0,233,0],[0,0,269,0,96],[0,0,128,0,237],[183,0,0,182,0],[182,0,0,183,0],[0,55,0,0,310],[0,178,0,0,187],[303,0,62,0,0],[305,0,60,0,0],[0,269,0,96,0],[0,269,0,96,0],[0,0,130,0,235],[0,0,269,0,96],[58,0,0,307,0],[59,0,0,306,0],[0,56,0,0,309],[0,55,0,0,310],[305,0,60,0,0],[305,0,60,0,0],[0,268,0,97,0],[0,133,0,232,0],[0,0,269,0,96],[0,0,269,0,96],[59,0,0,306,0],[59,0,0,306,0],[0,56,0,0,309],[0,56,0,0,309],[307,0,59,0,0],[306,0,60,0,0],[0,135,0,231,0],[0,271,0,95,0],[0,0,274,0,92],[0,0,131,0,235],[57,0,0,309,0],[59,0,0,307,0],[0,56,0,0,310],[0,55,0,0,311],[183,0,183,0,0],[307,0,59,0,0],[0,270,0,96,0],[0,271,0,95,0],[0,0,129,0,237],[0,0,268,0,97],[180,0,0,185,0],[58,0,0,307,0],[0,174,0,0,191],[0,174,0,0,191],[305,0,60,0,0],[186,0,179,0,0],[0,132,0,233,0],[0,133,0,232,0],[0,0,127,0,238],[0,0,129,0,236],[58,0,0,307,0],[180,0,0,185,0]];
-  // 오늘 이 점수 이상인 사람의 비율(상위 N%) — 같은 날 모든 1950~2009년생을 같은 식으로 매긴 것
-  function tfPct(score,today){var t=0,c=0;for(var i=0;i<60;i++)for(var e=0;e<5;e++){var n=TF_PCT[i][e];if(!n)continue;t+=n;if(tfScore(i%10,i%12,e,today).score>=score)c+=n;}return Math.max(1,Math.round(c/t*100));}
-  /* 출생 당시 한국 시계가 지금 표준시(UTC+9)와 몇 분 달랐나.
-     IANA tzdb Asia/Seoul·Rule ROK 기준: 1954-03-21~1961-08-10 표준시 UTC+8:30, 서머타임 +1시간.
-     1987·88년 기간은 tzdb·국가기록원·언론 기록이 같다. 1948~60년 기간은 tzdb 날짜를 쓰되
-     국가기록원은 "1949~1961년, 대개 5~9월"로만 적어 기록마다 조금 다르다.
-     https://data.iana.org/time-zones/tzdb/asia — [시작 현지 시각, 종료 직전 현지 시각]. 24:00은 다음 날 00:00으로 적는다. */
-  var KR_DST=[["1948-06-01T00:00","1948-09-13T00:00"],["1949-04-03T00:00","1949-09-11T00:00"],["1950-04-01T00:00","1950-09-10T00:00"],["1951-05-06T00:00","1951-09-09T00:00"],
-    ["1955-05-05T00:00","1955-09-09T00:00"],["1956-05-20T00:00","1956-09-30T00:00"],["1957-05-05T00:00","1957-09-22T00:00"],["1958-05-04T00:00","1958-09-21T00:00"],
-    ["1959-05-03T00:00","1959-09-20T00:00"],["1960-05-01T00:00","1960-09-18T00:00"],["1987-05-10T02:00","1987-10-11T03:00"],["1988-05-08T02:00","1988-10-09T03:00"]];
-  function krClockShift(y,m,d,h,mi){
-    var k=Date.UTC(y,m-1,d,h==null?12:h,mi||0),dst=false;
-    // 1954년 자정에 23:30으로 되돌린 30분은 변경 후 UTC+8:30으로 해석한다. 1961년 전환도 현지 자정이다.
-    var std830=k>=Date.UTC(1954,2,20,23,30)&&k<Date.UTC(1961,7,10);
-    KR_DST.forEach(function(r){
-      // 종료 때 반복되는 한 시간은 표준시로 해석하므로 종료 직전 시각에서 60분을 뺀다.
-      if(k>=Date.parse(r[0]+"Z")&&k<Date.parse(r[1]+"Z")-3600000)dst=true;});
-    return {min:(std830?-30:0)+(dst?60:0),dst:dst,std830:std830};}
-  function sjKst(jd){var t=new Date(Math.round((jd-2440587.5)*86400000)+9*3600000);
-    return t.getUTCFullYear()+"년 "+(t.getUTCMonth()+1)+"월 "+t.getUTCDate()+"일 "+String(t.getUTCHours()).padStart(2,"0")+":"+String(t.getUTCMinutes()).padStart(2,"0");}
-  // 태어난 순간의 앞뒤 월 절기(황경 315+30k°) — 월주가 어느 절기부터 시작됐는지 보여 준다
-  function sjMonthTerms(jd){
-    var L=sjSunLong(jd),k=Math.floor((((L-315)%360)+360)%360/30),deg=(315+30*k)%360,y=new Date(Math.round((jd-2440587.5)*86400000)).getUTCFullYear();
-    var prev=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,deg);}).filter(function(j){return j<=jd;}).pop();
-    var nd=(deg+30)%360,next=[y-1,y,y+1].map(function(Y){return sjTermJd(Y,nd);}).filter(function(j){return j>jd;})[0];
-    var nm=function(g){for(var i=0;i<SJ_TERM.length;i++)if(SJ_TERM[i][1]===g)return SJ_TERM[i][0];};
-    return {L:L,prev:prev,prevName:nm(deg),next:next,nextName:nm(nd)};}
   /* 계산 근거 — 결과가 어떤 계산에서 나왔는지 존댓말로 밝힌다(풀이는 보살 말투, 근거 고지는 존댓말).
      o: {y,mo,d,h,corr,male,p,su,days,fwd} */
   function sjBasisHtml(o){
@@ -878,26 +1013,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     b.addEventListener("click",copy);b.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();copy();}});}
   /* 띠 오늘 점수 — 띠별 운세와 홈 "오늘의 띠 순위"가 같이 쓴다.
      띠(연지)와 오늘 일지의 관계로 기본점수, 오늘 천간이 띠 본기 천간에 갖는 십성으로 보정한다. */
-  var ZF_BASE={"삼합":88,"육합":84,"복음":74,"평":72,"해":60,"형":56,"충":52};
-  var ZF_TG={"식신":4,"정재":4,"정관":3,"정인":4,"편재":2,"비견":0,"상관":-3,"편인":-2,"겁재":-5,"편관":-5};
   var ZF_LINE={"삼합":"사람이 붙는 날","육합":"걸림 없이 맞물리는 날","복음":"좋고 나쁨이 진해지는 날","평":"평평하게 흘러가는 날",
     "해":"작은 어긋남을 조심할 날","형":"밀어붙이면 마찰이 나는 날","충":"변수가 튀어나오는 날"};
   // 오늘 천간이 띠 본기에 갖는 십성을 짧게 — 띠 운세 총운과 홈 순위(합충 없는 "평"인 띠)가 쓴다
   var ZF_TGW={"비견":"내 힘으로 밀고 가는","겁재":"지출이 새기 쉬운","식신":"표현과 먹을 복이 좋은","상관":"말이 앞서기 쉬운","편재":"큰돈이 움직이는","정재":"성실함이 돈이 되는","편관":"압박과 도전이 따르는","정관":"원칙이 통하는","편인":"생각이 깊어지는","정인":"귀인과 문서의"};
-  function zfRel(b,t){
-    if(Math.abs(b-t)===6)return"충";
-    var H=[[0,3],[2,5],[5,8],[8,2],[1,10],[10,7],[7,1]],i;
-    for(i=0;i<H.length;i++)if((H[i][0]===b&&H[i][1]===t)||(H[i][0]===t&&H[i][1]===b))return"형";
-    var Y=[[0,7],[1,6],[2,5],[3,4],[8,11],[9,10]];
-    for(i=0;i<Y.length;i++)if((Y[i][0]===b&&Y[i][1]===t)||(Y[i][0]===t&&Y[i][1]===b))return"해";
-    if(b===t)return"복음";
-    if(b%4===t%4)return"삼합";
-    if(sjYukhap(b)===t)return"육합";
-    return"평";}
-  function zfScore(b,today){var rel=zfRel(b,today.d.b),tg=sjTenGod(SJ_BMAIN[b],today.d.s);
-    return {rel:rel,tg:tg,score:Math.max(35,Math.min(98,ZF_BASE[rel]+(ZF_TG[tg]||0)))};}
-  /* 띠별 운세 깊이 풀이 — 원고 D(content_zodiac_fortune.js → zf/deep.json)에서 오늘 일진과 내 띠의 관계(7)·오늘 하늘 글자의 역할(10)·띠(12)에 맞는 문장을 고른다.
-     순수 함수 — verify 가 12띠 × 60일진으로 검사한다. art 는 관계 그림(있으면 총운 첫 문단 앞에 붙는다) */
   function zfDeep(b,today,D,art){var zf=zfScore(b,today),rel=zf.rel,tg=zf.tg;
     return {rel:rel,tg:tg,secs:[
       {k:"gen",h:"오늘의 총운",p:[(art||"")+D.gen[b][rel],D.tg[tg]]},
@@ -992,9 +1111,6 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(s.list)h+='<ol class="gh-tips">'+s.list.map(function(x){return '<li>'+x+'</li>';}).join("")+'</ol>';
     if(s.grid)h+='<div class="tj-grid">'+s.grid.map(function(c){return '<div class="tj-c'+(c.cur?' cur':'')+'"><div class="a">음력 '+c.m+'월</div><div class="g '+c.f+'1">'+c.lab+'</div><div class="a">'+(c.d||"&nbsp;")+'</div></div>';}).join("")+'</div>';
     if(s.n)h+='<p class="gh-note">'+s.n+'</p>';return h+'</div>';}
-  // 12띠를 오늘 점수순으로 — 같은 점수면 자·축·인… 순서
-  function zfRank(now){now=now||new Date();var t=sjPillars(now.getFullYear(),now.getMonth()+1,now.getDate(),null,0,false);
-    return SJ_TTI.map(function(n,b){var z=zfScore(b,t);z.b=b;return z;}).sort(function(x,y){return y.score-x.score||x.b-y.b;});}
   // 띠·별자리 운세 맨 위에 붙이는 "내 개인 오늘" — 생일을 모르면 빈 문자열
   function tfPersonalBox(birth){
     var p=(birth||"").split("-");if(p.length<3||!+p[0])return "";

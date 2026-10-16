@@ -1,5 +1,5 @@
 /* 스레드 일일 원고 생성기.
-   hub.html의 만세력 엔진과 원고를 그대로 읽어 그날 일진으로 글을 조립한다.
+   공용 만세력 엔진과 hub.html의 원고를 읽어 그날 일진으로 글을 조립한다.
    지어내는 문장이 없으므로, 글을 보고 사이트에 온 사람이 같은 값을 본다.
 
    실행:  node threads_daily.js            → 오늘
@@ -11,10 +11,12 @@ const path = require("path");
 
 const src = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8");
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-eval(inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")));
-eval(inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS")));
+const engine = require("./engine/saju.js"), names = Object.keys(engine);
+const { sjPillars, sjTenGod, SJ_S, SJ_B, SJ_SH, SJ_BH, SJ_TTI, SJ_EL, SJ_ES } = engine;
 const tfSrc = inner.slice(inner.indexOf('{id:"todayfortune"'));
-eval(tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")));
+// 원고 조립만 hub.html에서 읽고 계산은 공용 엔진을 주입한다.
+const TXT = new Function(...names, inner.slice(inner.indexOf("var num="), inner.indexOf("var TOOLS=")) + "\n" +
+  tfSrc.slice(tfSrc.indexOf("var TXT="), tfSrc.indexOf("el.innerHTML=")) + "\nreturn TXT;")(...names.map(n => engine[n]));
 
 const NL = String.fromCharCode(10);
 const WD = ["일", "월", "화", "수", "목", "금", "토"];

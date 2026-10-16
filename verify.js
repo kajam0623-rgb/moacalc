@@ -5,9 +5,10 @@ const fs = require("fs");
 const src = fs.readFileSync("hub.html", "utf8");
 const bs = fs.readFileSync("build_site.js", "utf8"); // 페이지 마크업(사이드바 이미지 등) 검사용
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-const engine = inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared"));
-const shared = inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS"));
-eval(engine); eval(shared);
+const engine = require("./engine/saju.js");
+var { SJ_S, SJ_SH, SJ_B, SJ_BH, SJ_TTI, SJ_ES, SJ_EB, SJ_BMAIN, SJ_EL, SJ_LUCK, SJ_HOUR, sjYukhap, sjJdn, sjSunLong, SJ_VSOP, sjJdKST, SJ_TERM_CACHE, SJ_IPCHUN_CACHE, sjIpchun, sjTermJd, SJ_TERM, SJ_REGIONS, sjRegion, sjPillars, sjStrength, SJ_UN, SJ_JS, sjUnseong, SJ_CHEONEUL, SJ_MUNCHANG, SJ_SUN, sjGongmang, subBal, GH_GRP, ghTg, ghEl, GH_YB, ghYear, SJ_YANGIN, sjSamhap, SJ_DOHWA, SJ_YEOKMA, SJ_HWAGAE, SJ_BAEKHO, SJ_GWAEGANG, sjSeason, sjCelebFeat, sjDuScores, SJ_HONGYEOM, SJ_HYEONCHIM_S, SJ_HYEONCHIM_B, SJ_GWIMUN, SJ_WONJIN, sjSinsal, SJ_JJG, sjDaeunStart, sjDaeunDate, sjDaeunYm, sjDaeunIntro, SJ_GYEOK, sjTenGod, SJ_PCT, SJ_GRP5, sjPct, sjPcList, sjMonthPick, GH_PCT, ghPct, TF_BASE, tfGrade, tfScore, tfToday, TF_PCT, tfPct, KR_DST, krClockShift, sjKst, sjMonthTerms, ZF_BASE, ZF_TG, zfRel, zfScore, zfRank, nyScore, nyPct, tjCalc } = engine;
+const shared = inner.slice(inner.indexOf("var num="), inner.indexOf("var TOOLS="));
+eval(shared);
 
 let pass = 0, fail = 0;
 function t(name, got, want) {
@@ -120,7 +121,9 @@ for (const y of [2000, 2026, 2030]) {
   };
   let seed = 19870510, calls = 0;
   const random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296);
-  const sun = sjSunLong; sjSunLong = jd => { calls++; return sun(jd); };
+  // CommonJS 내부 호출도 관찰한다. 지역 변수 재대입은 모듈의 클로저를 바꾸지 않는다.
+  const cos = Math.cos; Math.cos = x => { calls++; return cos(x); };
+  try {
   for (let i = 0; i < 100; i++) {
     const y = 1900 + Math.floor(random() * 201), deg = Math.floor(random() * 36000) / 100;
     const expected = uncached(y, deg), actual = sjTermJd(y, deg), n = calls;
@@ -128,7 +131,7 @@ for (const y of [2000, 2026, 2030]) {
   }
   const ip = sjIpchun(2026), n = calls;
   t("입춘 캐시도 값 동일·재계산 없음", sjIpchun(2026) === ip && calls === n, true);
-  sjSunLong = sun;
+  } finally { Math.cos = cos; }
 }
 
 // 가상 시계로 단계 수가 달라도 완료 콜백은 3000ms에 한 번만 실행되는지 확인한다.
@@ -479,9 +482,9 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
     t("배우기: 실습 열여섯 가지가 모두 정의돼 있다", [...lsrc.matchAll(/DEF\[(\d+)\] =/g)].map(m => +m[1]).sort((a, b) => a - b).join(","), "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16");
     let lsyn = ""; try { new Function(lsrc); } catch (e) { lsyn = e.message; }
     t("배우기: learn_client.js 구문", lsyn, "");
-    // 실습 코드가 쓰는 core.js 전역이 hub.html 엔진·공용 헬퍼에 실제로 있다
+    // 실습 코드가 쓰는 core.js 전역이 공용 엔진·화면 헬퍼에 실제로 있다
     const used = ["sjPillars", "sjStrength", "sjTenGod", "sjUnseong", "sjSinsal", "sjSamhap", "sjYukhap", "sjDaeunStart", "sjJdKST", "sjMonthTerms", "sjKst", "sjIpchun", "sjHourOpts", "sjGridHtml", "birthDial", "SJ_JJG", "SJ_JS", "SJ_BMAIN", "SJ_GYEOK", "SJ_GYEOK_DESC", "SJ_SINSAL_DESC", "SJ_DOHWA", "SJ_YONG", "SJ_UN"];
-    t("배우기: 실습이 쓰는 전역 함수·표가 hub.html 에 정의돼 있다", used.filter(n => !new RegExp("function " + n + "\\(|var " + n + "\\s*=|," + n + "=").test(src)).join(","), "");
+    t("배우기: 실습이 쓰는 전역 함수·표가 공용 엔진 또는 hub.html 에 정의돼 있다", used.filter(n => !(n in engine) && !new RegExp("function " + n + "\\(|var " + n + "\\s*=|," + n + "=").test(src)).join(","), "");
     t("배우기: 실습은 생년월일을 저장하지 않는다(진도 키만 저장)", /localStorage\.setItem\(KEY/.test(lsrc) && !/setItem\([^)]*(birth|생일|dnbs")/.test(lsrc) && /var KEY = "dnbs_learn"/.test(lsrc), true);
     t("배우기: 실습 통계 이벤트 이름을 서버가 허용", /const EVENTS = new Set\(\[[^\]]*"learn_practice"/.test(fs.readFileSync("worker.js", "utf8")) && lsrc.includes('track("learn_practice"'), true);
     t("배우기: 허브·강의 페이지·끼워 넣기 빌드 코드", ["function learnHubPage()", "function lecturePage(", "function lectureByPage(", "learnBar(lec)", "learnBottom(lec)", 'smUrl("learn.html")'].every(x => bs.includes(x)), true);
@@ -504,8 +507,7 @@ t("용신 문장에 하드코딩 조사 없음", !/EL_HAN\.charAt\(st\.yong\)\+'
 
 // ── 토정비결 작괘 — 출처 예제(chunun·badukworld·만복가)와 2026 벡터 ──
 {
-  const tjSrc = toolBlock("tojeong");
-  const tjCalc = new Function("return " + tjSrc.slice(tjSrc.indexOf("function tjCalc"), tjSrc.indexOf("    var nowD=new Date(),Y0")))();
+  const { tjCalc } = engine;
   const KLC = require("./vendor-lunar.js");
   const jdn = (y, m, d) => { const a = Math.floor((14 - m) / 12), yy = y + 4800 - a, mm = m + 12 * a - 3; return d + Math.floor((153 * mm + 2) / 5) + 365 * yy + Math.floor(yy / 4) - Math.floor(yy / 100) + Math.floor(yy / 400) - 32045; };
   const gz = (y, m, d) => { const i = (jdn(y, m, d) + 49) % 60; return [i % 10, i % 12]; };
@@ -687,9 +689,17 @@ t("홈 생일을 자세히·사주 페이지로 넘긴다(탭 안에서만, 한 
   t("궁합 깊은 풀이: 무작위 3000쌍 — 남은 토큰·undefined·존댓말 혼입·조사 오류·섹션 수·같은 문장 되풀이가 모두 0" + (cnt.dup ? " — 예: " + Object.keys(dupG).slice(0, 4).join(" | ") : ""), JSON.stringify(cnt), JSON.stringify({ token: 0, undef: 0, jondae: 0, josa: 0, secs: 0, dup: 0 }));
   t("궁합 깊은 풀이: 어느 쌍이든 글자 수(공백 제외)가 1600자 이상(2026-10-11 중복 걷어 냄) (최소 " + minLen + ")", minLen >= 1600, true);
   // 해별 점수는 신년운세 도구와 같은 식이다(십성 기본점수 표가 같고 삼합·육합 +5 / 충 -6)
-  { const nyb = toolBlock("newyear"), m1 = /var sc=\{([^}]*)\}\[sjTenGod\(ds,YS\)\]/.exec(nyb), m2 = /var GH_YB=\{([^}]*)\}/.exec(inner);
-    t("궁합 해별 점수표(GH_YB)가 신년운세 점수표와 같다", m1 && m2 && m1[1] === m2[1], true);
-    t("궁합 해별 점수는 신년운세와 같은 합충 가감(삼합·육합 +5, 충 -6)", inner.includes("if(b%4===yb%4&&b!==yb)sc+=5;else if(sjYukhap(b)===yb)sc+=5;else if(Math.abs(b-yb)===6)sc-=6;") && nyb.includes("if(b%4===YB%4&&b!==YB||sjYukhap(b)===YB)sc+=5;else if(Math.abs(b-YB)===6)sc-=6;"), true); }
+  { let baseSame = true, scoreSame = true;
+    for (let ds = 0; ds < 10; ds++) for (let Y = 2020; Y < 2080; Y++) {
+      const ys = (Y - 4) % 10, yb = (Y - 4) % 12;
+      if (nyScore(ds, yb, yb, ys, yb) !== GH_YB[sjTenGod(ds, ys)]) baseSame = false;
+      for (let b = 0; b < 12; b++) for (let d = 0; d < 12; d++) {
+        const p = { y: { b }, d: { s: ds, b: d } };
+        if (ghYear(p, Y).score !== nyScore(ds, b, d, ys, yb)) scoreSame = false;
+      }
+    }
+    t("궁합 해별 점수표(GH_YB)가 신년운세 점수표와 같다", baseSame, true);
+    t("궁합 해별 점수는 신년운세와 같은 합충 가감(삼합·육합 +5, 충 -6)", scoreSame, true); }
   // 점수 기준선: 합이 하나도 없는 평범한 조합이 노력형 인연에 몰리지 않는다(무작위 3000쌍: 중앙값 74~82, 노력형 35% 이하, 신중 10% 이하)
   { const gb = toolBlock("gunghap"), ps = gb.slice(gb.indexOf("function pts(a,b){"), gb.indexOf("function go(){")), pts = new Function("sjTenGod", "sjYukhap", "SJ_S", "SJ_B", "SJ_ES", "SJ_EB", "SJ_TTI", ps + "\nreturn pts;")(sjTenGod, sjYukhap, SJ_S, SJ_B, SJ_ES, SJ_EB, SJ_TTI);
     const sc = []; for (let i = 0; i < 3000; i++) { const a = RG(), b = RG(); sc.push(pts(sjPillars(a[0], a[1], a[2], null, 30, true), sjPillars(b[0], b[1], b[2], null, 30, true))[0]); }
@@ -969,7 +979,7 @@ const toolsSrc = inner.slice(inner.indexOf("var TOOLS="));
 // 문자열 리터럴(HTML·CSS 조각) 제거 후 실제 호출만 검사
 const codeOnly = toolsSrc.replace(/'(?:\\.|[^'\\])*'/g, "''").replace(/"(?:\\.|[^"\\])*"/g, '""');
 const called = [...codeOnly.matchAll(/(?:^|[^\w.$])([a-zA-Z_$][\w$]*)\s*\(/g)].map(m => m[1]);
-const known = new Set([...HELPERS, "fetch","encodeURIComponent","decodeURIComponent","iljuCardKey","ilKey","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
+const known = new Set([...HELPERS, ...Object.keys(engine), "fetch","encodeURIComponent","decodeURIComponent","iljuCardKey","ilKey","function","if","for","while","switch","catch","return","typeof","Math","Number","String","Array","Date","Set","Map","JSON","parseInt","parseFloat","isNaN","el","cb","render","calc","go","gen","draw","deal","cell","P","relB","pts","cnt6","strokes","mIdxOf","fromP","fromM","rate","name","require","console"]);
 const unknownCalls = [...new Set(called)].filter(n => !known.has(n) && !/^[A-Z]/.test(n) && !toolsSrc.includes("function "+n) && !toolsSrc.includes("var "+n+"=") && !toolsSrc.includes(n+"=function"));
 t("도구 스크립트: 미정의 헬퍼 호출 없음", unknownCalls.length === 0, true);
 if (unknownCalls.length) console.log("   ⚠ 의심 호출:", unknownCalls.join(", "));
@@ -1130,8 +1140,7 @@ t("사이트맵에 일주 포함", /ILJU_PAGES\.map\(p=>smUrl\("ilju-/.test(bs),
 t("일주는 UN_DESC(존댓말판)를 쓴다", /ILJU_SRC\.UN_DESC/.test(bs), true);
 t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S]{0,3000}SJ_UN_DESC/.test(bs), false);
 // ── 계산 근거: 출생 당시 시계(tzdb Asia/Seoul) · 월 절기 ──
-{ const hs = inner.slice(inner.indexOf("  var KR_DST="), inner.indexOf("  /* 계산 근거"));
-  const E = new Function("sjSunLong","sjTermJd","SJ_TERM", hs + "; return {krClockShift, sjMonthTerms, sjKst};")(sjSunLong, sjTermJd, SJ_TERM);
+{ const E = engine;
   t("시계 보정 1987-07-01 서머타임 +60분", E.krClockShift(1987,7,1).min, 60);
   t("시계 보정 1987-05-10 서머타임 첫날 +60분", E.krClockShift(1987,5,10,3,30).min, 60);
   t("시계 보정 1987-10-11 해제일 0분", E.krClockShift(1987,10,11).min, 0);
@@ -1552,8 +1561,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   const worst = Math.max(...[50, 60, 67, 75, 85, 95].map(sc => Math.abs(sh(GH_PCT, sc) - sh(R, sc))));
   t("궁합 상위 N%: GH_PCT 가 궁합 점수 함수로 다시 잰 표본(4만 쌍·다른 시드)과 2%p 안에서 맞는다", worst < 2, true);
   t("궁합 상위 N%: 표본 20만 쌍 · 점수가 높을수록 상위 %가 작아진다", GH_PCT.reduce((a, b) => a + b, 0) === 200000 && ghPct(90) < ghPct(70) && ghPct(70) < ghPct(50), true);
-  const a = src.indexOf("    function nyScore("), b = src.indexOf("    if(typeof fetch===\"function\")fetch(\"ny/deep.json\")");
-  const NY = new Function("sjTenGod", "sjYukhap", src.slice(a, b) + "\nreturn {nyScore,nyPct};")(sjTenGod, sjYukhap);
+  const NY = engine;
   t("신년 상위 N%: go 가 nyScore 를 쓰고(옛 셈 없음), 2027(丁未) 상위 %는 점수가 높을수록 작고 1~100 사이", [src.includes("var score=nyScore(me.d.s,yb,db,YS,YB);"), !src.includes('notes.forEach(function(n){if(n.indexOf("충")>=0)score-=6;'),
     NY.nyPct(90, 3, 7) < NY.nyPct(70, 3, 7), NY.nyPct(40, 3, 7) === 100, NY.nyPct(97, 3, 7) >= 1].join(","), "true,true,true,true,true");
   const sc = sumCard({ ttl: "두 사람 한 장 요약", sub: "s", arch: "a", archd: "d", chips: ["x"], axes: [["끌림", 73], ["안정", 65], ["소통", 76], ["생활", 54]], pct: { v: ghPct(90), t: "궁합 90점", n: "n" }, spoon: "s" }), sc2 = sumCard({ ttl: "t", sub: "s", arch: "a", archd: "d", axes: [["끌림", 50], ["안정", 50], ["소통", 50], ["생활", 50]], pct: { v: ghPct(55), t: "궁합 55점", n: "n" }, spoon: "s" });

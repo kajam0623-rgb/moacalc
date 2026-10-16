@@ -1,12 +1,13 @@
 // 궁합 '상위 N%' 표 — hub.html 궁합 도구의 점수 함수 pts(a,b)를 그대로 뽑아, 1950~2009년생 두 사람 짝(시각 모름)을
-// 고정 시드로 무작위 20만 쌍 돌려 점수 분포(35~99점 칸별 개수)를 센다. 결과(JSON 배열)를 hub.html 의 GH_PCT 에 넣는다.
+// 고정 시드로 무작위 20만 쌍 돌려 점수 분포(35~99점 칸별 개수)를 센다. 결과(JSON 배열)를 engine/saju.js 의 GH_PCT 에 넣는다.
 // 사용: node tools/sajupct/make_gh_pct.js [--n 200000]   verify.js 가 다른 시드 표본으로 다시 재서 맞춰 본다
 const fs = require("fs"), path = require("path");
 function load() {
   const src = fs.readFileSync(path.join(__dirname, "../../hub.html"), "utf8"), inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-  const eng = inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared"));
+  const eng = require("../../engine/saju.js"), names = Object.keys(eng);
   const a = inner.indexOf("    function pts(a,b){"), b = inner.indexOf("\n    }\n", a) + 6;
-  return new Function(eng + "\n" + inner.slice(a, b) + "\nreturn {sjPillars,pts};")();
+  // pts는 점수와 설명 문장을 함께 반환하므로 화면 쪽에 둔다.
+  return new Function(...names, inner.slice(a, b) + "\nreturn {sjPillars,pts};")(...names.map(n => eng[n]));
 }
 function make(n, seed) {
   const E = load(), H = new Array(65).fill(0), D0 = Date.UTC(1950, 0, 1), ND = Math.round((Date.UTC(2009, 11, 31) - D0) / 864e5) + 1;

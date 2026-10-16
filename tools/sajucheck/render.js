@@ -5,8 +5,9 @@ const fs = require("fs"), path = require("path"), vm = require("vm");
 const ROOT = path.join(__dirname, "..", "..");
 const src = fs.readFileSync(path.join(ROOT, "hub.html"), "utf8");
 const inner = src.match(/<script>([\s\S]*?)<\/script>/)[1];
-const engine = inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared"));
-const shared = inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS"));
+const engine = require("../../engine/saju.js");
+// 원고 조립·화면 헬퍼만 hub.html에서 읽고, 계산은 공용 모듈을 쓴다.
+const shared = inner.slice(inner.indexOf("var num="), inner.indexOf("var TOOLS="));
 const blk = (() => { const i = inner.indexOf('{id:"saju"'), j = inner.indexOf('{id:"', i + 8); return inner.slice(i, j).trim().replace(/,$/, ""); })();
 const COMBO = require(path.join(ROOT, "content_saju_combo.js")), VD = require(path.join(ROOT, "content_saju_verdict.js")), SY = require(path.join(ROOT, "content_saju_synth.js"));
 const J = { "sj/char.json": require(path.join(ROOT, "content_saju_char.js")), "sj/easy.json": require(path.join(ROOT, "content_saju_easy.js")), "sj/q.json": require(path.join(ROOT, "content_saju_q.js")) };
@@ -30,8 +31,9 @@ const ctx = { console, Math, Date, JSON, Object, Array, String, Number, RegExp, 
   Image: class { set src(v) {} }, window: { print() {}, addEventListener() {} },
   fetch: u => syncP({ ok: !!J[u], json: () => J[u] }),
   SAJU_GUNG: require(path.join(ROOT, "content_saju_gung.js")), SAJU_ILG: require(path.join(ROOT, "content_saju_ilgan.js")) };
+Object.assign(ctx, engine);
 vm.createContext(ctx);
-vm.runInContext(engine + "\n" + shared, ctx);
+vm.runInContext(shared, ctx);
 // 화면에 손대는 도우미는 비운다(결과 글만 본다). askWire 는 go 를 붙잡는다
 const NOOP = ["track", "birthDial", "foldAll", "plainWords", "fillBars", "slowReveal", "sjToon", "sjChapters", "bindSave", "bindSumShare", "bindShare", "bindYearFb", "tailAsk", "bindAiCopy", "iljuCardKey", "sjCelebFill"];
 NOOP.forEach(n => { ctx[n] = () => {}; });

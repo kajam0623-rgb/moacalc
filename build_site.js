@@ -17,6 +17,8 @@ const ADSENSE_CLIENT = "ca-pub-2579933973121542";  // 애드센스 게시자 ID
 const ADSENSE_SLOT = "";    // 광고 단위 슬롯 ID. 승인 후 광고 단위를 만들면 채운다
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c"; // IndexNow(빙·네이버 등) 색인 요청 키
 const src = fs.readFileSync(path.join(DIR, "hub.html"), "utf8");
+const SAJU = require("./engine/saju.js"), engineNames = Object.keys(SAJU);
+const engineSource = fs.readFileSync(path.join(DIR, "engine/saju.js"), "utf8");
 // 이름 궁합 안내글의 숫자(예시·FAQ·획수표)는 도구와 같은 함수(hub.html 의 NM 블록)로 만든다 — 손으로 쓴 숫자가 도구와 어긋나지 않게
 const NM = (() => { const a = src.indexOf("/*NM-BEGIN*/"), b = src.indexOf("/*NM-END*/"); if (a < 0 || b < a) throw new Error("hub.html 의 NM 블록을 찾지 못했습니다");
   return new Function(src.slice(a, b) + "\nreturn {nmJ:nmJ,nmChar:nmChar,nmCalc:nmCalc,nmBand:nmBand};")(); })();
@@ -1164,17 +1166,16 @@ const tarotChips = cur => { const g = cur ? tarotGroup(TAROT_PAGES.find(c=>c.en=
    조합하고, 나머지(일간별 십성·점수·십이운성·합충·행운)는 hub.html 만세력 엔진이
    그대로 계산한다. 즉 페이지마다 다른 것은 문장 조합이 아니라 계산 결과다.
 
-   엔진은 new Function으로 격리해 부른다. eval을 이 파일 스코프에 풀면
+   계산은 공용 엔진을 주입하고 원고 조립만 new Function으로 격리한다. eval을 이 파일 스코프에 풀면
    hub.html의 var가 build_site.js의 const(josa 등)와 이름이 부딪친다. */
-const ENGINE = new Function(
-  inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")) + "\n" +
-  (inner.match(/var TF_LINE=\{[^\n]*\};/) || [""])[0] + "\n" +   // TXT 의 한 줄 요약이 이걸 가리킨다
+const ENGINE = new Function(...engineNames,
+  helpers + "\n" +
   (function(){ const t = inner.slice(inner.indexOf('{id:"todayfortune"'));
                return t.slice(t.indexOf("var TXT="), t.indexOf("el.innerHTML=")); })() + "\n" +
   "return {SJ_S,SJ_SH,SJ_B,SJ_BH,SJ_TTI,SJ_EL,SJ_ES,SJ_EB,SJ_BMAIN,SJ_LUCK,SJ_HOUR,SJ_UN,SJ_UN_DESC," +
   "sjPillars,sjTenGod,sjUnseong,sjYukhap,sjGongmang,SJ_SUN,subBal,ghDeep,ghFill,ghYear,sjChar,nyDeep,TXT," +
   "sjStrength,sjSinsal,sjDaeunStart,sjJdKST,SJ_JJG,SJ_GYEOK,SJ_CHEONEUL,SJ_MUNCHANG,SJ_YANGIN,SJ_DOHWA,SJ_YEOKMA,SJ_HWAGAE,SJ_BAEKHO,SJ_GWAEGANG," +
-  "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")();
+  "stOf,ST_KO,ST_SYM,ST_RANGE,ST_ELE,ST_RULER,ST_ASP,sjTermJd,SJ_TERM};")(...engineNames.map(n => SAJU[n]));
 
 
 /* 별자리 월간 운세.
@@ -1203,10 +1204,8 @@ function starMonthSection(s, myIdx){
    그래서 날짜마다 별자리 12·띠 12 페이지와 두 허브에 들어갈 글을 today/YYYY-MM-DD.json 으로 미리 만들고,
    worker.js 가 그날(한국 시각) 파일을 읽어 #today-sv 자리에 끼운다.
    점수·원고·쉬운 말 바꾸기는 도구와 같은 함수다 — verify.js 처럼 엔진과 공용 구간을 그대로 불러 쓴다. */
-const FORT = new Function(
-  inner.slice(inner.indexOf("var SJ_S="), inner.indexOf("// ---------- shared")) + "\n" +
-  inner.slice(inner.indexOf("function earnedDed"), inner.indexOf("// ---------- TOOLS")) + "\n" +
-  "return {hsDeep,hsGrade,zfDeep,zfScore,plainStr,sjPillars,HS_LINE,ZF_LINE,ST_KO,ST_SYM,SJ_S,SJ_B,SJ_SH,SJ_BH,WD_KO};")();
+const FORT = new Function(...engineNames, helpers + "\n" +
+  "return {hsDeep,hsGrade,zfDeep,zfScore,plainStr,sjPillars,HS_LINE,ZF_LINE,ST_KO,ST_SYM,SJ_S,SJ_B,SJ_SH,SJ_BH,WD_KO};")(...engineNames.map(n => SAJU[n]));
 const TODAY_DAYS = 90; // 빌드한 날부터 90일 치. 그 안에 다시 배포하지 않으면 자리가 빌 뿐 페이지는 그대로다
 function todayFortune(dt){
   const F = FORT, day = `${dt.getMonth()+1}월 ${dt.getDate()}일 ${F.WD_KO[dt.getDay()]}요일`, out = {};
@@ -2275,16 +2274,16 @@ function ahopsuPage() {
 }
 
 // ── 신살(sinsal.html 모음 + sinsal-<en>.html 8, 2026-10-09) — 원고 content_sinsal.js. 계산은 쪽에 붙인 사주 도구(t-saju.js 의 sjSinsal)가 한다.
-// 원고의 기준표가 도구 엔진(hub.html)의 표와 어긋나면 빌드를 멈춘다(페이지 설명과 도구 결과가 달라지는 것을 막는다)
+// 원고의 기준표가 공용 엔진의 표와 어긋나면 빌드를 멈춘다(페이지 설명과 도구 결과가 달라지는 것을 막는다)
 const SINSAL = require("./content_sinsal.js");
-{ const H = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8"), grab = re => { const m = H.match(re); if (!m) throw new Error("신살 엔진 표 못 찾음 " + re); return m[1]; };
+{
   const norm = s => s.replace(/\s|"/g, "");
-  const eng = { cheoneul: grab(/var SJ_CHEONEUL=(\{[^;]*\});/), munchang: grab(/var SJ_MUNCHANG=(\[[^;]*\]);/), dohwa: grab(/SJ_DOHWA=(\{[^}]*\})/), yeokma: grab(/SJ_YEOKMA=(\{[^}]*\})/),
-    hwagae: grab(/SJ_HWAGAE=(\{[^}]*\})/), yangin: grab(/var SJ_YANGIN=(\{[^;]*\});/), baekho: grab(/SJ_BAEKHO=(\[[^\]]*\])/), gwaegang: grab(/SJ_GWAEGANG=(\[[^\]]*\])/),
-    hongyeom: grab(/var SJ_HONGYEOM=(\[[^;]*\]);/), hyeonchimS: grab(/SJ_HYEONCHIM_S=(\[[^\]]*\])/), hyeonchimB: grab(/SJ_HYEONCHIM_B=(\[[^\]]*\])/),
-    gwimun: grab(/SJ_GWIMUN=(\[\[.*?\]\]),/), wonjin: grab(/SJ_WONJIN=(\[\[.*?\]\]);/) };
+  const eng = { cheoneul: SAJU.SJ_CHEONEUL, munchang: SAJU.SJ_MUNCHANG, dohwa: SAJU.SJ_DOHWA, yeokma: SAJU.SJ_YEOKMA,
+    hwagae: SAJU.SJ_HWAGAE, yangin: SAJU.SJ_YANGIN, baekho: SAJU.SJ_BAEKHO, gwaegang: SAJU.SJ_GWAEGANG,
+    hongyeom: SAJU.SJ_HONGYEOM, hyeonchimS: SAJU.SJ_HYEONCHIM_S, hyeonchimB: SAJU.SJ_HYEONCHIM_B,
+    gwimun: SAJU.SJ_GWIMUN, wonjin: SAJU.SJ_WONJIN };
   for (const k of Object.keys(eng)) { const mine = Array.isArray(SINSAL.T[k]) ? JSON.stringify(SINSAL.T[k]) : JSON.stringify(Object.fromEntries(Object.entries(SINSAL.T[k]).sort((a, b) => a[0] - b[0])));
-    const theirs = eng[k].startsWith("[") ? JSON.stringify(JSON.parse(eng[k])) : JSON.stringify(Object.fromEntries(Object.entries(Function("return " + eng[k])()).sort((a, b) => a[0] - b[0])));
+    const theirs = Array.isArray(eng[k]) ? JSON.stringify(eng[k]) : JSON.stringify(Object.fromEntries(Object.entries(eng[k]).sort((a, b) => a[0] - b[0])));
     if (norm(mine) !== norm(theirs)) throw new Error(`신살 기준표 ${k} 가 사주 도구와 다름: ${mine} vs ${theirs}`); } }
 const sinsalHref = en => SINSAL.PAGES.some(p => p.en === en) ? `sinsal-${en}.html` : `sinsal.html#${en}`;
 const sinsalName = en => (SINSAL.PAGES.find(p => p.en === en) || SINSAL.EXTRA.find(p => p.en === en)).ko;
@@ -3783,7 +3782,7 @@ const chunks = markers.map((mk, i) => {
   if (src.endsWith(",")) src = src.slice(0, -1);
   return { id: mk.id, src };
 });
-const coreJs = `${helpers}\nvar TOOLS=[];\n`+
+const coreJs = `${engineSource}\n${helpers}\nvar TOOLS=[];\n`+
   `window.mountTool=function(id,elId){var t=TOOLS.filter(function(x){return x.id===id;})[0];if(!t)return;var el=document.getElementById(elId);t.render(el);if(location.hash==="#go"&&(id==="todayfortune"||id==="saju")){try{var hh=JSON.parse(sessionStorage.getItem("dnbs_hb")||"null"),bi=el.querySelector("#d");sessionStorage.removeItem("dnbs_hb");if(hh&&hh.v&&Date.now()-hh.t<6e5&&bi){bi.value=id==="todayfortune"?hh.v.replace(/-/g,"."):hh.v;bi.dispatchEvent(new Event("change",{bubbles:true}));}}catch(e){}}if(location.hash==="#go"){var g=el.querySelector("#go"),ni=el.querySelector("#d");if(g&&!(ni&&ni.inputMode==="numeric"&&!ni.value))setTimeout(function(){g.click();},250);}`+
   // 도구들은 <label>이름</label><input id=…> 로 쓰고 for 를 안 붙였다. 바로 뒤 입력칸과 이어 준다(스크린리더·라벨 클릭)
   // 생년월일은 이름표와 입력칸 사이에 연대 칩이 끼어 있어, 다음 이름표 전까지 형제를 따라가며 첫 입력칸을 찾는다
@@ -4306,7 +4305,7 @@ fs.writeFileSync(path.join(OUT,"zf","deep.json"), JSON.stringify(ZF_DEEP));
 fs.mkdirSync(path.join(OUT,"sg"),{recursive:true});
 fs.writeFileSync(path.join(OUT,"sg","deep.json"), JSON.stringify(SG_DEEP));
 { // 사주가 닮은 유명인 데이터(2026-10-09) — content_celeb.json(위키데이터, tools/celeb_fetch.py) 을 연·월·일 기둥 특징으로 바꿔 sj/celeb.json. 오행 표는 hub.html 과 같아야 한다
-  const H = fs.readFileSync(path.join(__dirname, "hub.html"), "utf8"), ES = JSON.parse(H.match(/var SJ_ES=(\[[^\]]*\])/)[1]), EB = JSON.parse(H.match(/var SJ_EB=(\[[^\]]*\])/)[1]);
+  const ES = SAJU.SJ_ES, EB = SAJU.SJ_EB;
   const C = require("./content_celeb.json").rows.map(([ko, b, c]) => { const [y, m, d] = b.split("-").map(Number), p = FORT.sjPillars(y, m, d, null, 0, false), el = [0, 0, 0, 0, 0];
     [p.y, p.m, p.d].forEach(x => { el[ES[x.s]]++; el[EB[x.b]]++; }); return [ko, b.replace(/-/g, "."), c, p.d.s, p.d.b, p.m.b, el]; });
   if (C.length < 500) throw new Error("유명인 데이터가 너무 적음 " + C.length);

@@ -1,17 +1,4 @@
 TOOLS.push({id:"tojeong",cat:"재미·운세",icon:"",name:"토정비결",desc:"음력 생일로 뽑는 한 해 144괘",render:function(el){
-    function tjCalc(ly, lm, ld, Y, K, gz) {
-      var SS = [9, 8, 7, 6, 5, 9, 8, 7, 6, 5], SB = [9, 8, 7, 6, 5, 4, 9, 8, 7, 6, 5, 4];          // 선천수
-      var JS = [11, 10, 9, 8, 7, 11, 10, 9, 8, 7], JB = [9, 11, 8, 8, 11, 7, 7, 11, 10, 10, 11, 9]; // 중천수
-      var ys = ((Y - 4) % 10 + 10) % 10, yb = ((Y - 4) % 12 + 12) % 12;
-      var age = Y - ly + 1, taese = JS[ys] + JB[yb];
-      var cal = new K(), days = cal.getLunarMonthDays(Y, lm, false);
-      var ms = ((ys % 5) * 2 + 2 + lm - 1) % 10, mb = (lm + 1) % 12, wolgeon = SS[ms] + SB[mb];
-      var d = Math.min(ld, days); cal.setLunarDate(Y, lm, d, false);
-      var s = cal.getSolarCalendar(), g = gz(s.year, s.month, s.day), iljin = SS[g[0]] + JB[g[1]];
-      var up = (age + taese) % 8 || 8, mid = (days + wolgeon) % 6 || 6, low = (d + iljin) % 3 || 3;
-      return { code: "" + up + mid + low, age: age, ys: ys, yb: yb, taese: taese, days: days, ms: ms, mb: mb, wolgeon: wolgeon,
-        ds: g[0], db: g[1], iljin: iljin, clamp: d !== ld, solar: s };
-    }
     var nowD=new Date(),Y0=nowD.getFullYear(),YS=[Y0,Y0+1],defY=nowD.getMonth()>=9?Y0+1:Y0;
     el.innerHTML='<label>어느 해</label><select id="yr">'+YS.map(function(y){var i=((y-4)%10+10)%10,j=((y-4)%12+12)%12;return '<option value="'+y+'"'+(y===defY?" selected":"")+'>'+y+' '+SJ_S[i]+SJ_B[j]+'년</option>';}).join("")+'</select>'+
     '<label for="d" style="margin-top:12px">생년월일 (양력) — 음력 생일이면 아래 "음력 생일이세요?"를 눌러 고르게</label><input type="date" id="d" value="1990-03-15">'+
