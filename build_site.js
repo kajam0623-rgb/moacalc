@@ -1461,10 +1461,6 @@ const ILJU_PAGES = Array.from({length:60}, (_, k) => {
 const iljuChips = cur => '<div class="sibs">'+ILJU_PAGES.map(p=>p.en===cur
   ? `<span class="cur">${p.ko}일주</span>` : `<a href="ilju-${p.en}.html">${p.ko}일주</a>`).join("")+'</div>';
 
-// 같은 해 열두 달 — 월력 페이지끼리 가로로 묶는다
-const manseChips = p => '<div class="sibs">'+MANSE_PAGES.filter(q=>q.y===p.y).map(q=>q.mo===p.mo
-  ? `<span class="cur">${q.mo}월</span>` : `<a href="manse-${q.en}.html">${q.mo}월</a>`).join("")+'</div>';
-
 /* 빵부스러기 구조화 데이터. 구글이 검색결과의 URL 자리를 이 경로로 바꿔 보여준다.
    FAQ·HowTo 리치 결과는 2023년에 대부분의 사이트에 대해 중단됐지만 빵부스러기는 남아 있다.
    about/privacy/terms 세 장에만 있었고 나머지 353장에 없었다.
@@ -1720,9 +1716,7 @@ function ipchunOf(y) {
 }
 const ipchunShort = ip => { const t = ip.then || ip.now; return `${t.mo}월 ${t.d}일 ${hhmm(t)}`; };
 const ipchunText = ip => ipchunShort(ip) + (ip.then ? `(그해 한국 시계 기준, 지금 시계로는 ${hhmm(ip.now)})` : "");
-// 연대별 묶음(1990년대 열 해) — 년생별 페이지 아래, 신년운세 도구 페이지에 쓴다
-const nybChips = y => '<div class="sibs">' + NYB.YEARS.filter(x => Math.floor(x / 10) === Math.floor(y / 10)).map(x => x === y
-  ? `<span class="cur">${x}년생</span>` : `<a href="${nybUrl(x)}">${x}년생</a>`).join("") + '</div>';
+// Decade groups for the complete birth-year index on the new-year hub.
 const nybGrid = () => '<div class="nybg">' + [1950, 1960, 1970, 1980, 1990, 2000].map(d => `<div class="nybg-r"><b>${d}년대</b><div class="sibs">` +
   NYB.YEARS.filter(x => x >= d && x < d + 10).map(x => `<a href="${nybUrl(x)}">${String(x).slice(2)}년생</a>`).join("") + '</div></div>').join("") + '</div>';
 const SEASON_LINKS = `<div class="sibs"><a href="tti.html">띠 순서·띠 계산기</a><a href="newyear.html">2027 신년운세</a><a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a><a href="tojeong.html">2027 토정비결</a><a href="column-zodiac-2027.html">2027 정미년 한눈에</a><a href="zodiacfortune.html">띠별 운세</a><a href="calendar-2027.html">2027년 달력</a></div>`;
@@ -1733,9 +1727,9 @@ const nybCelebSec = y => {
   if (!CELEB_BY_YEAR) { CELEB_BY_YEAR = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) (CELEB_BY_YEAR[+b.slice(0, 4)] ||= []).push([ko, b.slice(5).replace("-", "월 ").replace(/^0/, "").replace(/ 0/, " ") + "일", c]); }
   const L = (CELEB_BY_YEAR[y] || []).slice(0, 20), yy = String(y).slice(2);
   if (!L.length) return "";
-  return `<section class="guide"><h2>${yy}년생 연예인·유명인 (${y}년생)</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">${y}년에 태어난 배우·가수·운동선수 가운데 널리 알려진 순입니다.</p>` +
+  return `<section class="guide"><h2>${yy}년생 연예인·유명인 (${y}년생)</h2><div class="intro" style="margin-top:0">` +
     `<div class="sibs">${L.map(([ko, md, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${md}</small></span>`).join("")}</div>` +
-    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료입니다. 1월~2월 초 생일은 사주로는 앞 해의 띠일 수 있습니다. 내 생일로 사주가 닮은 유명인은 <a href="celeb.html">닮은 연예인 찾기</a>에서 볼 수 있습니다.</p></div></section>`;
+    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0"><a href="celeb.html">생일 출처·계산 기준</a></p></div></section>`;
 };
 function nybPage(y) {
   const f = NYB.facts(y), t = NYB.TEXT[String(y)];
@@ -1755,7 +1749,7 @@ function nybPage(y) {
     parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
     tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`, `${yy}년생 연예인`],
     body: `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
-      [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `만 ${f.age[1]}세 (생일 전 ${f.age[0]}세)`],
+      [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `세는나이 ${2027-y+1}세 · 만 ${f.age[0]}~${f.age[1]}세`],
        ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
         .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
       `<div class="res ttisum"><span>한 줄로</span><b>${esc(t.sum)}</b></div></div>` +
@@ -1763,17 +1757,15 @@ function nybPage(y) {
       `<div class="intro">${bodyCut("zoc-" + f.en, A + " 상징")}${para(t.all)}</div>` +
       sec(`${y}년생의 일과 돈`, para(t.work)) + sec(`사람과 가족`, para(t.people)) + sec(`건강과 생활`, para(t.life)) +
       `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
-      sec(`1월~2월 초에 태어났다면 — 띠가 바뀌는 날`, `<p style="margin-bottom:10px">사주에서는 해가 1월 1일이 아니라 입춘에 바뀝니다. ${y}년 입춘은 ${ipchunText(ip)}입니다. ${y}년 1월 1일부터 이 시각 전에 태어났다면 사주로는 ${y - 1}년 ${pf.ko}년생 ${pf.animal}로 봅니다.${y - 1 >= NYB.Y0 ? ` 그런 분은 <a href="${nybUrl(y - 1)}">${y - 1}년생 2027년 운세</a>를 함께 보세요.` : ""}</p>`) +
+      sec(`1월~2월 초에 태어났다면 — 띠가 바뀌는 날`, `<p>${y}년 ${ipchunText(ip)}부터 ${f.han} ${A}입니다. 그 전 출생은 ${pf.han} ${pf.animal}에 해당합니다.${y - 1 >= NYB.Y0 ? ` <a href="${nybUrl(y - 1)}">${y - 1}년생 풀이</a>를 확인하세요.` : ""}</p>`) +
       nybCelebSec(y) +
-      sec(`더 자세히 보기`, `<p style="margin-bottom:10px">생년월일을 넣으면 <a href="newyear.html">2027 신년운세</a>에서 내 사주로 본 한 해와 달마다의 흐름을 볼 수 있습니다. 띠 성격과 궁합은 <a href="zodiac-${f.en}.html">${A} 운세·성격</a>과 <a href="tti-gunghap-${f.en}.html">${A} 궁합</a>에, 삼재는 <a href="samjae.html">삼재 계산기</a>에 있습니다.</p>` +
+      sec(`더 자세히 보기`, `<p><a href="newyear.html">생일로 보는 신년운세</a> · <a href="tti-gunghap-${f.en}.html">${A} 궁합</a> · <a href="samjae.html">삼재 계산 기준</a></p>` +
         `<p style="margin-bottom:10px">같은 ${A}: ${same.map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join(" · ")}</p>` +
-        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">이 풀이는 태어난 해의 간지와 2027년 정미년의 관계(띠끼리의 관계, 태어난 해 위 글자와 정(丁)의 관계)로 본 큰 흐름입니다. 사주에서 '나'를 뜻하는 글자는 태어난 날의 위 글자(일간)라서, 같은 ${y}년생이라도 생일과 태어난 시각에 따라 한 해의 모양이 달라집니다.</p>`),
+        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0"><a href="column-new-year-start.html">연도별 풀이의 범위·입춘 기준</a></p>`),
     faq: [
-      [`${y}년생은 2027년에 몇 살인가요?`, `2027년에 생일이 지나면 만 ${f.age[1]}세, 생일 전에는 만 ${f.age[0]}세입니다. 2023년 6월부터 법과 행정에서는 만 나이를 씁니다.`],
-      [`${y}년생은 무슨 띠인가요?`, `${f.ko}(${f.han})년생 ${A}이고, 색으로 부르면 ${f.color} ${A}입니다. 다만 ${y}년 1월 1일부터 입춘(${ipchunShort(ip)}) 전에 태어났다면 사주로는 ${y - 1}년생 ${pf.animal}입니다.`],
-      [`${y}년생은 2027년에 삼재인가요?`, f.samjae ? `네. ${A}는 2025~2027년이 삼재이고, 2027년은 세 해 가운데 마지막 해인 날삼재입니다. 정리하고 다음을 준비하는 해로 보면 됩니다. 다음 삼재는 ${f.sjNext}년부터입니다.` : `아닙니다. ${A}의 다음 삼재는 ${f.sjNext}~${f.sjNext + 2}년입니다.`],
-      [`${y}년생의 2027년 운세는 어떤가요?`, `${t.sum} 한 해의 주제는 ${f.stem[1]}이고, 띠로 보면 ${f.relPlain}입니다.`]],
-    sibTitle: `${Math.floor(y / 10) * 10}년대생 2027년 운세`, sibs: nybChips(y),
+      [`${y}년생이 올해 먼저 해 볼 일은 무엇인가요?`, t.tips[0]],
+      [`${y}년생의 생활에서는 어떤 점을 챙기나요?`, t.life]],
+    sibTitle: `${Math.floor(y / 10) * 10}년대생 2027년 운세`, sibs: `<div class="sibs">${[y-1,y+1].filter(x => NYB.YEARS.includes(x)).map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join("")}<a href="newyear.html">출생연도 전체 보기</a></div>`,
     related: ["newyear", "tojeong", "zodiacfortune", "saju"] });
 }
 
@@ -2466,13 +2458,15 @@ function ttiHubPage(i) {
   const by = types => rs.filter(x => types.includes(x.r.type));
   const names = type => rs.filter(x => x.r.type === type).map(x => TTI.JI[x.j].name);
   const row = x => `<div class="row"><span><a href="${ttiPairUrl(i, x.j)}">${x.j === i ? z.name + "끼리" : z.name + " × " + TTI.JI[x.j].name}</a></span><b>${esc(x.r.type)}</b></div><p style="font-size:13px;color:var(--muted);margin:2px 0 10px">${esc(x.t.sum)}</p>`;
-  const group = (title, sub, types) => { const g = by(types); return g.length ? `<section class="guide"><h2>${title}</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">${sub}</p><div class="exbox">${g.map(row).join("")}</div></section>` : ""; };
+  const group = (title, types) => { const g = by(types); return g.length ? `<section class="guide"><h2>${title}</h2><div class="exbox">${g.map(row).join("")}</div></section>` : ""; };
   const sam = names("삼합"), yuk = names("육합"), chu = names("충"), won = names("원진"), hyu = names("형");
   const glance = [["삼합", sam.join(" · ")], ["육합", yuk.join(" · ")], ["충", chu.join(" · ")], ["원진", won.join(" · ")]].concat(hyu.length ? [["형", hyu.join(" · ")]] : []).filter(x => x[1]);
   const join = (xs, sep) => xs.join(sep || "와 ");
+  const yearly = TTI.rel(i, NYB.TB), samjae = SAMJAE.samjae(i, NYB.TB);
+  const yearRelation = `${z.ji}${josa(ENGINE.SJ_B[i], "과/와")} 정미년의 未를 대조하면 ${yearly.type === "무난" ? "삼합·육합·충·원진·형에 해당하지 않습니다" : yearly.name + " 관계입니다"}.${yearly.tags.length ? " 함께 표시되는 관계는 " + yearly.tags.join("·") + "입니다." : ""}`;
   return seoPage({
     crumb: `${z.name} 궁합`,
-    learn: learnMore(`${z.name}는 사주 여덟 글자 가운데 태어난 해의 아래 글자(연지) ${z.ji}입니다. 지지 열두 글자는 3강, 띠끼리 붙고 부딪히는 합·충은 11강, 사주의 해가 입춘에 바뀌어 띠가 달라지는 이유는 4강에서 배웁니다.`, [3, 11, 4]),
+    learn: learnMore("합과 충의 읽는 법을 확인하세요.", [11]),
     title: `${z.name} 궁합 — 잘 맞는 띠·맞춰 갈 띠 | 동네보살`,
     desc: `${z.name} 궁합 한눈에. 삼합 ${join(sam, "·")}, 육합 ${join(yuk, "·")}. 충·원진·형 띠까지 열두 띠 전부의 궁합을 짝마다 자세한 풀이로 볼 수 있습니다.`,
     url: `${DOMAIN}/${ttiHubUrl(i)}`, img: `img/char/zo-${z.en}.webp`, hero: "img/tool/h-gunghap.webp",
@@ -2484,18 +2478,16 @@ function ttiHubPage(i) {
     body: `<div class="exbox"><h2>${z.name} 궁합 한눈에 보기</h2>` + glance.map(x => `<div class="row"><span>${esc(x[0])}</span><b>${esc(x[1])}</b></div>`).join("") +
       `<div class="res ttisum"><span>출생 연도</span><b>${esc(TTI.years(i).join(" · "))}년생</b></div></div>` + ttiShareRow(`${z.name} 궁합`, `${z.name} 궁합 — 잘 맞는 띠와 맞춰 갈 띠를 한눈에. 동네보살에서 보기:`, ttiHubUrl(i), i) +
       `<div class="intro">${para(h.intro)}</div>` +
-      group("잘 맞는 띠 — 삼합·육합", `${z.name}와 같은 방향을 보기 쉬운 띠입니다. 짝 이름을 누르면 자세한 풀이가 열립니다.`, ["삼합", "육합"]) +
-      group("맞춰 가면 좋은 띠 — 충·원진·형", `속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 안 맞는 띠가 아니라 서로 배울 것이 많은 띠입니다.`, ["충", "원진", "형"]) +
-      group("그 밖의 띠 — 무난한 사이와 같은 띠", `특별한 합·충 표시가 없는 사이입니다. 두 사람의 성격과 대화가 관계의 모양을 정합니다.`, ["무난", "같은 띠"]) +
+      group("잘 맞는 띠 — 삼합·육합", ["삼합", "육합"]) +
+      group("맞춰 가면 좋은 띠 — 충·원진·형", ["충", "원진", "형"]) +
+      group("그 밖의 띠 — 무난한 사이와 같은 띠", ["무난", "같은 띠"]) +
       `<section class="guide"><h2>${z.name}의 연애·결혼 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.love)}</div></section>` +
       cpSec(`${z.name}와 짝에게 커플 선물`, `궁합이 잘 맞는 짝을 만났다면, 둘이 함께 쓰는 물건 하나로 마음을 전해 보세요.`, [["커플링", "hIY53jNlaC"], ["커플 잠옷", "hIY6cnZwrs"], ["커플 키링", "hIY6ly7geO"]]) +
       `<section class="guide"><h2>${z.name}의 일·동업 궁합 포인트</h2><div class="intro" style="margin-top:0">${para(h.work)}</div></section>` +
-      `<section class="guide"><h2>궁합을 볼 때 기억할 한 가지</h2><div class="intro" style="margin-top:0">${para(h.tip)}${ttiMore}<p style="color:var(--muted);font-size:13px;margin:8px 0 0">${z.name}의 성격과 오늘의 운세는 <a href="zodiac-${z.en}.html">${z.name} 운세·성격</a>에서 볼 수 있습니다.</p></div></section>`,
+      `<section class="guide"><h2>궁합을 볼 때 기억할 한 가지</h2><div class="intro" style="margin-top:0">${para(h.tip)}<p>${yearRelation} 2027년은 ${samjae ? samjae + "에 해당합니다" : "삼재에 해당하지 않습니다"}. <a href="samjae.html">삼재 주기</a>와 <a href="zodiac-${z.en}.html">${z.name} 성격</a>도 확인하세요.</p></div></section>`,
     faq: [
-      [`${z.name}와 잘 맞는 띠는?`, `삼합인 ${join(sam)}, 육합인 ${join(yuk)}이 대표적입니다. ${rs.find(x => x.r.type === "삼합").t.sum} 이 페이지의 표에서 열두 띠 각각의 풀이를 볼 수 있습니다.`],
-      [`${z.name}와 상극이라고 하는 띠는?`, `흔히 상극이라고 부르는 관계는 충인 ${join(chu)}${won.length ? ", 원진인 " + join(won) : ""}${hyu.length ? ", 형인 " + join(hyu) : ""}를 가리킵니다. 하지만 안 맞는 띠가 아니라 속도와 방식이 달라 맞춰 갈 점이 있는 띠입니다. 짝별 풀이에서 구체적인 방법을 볼 수 있습니다.`],
-      [`${z.name} 남자와 여자의 궁합은 다른가요?`, "전통 띠 궁합은 성별을 가리지 않고 두 띠의 관계로 봅니다. 남자가 어느 띠인지, 여자가 어느 띠인지와 상관없이 같은 풀이를 쓰며, 실제 관계는 두 사람의 성격과 노력이 크게 좌우합니다."],
-      [`${z.name}는 몇 년생인가요?`, `${TTI.years(i).join(", ")}년생이 ${z.name}입니다. ${TTI_IPCHUN}`]],
+      [`${z.name}와 잘 맞는 띠는?`, `삼합 ${join(sam, "·")}, 육합 ${join(yuk, "·")}입니다. ${h.love}`],
+      [`${z.name}의 2027년 관계는 무엇인가요?`, yearRelation]],
     sibTitle: "다른 띠 궁합도 보기", sibs: ttiHubChips(i),
     related: ["gunghap", "zodiacfortune", "namematch", "todayfortune"]});
 }
@@ -2748,7 +2740,6 @@ function mansePage(p){
   const lunSpan = `음력 ${lunOf(M.first.lun)} ~ ${lunOf(M.last.lun)}`;
   const jeol = M.terms[0], jung = M.terms[1];      // 앞이 절기(월주를 가름), 뒤가 중기
   const mid = M.days[Math.min(15, M.dim) - 1];     // 대표일 — FAQ에서 "15일 일진"으로 쓴다
-  const prevJi = MANSE_SRC.MONTH_TEXT[prev.mo].ji;
   const sonD = M.days.filter(x => x.son), sonW = sonD.filter(x => x.w === 0 || x.w === 6);
 
   /* 연주·월주는 같은 달이라도 해마다 다르다. 월주는 5년, 연주는 60년 주기다.
@@ -2758,9 +2749,12 @@ function mansePage(p){
   const P1 = ENGINE.sjPillars(p.y, p.mo, 1, null, 0, false);
   const P2 = ENGINE.sjPillars(p.y, p.mo, M.dim, null, 0, false);
   const ipchun = jdToKst(ENGINE.sjTermJd(p.y, 315));
-  const tti = ENGINE.SJ_TTI[P2.y.b];               // 말일 기준 — 입춘이 이미 지난 연주
+  const tti = ENGINE.SJ_TTI[P2.y.b];               // Year pillar at month end, including January before Ipchun.
   const kIdx = (ILJIN_PAGES.find(z => z.ko === M.first.ko) || { k:0 }).k + 1;
   const jeolW = WDAY[M.days[jeol.at.d - 1].w], jungW = WDAY[M.days[jung.at.d - 1].w];
+  const lunarStarts = M.days.filter(x => x.lun.day === 1);
+  const lunarStartText = lunarStarts.map(x => `${p.mo}월 ${x.d}일(${WDAY[x.w]})에 음력 ${x.lun.year}년 ${lunOf(x.lun)}이 시작되며 일진은 ${x.ko}(${x.han})입니다.`).join(" ");
+  const monthMeaning = `${gz(P2.m)}의 ${ENGINE.SJ_SH[P2.m.s]}${josa(ENGINE.SJ_S[P2.m.s], "은/는")} ${ENGINE.SJ_EL[ENGINE.SJ_ES[P2.m.s]]}, ${ENGINE.SJ_BH[P2.m.b]}${josa(ENGINE.SJ_B[P2.m.b], "은/는")} ${ENGINE.SJ_EL[ENGINE.SJ_EB[P2.m.b]]}에 해당합니다.`;
 
   const rows = M.days.map(x => {
     const q = ILJIN_PAGES.find(z => z.ko === x.ko);
@@ -2771,7 +2765,7 @@ function mansePage(p){
   return seoPage({
     noindex: !MANSE_KEEP(p),
     crumb:`${p.y}년 ${p.mo}월 만세력`,
-    learn: learnMore(`${p.y}년 ${p.mo}월의 연주와 월주를 읽는 순서는 1강, 달이 절기(${jeol.name})에서 바뀌는 이유는 4강, 해마다 바뀌는 큰 흐름과 월운은 15강에서 배웁니다.`, [1, 4, 15]),
+    learn: learnMore("절입 시각으로 월주를 나누는 기준을 확인하세요.", [4]),
     title:`${p.y}년 ${p.mo}월 음력 달력·손 없는 날 — 날짜별 일진·절기 만세력 | 동네보살`,
     desc:`${p.y}년 ${p.mo}월 손 없는 날: ${sonD.map(x=>x.d).join("·")}일${sonW.length ? "(주말 "+sonW.map(x=>x.d).join("·")+"일)" : ""}. ${M.dim}일 전체 음력 날짜·일진을 한 표로 보고, ${jeol.name} ${termAt(jeol)}·${jung.name} ${termAt(jung)} 절기 시각도 확인해요.`,
     url:`${DOMAIN}/manse-${p.en}.html`, img:"img/tool/h-saju.webp", hero:"img/tool/h-saju.webp",
@@ -2793,8 +2787,7 @@ function mansePage(p){
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>윤달</span><b>${M.leap ? "이 달에 윤달이 걸칩니다" : "없음"}</b></div></div>`+
 
-      `<div class="intro"><p style="margin-bottom:10px">${T.lead}</p>`+
-      `<p style="margin-bottom:10px">${p.y}년 ${p.mo}월은 ${M.dim}일까지 있습니다. 1일이 ${M.first.ko}(${M.first.han})일로 시작해 ${M.dim}일 ${M.last.ko}(${M.last.han})일로 끝나고, 음력으로는 ${lunSpan} 구간입니다.${M.leap ? " 이 달에는 윤달이 걸쳐 있어 음력 날짜가 한 번 되감깁니다." : ""}</p>`+
+      `<div class="intro"><p style="margin-bottom:10px">${p.y}년 ${p.mo}월은 1일(${WDAY[M.first.w]}) ${M.first.ko}(${M.first.han})일로 시작해 ${M.dim}일(${WDAY[M.last.w]}) ${M.last.ko}(${M.last.han})일로 끝납니다. ${lunarStartText}</p>`+
       `<p style="margin-bottom:10px">${M.feasts.length ? `표에 따로 표시되는 날은 ${M.feasts.join(", ")}입니다.` : "이 달에는 절기 말고 따로 표시되는 날이 없습니다."}</p></div>`+
 
       `<section class="guide"><h2>${p.y}년 ${p.mo}월의 절기 — ${jeol.name}${josa(jeol.name,"과/와")} ${jung.name}</h2>`+
@@ -2802,13 +2795,11 @@ function mansePage(p){
       M.terms.map(t=>`<div class="row"><span>${t.name}</span><b>${p.mo}월 ${t.at.d}일 ${hhmm(t.at)}</b></div>`).join("")+
       `</div>`+
       `<div class="intro" style="margin-top:10px">`+
-      `<p style="margin-bottom:10px">${jeol.name}${josa(jeol.name,"은/는")} ${p.y}년 ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}, ${jung.name}${josa(jung.name,"은/는")} ${p.mo}월 ${jung.at.d}일 ${hhmm(jung.at)}입니다. 날짜표에서 옮겨 적은 값이 아니라 태양 황경이 그 각도에 닿는 순간을 직접 계산한 한국 시각이라 분 단위까지 나옵니다.</p>`+
-      `<p style="margin-bottom:10px">월주(月柱)를 가르는 것은 앞의 ${jeol.name}입니다. ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)} 이전에 태어났다면 ${p.mo}월생이라도 앞 달인 ${prevJi}월을 씁니다. 같은 ${jeol.at.d}일생이라도 태어난 시각이 이 경계를 넘었는지에 따라 월주가 갈립니다.</p>`+
-      `<p style="margin-bottom:10px">뒤의 ${jung.name}${josa(jung.name,"은/는")} 중기라 월주를 가르지 않습니다. 계절이 어디까지 왔는지를 표시하는 자리입니다. 내 사주의 월주를 바로 보려면 <a href="saju.html">사주팔자 만세력</a>에 생년월일시를 넣으세요.</p></div></section>`+
+      `<p style="margin-bottom:10px">${jeol.name} ${jeol.at.d}일(${jeolW}) ${hhmm(jeol.at)}에 월주가 ${gz(P1.m)}에서 ${gz(P2.m)}${gz(P2.m).endsWith("술") ? "로" : josa(gz(P2.m), "으로/로")} 바뀝니다. ${jung.name} ${jung.at.d}일(${jungW}) ${hhmm(jung.at)}은 중기입니다. 시각은 한국 표준시입니다.</p></div></section>`+
 
       /* 연주·월주는 해마다 갈린다. 같은 9월이라도 2026년과 2027년은 여기서 완전히 달라진다 */
       `<section class="guide"><h2>${p.y}년 ${p.mo}월의 연주와 월주</h2><div class="exbox" style="margin-top:0">`+
-      [["연주(年柱)", `${gz(P2.y)}(${gzh(P2.y)})년 · ${tti}띠`],
+      [["말일 연주(年柱)", `${gz(P2.y)}(${gzh(P2.y)})년 · ${tti}띠`],
        [`${jeol.name} 이전 월주`, `${gz(P1.m)}(${gzh(P1.m)})월`],
        [`${jeol.name} 이후 월주`, `${gz(P2.m)}(${gzh(P2.m)})월`],
        [`${p.y}년 입춘`, `${ipchun.mo}월 ${ipchun.d}일 ${hhmm(ipchun)}`],
@@ -2816,22 +2807,20 @@ function mansePage(p){
        ["1일 일진 순번", `60갑자 ${kIdx}번째 ${M.first.ko}(${M.first.han})`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `</div><div class="intro" style="margin-top:10px">`+
-      `<p style="margin-bottom:10px">${p.y}년의 연주는 ${gz(P2.y)}(${gzh(P2.y)})년, ${tti}띠 해입니다. 연주는 1월 1일이 아니라 입춘에 바뀌며 ${p.y}년 입춘은 ${ipchun.mo}월 ${ipchun.d}일 ${hhmm(ipchun)}입니다.</p>`+
-      `<p style="margin-bottom:10px">${p.mo}월의 월주는 ${jeol.name} 절입을 기준으로 갈립니다. ${p.mo}월 1일은 아직 ${gz(P1.m)}(${gzh(P1.m)})월이고, ${jeol.at.d}일 ${hhmm(jeol.at)}부터 ${M.dim}일까지가 ${gz(P2.m)}(${gzh(P2.m)})월입니다. 월지는 해마다 같지만 월간은 그 해 연간을 따라가므로 ${p.y}년 ${p.mo}월의 월주는 5년마다 한 번씩만 돌아옵니다.</p>`+
-      `<p style="margin-bottom:10px">${jeol.name}${josa(jeol.name,"은/는")} ${jeolW}요일, ${jung.name}${josa(jung.name,"은/는")} ${jungW}요일에 듭니다. ${p.mo}월 1일은 ${WDAY[M.first.w]}요일이고 일진은 60갑자 ${kIdx}번째인 <a href="iljin-${(ILJIN_PAGES.find(z=>z.ko===M.first.ko)||{en:""}).en}.html">${M.first.ko}(${M.first.han})일</a>입니다.</p></div></section>`+
+      `<p style="margin-bottom:10px">${p.mo}월 1일의 연주는 ${gz(P1.y)}(${gzh(P1.y)}), ${M.dim}일은 ${gz(P2.y)}(${gzh(P2.y)})입니다. ${P1.y.s !== P2.y.s ? `입춘 ${ipchun.d}일 ${hhmm(ipchun)}을 사이에 두고 연주도 달라집니다.` : p.mo === 1 ? `아직 ${p.y}년 입춘 전이므로 전해의 연주를 씁니다.` : `이 달은 입춘 이후의 ${tti}띠 해에 속합니다.`}</p>`+
+      `<p style="margin-bottom:10px">${monthMeaning} ${jeol.name} 이후 태어난 분의 월건은 ${gzh(P2.m)}입니다.</p></div></section>`+
 
       `<section class="guide"><h2>${p.y}년 ${p.mo}월 날짜별 일진과 음력</h2>`+
-      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일진은 날에 붙는 간지이며 60일마다 돌아옵니다. 간지를 누르면 그 일진의 풀이로 갑니다. 음력은 한국천문연구원 기준 변환입니다.</p>`+
+      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px"><a href="manse-howto.html">일진·음력 표 읽는 법</a></p>`+
       `<div style="overflow-x:auto" tabindex="0" role="region" aria-label="날짜별 일진과 음력 표 (좌우로 스크롤)"><table class="mtbl"><thead><tr><th>일</th><th>요일</th><th>일진</th><th>음력</th><th>비고</th></tr></thead><tbody>${rows}</tbody></table></div></section>`+
 
       /* 띠날 목록 — "이번 달 말날"처럼 날짜로 찾는 수요를 받는다.
          일진이 해마다 닷새씩 밀려서 같은 달이라도 해가 다르면 날짜가 전부 어긋난다 */
       `<section class="guide"><h2>${p.y}년 ${p.mo}월의 띠날 — 무슨 날이 며칠인가</h2>`+
-      `<p style="color:var(--muted);font-size:13px;margin:0 0 10px">일진의 지지가 그 날의 띠입니다. 열두 지지가 돌아가므로 한 달에 같은 띠 날이 두세 번 옵니다.</p>`+
       `<div class="exbox" style="margin-top:0">`+
       ENGINE.SJ_TTI.map((t, b) => {
-        const ds = M.days.filter(x => x.b === b).map(x => x.d);
-        return `<div class="row"><span>${t}날 (${ENGINE.SJ_B[b]}일)</span><b>${ds.join("일 · ")}일</b></div>`;
+        const ds = M.days.filter(x => x.b === b).map(x => `${x.d}일(${WDAY[x.w]}) ${x.ko}`);
+        return `<div class="row"><span>${t}날 (${ENGINE.SJ_B[b]}일)</span><b>${ds.join(" · ")}</b></div>`;
       }).join("")+
       `</div></section>`+
 
@@ -2840,10 +2829,9 @@ function mansePage(p){
         `<img class="bosal bs-side" src="img/bosal/scroll.webp" alt="날짜를 펼쳐 보는 아기보살" loading="lazy" decoding="async" onerror="this.remove()">`+
         `<p style="margin:0 0 10px">이 달의 손 없는 날은 <b>${S.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ")}</b>입니다.${wk.length ? " 그중 주말은 " + wk.map(x => x.d + "일(" + WDAY[x.w] + ")").join(" · ") + "이라 이사 날짜로 먼저 찾는 사람이 많습니다." : " 이 달에는 주말에 드는 손 없는 날이 없습니다."}</p>`+
         `<div class="exbox" style="margin-top:0">`+S.map(x => `<div class="row"><span>${p.mo}월 ${x.d}일 (${WDAY[x.w]})</span><b>${lunOf(x.lun)} · ${x.ko}일</b></div>`).join("")+`</div>`+
-        `<p style="color:var(--muted);font-size:13px;line-height:1.75;margin:10px 0 0">'손'은 날마다 방위를 옮겨 다니며 사람의 일을 방해한다고 여겨진 존재입니다. 민간에서는 음력 날짜 끝자리가 9와 0인 날에는 손이 하늘로 올라가 어느 방위에도 없다고 보아, 이사·개업·혼례 날짜를 이 날로 잡아 왔습니다. 풍습이니 참고로만 보세요. 수요가 몰려 이삿짐 비용이 오르는 날이기도 합니다.</p>`+
-        `<p style="margin:12px 0 0">휴대폰 달력에 넣어 두면 손 없는 날이 해마다 저절로 보입니다 — <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 구독</a> · <a href="${ICS_TERMS.replace("https://", "webcal://")}">절기·명절 구독</a> · 여러 달을 한 번에 보려면 <a href="sonless.html">손 없는 날 달력</a></p></section>`; })()+
+        `<p style="margin:12px 0 0">풍습의 기준은 <a href="sonless.html">손 없는 날 안내</a>를 보세요. <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 구독</a> · <a href="${ICS_TERMS.replace("https://", "webcal://")}">절기·명절 구독</a></p></section>`; })()+
       `<section class="guide"><h2>${p.mo}월은 사주에서 ${T.ji}월 — 이 달에 태어난 사람</h2>`+
-      `<div class="intro" style="margin-top:0">${para(T.body)}</div></section>`+
+      `<div class="intro" style="margin-top:0"><p>${jeol.at.d}일 ${hhmm(jeol.at)} 전 출생은 ${gz(P1.m)}(${gzh(P1.m)}), 이후 출생은 ${gz(P2.m)}(${gzh(P2.m)}) 월주로 확인하세요. 월지 ${ENGINE.SJ_BH[P2.m.b]}의 지장간은 ${ENGINE.SJ_JJG[P2.m.b].map(([s]) => ENGINE.SJ_SH[s] + ENGINE.SJ_S[s]).join("·")}입니다. <a href="saju.html">생년월일시로 전체 명식 보기</a></p></div></section>`+
 
       `<section class="guide"><h2>앞뒤 달 만세력</h2><div class="sibs">`+
       (inRange(prev) ? `<a href="manse-${enOf(prev)}.html">← ${prev.y}년 ${prev.mo}월</a>` : "")+
@@ -2855,18 +2843,16 @@ function mansePage(p){
       `</div></section>`,
     faq:[
       [`${p.y}년 ${p.mo}월 손 없는 날은 언제인가요?`,
-       `${M.days.filter(x => x.son).map(x => p.mo + "월 " + x.d + "일(" + WDAY[x.w] + ")").join(", ")}입니다. 음력 날짜 끝자리가 9와 0인 날이며, 민간에서 이사·개업 날짜로 즐겨 고르는 날입니다.`],
+       `${sonD.map(x => p.mo + "월 " + x.d + "일(" + WDAY[x.w] + ")").join(", ")}입니다.`],
       [`${p.y}년 ${p.mo}월 절기는 언제인가요?`,
-       `${jeol.name}${josa(jeol.name,"은/는")} ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}, ${jung.name}${josa(jung.name,"은/는")} ${p.mo}월 ${jung.at.d}일 ${hhmm(jung.at)}입니다. 태양 황경으로 직접 계산한 한국 시각입니다.`],
+       `${jeol.name} ${termAt(jeol)}, ${jung.name} ${termAt(jung)}입니다.`],
       [`${p.y}년 ${p.mo}월생의 월주는 무엇인가요?`,
-       `${jeol.name} 절입 시각인 ${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)}부터 ${T.ji}월입니다. 그 이전에 태어났다면 앞 달인 ${prevJi}월을 씁니다. 월주의 천간은 그 해 연간에 따라 갈리므로 사주팔자 만세력에 생년월일시를 넣어 확인하세요.`],
+       `${p.mo}월 ${jeol.at.d}일 ${hhmm(jeol.at)} 전에는 ${gz(P1.m)}(${gzh(P1.m)}), 이후에는 ${gz(P2.m)}(${gzh(P2.m)})입니다.`],
       [`${p.y}년 ${p.mo}월 음력 날짜는 어떻게 되나요?`,
        `${p.mo}월 1일이 ${lunOf(M.first.lun)}, ${M.dim}일이 ${lunOf(M.last.lun)}입니다. 날짜별 음력은 위 표의 음력 칸에 있습니다.${M.leap ? " 이 달에는 윤달이 걸쳐 있습니다." : ""}`],
       [`${p.y}년 ${p.mo}월 ${mid.d}일 일진은 무엇인가요?`,
-       `${M.first.ko}(${M.first.han})일로 시작한 달이라 ${p.mo}월 ${mid.d}일은 ${mid.ko}(${mid.han})일입니다. 음력으로는 ${lunOf(mid.lun)}입니다. 일진은 자정에 바뀌며 60일마다 같은 간지가 돌아옵니다.`],
-      ["만세력이 무엇인가요?",
-       "날짜를 간지로 바꿔 적은 책입니다. 예전에는 두꺼운 책을 넘겨 찾았지만 이 사이트는 태양 황경과 음력 변환을 그때그때 계산합니다. 같은 날짜를 언제 열어도 같은 값이 나옵니다."]],
-    sibTitle:`${p.y}년 다른 달 만세력`, sibs:manseChips(p),
+       `${p.mo}월 ${mid.d}일은 ${mid.ko}(${mid.han})일이며 음력 ${lunOf(mid.lun)}입니다.`]],
+    sibTitle:`${p.y}년 다른 달 만세력`, sibs:'<div class="sibs"><a href="manse.html">월별 전체 목록</a></div>',
     related:["saju","lunar","todayfortune","newyear"]});
 }
 
@@ -3091,17 +3077,29 @@ const iljuCelebSec = p => {
   if (!CELEB_BY_ILJU) { CELEB_BY_ILJU = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) { const [y, m, d] = b.split("-").map(Number), q = FORT.sjPillars(y, m, d, null, 0, false); (CELEB_BY_ILJU[q.d.s + "-" + q.d.b] ||= []).push([ko, y, c]); } }
   const L = (CELEB_BY_ILJU[p.s + "-" + p.b] || []).slice(0, 12);
   if (!L.length) return "";
-  return `<section class="guide"><h2>${p.ko}일주 유명인</h2><div class="intro" style="margin-top:0"><p style="margin-bottom:10px">생일로 계산하면 ${p.ko}일주로 태어난 유명인입니다(널리 알려진 순).</p>` +
+  return `<section class="guide"><h2>${p.ko}일주 유명인</h2><div class="intro" style="margin-top:0">` +
     `<div class="sibs">${L.map(([ko, y, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${y}</small></span>`).join("")}</div>` +
-    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료이고 태어난 시각은 몰라 일주만 맞춰 보았습니다. 같은 일주라도 삶은 사람마다 다릅니다. 내 생일로 사주가 닮은 유명인을 찾으려면 <a href="celeb.html">닮은 연예인 찾기</a>를 보세요.</p></div></section>`;
+    `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">출생 시각 미반영 · <a href="celeb.html">생일 출처·계산 기준</a></p></div></section>`;
 };
+// Only report signs decidable from the day pillar; do not fabricate other pillars.
+function iljuDaySigns(p) {
+  const signs = [];
+  if ((ENGINE.SJ_CHEONEUL[p.s] || []).includes(p.b)) signs.push("천을귀인");
+  if (ENGINE.SJ_MUNCHANG[p.s] === p.b) signs.push("문창귀인");
+  if (ENGINE.SJ_YANGIN[p.s] === p.b) signs.push("양인살");
+  if (ENGINE.SJ_BAEKHO.includes(p.ko)) signs.push("백호대살");
+  if (ENGINE.SJ_GWAEGANG.includes(p.ko)) signs.push("괴강살");
+  return signs.length
+    ? `${p.han} 일주에서 확인한 신살은 ${signs.join("·")}입니다. <a href="sinsal.html">전체 사주로 확인하기</a>`
+    : `${p.han} 일주는 일주 단독 판정 5종(천을·문창·양인·백호·괴강)에 해당하지 않습니다. <a href="sinsal.html">전체 사주로 확인하기</a>`;
+}
 function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
   const first = (t, n) => t.trim().split(/(?<=[.?!])\s+/).slice(0, n).join(" ");
   return seoPage({
     crumb:`${p.ko}일주`,
-    learn: learnMore(`${p.ko}일주는 일간 ${gEl}과 일지 ${J.ko}(${J.tti}띠)가 만든 두 글자입니다. 일주를 읽는 순서는 1강, 일간의 뜻은 5강, 일지 ${J.ko} 속에 숨은 글자는 10강, 일간이 일지에서 놓이는 기운의 단계(${p.un})는 12강, 일지의 십성(${p.tengod})은 6강에서 배웁니다.`, [1, 5, 10, 12, 6]),
+    learn: learnMore(`지장간을 읽는 방법을 확인하세요.`, [10]),
     title:`${p.ko}일주 성격 — ${C.tag}, 여자·남자 차이 | 동네보살`,
     desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(C.core,1)} 여자와 남자의 차이, 일과 재물까지.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:(iljuImgs(p.en)[0] || {}).rel || `img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
@@ -3124,10 +3122,10 @@ function iljuPage(p){
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) + iljuFig(p, "top") +
       luckGoodsSec(`${p.ko}일주`, G.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간(${G.ko}${G.el})만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`) +
 
-      `<div class="intro"><p style="margin-bottom:10px">${p.ko}일주란 태어난 날의 간지가 ${p.han}인 사람을 말합니다. 위 글자 ${G.han}(${G.ko})${josa(G.ko,"이/가")} 나 자신이고, 아래 글자 ${J.han}(${J.ko})${josa(J.ko,"은/는")} 배우자가 앉는 자리입니다. <a href="column-gapja-60.html">60갑자</a> 가운데 ${p.k+1}번째라 같은 일주를 가진 사람은 대략 예순 명 중 한 명꼴입니다.</p>`+
+      `<div class="intro"><p><a href="column-gapja-60.html">60갑자</a>의 ${p.k+1}번째 조합은 ${p.han}입니다.</p>`+
       `${para(C.core)}</div>`+
-      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0">천간 하나만 떼어 본 성격·일·재물 풀이는 <a href="ilgan-${G.en}.html">${gEl} 일간</a> 페이지에 있습니다.</p>`+
-      `<p style="color:var(--muted);font-size:13px;margin:6px 2px 0">${p.ko}일주가 속한 순은 ${p.gm.sun}이고, 이 순에서 짝 없이 남는 지지 ${gmTxt(p.gm)}이 공망(空亡)입니다. 연지·월지·시지까지 견주어 보려면 <a href="gongmang.html">공망 찾기</a>에 생년월일을 넣어 보세요.</p>`+
+      `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0"><a href="ilgan-${G.en}.html">${gEl} 일간의 성격·일·재물</a></p>`+
+      `<p style="color:var(--muted);font-size:13px;margin:6px 2px 0">${p.gm.sun}의 공망은 ${gmTxt(p.gm)}입니다. <a href="gongmang.html">공망 찾기</a></p>`+
 
       `<section class="guide"><h2>${C.tag} — ${p.ko}일주가 드러나는 장면</h2>`+
       `<div class="intro" style="margin-top:0">${para(C.scene)}</div>${iljuFig(p, "scene")}</section>`+
@@ -3135,11 +3133,12 @@ function iljuPage(p){
       `<section class="guide"><h2>${p.ko}일주 여자와 남자</h2><div class="intro" style="margin-top:0">`+
       `<p style="margin-bottom:10px"><b>${p.ko}일주 여자</b><br>${C.woman}</p>`+
       `<p style="margin-bottom:10px"><b>${p.ko}일주 남자</b><br>${C.man}</p>`+
-      `<p style="margin-bottom:10px">남녀가 갈리는 근거는 십성입니다. 여자는 관성(官星), 남자는 재성(財星)을 배우자로 읽습니다.</p></div>${iljuFig(p, "love")}</section>`+
+      `<p><a href="gunghap.html">생년월일로 두 사람의 궁합을 확인하세요.</a></p></div>${iljuFig(p, "love")}</section>`+
 
       `<section class="guide"><h2>일지 ${J.ko}(${J.han}) — 배우자 자리</h2><div class="intro" style="margin-top:0">`+
-      `${para(J.seat)}${para(J.pair)}`+
-      `<p style="margin-bottom:10px">상대의 사주와 맞춰 보려면 <a href="gunghap.html">궁합</a>에서 두 사람의 생년월일을 함께 넣어 보세요.</p></div>${iljuFig(p, "seat")}</section>`+
+      `<p>${p.han}의 일지 ${J.han}: 지장간과 ${G.han} 기준 십성입니다.</p>`+
+      `<ul>${ENGINE.SJ_JJG[p.b].map(([s], i, a) => `<li>${ENGINE.SJ_S[s]}(${ENGINE.SJ_SH[s]}) · ${ENGINE.sjTenGod(p.s, s)}${i === a.length - 1 ? " · 본기" : ""}</li>`).join("")}</ul>`+
+      `<p>${iljuDaySigns(p)}</p></div>${iljuFig(p, "seat")}</section>`+
 
       `<section class="guide"><h2>${p.ko}일주의 일과 재물</h2>`+
       `<div class="intro" style="margin-top:0">${para(C.work)}</div>${iljuFig(p, "work")}</section>`+
@@ -3148,19 +3147,17 @@ function iljuPage(p){
       `<div class="intro" style="margin-top:0">${para(C.care)}</div>${iljuFig(p, "care")}</section>`+
 
       `<section class="guide"><h2>십이운성 ${p.un}${josa(p.un,"과/와")} 일지 십성 ${p.tengod}</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px"><b>십이운성 ${p.un}</b> — ${esc(ILJU_SRC.UN_DESC[p.un])}</p>`+
-      `<p style="margin-bottom:10px"><b>일지 십성 ${p.tengod}</b> — ${J.ko}(${J.han}) 안에서 가장 힘이 센 ${p.bmain}${josa(p.bmain,"을/를")} 내 일간 ${G.ko}${josa(G.ko,"과/와")} 대조한 결과입니다.${S ? " "+esc(S.rule)+josa(S.rule,"이라는/라는")+" 뜻입니다." : ""}</p>`+
+      `<p>${gEl}의 ${J.ko} 자리인 ${p.un}: ${esc(first(ILJU_SRC.UN_DESC[p.un], 1))}</p>`+
+      `<p>${p.han}의 본기 ${p.bmain}${josa(p.bmain,"은/는")} ${G.ko}에게 ${p.tengod}입니다.</p>`+
       (S ? `<p style="color:var(--muted);font-size:13px;margin:10px 2px 0"><a href="sipseong-${S.en}.html">${p.tengod} 뜻 자세히 보기</a></p>` : "")+
       `</div></section>`+
 
       `<section class="guide"><h2>${p.ko}일주와 인연이 닿는 띠</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px">일지 ${J.ko}${josa(J.ko,"과/와")} 한 덩어리로 묶이는 삼합은 <b>${esc(p.samhap.join(", "))}띠</b>, 짝을 이루는 육합은 <b>${esc(p.yukhap)}띠</b>입니다. 정면으로 마주 보는 충은 <b>${esc(p.chung)}띠</b>인데 못 만날 사이가 아니라 끌림과 마찰이 함께 큰 사이로 읽습니다.</p></div></section>`+iljuCelebSec(p),
+      `<p>${J.han} 기준 삼합은 ${esc(p.samhap.join("·"))}, 육합은 ${esc(p.yukhap)}, 충은 ${esc(p.chung)}입니다. <a href="tti-gunghap.html">관계표의 읽는 법</a>을 함께 보세요.</p></div></section>`+iljuCelebSec(p),
     faq:[
       [`${p.ko}일주는 어떤 성격인가요?`,`${G.metaphor}에 비유되는 ${gEl} 일간이 ${jEl} 위에 앉은 일주입니다. ${first(C.core,2)}`],
-      [`${p.ko}일주는 여자와 남자가 다른가요?`,`기본 성격은 같고 배우자를 보는 글자가 갈립니다. 여자는 관성, 남자는 재성을 배우자로 읽습니다. ${first(C.woman,1)} ${first(C.man,1)}`],
-      [`내 일주는 어떻게 확인하나요?`,`태어난 날의 간지가 일주입니다. 생년월일을 사주팔자 만세력에 넣으면 여덟 글자 가운데 세 번째 기둥으로 나옵니다. 그 두 글자가 ${p.han}이면 ${p.ko}일주입니다. 날짜 경계는 자정 기준이며 시주만 진태양시로 보정합니다.`],
-      [`충인 ${p.chung}띠와는 안 맞나요?`,`충은 안 맞는다는 뜻이 아니라 부딪힌다는 뜻입니다. ${p.chung}띠는 내 일지 ${J.ko}${josa(J.ko,"과/와")} 정면으로 마주 보는 자리라 끌리는 힘도 세고 마찰도 잦습니다. 실제 궁합은 일지 하나가 아니라 사주 여덟 글자 전체의 균형으로 봅니다.`]],
-    sibTitle:"다른 일주도 보기", sibs:iljuChips(p.en),
+      [`${p.ko}일주의 일에서는 어떤 점을 살펴보나요?`, first(C.work,2)]],
+    sibTitle:"다른 일주도 보기", sibs:`<div class="sibs"><a href="ilju-${ILJU_PAGES[(p.k+59)%60].en}.html">이전: ${ILJU_PAGES[(p.k+59)%60].ko}</a><a href="column-gapja-60.html">60갑자 전체 보기</a><a href="ilju-${ILJU_PAGES[(p.k+1)%60].en}.html">다음: ${ILJU_PAGES[(p.k+1)%60].ko}</a></div>`,
     related:["saju","gunghap","todayfortune","newyear"]});
 }
 
