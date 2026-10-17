@@ -366,8 +366,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
       var gMax=G[gTop],gTops=Object.keys(G).filter(function(k){return G[k]===gMax;}),gEven=!gZero.length&&gMax===Math.min.apply(null,Object.keys(G).map(function(k){return G[k];}));
       var gTxt=(gEven?'다섯 자리가 같은 칸 수로 고루 들어 있어요. 어느 한쪽으로도 치우치지 않는 짜임이라, 상황에 맞춰 골라 쓰면 돼요.':'가장 두터운 자리는 <b>'+gTops.join("·")+'</b>'+josa(gTops[gTops.length-1],"예요/이에요")+'. '+(gTops.length>1?'이 기운들을':'이 기운을')+' 중심으로 삶이 굴러간다는 뜻이에요.')+(gEven?'':
         (gZero.length
-          ?' 반대로 '+gZero.join("·")+josa(gZero[gZero.length-1],"가/이")+' 비어 있어요. 비어 있는 자리는 채우면 좋은 자리라, '+
-            '그쪽을 채워 주는 사람이나 일을 곁에 두면 숨통이 트여요.'
+          ?' 반대로 '+gZero.join("·")+josa(gZero[gZero.length-1],"가/이")+' 비어 있어요. 그쪽을 채워 주는 사람이나 일을 곁에 두면 숨통이 트여요.'
           :(G[gTop]-Math.min.apply(null,Object.keys(G).map(function(k){return G[k];}))<=1?' 다섯 자리가 모두 들어 있고 칸 수 차이도 크지 않아, 다른 기운도 필요할 때 꺼내 쓸 수 있어요.'
             :' 다섯 자리가 모두 들어 있어 빈 곳은 없어요. 그중 '+gTops.join("·")+'에 무게가 실려 있으니 그 힘을 중심에 두고 쓰면 돼요.')));   // 3·1·1·1·1 을 '고루'라 했던 오판(검수)
 

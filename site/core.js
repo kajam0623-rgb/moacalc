@@ -2018,18 +2018,22 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     if(/^맞는 짝은|^잘 맞는 짝은/.test(t))return true;   // 짝 모습은 '여덟 글자' 칸의 태어난 날 자리 한곳에서만
     /* 달마다 칸(PF.noKw)은 달마다 처방이 달라 한도에서 뺀다(그 달 처방이 잘려 첫 문장만 남던 것) — 성향 축 검사는 그대로 */
     {var K=PF.kw||(PF.kw={}),hit=Object.keys(SJ_RX).filter(function(k){return SJ_RX[k].test(t);}),ONE={서운:1,혼자:1,숨:1,말끝:1,윗사람:1,반반:1,나돌봄:1,도움:1,정하기:1,미루기:1,골라쓰기:1,쉬기:1,넘겨주기:1,빌려:1,몫:1,작게:1,한도:1,새로열기:1,져주기:1,힘쓰기:1,곁에두기:1,통장:1,배우기:1,걷기:1,일정:1,운동:1,편하게:1,기록:1,베풀기:1,끝내기:1,벌인일:1,말꺼내기:1,혼자쉼:1,약속:1,붙들기:1,젊어서:1,끼니:1,결정연습:1};
-    if(!PF.noKw&&hit.some(function(k){return (K[k]||0)>=(ONE[k]?1:2);}))return true;hit.forEach(function(k){K[k]=(K[k]||0)+1;});}
+    if(!PF.noKw&&hit.some(function(k){return (K[k]||0)>=(ONE[k]?1:2);}))return true;}
     if(!PF.G.인성&&/배우는 일을 즐겨|공부로 익힌 것이 잘 통하|배움의 힘을 일찍/.test(t))return true;
-    return (PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);});}
+    if((PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);}))return true;
+    /* 주제 사용량은 살아남은 문장만 센다(2026-10-17: 성향 검사로 빠질 문장이 한도를 먼저 써서 뒤 문장이 대신 빠지던 것). sjFit 이 뒤에서 또 빼면 sjKwUndo 로 되돌린다 */
+    hit.forEach(function(k){K[k]=(K[k]||0)+1;});PF._hit=hit;return false;}
+  function sjKwUndo(PF,hit){(hit||[]).forEach(function(k){if(PF.kw&&PF.kw[k])PF.kw[k]--;});}
   function sjFit(h,PF){if(!h||!PF)return h;if(PF.age>=55)h=sjOldW(String(h));if(PF.age>=45)h=String(h).replace(/예술·연애·대인 관계/g,"예술·대인 관계");
     var out=String(h).split(/(<br\s*\/?>|<\/?p[^>]*>|<\/?div[^>]*>|<h3[^>]*>[\s\S]*?<\/h3>|<span[^>]*>[\s\S]*?<\/span>|<img[^>]*>)/).map(function(seg){if(/^<(br|\/?p|\/?div|h3|span|img)\b/.test(seg))return seg;/* 제목·문단·회색 주석은 문장 나누기 전에 떼어 둔다(칸 첫 문장을 뺄 때 제목 글자까지 지워졌음) */var drop=false;
       var adv=0,parts=seg.split(/(?<=[.!?])\s+/),txt=parts.map(function(x){return x.replace(/<[^>]+>/g,"").replace(/^[^—]{0,14}—\s*/,"").trim();}),
         isA=txt.map(function(t){return /(보세요|두세요|하세요|주세요|마세요|챙기세요|지키세요|드세요|내세요|정하세요|놓으세요|남기세요)[.!]?$/.test(t);}),
         lab=/^\s*(<[^>]+>)*<b>(<[^>]+>|[^<]){1,80}?<\/b>/.test(parts[0]||""),segDrop=false;   /* 이름표 안에 링크(<a>)가 있어도 이름표로 본다 */   /* 이름표(<b>…</b>)로 시작하는 줄의 첫 문장이 빠지면 줄을 통째로 뺀다 — 이름표 없이 뒷문장만 남던 것(검수) */
-      var dr=[];
-      parts.forEach(function(x,i){var t=txt[i];if(segDrop||drop&&SJ_DEM.test(t)){dr[i]=1;return;}drop=t.length>6&&sjBadSent(t,PF);if(!drop&&PF.advLim&&!(i===0&&lab)&&isA[i]){if(adv>=1&&(i===parts.length-1||isA[i+1]))drop=true;adv++;}   /* 처방 뒤에 그 결과 문장이 이어지면 빼지 않는다(결과 문장만 홀로 남던 것) */
+      var dr=[],hs=[];
+      parts.forEach(function(x,i){var t=txt[i];if(segDrop||drop&&SJ_DEM.test(t)){dr[i]=1;return;}PF._hit=null;drop=t.length>6&&sjBadSent(t,PF);hs[i]=drop?null:PF._hit;if(!drop&&PF.advLim&&!(i===0&&lab)&&isA[i]){if(adv>=1&&(i===parts.length-1||isA[i+1])){drop=true;sjKwUndo(PF,hs[i]);}adv++;}   /* 처방 뒤에 그 결과 문장이 이어지면 빼지 않는다(결과 문장만 홀로 남던 것) */
         if(drop&&i===0&&lab)segDrop=true;dr[i]=drop?1:0;});
-      if(!PF.noKw&&parts.length===2&&dr[0]+dr[1]===1)dr=[1,1];   /* 두 문장짜리 줄(진단+처방)에서 하나만 빠지면 남은 쪽이 받을 말 없이 끊겨 둘 다 뺀다(검수). 달마다 칸은 제외 */
+      if(segDrop)hs.forEach(function(h,i){if(i>0)sjKwUndo(PF,h);});
+      if(!PF.noKw&&parts.length===2&&dr[0]+dr[1]===1){sjKwUndo(PF,hs[dr[0]?1:0]);dr=[1,1];}   /* 두 문장짜리 줄(진단+처방)에서 하나만 빠지면 남은 쪽이 받을 말 없이 끊겨 둘 다 뺀다(검수). 달마다 칸은 제외 */
       return parts.map(function(x,i){return dr[i]?(x.match(/<[^>]+>/g)||[]).join(""):x;}).filter(function(x){return x!=="";}).join(" ");}).join("");
     if(PF.age<25)out=out.replace(/살림/g,"생활");
     if(PF.age<35)out=out.replace(/자식과 아랫사람|자녀와 아랫사람/g,"후배와 아랫사람").replace(/노후(를|가|는)?/g,function(m,j){return "훗날"+(j?{를:"을",가:"이",는:"은"}[j]:"");}).replace(/늘그막에도/g,"나이 들어서도").replace(/늘그막에?는?/g,"나이 들수록");
