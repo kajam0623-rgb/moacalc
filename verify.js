@@ -1384,7 +1384,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   let nf = 0, badF = [];
   Object.entries(CI.figs).forEach(([en, a]) => { const c = CP.find(x => x.en === en); if (!c) { badF.push(en + ":칼럼 없음"); return; } nf += a.length;
     a.forEach((f, k) => { if (!Number.isInteger(f.after) || f.after < 0 || f.after >= c.sections.length) badF.push(en + ":after " + f.after); if (typeof f.alt !== "string" || f.alt.length < 15 || f.alt.length > 120) badF.push(en + ":alt " + k); if (k && f.after <= a[k - 1].after) badF.push(en + ":순서 " + k); }); });
-  t("칼럼 그림: 글 안 그림 48장 — 칼럼마다 2~3장, 섹션 번호가 범위 안·오름차순이고 설명(alt)이 15~120자다", [nf, badF.slice(0, 3).join("|"), Object.values(CI.figs).every(a => a.length >= 2 && a.length <= 3), Object.keys(CI.figs).length === ens.length].join(","), "48,,true,true");
+  t("칼럼 그림: 글 안 그림 52장 — 칼럼마다 2~3장, 섹션 번호가 범위 안·오름차순이고 설명(alt)이 15~120자다", [nf, badF.slice(0, 3).join("|"), Object.values(CI.figs).every(a => a.length >= 2 && a.length <= 3), Object.keys(CI.figs).length === ens.length].join(","), "52,,true,true");
   // 파일: 전부 있고 진짜 webp 이며 비율·용량 예산을 지킨다 (원본 PNG 2~3MB 를 줄인 것)
   const webpDim = f => { const b = fs.readFileSync(f); if (b.toString("latin1", 0, 4) !== "RIFF" || b.toString("latin1", 8, 12) !== "WEBP") return null; const k = b.toString("latin1", 12, 16);
     if (k === "VP8 ") return { w: b.readUInt16LE(26) & 0x3fff, h: b.readUInt16LE(28) & 0x3fff }; if (k === "VP8X") return { w: 1 + b.readUIntLE(24, 3), h: 1 + b.readUIntLE(27, 3) };
@@ -1395,7 +1395,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
   const miss = [], notWebp = [], badAsp = [], big = []; let total = 0;
   want.forEach(([n, [asp, kb]]) => { const f = `img/col/${n}.webp`; if (!fs.existsSync(f)) { miss.push(n); return; } const d = webpDim(f), sz = fs.statSync(f).size; total += sz;
     if (!d) { notWebp.push(n); return; } if (Math.abs(d.w / d.h - asp) > 0.03 * asp) badAsp.push(n + " " + d.w + "x" + d.h); if (sz > kb * 1024) big.push(n + " " + Math.round(sz / 1024) + "KB"); });
-  t("칼럼 그림: 62장(타일 14 + 글 안 48)이 모두 img/col 에 있다", want.length + "|" + miss.slice(0, 4).join(","), "62|");
+  t("칼럼 그림: 66장(타일 14 + 글 안 52)이 모두 img/col 에 있다", want.length + "|" + miss.slice(0, 4).join(","), "66|");
   t("칼럼 그림: 전부 진짜 webp 이고 원본 비율 그대로다(타일 3:2, 글 안 16:9 — 미리 자르면 얼굴이 잘린다)", notWebp.slice(0, 3).join(",") + "|" + badAsp.slice(0, 3).join(","), "|");
   t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일·가로 타일·글 안 80KB 이하), 전체 5.5MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 5.5 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
   t("칼럼 그림: img/col 에는 webp 말고 다른 파일이 없다(원본 PNG 는 리포에 두지 않는다)", fs.readdirSync("img/col").filter(f => !f.endsWith(".webp")).join(","), "");
