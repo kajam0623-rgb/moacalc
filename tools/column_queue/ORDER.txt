@@ -1,8 +1,8 @@
 # 하루 2편씩 위에서부터 올린다. 올린 줄 앞에 '# 올림 YYYY-MM-DD ' 를 붙인다.
 # 올림 2026-10-17 hwangap-age
 # 올림 2026-10-17 solar-terms-2027
-dongji-2026
-job-luck-saju
+# 올림 2026-10-18 dongji-2026
+# 올림 2026-10-18 job-luck-saju
 naming-gaemyeong
 gwansang
 songeum
