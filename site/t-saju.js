@@ -646,7 +646,7 @@ TOOLS.push({id:"saju",cat:"재미·운세",icon:"",name:"사주팔자 만세력"
         // 2026-10-11 순서: 한마디·성격·네 갈래 운 → 시기(달·해·10년) → 왜 그렇게 읽었나(그릇·신살·유명인·자리·받쳐 주는 기운·오행·축)
         FA(coreH)+
         // 회색 소자 = 계산 근거 주석. 보살 말투는 풀이 본문에만 쓴다
-        FA(sinH)+
+        (function(h){var n=(h.match(/<\/b> — /g)||[]).length;return n?h.replace(/눈에 띄는 기운 \d+가지/,"눈에 띄는 기운 "+n+"가지"):h;})(FA(sinH))+   /* 거르기로 빠진 줄이 있으면 제목 숫자를 남은 줄 수에 맞춘다(2026-10-19: 제목 7가지에 6줄) */
         '<div class="sj-sec" id="sjceleb"></div>'+
         FA(gungH)+
         F(elH)+

@@ -17,7 +17,8 @@ function check(date, h, g, nowY) {
   { const ms = [...html.matchAll(/힘이 실리는 달은 <b>([^<]+)<\/b>/g)].map(m => m[1]); if (new Set(ms).size > 1) bad.push(["달 목록 다름", ms.join(" / ")]); }
   ["재물운","직업운","애정운","건강운","타고난 성격","맺는 말","타고난 그릇 모양"].forEach(k => { if (html.indexOf(">" + k) < 0 && html.indexOf(k + "<") < 0) bad.push(["칸 제목 빠짐", k]); });
   if (/<p>(\s|<br\s*\/?>)*<\/p>|<b>\s*<\/b>/.test(html)) bad.push(["빈 문단", date]);   // 거르개가 문장을 다 뺀 자리
-  const own = S.filter(x => !C.SJ_OTHER.test(x));
+  { const m = html.match(/눈에 띄는 기운 (\d+)가지<\/h3>([\s\S]*?)<\/div>/); if (m && (m[2].match(/<\/b> — /g) || []).length !== +m[1]) bad.push(["신살 개수", date]); }   // 제목 숫자 = 남은 줄 수(2026-10-19)
+  const own = S.filter(x => !C.SJ_OTHER.test(x) && !/\([가-힣]{2,5}\) —/.test(x));   // 신살 이름 줄('혼자 깊어지는 시간(화개) — …')은 사실 목록이라 성향 문장으로 세지 않는다(hub sjBadSent 와 같은 규칙)
   C.SJ_TRAIT_PAIRS.forEach((pr, i) => { const a = own.filter(x => pr[0].test(x)), b = own.filter(x => pr[1].test(x)); if (a.length && b.length) bad.push(["성향" + i, a[0].slice(0, 40) + " ↔ " + b[0].slice(0, 40)]); });
   if (st === "weak") S.filter(x => C.SJ_STRONG_CLAIM.test(x)).forEach(x => bad.push(["힘(약)", x.slice(0, 60)]));
   if (st === "strong") S.filter(x => C.SJ_WEAK_CLAIM.test(x)).forEach(x => bad.push(["힘(강)", x.slice(0, 60)]));

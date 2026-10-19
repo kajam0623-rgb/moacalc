@@ -2003,7 +2003,10 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
   // 성향 쌍마다 이 사람이 어느 쪽인지 — 조립된 글에서 많이 나온 쪽, 같으면 프로필(일간·힘·무리)로 정한다. 한쪽만 나오면 거를 것 없음(null)
   function sjAxes(text,PF){var S=String(text).replace(/<[^>]+>/g," ").split(/(?<=[.!?])\s+/).filter(function(x){return !SJ_OTHER.test(x);}),
       hint=[PF.ds===6||PF.ds===7||PF.str==="strong"?0:1,PF.ds===2||PF.ds===3||PF.G.식상>=2?0:1,PF.str==="strong"?0:1,PF.G.비겁>=3?1:0,PF.str==="strong"?0:1,PF.G.재성>=3?1:0,PF.G.비겁>=2?0:1,0,1,0,0,PF.G.재성>=3?1:0,0,0,PF.str==="weak"?1:0,PF.G.관성?1:0];   /* 축 순서: 결단·말·과감·양보·혼자·돈·경쟁·집중·감정·머묾·수입·짝·끈기·마무리·틀 */
-    return SJ_TRAIT_PAIRS.map(function(pr,i){var a=0,b=0;S.forEach(function(x){if(pr[0].test(x))a++;if(pr[1].test(x))b++;});return !a||!b?null:a>b?0:b>a?1:hint[i];});}
+    /* 사주 근거가 있는 축(일간·힘의 세기·무리 개수로 정한 hint)은 명식으로 정한다 — 문장 다수결이면 원고를 고칠 때 사람의 성향 판정까지 바뀌었다(2026-10-19, Codex 감사).
+       근거가 없는 축(집중·감정·머묾·인연 속도·짝 사이·끈기)만 조립된 문장 다수결을 쓴다 */
+    var BYCHART={0:1,1:1,2:1,3:1,4:1,5:1,6:1,11:1,14:1,15:1};
+    return SJ_TRAIT_PAIRS.map(function(pr,i){var a=0,b=0;S.forEach(function(x){if(pr[0].test(x))a++;if(pr[1].test(x))b++;});return !a||!b?null:BYCHART[i]?hint[i]:a>b?0:b>a?1:hint[i];});}
   function sjBadSent(t,PF){
     if(PF.str==="weak"&&SJ_STRONG_CLAIM.test(t))return true;
     if(PF.str==="strong"&&SJ_WEAK_CLAIM.test(t))return true;
@@ -2020,7 +2023,8 @@ var num=function(s){return Number(String(s).replace(/[^0-9.]/g,""))||0;};
     {var K=PF.kw||(PF.kw={}),hit=Object.keys(SJ_RX).filter(function(k){return SJ_RX[k].test(t);}),ONE={서운:1,혼자:1,숨:1,말끝:1,윗사람:1,반반:1,나돌봄:1,도움:1,정하기:1,미루기:1,골라쓰기:1,쉬기:1,넘겨주기:1,빌려:1,몫:1,작게:1,한도:1,새로열기:1,져주기:1,힘쓰기:1,곁에두기:1,통장:1,배우기:1,걷기:1,일정:1,운동:1,편하게:1,기록:1,베풀기:1,끝내기:1,벌인일:1,말꺼내기:1,혼자쉼:1,약속:1,붙들기:1,젊어서:1,끼니:1,결정연습:1};
     if(!PF.noKw&&hit.some(function(k){return (K[k]||0)>=(ONE[k]?1:2);}))return true;}
     if(!PF.G.인성&&/배우는 일을 즐겨|공부로 익힌 것이 잘 통하|배움의 힘을 일찍/.test(t))return true;
-    if((PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);}))return true;
+    /* 신살 이름 줄('혼자 깊어지는 시간(화개) — …')은 사실을 적은 목록이라 성향 축으로 빼지 않는다 — 빠지면 '눈에 띄는 기운 3가지'에 2개만 남았다(2026-10-19) */
+    if(!/\([가-힣]{2,5}\) —/.test(t)&&(PF.ax||[]).some(function(k,i){return k!=null&&!SJ_OTHER.test(t)&&SJ_TRAIT_PAIRS[i][1-k].test(t);}))return true;
     /* 주제 사용량은 살아남은 문장만 센다(2026-10-17: 성향 검사로 빠질 문장이 한도를 먼저 써서 뒤 문장이 대신 빠지던 것). sjFit 이 뒤에서 또 빼면 sjKwUndo 로 되돌린다 */
     hit.forEach(function(k){K[k]=(K[k]||0)+1;});PF._hit=hit;return false;}
   function sjKwUndo(PF,hit){(hit||[]).forEach(function(k){if(PF.kw&&PF.kw[k])PF.kw[k]--;});}
