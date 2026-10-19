@@ -80,6 +80,6 @@
 # 요청됨 2026-10-18 https://dongnebosal.com/column-hwangap-age.html
 # 요청됨 2026-10-18 https://dongnebosal.com/column-solar-terms-2027.html
 # 요청됨 2026-10-18 https://dongnebosal.com/dream-death-self.html
-https://dongnebosal.com/column-naming-gaemyeong.html
-https://dongnebosal.com/column-gwansang.html
-https://dongnebosal.com/dream-death-family.html
+# 요청됨 2026-10-19 https://dongnebosal.com/column-naming-gaemyeong.html
+# 요청됨 2026-10-19 https://dongnebosal.com/column-gwansang.html
+# 요청됨 2026-10-19 https://dongnebosal.com/dream-death-family.html
