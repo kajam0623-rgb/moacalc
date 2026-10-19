@@ -3,8 +3,8 @@
 # 올림 2026-10-17 solar-terms-2027
 # 올림 2026-10-18 dongji-2026
 # 올림 2026-10-18 job-luck-saju
-naming-gaemyeong
-gwansang
+# 올림 2026-10-19 naming-gaemyeong
+# 올림 2026-10-19 gwansang
 songeum
 taegil
 sebae-deokdam-2027
