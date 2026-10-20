@@ -5,7 +5,7 @@
 # 올림 2026-10-18 job-luck-saju
 # 올림 2026-10-19 naming-gaemyeong
 # 올림 2026-10-19 gwansang
-songeum
-taegil
+# 올림 2026-10-20 songeum
+# 올림 2026-10-20 taegil
 sebae-deokdam-2027
 daeboreum-2027
