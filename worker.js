@@ -16,7 +16,8 @@ const kstDay = (off = 0) => new Date(Date.now() + 9 * 3600e3 - off * 86400e3).to
 
 export default {
   async fetch(req, env) {
-    const { pathname } = new URL(req.url);
+    const u = new URL(req.url), { pathname } = u;
+    if (u.protocol === "http:") { u.protocol = "https:"; return Response.redirect(u.toString(), 301); }   // http 주소가 그대로 열려 중복 주소가 되던 것(2026-10-21)
     if (pathname === "/api/hit") return req.method === "POST" ? hit(req, env) : new Response(null, { status: 405 });
     if (pathname === "/api/invite") return req.method === "POST" ? inviteMake(req, env) : req.method === "GET" ? inviteGet(req, env) : new Response(null, { status: 405 });
     if (pathname === "/admin") return admin(req, env);
