@@ -83,5 +83,5 @@
 # 요청됨 2026-10-19 https://dongnebosal.com/column-naming-gaemyeong.html
 # 요청됨 2026-10-19 https://dongnebosal.com/column-gwansang.html
 # 요청됨 2026-10-19 https://dongnebosal.com/dream-death-family.html
-https://dongnebosal.com/column-songeum.html
-https://dongnebosal.com/column-taegil.html
+# 요청됨 2026-10-20 https://dongnebosal.com/column-songeum.html
+# 요청됨 2026-10-20 https://dongnebosal.com/column-taegil.html
