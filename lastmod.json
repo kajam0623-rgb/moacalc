@@ -652,8 +652,8 @@
   "d": "2026-09-16"
  },
  "index.html": {
-  "h": "f52f0268",
-  "d": "2026-10-20"
+  "h": "f4fbaefd",
+  "d": "2026-10-21"
  },
  "installment.html": {
   "h": "df53a0c6",
@@ -680,8 +680,8 @@
   "d": "2026-09-16"
  },
  "lunar.html": {
-  "h": "bc8dbd73",
-  "d": "2026-10-20"
+  "h": "7d6ef5ae",
+  "d": "2026-10-21"
  },
  "manse-2020-01.html": {
   "h": "cbf61e5e",
@@ -1224,8 +1224,8 @@
   "d": "2026-10-19"
  },
  "newyear.html": {
-  "h": "683d1cc5",
-  "d": "2026-10-17"
+  "h": "27b9b94d",
+  "d": "2026-10-21"
  },
  "password.html": {
   "h": "c7a92bf3",
@@ -1544,40 +1544,40 @@
   "d": "2026-10-10"
  },
  "zodiacfortune.html": {
-  "h": "9e1bd1d2",
-  "d": "2026-10-17"
+  "h": "fbc7f617",
+  "d": "2026-10-21"
  },
  "column.html": {
-  "h": "f49c2dc9",
-  "d": "2026-10-20"
+  "h": "bb421bac",
+  "d": "2026-10-21"
  },
  "column-birth-time-unknown.html": {
-  "h": "de99fdd2",
-  "d": "2026-10-20"
+  "h": "296107af",
+  "d": "2026-10-21"
  },
  "column-new-year-start.html": {
-  "h": "00ee9962",
-  "d": "2026-10-20"
+  "h": "ff363a79",
+  "d": "2026-10-21"
  },
  "column-star-cusp.html": {
-  "h": "9078c4e2",
-  "d": "2026-10-20"
+  "h": "fbcb92b5",
+  "d": "2026-10-21"
  },
  "column-daeun-reading.html": {
-  "h": "ede10e44",
-  "d": "2026-10-20"
+  "h": "f3bf7f7b",
+  "d": "2026-10-21"
  },
  "column-tti-vs-saju-gunghap.html": {
-  "h": "bf85fa94",
-  "d": "2026-10-20"
+  "h": "352d0505",
+  "d": "2026-10-21"
  },
  "column-tarot-vs-saju.html": {
-  "h": "f0a8a3a6",
-  "d": "2026-10-20"
+  "h": "d7e04eb7",
+  "d": "2026-10-21"
  },
  "dict.html": {
-  "h": "481c72fc",
-  "d": "2026-10-20"
+  "h": "c08d04a4",
+  "d": "2026-10-21"
  },
  "tarot-wands-ace.html": {
   "h": "b52e19a8",
@@ -1856,32 +1856,32 @@
   "d": "2026-10-13"
  },
  "tojeong.html": {
-  "h": "8d34dabe",
-  "d": "2026-10-18"
+  "h": "a766de2c",
+  "d": "2026-10-21"
  },
  "column-yearly-luck-table.html": {
-  "h": "08ad40b4",
-  "d": "2026-10-20"
+  "h": "16bd865c",
+  "d": "2026-10-21"
  },
  "column-zodiac-move-years.html": {
-  "h": "3a099297",
-  "d": "2026-10-20"
+  "h": "c454be85",
+  "d": "2026-10-21"
  },
  "column-sipseong-lookup-table.html": {
-  "h": "c223b5e1",
-  "d": "2026-10-20"
+  "h": "970d0130",
+  "d": "2026-10-21"
  },
  "column-online-saju-checklist.html": {
-  "h": "2ee0da27",
-  "d": "2026-10-20"
+  "h": "ae79222a",
+  "d": "2026-10-21"
  },
  "column-free-saju-result-items.html": {
-  "h": "751baa8c",
-  "d": "2026-10-20"
+  "h": "cd0b49ff",
+  "d": "2026-10-21"
  },
  "column-saju-helper-guide.html": {
-  "h": "d6b10341",
-  "d": "2026-10-20"
+  "h": "a91be6d8",
+  "d": "2026-10-21"
  },
  "learn.html": {
   "h": "b09761c7",
@@ -1916,16 +1916,16 @@
   "d": "2026-10-10"
  },
  "column-zodiac-2027.html": {
-  "h": "622b0d42",
-  "d": "2026-10-20"
+  "h": "754c0ece",
+  "d": "2026-10-21"
  },
  "gongmang.html": {
   "h": "d90fbaf8",
   "d": "2026-10-10"
  },
  "column-gapja-60.html": {
-  "h": "83efad55",
-  "d": "2026-10-20"
+  "h": "c9328316",
+  "d": "2026-10-21"
  },
  "tti-gunghap.html": {
   "h": "b06759d9",
@@ -2776,51 +2776,59 @@
   "d": "2026-10-10"
  },
  "column-red-goat-2027.html": {
-  "h": "decef378",
-  "d": "2026-10-20"
+  "h": "49507fb5",
+  "d": "2026-10-21"
  },
  "column-baby-tti-2027.html": {
-  "h": "53107ef6",
-  "d": "2026-10-20"
+  "h": "c4c51a3e",
+  "d": "2026-10-21"
  },
  "column-exam-luck-saju.html": {
-  "h": "a7aa0a32",
-  "d": "2026-10-20"
+  "h": "20c2aaa7",
+  "d": "2026-10-21"
  },
  "column-tojeong-2027.html": {
-  "h": "da5d535a",
-  "d": "2026-10-20"
+  "h": "b088399e",
+  "d": "2026-10-21"
  },
  "column-hwangap-age.html": {
-  "h": "ceac5986",
-  "d": "2026-10-20"
+  "h": "f35f9a10",
+  "d": "2026-10-21"
  },
  "column-solar-terms-2027.html": {
-  "h": "f8661b91",
-  "d": "2026-10-20"
+  "h": "920351ae",
+  "d": "2026-10-21"
  },
  "column-dongji-2026.html": {
-  "h": "796b16f4",
-  "d": "2026-10-20"
+  "h": "c07c7d3b",
+  "d": "2026-10-21"
  },
  "column-job-luck-saju.html": {
-  "h": "30f3f84f",
-  "d": "2026-10-20"
+  "h": "856b0f85",
+  "d": "2026-10-21"
  },
  "column-naming-gaemyeong.html": {
-  "h": "3aab0241",
-  "d": "2026-10-20"
+  "h": "f1d6e8ce",
+  "d": "2026-10-21"
  },
  "column-gwansang.html": {
-  "h": "1926e3b5",
-  "d": "2026-10-20"
+  "h": "b6387b70",
+  "d": "2026-10-21"
  },
  "column-songeum.html": {
-  "h": "629330f1",
-  "d": "2026-10-20"
+  "h": "f0cc5236",
+  "d": "2026-10-21"
  },
  "column-taegil.html": {
-  "h": "cb6f53c2",
-  "d": "2026-10-20"
+  "h": "b6b3a5df",
+  "d": "2026-10-21"
+ },
+ "column-daeboreum-2027.html": {
+  "h": "37045e08",
+  "d": "2026-10-21"
+ },
+ "column-sebae-deokdam-2027.html": {
+  "h": "6a9d2cb9",
+  "d": "2026-10-21"
  }
 }
