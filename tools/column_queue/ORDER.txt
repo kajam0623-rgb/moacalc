@@ -7,5 +7,5 @@
 # 올림 2026-10-19 gwansang
 # 올림 2026-10-20 songeum
 # 올림 2026-10-20 taegil
-sebae-deokdam-2027
-daeboreum-2027
+# 올림 2026-10-21 sebae-deokdam-2027
+# 올림 2026-10-21 daeboreum-2027
