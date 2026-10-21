@@ -85,6 +85,6 @@
 # 요청됨 2026-10-19 https://dongnebosal.com/dream-death-family.html
 # 요청됨 2026-10-20 https://dongnebosal.com/column-songeum.html
 # 요청됨 2026-10-20 https://dongnebosal.com/column-taegil.html
-https://dongnebosal.com/column-sebae-deokdam-2027.html
-https://dongnebosal.com/column-daeboreum-2027.html
-https://dongnebosal.com/dream-money-findmoney.html
+# 요청됨 2026-10-21 https://dongnebosal.com/column-sebae-deokdam-2027.html
+# 요청됨 2026-10-21 https://dongnebosal.com/column-daeboreum-2027.html
+# 요청됨 2026-10-21 https://dongnebosal.com/dream-money-findmoney.html
