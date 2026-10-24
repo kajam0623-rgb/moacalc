@@ -174,6 +174,24 @@
     if(pair(SJ_WONJIN))found.push("원진살");
     return found;
   }
+  /* 2026-10-24 신살 25종 더(네이버 태극귀인 9,040·장성살 6,010·반안살 5,620 등). 기준표는 출처 3곳 대조(고란·상문·조객·탕화는 갈려 다수 쪽).
+     사주 결과 목록(sjSinsal)에는 넣지 않는다 — 12신살은 누구 사주에나 몇 개씩 붙어 결과가 어수선해진다. 신살 페이지의 계산 칸에서만 쓴다.
+     12신살(겁·재·천·지·월·망신·장성·반안·육해) 키 = 지지번호%4 묶음, 귀인 = 일간·월지 기준, 상문·조객·고신·과숙 = 연지, 탕화 = 일지, 고란·효신 = 일주 */
+  var SJ_SIN_MORE={geopsal:{0:5,1:2,2:11,3:8},jaesal:{0:6,1:3,2:0,3:9},cheonsal:{0:7,1:4,2:1,3:10},jisal:{0:8,1:5,2:2,3:11},wolsal:{0:10,1:7,2:4,3:1},mangsin:{0:11,1:8,2:5,3:2},jangseong:{0:0,1:9,2:6,3:3},banan:{0:1,1:10,2:7,3:4},yukhae:{0:3,1:0,2:9,3:6},taegeuk:{0:[0,6],1:[0,6],2:[3,9],3:[3,9],4:[1,4,7,10],5:[1,4,7,10],6:[2,11],7:[2,11],8:[5,8],9:[5,8]},cheondeok:{0:{branch:5},1:{stem:6},2:{stem:3},3:{branch:8},4:{stem:8},5:{stem:7},6:{branch:11},7:{stem:0},8:{stem:9},9:{branch:2},10:{stem:2},11:{stem:1}},woldeok:{0:8,1:6,2:2,3:0},hakdang:{0:11,1:6,2:2,3:9,4:2,5:9,6:5,7:0,8:8,9:3},amnok:{0:11,1:10,2:8,3:7,4:8,5:7,6:5,7:4,8:2,9:1},geumyeo:{0:4,1:5,2:7,3:8,4:7,5:8,6:10,7:11,8:1,9:2},cheonui:{0:11,1:0,2:1,3:2,4:3,5:4,6:5,7:6,8:7,9:8,10:9,11:10},goran:["갑인","을사","정사","무신","신해"],nakjeong:{0:5,1:0,2:8,3:10,4:3,5:5,6:0,7:8,8:10,9:3},sangmun:{0:2,1:3,2:4,3:5,4:6,5:7,6:8,7:9,8:10,9:11,10:0,11:1},jogaek:{0:10,1:11,2:0,3:1,4:2,5:3,6:4,7:5,8:6,9:7,10:8,11:9},geupgak:{0:[1,4],1:[1,4],2:[11,0],3:[11,0],4:[11,0],5:[3,7],6:[3,7],7:[3,7],8:[2,10],9:[2,10],10:[2,10],11:[1,4]},gosin:{0:2,1:2,2:5,3:5,4:5,5:8,6:8,7:8,8:11,9:11,10:11,11:2},gwasuk:{0:10,1:10,2:1,3:1,4:1,5:4,6:4,7:4,8:7,9:7,10:7,11:10},tanghwa:{1:[6,7,10],2:[5,8],6:[1,4,6]},hyosin:["갑자","을해","병인","정묘","무오","기사","경진","경술","신축","신미","임신","계유"]};
+  var SJ_SIN12=["geopsal","jaesal","cheonsal","jisal","wolsal","mangsin","jangseong","banan","yukhae"];
+  function sjSinsalMore(p){
+    var T=SJ_SIN_MORE,ds=p.d.s,yb=p.y.b,mb=p.m.b,db=p.d.b,bs=[yb,mb,db],ss=[p.y.s,p.m.s,ds],found=[];if(p.h){bs.push(p.h.b);ss.push(p.h.s);}
+    var has=function(list,v){return [].concat(v).some(function(x){return list.indexOf(x)>=0;});},but=function(skip){return bs.filter(function(b,i){return i!==skip;});};
+    SJ_SIN12.forEach(function(en){if(has(bs,[T[en][yb%4],T[en][db%4]]))found.push(en);});
+    ["taegeuk","hakdang","amnok","geumyeo","nakjeong"].forEach(function(en){if(has(bs,T[en][ds]))found.push(en);});
+    var cd=T.cheondeok[mb];if(cd.stem!==undefined?ss.indexOf(cd.stem)>=0:bs.indexOf(cd.branch)>=0)found.push("cheondeok");
+    if(ss.indexOf(T.woldeok[mb%4])>=0)found.push("woldeok");
+    if(has(but(1),T.cheonui[mb]))found.push("cheonui");
+    if(has([db].concat(p.h?[p.h.b]:[]),T.geupgak[mb]))found.push("geupgak");
+    ["sangmun","jogaek","gosin","gwasuk"].forEach(function(en){if(has(but(0),T[en][yb]))found.push(en);});
+    if(T.tanghwa[db]&&has(but(2),T.tanghwa[db]))found.push("tanghwa");
+    var dj=SJ_S[ds]+SJ_B[db];["goran","hyosin"].forEach(function(en){if(T[en].indexOf(dj)>=0)found.push(en);});
+    return found;}
   /* 지장간 — 지지 속에 숨은 천간. 지지마다 [천간 번호, 일수] 를 여기·중기·정기 순으로 둔다(일수 합 30).
      마지막이 정기(본기)라 SJ_BMAIN 과 같다(verify 가 대조). 자·오·해 등 일부는 학파에 따라 적는 방식이 달라 동네보살은 널리 쓰는 표를 따른다 */
   var SJ_JJG=[[[8,10],[9,20]],[[9,9],[7,3],[5,18]],[[4,7],[2,7],[0,16]],[[0,10],[1,20]],[[1,9],[9,3],[4,18]],[[4,7],[6,7],[2,16]],
@@ -398,7 +416,9 @@
     zfRank:zfRank,
     nyScore:nyScore,
     nyPct:nyPct,
-    tjCalc:tjCalc
+    tjCalc:tjCalc,
+    SJ_SIN_MORE:SJ_SIN_MORE,
+    sjSinsalMore:sjSinsalMore
   };
 });
 

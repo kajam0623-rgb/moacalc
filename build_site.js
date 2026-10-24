@@ -2208,7 +2208,7 @@ const BIRTHSTONE = [["가넷", "Garnet", "짙은 붉은색", "", "우정·진실
 const BS_CP = ["hINBtugAxw", "hINBCy89ts", "hINBLGOZlQ", "hINBUUMIrQ", "hINB3V3Fqm", "hINCc8SZZ6", "hINCmhEL1w", "hINCvsuUGO", "hINCEE2D8u", "hINCNPjAxE", "hINCWSuyHc", "hINC5440u4"];
 const bsLink = (i, txt) => `<a href="https://link.coupang.com/a/${BS_CP[i]}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${txt}</a>`;
 function birthstonePage() {
-  const rows = BIRTHSTONE.map((b, i) => `<tr><th scope="row">${i + 1}월</th><td><b>${b[0]}</b><small>${b[1]}</small><br>${bsLink(i, "목걸이 보기 →")}</td><td>${b[2]}</td><td>${b[4]}${b[3] ? `<br><small>함께 쓰는 돌: ${b[3]}</small>` : ""}</td></tr>`).join("");
+  const rows = BIRTHSTONE.map((b, i) => `<tr><th scope="row"><a href="birth-${i + 1}.html">${i + 1}월</a></th><td><b>${b[0]}</b><small>${b[1]}</small><br>${bsLink(i, "목걸이 보기 →")}</td><td>${b[2]}</td><td>${b[4]}${b[3] ? `<br><small>함께 쓰는 돌: ${b[3]}</small>` : ""}</td></tr>`).join("");
   const STARS = STAR_PAGES.map(s => ({ en: s.en, ko: s.ko }));
   const js = `<script>(function(){var B=${JSON.stringify(BIRTHSTONE.map(b => [b[0], b[4], b[3]]))},S=${JSON.stringify(STARS)},CP=${JSON.stringify(BS_CP)},R=[[1,20,10],[2,19,11],[3,21,0],[4,20,1],[5,21,2],[6,22,3],[7,23,4],[8,23,5],[9,23,6],[10,23,7],[11,22,8],[12,22,9]];` +
     `function star(m,d){for(var i=0;i<R.length;i++){if(R[i][0]===m)return d>=R[i][1]?R[i][2]:R[(i+11)%12][2]}}var i=document.getElementById("bsd"),o=document.getElementById("bso");` +
@@ -2233,6 +2233,89 @@ function birthstonePage() {
       ["12월 탄생석은 무엇인가요?", "12월 탄생석은 터키석이고 탄자나이트와 지르콘을 함께 씁니다. 성공과 행운, 여행의 안전을 뜻한다고 전해집니다."],
       ["탄생석은 나라마다 다른가요?", "지금 널리 쓰는 목록은 미국 보석업계 표준을 바탕으로 하지만, 나라와 문화권에 따라 달마다 다른 돌을 함께 쓰기도 합니다."]],
     sibTitle: "생일로 보는 운세", sibs: `<div class="sibs"><a href="horoscope.html">별자리 운세</a><a href="stargunghap.html">별자리 궁합</a><a href="tti.html">띠 계산기</a><a href="saju.html">무료 사주풀이</a><a href="todayfortune.html">오늘의 운세</a></div>`,
+    related: ["horoscope", "stargunghap", "todayfortune", "saju"] });
+}
+
+// ── 달별 탄생석·탄생화·별자리(birth-<월>.html 12) + 날짜별 탄생화(flower-<MMDD>.html 366), 2026-10-24.
+// 네이버: N월탄생석 1,810~4,670(합 ~3.3만)·N월별자리 1,590~4,100(합 ~3만)·N월탄생화 870~4,340(합 ~1.6만)·날짜별 탄생화 하루 105~290.
+// 탄생화 목록·꽃말은 content_flower.js(국내에 널리 퍼진 날짜별 목록, 출처 대조 기록은 그 파일 머리), 설명 원고는 content_flower_text.js
+const FLOWER = require("./content_flower.js"), FLOWER_TXT = require("./content_flower_text.js");
+const BIRTH_STAR_R = [[1, 20, 10], [2, 19, 11], [3, 21, 0], [4, 20, 1], [5, 21, 2], [6, 22, 3], [7, 23, 4], [8, 23, 5], [9, 23, 6], [10, 23, 7], [11, 22, 8], [12, 22, 9]];
+const starOf = (m, d) => { const i = BIRTH_STAR_R.findIndex(r => r[0] === m); return STAR_PAGES[d >= BIRTH_STAR_R[i][1] ? BIRTH_STAR_R[i][2] : BIRTH_STAR_R[(i + 11) % 12][2]]; };
+const MDAYS = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+const mmdd = (m, d) => String(m).padStart(2, "0") + String(d).padStart(2, "0");
+const flowerUrl = (m, d) => `flower-${mmdd(m, d)}.html`;
+let CELEB_BY_MD = null;
+const celebsOn = (m, d) => {
+  if (!CELEB_BY_MD) { CELEB_BY_MD = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) (CELEB_BY_MD[b.slice(5, 7) + b.slice(8, 10)] ||= []).push([ko, +b.slice(0, 4), c]); }
+  return CELEB_BY_MD[mmdd(m, d)] || [];
+};
+const BIRTH_SIBS = `<div class="sibs">${Array.from({ length: 12 }, (_, i) => `<a href="birth-${i + 1}.html">${i + 1}월</a>`).join("")}<a href="birthstone.html">탄생석 전체</a></div>`;
+// 쿠팡: 탄생석 팔찌(2,080)·목걸이(1,560)·반지(1,350), 꽃다발(3.9만)·프리저브드플라워(5,280) — 상품 링크가 생기면 BIRTH_GOODS 에, 없으면 탄생석 목걸이 검색 링크
+const BIRTH_GOODS = (() => { try { return require("./content_birth_goods.js"); } catch (e) { return null; } })();
+const birthGoods = (m, day) => {   // 달 쪽: 탄생석 팔찌·생화·프리저브드 / 날짜 쪽: 탄생석 팔찌·드라이플라워·생화
+  const g = BIRTH_GOODS, stone = g && g.stone[m - 1], fl = g && g.flower;
+  const row = [stone, ...(fl ? (day ? [fl[2], fl[0]] : [fl[0], fl[1]]) : [])].filter(Boolean);
+  return `<section class="guide"><h2>${m}월생 선물 — 쿠팡에서 바로 보기</h2>` + GOODS_CSS +
+    (row.length ? cpChips(row.slice(0, 3)) : `<div class="sj-goods">${bsLink(m - 1, `${m}월 탄생석 ${BIRTHSTONE[m - 1][0]} 목걸이 보기 →`)}</div>`) + GOODS_NOTE + `</section>`;
+};
+function birthMonthPage(m) {
+  const b = BIRTHSTONE[m - 1], F = FLOWER.monthly[m], T = FLOWER_TXT.month[m];
+  const rs = BIRTH_STAR_R.find(r => r[0] === m), sA = starOf(m, 1), sB = starOf(m, MDAYS[m - 1]);
+  const sec = (h, body, id) => `<section class="guide"${id ? ` id="${id}"` : ""}><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  const days = Array.from({ length: MDAYS[m - 1] }, (_, i) => i + 1);
+  const cel = days.flatMap(d => celebsOn(m, d).map(c => [...c, d])).slice(0, 12);
+  return seoPage({
+    crumb: `${m}월 탄생석·탄생화`, date: "2026-10-24",
+    title: `${m}월 탄생석·탄생화·별자리 — ${b[0]}, ${F.flowers[0]}, ${sA.ko}·${sB.ko} | 동네보살`,
+    desc: `${m}월 탄생석은 ${b[0]}${b[3] ? `(함께 쓰는 돌 ${b[3]})` : ""}, ${m}월 탄생화는 ${F.flowers.join("·")}입니다. ${m}월생 별자리는 ${m}월 ${rs[1] - 1}일까지 ${sA.ko}, ${rs[1]}일부터 ${sB.ko}. 날짜별 탄생화와 꽃말, ${m}월생 유명인까지.`,
+    url: `${DOMAIN}/birth-${m}.html`, img: "img/tool/h-horoscope.webp", hero: "img/tool/h-horoscope.webp",
+    h1: `${m}월 탄생석·탄생화·별자리`, sub: `탄생석 ${b[0]} · 탄생화 ${F.flowers[0]} · ${sA.ko}·${sB.ko}`,
+    parent: "birthstone.html", parentName: "탄생석", tool: "horoscope", noTool: true,
+    tags: [`${m}월 탄생석`, `${m}월 탄생화`, `${m}월 별자리`, `${m}월생`, `${m}월 탄생석 목걸이`, "탄생화 꽃말"],
+    body: `<div class="exbox"><h2>${m}월생 한눈에 보기</h2>` +
+      [[`${m}월 탄생석`, b[0] + (b[3] ? ` (함께 쓰는 돌 ${b[3]})` : "")], ["탄생석 색·뜻", `${b[2]} · ${b[4]}`], [`${m}월 탄생화`, F.flowers.join(" · ")], ["탄생화 꽃말", F.meaning],
+       [`${m}월 1~${rs[1] - 1}일`, sA.ko], [`${m}월 ${rs[1]}~${MDAYS[m - 1]}일`, sB.ko]]
+        .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") + `</div>` +
+      `<div class="sibs" style="margin:10px 0 4px"><a href="#stone">${m}월 탄생석</a><a href="#flower">${m}월 탄생화</a><a href="#star">${m}월 별자리</a><a href="#days">날짜별 탄생화</a></div>` +
+      `<div class="intro">${para(T.intro)}</div>` +
+      sec(`${m}월 탄생석 ${b[0]} — 색과 뜻`, para(T.stone), "stone") +
+      sec(`${m}월 탄생화 ${F.flowers.join("·")} — 꽃말`, para(T.flower), "flower") +
+      birthGoods(m, false) +
+      sec(`${m}월 별자리 — ${sA.ko}·${sB.ko}`, `<p style="margin-bottom:10px">${m}월 1일부터 ${rs[1] - 1}일까지 태어났다면 <a href="star-${sA.en}.html">${sA.ko}</a>(${sA.range}), ${rs[1]}일부터 ${MDAYS[m - 1]}일까지는 <a href="star-${sB.en}.html">${sB.ko}</a>(${sB.range})입니다. 별자리가 바뀌는 날짜는 해마다 하루쯤 달라질 수 있어, 경계 날짜에 태어났다면 두 별자리를 함께 읽어 보세요.</p>`, "star") +
+      `<section class="guide" id="days"><h2>${m}월 날짜별 탄생화와 꽃말</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">날짜</th><th scope="col">탄생화</th><th scope="col">꽃말</th></tr></thead><tbody>` +
+      days.map(d => { const f = FLOWER.daily[mmdd(m, d)]; return `<tr><td><a href="${flowerUrl(m, d)}">${m}월 ${d}일</a></td><td><b>${esc(f.flower)}</b></td><td>${esc(f.meaning)}</td></tr>`; }).join("") +
+      `</tbody></table></div></section>` +
+      (cel.length ? sec(`${m}월생 유명인`, `<div class="sibs">${cel.map(([ko, y, c, d]) => `<span>${ko} <small style="color:var(--muted)">${m}월 ${d}일 · ${c}</small></span>`).join("")}</div><p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료입니다. 생일로 사주가 닮은 유명인은 <a href="celeb.html">닮은 연예인 찾기</a>에서.</p>`) : ""),
+    faq: [[`${m}월 탄생석은 무엇인가요?`, `${m}월 탄생석은 ${b[0]}${b[3] ? `이고 ${b[3]}${josa(b[3], "을/를")} 함께 씁니다` : "입니다"}. ${b[4]}${josa(b[4], "을/를")} 뜻한다고 전해집니다.`],
+      [`${m}월 탄생화는 무엇인가요?`, `${m}월 탄생화는 ${F.flowers.join("·")}이고 꽃말은 ${F.meaning}입니다. 날짜마다 따로 정한 탄생화도 있어 아래 표에서 생일 날짜의 꽃을 볼 수 있습니다.`],
+      [`${m}월생은 무슨 별자리인가요?`, `${m}월 ${rs[1] - 1}일까지는 ${sA.ko}, ${rs[1]}일부터는 ${sB.ko}입니다.`]],
+    sibTitle: "다른 달 보기", sibs: BIRTH_SIBS,
+    related: ["horoscope", "stargunghap", "todayfortune", "saju"] });
+}
+function flowerDayPage(m, d) {
+  const k = mmdd(m, d), f = FLOWER.daily[k], b = BIRTHSTONE[m - 1], s = starOf(m, d), cel = celebsOn(m, d).slice(0, 10);
+  const prev = d > 1 ? [m, d - 1] : [m === 1 ? 12 : m - 1, MDAYS[m === 1 ? 11 : m - 2]], next = d < MDAYS[m - 1] ? [m, d + 1] : [m === 12 ? 1 : m + 1, 1];
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  return seoPage({
+    crumb: `${m}월 ${d}일 탄생화`, date: "2026-10-24",
+    title: `${m}월 ${d}일 탄생화 — ${f.flower}, 꽃말 ${f.meaning.split(",")[0].trim()} | ${m}월 ${d}일 별자리·탄생석`,
+    desc: `${m}월 ${d}일 탄생화는 ${f.flower}, 꽃말은 ${f.meaning}입니다. ${m}월 ${d}일생 별자리는 ${s.ko}, 탄생석은 ${b[0]}.${cel.length ? ` 같은 날 태어난 ${cel.slice(0, 2).map(c => c[0]).join("·")}까지.` : ""}`,
+    url: `${DOMAIN}/${flowerUrl(m, d)}`, img: "img/tool/h-horoscope.webp", hero: "img/tool/h-horoscope.webp",
+    h1: `${m}월 ${d}일 탄생화 — ${f.flower}`, sub: `꽃말 ${f.meaning} · 별자리 ${s.ko} · 탄생석 ${b[0]}`,
+    parent: `birth-${m}.html`, parentName: `${m}월 탄생석·탄생화`, tool: "horoscope", noTool: true,
+    tags: [`${m}월 ${d}일 탄생화`, `${m}월${d}일 탄생화`, `${f.flower} 꽃말`, `${m}월 ${d}일 별자리`, `${m}월 ${d}일 생일`],
+    body: `<div class="exbox"><h2>${m}월 ${d}일생 한눈에 보기</h2>` +
+      [["탄생화", f.flower + (f.en ? ` (${f.en})` : "")], ["꽃말", f.meaning], ["별자리", s.ko + ` (${s.range})`], [`${m}월 탄생석`, b[0]]]
+        .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") + `</div>` +
+      sec(`${f.flower} — ${m}월 ${d}일의 꽃`, para(FLOWER_TXT.day[k])) +
+      sec(`${m}월 ${d}일생 별자리와 탄생석`, `<p style="margin-bottom:10px">${m}월 ${d}일에 태어났다면 별자리는 <a href="star-${s.en}.html">${s.ko}</a>이고, ${m}월 탄생석은 ${b[0]}(${b[2]} · ${b[4]})입니다. ${m}월의 탄생석·탄생화·별자리는 <a href="birth-${m}.html">${m}월 탄생석·탄생화</a>에 모았습니다.</p>`) +
+      (cel.length ? sec(`${m}월 ${d}일에 태어난 유명인`, `<div class="sibs">${cel.map(([ko, y, c]) => `<span>${ko} <small style="color:var(--muted)">${y} · ${c}</small></span>`).join("")}</div><p style="color:var(--muted);font-size:13px;margin:10px 0 0">생일은 위키데이터 공개 자료입니다. 생년월일로 내 사주는 <a href="saju.html">무료 사주풀이</a>에서.</p>`) : "") +
+      birthGoods(m, true),
+    faq: [[`${m}월 ${d}일 탄생화는 무엇인가요?`, `${m}월 ${d}일 탄생화는 ${f.flower}이고 꽃말은 ${f.meaning}입니다.`],
+      [`${m}월 ${d}일은 무슨 별자리인가요?`, `${m}월 ${d}일생은 ${s.ko}(${s.range})입니다.`],
+      [`${m}월 ${d}일생 탄생석은 무엇인가요?`, `탄생석은 달로 정해, ${m}월생은 ${b[0]}입니다.`]],
+    sibTitle: `${m}월 다른 날 탄생화`, sibs: `<div class="sibs"><a href="${flowerUrl(...prev)}">← ${prev[0]}월 ${prev[1]}일</a><a href="birth-${m}.html">${m}월 전체</a><a href="${flowerUrl(...next)}">${next[0]}월 ${next[1]}일 →</a></div>`,
     related: ["horoscope", "stargunghap", "todayfortune", "saju"] });
 }
 
@@ -2269,6 +2352,8 @@ function ahopsuPage() {
 // ── 신살(sinsal.html 모음 + sinsal-<en>.html 8, 2026-10-09) — 원고 content_sinsal.js. 계산은 쪽에 붙인 사주 도구(t-saju.js 의 sjSinsal)가 한다.
 // 원고의 기준표가 공용 엔진의 표와 어긋나면 빌드를 멈춘다(페이지 설명과 도구 결과가 달라지는 것을 막는다)
 const SINSAL = require("./content_sinsal.js");
+// 2026-10-24 네이버: 화개살여자 1,500·백호살여자 1,020·홍염살여자 970·괴강살여자 790·양인살여자 550 — 여자·남자 절(원고 content_sinsal_gender.js)
+const SINSAL_GENDER = require("./content_sinsal_gender.js");
 {
   const norm = s => s.replace(/\s|"/g, "");
   const eng = { cheoneul: SAJU.SJ_CHEONEUL, munchang: SAJU.SJ_MUNCHANG, dohwa: SAJU.SJ_DOHWA, yeokma: SAJU.SJ_YEOKMA,
@@ -2278,9 +2363,42 @@ const SINSAL = require("./content_sinsal.js");
   for (const k of Object.keys(eng)) { const mine = Array.isArray(SINSAL.T[k]) ? JSON.stringify(SINSAL.T[k]) : JSON.stringify(Object.fromEntries(Object.entries(SINSAL.T[k]).sort((a, b) => a[0] - b[0])));
     const theirs = Array.isArray(eng[k]) ? JSON.stringify(eng[k]) : JSON.stringify(Object.fromEntries(Object.entries(eng[k]).sort((a, b) => a[0] - b[0])));
     if (norm(mine) !== norm(theirs)) throw new Error(`신살 기준표 ${k} 가 사주 도구와 다름: ${mine} vs ${theirs}`); } }
+// 신살 25종 더(2026-10-24) — 원고 content_sinsal_more.js, 표·판정은 엔진 SJ_SIN_MORE·sjSinsalMore. 사주 결과 목록엔 안 넣고 페이지 계산 칸에서만 판정한다
+const SINSAL_MORE = require("./content_sinsal_more.js");
+const SIN_GRP = ["신자진(쥐·용·원숭이)", "사유축(뱀·닭·소)", "인오술(호랑이·말·개)", "해묘미(돼지·토끼·양)"];
+const SIN_KIND = { geopsal: "g12", jaesal: "g12", cheonsal: "g12", jisal: "g12", wolsal: "g12", mangsin: "g12", jangseong: "g12", banan: "g12", yukhae: "g12",
+  taegeuk: "stem", hakdang: "stem", amnok: "stem", geumyeo: "stem", nakjeong: "stem", cheondeok: "cheondeok", woldeok: "woldeok", cheonui: "month", geupgak: "month",
+  sangmun: "year", jogaek: "year", gosin: "year", gwasuk: "year", tanghwa: "tanghwa", goran: "pillar", hyosin: "pillar" };
+// 계산 칸의 ★ 표시가 엔진 판정과 같은 기둥만 보게 — 연·월·일·시 = 0·1·2·3
+const SIN_ONLY = { cheonui: [0, 2, 3], geupgak: [2, 3], sangmun: [1, 2, 3], jogaek: [1, 2, 3], gosin: [1, 2, 3], gwasuk: [1, 2, 3], tanghwa: [0, 1, 3] };
+const MONTH_ORDER = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 0, 1];   // 인월부터
+const bName = b => `${SAJU.SJ_B[b]}(${SAJU.SJ_BH[b]})`, sName = s => `${SAJU.SJ_S[s]}(${SAJU.SJ_SH[s]})`, bList = v => [].concat(v).map(bName).join(" · ");
+function sinMoreTable(en) {
+  const T = SAJU.SJ_SIN_MORE[en], k = SIN_KIND[en];
+  if (k === "g12") return [0, 1, 2, 3].map(g => [`${SIN_GRP[g]} 띠·일지`, bName(T[g])]);
+  if (k === "stem") return Array.from({ length: 10 }, (_, s) => [`${sName(s)} 일간`, bList(T[s])]);
+  if (k === "cheondeok") return MONTH_ORDER.map(b => [`${bName(b)}월`, T[b].stem !== undefined ? `${sName(T[b].stem)} — 천간` : `${bName(T[b].branch)} — 지지`]);
+  if (k === "woldeok") return [2, 0, 3, 1].map(g => [`${SIN_GRP[g].split("(")[0]}월`, sName(T[g])]);
+  if (k === "month") return MONTH_ORDER.map(b => [`${bName(b)}월`, bList(T[b])]);
+  if (k === "year") return Array.from({ length: 12 }, (_, b) => [`${bName(b)} · ${SAJU.SJ_TTI[b]}띠`, bName(T[b])]);
+  if (k === "tanghwa") return Object.keys(T).map(Number).map(b => [`일지 ${bName(b)}`, bList(T[b])]);
+  return T.map((ko, i) => { const q = ILJU_PAGES.find(x => x.ko === ko); return [`${i + 1}`, q ? `<a href="ilju-${q.en}.html">${ko}일주</a>` : `${ko}일주`]; });
+}
+SINSAL.PAGES.push(...SINSAL_MORE.PAGES.map(p => ({ ...p, more: true, table: () => sinMoreTable(p.en) })));
+const sinWidget = p => `<div class="sjw" id="snw"><h2>내 사주에 ${p.ko}${josa(p.ko, "이/가")} 있을까</h2><label for="snd">생년월일 (양력)</label><div class="sjw-row"><input id="snd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="sngo">확인</button></div>` +
+  `<label for="snh" style="margin-top:8px">태어난 시 (0~23시, 모르면 비워 두세요)</label><input id="snh" type="text" inputmode="numeric" maxlength="2" placeholder="예) 14" autocomplete="off" style="max-width:10em"><p class="sjw-note">생년월일은 이 화면에서만 계산하고 서버로 보내지 않습니다. 시를 모르면 연·월·일 세 기둥만 봅니다.</p><div id="sno" aria-live="polite"></div></div>` +
+  `<script>(function(){var EN=${JSON.stringify(p.en)},K=${JSON.stringify(SIN_KIND[p.en])},ONLY=${JSON.stringify(SIN_ONLY[p.en] || [0, 1, 2, 3])},NM=${JSON.stringify(p.ko)};var i=document.getElementById("snd"),hh=document.getElementById("snh"),o=document.getElementById("sno");` +
+  `function go(){if(typeof sjPillars!=="function"){o.innerHTML='<p class="sjw-note">계산기를 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.</p>';return}var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 여덟 자리로 넣어 주세요.</p>';return}` +
+  `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").replace(/\\D/g,"");if(!(y>=1900&&y<=2100&&m>=1&&m<=12&&d>=1&&d<=31)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}h=h===""?null:Math.min(23,+h);` +
+  `var p=sjPillars(y,m,d,h,0,false),T=SJ_SIN_MORE[EN],tb=[],ts=[],pil=false;if(K==="g12")tb=[T[p.y.b%4],T[p.d.b%4]];else if(K==="stem")tb=[].concat(T[p.d.s]);else if(K==="cheondeok"){var c=T[p.m.b];if(c.stem!==undefined)ts=[c.stem];else tb=[c.branch]}else if(K==="woldeok")ts=[T[p.m.b%4]];else if(K==="month")tb=[].concat(T[p.m.b]);else if(K==="year")tb=[T[p.y.b]];else if(K==="tanghwa")tb=T[p.d.b]||[];else pil=true;` +
+  `var has=sjSinsalMore(p).indexOf(EN)>=0,cols=[["연주",p.y],["월주",p.m],["일주",p.d]].concat(p.h?[["시주",p.h]]:[]);` +
+  `var rows=cols.map(function(c,k){var hit=ONLY.indexOf(k)>=0&&(pil?k===2&&has:ts.indexOf(c[1].s)>=0||tb.indexOf(c[1].b)>=0);return '<div class="row"><span>'+c[0]+'</span><b>'+SJ_S[c[1].s]+SJ_B[c[1].b]+(hit?' ★':'')+'</b></div>'}).join("");` +
+  `var tg=pil?'':'<p class="sjw-note">이 사주에서 '+NM+' 글자: '+ts.map(function(s){return SJ_S[s]}).concat(tb.map(function(b){return SJ_B[b]})).filter(function(x,j,a){return a.indexOf(x)===j}).join("·")+'</p>';` +
+  `o.innerHTML='<div class="exbox" style="margin-top:12px"><div class="res"><span>'+NM+'</span><b>'+(has?'있습니다 (★ 표시한 기둥)':'이 사주에는 없습니다')+'</b></div>'+rows+'</div>'+tg;try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"sinsal-"+EN}))}catch(e){}}` +
+  `document.getElementById("sngo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
 const sinsalHref = en => SINSAL.PAGES.some(p => p.en === en) ? `sinsal-${en}.html` : `sinsal.html#${en}`;
 const sinsalName = en => (SINSAL.PAGES.find(p => p.en === en) || SINSAL.EXTRA.find(p => p.en === en)).ko;
-const SINSAL_SIBS = `<div class="sibs"><a href="sinsal.html">신살 모음</a>${SINSAL.PAGES.map(p => `<a href="sinsal-${p.en}.html">${p.ko}</a>`).join("")}</div>`;
+const SINSAL_SIBS = `<div class="sibs"><a href="sinsal.html">신살 모음</a><a href="sinsal-12.html">12신살 표</a>${SINSAL.PAGES.map(p => `<a href="sinsal-${p.en}.html">${p.ko}</a>`).join("")}</div>`;
 // 그림이 없는 신살(홍염·현침·귀문·원진)은 결이 가까운 신살 그림을 빌린다
 const SINSAL_IMG = en => { const own = `img/char/sinsal-${en}.webp`; return fs.existsSync(path.join(IMG_SRC, "char", `sinsal-${en}.webp`)) ? own : `img/char/sinsal-${({ hongyeom: "dohwa", hyeonchim: "yangin", gwimun: "hwagae", wonjin: "cheoneul" })[en] || "cheoneul"}.webp`; };
 function sinsalPage(p) {
@@ -2290,16 +2408,52 @@ function sinsalPage(p) {
     crumb: p.ko, date: "2026-10-09",
     title: p.title + " | 동네보살", desc: p.desc,
     url: `${DOMAIN}/sinsal-${p.en}.html`, img: SINSAL_IMG(p.en), hero: SINSAL_IMG(p.en),
-    h1: `${p.ko} 뜻과 찾는 법`, sub: `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
+    h1: `${p.ko} 뜻과 찾는 법`, sub: p.more ? `${p.han} · 아래 계산 칸에 생년월일을 넣으면 내 사주에 ${p.ko}${josa(p.ko, "이/가")} 있는지, 어느 기둥인지 바로 나옵니다` : `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
     parent: "sinsal.html", parentName: "신살 모음", tool: "saju",
     tags: [p.kw, `${p.kw} 뜻`, `${p.kw} 있는 사람`, `${p.kw} 찾는 법`, "신살", "사주 신살"],
-    body: `<div class="intro">${para(p.lead)}</div>` +
+    body: (p.more ? sinWidget(p) : "") + `<div class="intro">${para(p.lead)}</div>` +
       sec(`${p.ko} 찾는 법`, `<p style="margin-bottom:10px">${p.rule}</p>${tbl}`) +
       sec(`${p.ko} 있는 사람의 특징`, para(p.mean)) +
+      (SINSAL_GENDER[p.en] ? sec(`${p.ko} 여자와 남자`, `<h3 style="font-size:15px;margin:4px 0 6px">${p.ko} 여자</h3><p style="margin-bottom:10px">${SINSAL_GENDER[p.en].woman}</p><h3 style="font-size:15px;margin:14px 0 6px">${p.ko} 남자</h3><p style="margin-bottom:10px">${SINSAL_GENDER[p.en].man}</p>`) : "") +
       sec(`${p.ko}과 연애`, para(p.love)) + sec(`${p.ko}과 어울리는 일`, para(p.work)) +
       sec("이렇게 써 보세요", `<ul>${p.tips.map(t => `<li>${t}</li>`).join("")}</ul>`) +
       sec("함께 보는 신살", `<div class="sibs">${p.rel.map(en => `<a href="${sinsalHref(en)}">${sinsalName(en)}</a>`).join("")}</div><p style="color:var(--muted);font-size:13px;margin:10px 0 0">신살은 사주를 읽는 여러 관점 가운데 하나입니다. 같은 신살도 사주 전체의 흐름에 따라 다르게 드러나니 한 가지로 단정하지 마세요. 신살이 무엇인지는 <a href="learn-sinsal.html">명리학 신살 강의</a>에서 차근차근 볼 수 있습니다.</p>`),
-    faq: p.faq,
+    faq: SINSAL_GENDER[p.en] ? [...p.faq, [`${p.ko} 여자는 어떤 특징이 있나요?`, SINSAL_GENDER[p.en].woman.split(/(?<=[.?!])\s+/).slice(0, 2).join(" ")]] : p.faq,
+    sibTitle: "신살 더 보기", sibs: SINSAL_SIBS,
+    related: ["saju", "gunghap", "newyear", "todayfortune"] });
+}
+// 12신살 모음(sinsal-12.html, 2026-10-24) — 네이버 12신살 950·12신살표 330·십이신살 260. 왕지(장성) C 에서 겁 C+5 … 화 C+4 순서
+const SIN12_ORDER = [["geopsal", 5], ["jaesal", 6], ["cheonsal", 7], ["jisal", 8], ["nyeonsal", 9], ["wolsal", 10], ["mangsin", 11], ["jangseong", 0], ["banan", 1], ["yeokma", 2], ["yukhae", 3], ["hwagae", 4]];
+const SIN12_PAGE = { nyeonsal: "dohwa" }, SIN12_KO = { nyeonsal: "년살(도화살)", yeokma: "역마살", hwagae: "화개살" };
+function sinsal12Page() {
+  const W = [0, 9, 6, 3], T = SINSAL_MORE.TWELVE, nm = en => SIN12_KO[en] || SINSAL.PAGES.find(p => p.en === en).ko;
+  // 엔진의 도화·역마·화개·12신살 표가 '왕지+n' 순서와 같은지 빌드에서 확인한다
+  for (const [en, off] of SIN12_ORDER) for (let g = 0; g < 4; g++) {
+    const v = en === "nyeonsal" ? SAJU.SJ_DOHWA[g] : en === "yeokma" ? SAJU.SJ_YEOKMA[g] : en === "hwagae" ? SAJU.SJ_HWAGAE[g] : SAJU.SJ_SIN_MORE[en][g];
+    if (v !== (W[g] + off) % 12) throw new Error(`12신살 표 어긋남: ${en} 묶음 ${g}`); }
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  const tbl = `<div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">12신살</th>${[2, 0, 3, 1].map(g => `<th scope="col">${SIN_GRP[g].replace("(", "<br><small>(").replace(")", ")</small>")}</th>`).join("")}</tr></thead><tbody>` +
+    SIN12_ORDER.map(([en, off]) => `<tr><th scope="row"><a href="sinsal-${SIN12_PAGE[en] || en}.html">${nm(en)}</a></th>${[2, 0, 3, 1].map(g => `<td>${SAJU.SJ_B[(W[g] + off) % 12]}</td>`).join("")}</tr>`).join("") + `</tbody></table></div>`;
+  const js = `<script>(function(){var W=[0,9,6,3],N=${JSON.stringify(SIN12_ORDER.map(([en, off]) => [off, nm(en)]))},i=document.getElementById("s12d"),hh=document.getElementById("s12h"),o=document.getElementById("s12o");` +
+    `function nameOf(g,b){var off=(b-W[g]+12)%12;for(var k=0;k<N.length;k++)if(N[k][0]===off)return N[k][1]}` +
+    `function go(){if(typeof sjPillars!=="function")return;var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 넣어 주세요.</p>';return}var h=(hh.value||"").replace(/\\D/g,"");h=h===""?null:Math.min(23,+h);` +
+    `var p=sjPillars(+v.slice(0,4),+v.slice(4,6),+v.slice(6,8),h,0,false),cols=[["연주",p.y],["월주",p.m],["일주",p.d]].concat(p.h?[["시주",p.h]]:[]);` +
+    `o.innerHTML='<div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">기둥</th><th scope="col">연지 기준</th><th scope="col">일지 기준</th></tr></thead><tbody>'+cols.map(function(c){return '<tr><th scope="row">'+c[0]+' '+SJ_S[c[1].s]+SJ_B[c[1].b]+'</th><td>'+nameOf(p.y.b%4,c[1].b)+'</td><td>'+nameOf(p.d.b%4,c[1].b)+'</td></tr>'}).join("")+'</tbody></table></div>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"sinsal-12"}))}catch(e){}}` +
+    `document.getElementById("s12go").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
+  return seoPage({
+    crumb: "12신살", date: "2026-10-24",
+    title: "12신살 뜻과 표 — 겁살·재살·천살·지살·년살·월살·망신살·장성살·반안살·역마살·육해살·화개살 | 동네보살",
+    desc: "12신살(십이신살)을 한 장의 표로 정리했습니다. 띠·일지가 속한 삼합 묶음마다 겁살부터 화개살까지 열두 글자가 정해지는 원리, 신살마다 뜻, 생년월일로 내 네 기둥의 12신살을 바로 보는 칸까지.",
+    url: `${DOMAIN}/sinsal-12.html`, img: SINSAL_IMG("hwagae"), hero: SINSAL_IMG("hwagae"),
+    h1: "12신살 뜻과 표 — 내 사주 12신살 보기", sub: "겁살부터 화개살까지 · 삼합 묶음별 표 · 생년월일로 바로 확인",
+    parent: "sinsal.html", parentName: "신살 모음", tool: "saju",
+    tags: ["12신살", "12신살 표", "십이신살", "장성살", "반안살", "육해살", "망신살", "겁살"],
+    body: `<div class="sjw" id="s12w"><h2>내 사주 12신살 보기</h2><label for="s12d">생년월일 (양력)</label><div class="sjw-row"><input id="s12d" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="s12go">보기</button></div><label for="s12h" style="margin-top:8px">태어난 시 (0~23시, 모르면 비워 두세요)</label><input id="s12h" type="text" inputmode="numeric" maxlength="2" placeholder="예) 14" autocomplete="off" style="max-width:10em"><p class="sjw-note">생년월일은 이 화면에서만 계산하고 서버로 보내지 않습니다.</p><div id="s12o" aria-live="polite"></div></div>` + js +
+      `<div class="intro">${para(T.lead)}</div>` +
+      sec("12신살 정하는 법", `<p style="margin-bottom:10px">${T.rule}</p>${tbl}`) +
+      sec("12신살 하나씩 — 뜻", `<ul>${SIN12_ORDER.map(([en]) => `<li><a href="sinsal-${SIN12_PAGE[en] || en}.html"><b>${nm(en)}</b></a> — ${esc(T.order[en])}</li>`).join("")}</ul>`) +
+      sec("함께 보는 신살", `<p>12신살 밖의 신살은 <a href="sinsal.html">신살 모음</a>에 있습니다. 귀인은 <a href="sinsal-cheoneul.html">천을귀인</a>·<a href="sinsal-taegeuk.html">태극귀인</a>·<a href="sinsal-cheondeok.html">천덕귀인</a>부터 보세요.</p>`),
+    faq: T.faq,
     sibTitle: "신살 더 보기", sibs: SINSAL_SIBS,
     related: ["saju", "gunghap", "newyear", "todayfortune"] });
 }
@@ -2546,24 +2700,32 @@ function ttiMainPage() {
 }
 
 // 일간·십성은 사주 도구의 하위 개념 페이지다. 부모를 saju.html로 두어 링크가 만세력으로 모이게 한다
+// 2026-10-24 네이버: 계수일간 1,230·임수일간 910·신금일간 870·경금여자 1,100·경금남자 670 — 사람들은 '계 일간'이 아니라 '계수 일간·계수 여자'로 찾는다
+const ILGAN_GENDER = require("./content_ilgan_gender.js");
 function ilganPage(g){
+  const W = ILGAN_GENDER[ILGAN_PAGES.indexOf(g)], nm = `${g.ko}${g.el}`;
+  const gsec = (who, id, look, love, marry) => `<section class="guide" id="${id}"><h2>${nm} ${who} — 성격·연애·결혼</h2><div class="intro" style="margin-top:0">` +
+    [["첫인상과 분위기", look], ["연애할 때", love], ["결혼과 가정", marry]]
+      .map(([t, x]) => `<h3 style="font-size:15px;margin:14px 0 6px">${nm} ${who} ${t}</h3><p style="margin-bottom:10px">${x}</p>`).join("") + `</div></section>`;
   return seoPage({
     crumb:`${g.ko}${g.el} 일간`,
     learn: learnMore(`${g.ko}${g.el} 일간은 여덟 글자 가운데 태어난 날의 위 글자입니다. 이 글자가 사주에서 나를 뜻하는 이유는 5강, 천간 열 글자의 짝과 성질은 3강, 오행의 상생·상극은 2강, 일간의 힘이 넉넉한지 채워 가는 중인지는 7강에서 순서대로 배울 수 있습니다.`, [5, 3, 2, 7]),
-    title:`${g.ko} 일간 — 성격·연애·직업·2027 운세 | 동네보살`,
-    desc:`사주에서 '나'를 뜻하는 ${g.ko}${g.el} 일간의 성격과 연애 방식, 잘 맞는 직업과 재물 흐름, 2027 정미년·2026 병오년 운세.`,
+    title:`${nm} 일간 — ${nm} 여자·남자 성격·연애·직업, 2027 운세 | 동네보살`,
+    desc:`사주에서 '나'를 뜻하는 ${nm} 일간(${nm}일간). ${W.wLook.split(/(?<=[.?!])\s+/)[0]} ${nm} 남자의 연애·결혼, 잘 맞는 직업과 재물 흐름, 2027 정미년 운세까지.`,
     url:`${DOMAIN}/ilgan-${g.en}.html`, img:`img/char/ilgan-${g.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${g.han} ${g.ko}${g.el} 일간 — ${g.metaphor}`,
     sub:`${g.el} 기운 · ${g.yy}간 · 잘 맞는 일간 ${g.best.join(" · ")}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju",
-    tags:[`${g.ko}${g.el} 일간`,`${g.ko}${g.el} 성격`,`${g.ko}${g.el} 궁합`,`${g.ko}${g.el} 직업`,`일간 ${g.ko}`],
+    tags:[`${g.ko}${g.el} 일간`,`${nm} 여자`,`${nm} 남자`,`${g.ko}${g.el} 성격`,`${g.ko}${g.el} 궁합`,`${g.ko}${g.el} 직업`,`일간 ${g.ko}`],
     body:`<div class="exbox"><h2>${g.ko}${g.el} 일간 한눈에 보기</h2>`+
       [["천간",`${g.han} ${g.ko}`],["오행",g.el],["음양",`${g.yy}간`],["상징",g.metaphor],["잘 맞는 일간",g.best.join(" · ")]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>조율이 필요한 일간</span><b>${esc(g.hard.join(" · "))}</b></div></div>`+
       luckGoodsSec(`${g.ko}${g.el} 일간`, g.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`)+
       `<div class="intro">${para(g.intro)}</div>`+
+      `<div class="sibs" style="margin:10px 0 4px"><a href="#woman">${nm} 여자</a><a href="#man">${nm} 남자</a></div>` +
+      gsec("여자", "woman", W.wLook, W.wLove, W.wMarry) + gsec("남자", "man", W.mLook, W.mLove, W.mMarry) +
       `<section class="guide"><h2>${g.ko}${g.el}의 연애</h2><div class="intro" style="margin-top:0">${para(g.love)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 일과 적성</h2><div class="intro" style="margin-top:0">${para(g.work)}</div></section>`+
       `<section class="guide"><h2>${g.ko}${g.el}의 재물</h2><div class="intro" style="margin-top:0">${para(g.money)}</div></section>`+
@@ -2574,6 +2736,8 @@ function ilganPage(g){
       [`내 일간은 어떻게 확인하나요?`,`태어난 날의 천간이 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주(日柱)의 위쪽 글자로 나옵니다. 이 글자가 ${g.han}이면 ${g.ko}${g.el} 일간입니다.`],
       [`${g.ko}${g.el} 일간과 잘 맞는 일간은?`,`${josaList(g.best, "이/가")} 대표적입니다. 반대로 ${josaList(g.hard, "은/는")} 기운이 부딪히기 쉬워 조율이 필요합니다. 다만 궁합은 일간만으로 정해지지 않고 사주 전체의 균형을 함께 봅니다.`],
       [`${g.ko}${g.el} 일간에게 2027년은 어떤 해인가요?`,g.y2027.split("\n")[0].trim()],
+      [`${nm} 여자는 어떤 사람인가요?`, W.wLook.split(/(?<=[.?!])\s+/).slice(0, 2).join(" ")],
+      [`${nm} 남자는 연애할 때 어떤가요?`, W.mLove.split(/(?<=[.?!])\s+/).slice(0, 2).join(" ")],
       [`일간이 사주에서 왜 중요한가요?`,`일간은 사주 여덟 글자 가운데 '나 자신'에 해당합니다. 나머지 일곱 글자가 나에게 어떤 관계인지(십성)를 판정하는 기준점이 일간이며, 신강·신약과 용신도 일간을 기준으로 정해집니다.`]],
     sibTitle:"다른 일간도 보기", sibs:ilganChips(g.en),
     related:["saju","todayfortune","gunghap","newyear"]});
@@ -3851,7 +4015,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
@@ -4368,12 +4532,14 @@ fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
+for (let m = 1; m <= 12; m++) { fs.writeFileSync(path.join(OUT, `birth-${m}.html`), birthMonthPage(m)); for (let d = 1; d <= MDAYS[m - 1]; d++) fs.writeFileSync(path.join(OUT, flowerUrl(m, d)), flowerDayPage(m, d)); }
 fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
 fs.writeFileSync(path.join(OUT,"bed-direction.html"), bedDirPage());
 fs.writeFileSync(path.join(OUT,"juyeok.html"), juyeokPage());
 fs.writeFileSync(path.join(OUT,"celeb.html"), celebPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
+fs.writeFileSync(path.join(OUT,"sinsal-12.html"), sinsal12Page());
 SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), sinsalPage(p)));
 fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
 fs.writeFileSync(path.join(OUT,"lucky.html"), luckyPage());
