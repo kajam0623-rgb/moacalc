@@ -3313,7 +3313,7 @@ function iljuPairs(p) {
 }
 const iljuMatchSec = p => {
   const { good, bad } = iljuPairs(p), a = q => `<a href="ilju-${q.en}.html">${q.ko}일주</a>`;
-  return `<section class="guide" id="match"><h2>${p.ko}일주와 잘 맞는 일주</h2><div class="intro" style="margin-top:0">` +
+  return `<section class="guide" id="match"><h2>${p.ko}일주 궁합 — 잘 맞는 일주·부딪히기 쉬운 일주</h2><div class="intro" style="margin-top:0">` +
     `<ul>${good.map(([q, why]) => `<li>${a(q)} — ${why}</li>`).join("")}</ul>` +
     `<p>부딪히기 쉬운 짝은 ${bad.map(a).join("·")}입니다. 일간끼리 서로 누르고 일지가 충(${ENGINE.SJ_B[p.b]}↔${ENGINE.SJ_B[(p.b + 6) % 12]})이라 생각이 엇갈리기 쉬운데, 서로 다른 점을 역할 나누기로 돌리면 오히려 빈틈을 메워 줍니다.</p>` +
     `<p style="color:var(--muted);font-size:13px;margin:6px 0 0">일주(태어난 날)끼리만 본 기준입니다. 연·월까지 넣은 두 사람의 궁합은 <a href="gunghap.html">궁합 보기</a>에서 확인하세요.</p></div></section>`;
@@ -3362,7 +3362,7 @@ function iljuPage(p){
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju", preset:"",
-    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`${p.ko}일주 연예인`,`${p.ko}일주 정미년`,`일주 ${p.ko}`],
+    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`${p.ko}일주 연예인`,`${p.ko}일주 궁합`,`${p.ko}일주 정미년`,`일주 ${p.ko}`],
     body:
       `<div class="exbox"><h2>${p.ko}일주 한눈에 보기</h2>`+
       [["일주",`${p.han} ${p.ko}일주 (60갑자 ${p.k+1}번째)`],
@@ -3375,7 +3375,7 @@ function iljuPage(p){
        ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) + iljuFig(p, "top") +
-      `<div class="sibs" style="margin:10px 0 4px"><a href="#woman">${p.ko}일주 여자</a><a href="#man">${p.ko}일주 남자</a><a href="#match">잘 맞는 일주</a>${celebs.length ? `<a href="#celeb">${p.ko}일주 연예인</a>` : ""}</div>` +
+      `<div class="sibs" style="margin:10px 0 4px"><a href="#woman">${p.ko}일주 여자</a><a href="#man">${p.ko}일주 남자</a><a href="#match">${p.ko}일주 궁합</a>${celebs.length ? `<a href="#celeb">${p.ko}일주 연예인</a>` : ""}</div>` +
       luckGoodsSec(`${p.ko}일주`, G.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간(${G.ko}${G.el})만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`) +
 
       `<div class="intro"><p><a href="column-gapja-60.html">60갑자</a>의 ${p.k+1}번째 조합은 ${p.han}입니다.</p>`+
@@ -3414,7 +3414,7 @@ function iljuPage(p){
       [`${p.ko}일주는 어떤 성격인가요?`,`${G.metaphor}에 비유되는 ${gEl} 일간이 ${jEl} 위에 앉은 일주입니다. ${first(C.core,2)}`],
       [`${p.ko}일주 여자는 어떤 사람인가요?`, first(W.wLook,2)],
       [`${p.ko}일주 남자는 연애할 때 어떤가요?`, first(W.mLove,2)],
-      [`${p.ko}일주와 잘 맞는 일주는 무엇인가요?`, `${pairs.good.map(([q]) => q.ko + "일주").join("·")}입니다. ${pairs.good[0][0].ko}일주는 ${pairs.good[0][1]}입니다.`],
+      [`${p.ko}일주 궁합은 어떤가요? 잘 맞는 일주는?`, `${pairs.good.map(([q]) => q.ko + "일주").join("·")}입니다. ${pairs.good[0][0].ko}일주는 ${pairs.good[0][1]}입니다.`],
       ...(celebs.length ? [[`${p.ko}일주 연예인은 누가 있나요?`, `생일로 계산하면 ${celebs.slice(0, 5).map(c => c[0]).join("·")} 등이 ${p.ko}일주입니다(출생 시각 미반영).`]] : []),
       [`${p.ko}일주의 일에서는 어떤 점을 살펴보나요?`, first(C.work,2)]],
     sibTitle:"다른 일주도 보기", sibs:`<div class="sibs"><a href="ilju-${ILJU_PAGES[(p.k+59)%60].en}.html">이전: ${ILJU_PAGES[(p.k+59)%60].ko}</a><a href="column-gapja-60.html">60갑자 전체 보기</a><a href="ilju-${ILJU_PAGES[(p.k+1)%60].en}.html">다음: ${ILJU_PAGES[(p.k+1)%60].ko}</a></div>`,
