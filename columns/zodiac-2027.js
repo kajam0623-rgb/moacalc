@@ -73,3 +73,5 @@ module.exports = {
     ["내 일간은 어떻게 확인하나요?", "태어난 날의 하늘 글자가 일간입니다. 생년월일을 사주팔자 만세력에 넣으면 일주의 위쪽 글자로 나옵니다."],
   ],
 };
+// 일주 쪽 "○○일주 2027년 정미년 운세" 칸이 같은 계산표를 쓴다(2026-10-24). 열거되지 않게 붙여 칼럼 원고 구조는 그대로
+Object.defineProperty(module.exports, "Y2027", { value: { GAN, ZREL, ZLINE, GLINE, tenGod } });

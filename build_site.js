@@ -2876,14 +2876,14 @@ function ohaengPage(o){
   return seoPage({
     crumb:`${K} 부족한 사주`,
     learn: learnMore(`${o.ko}(${o.han})${josa(o.ko,"은/는")} 다섯 기운 가운데 하나예요. 내 사주에 ${o.ko}${o.josa} 몇 개인지는 사주팔자 만세력에 생년월일을 넣으면 오행 막대로 바로 보여요. 오행이 서로 돕고 누르는 흐름은 2강, 내게 필요한 기운을 고르는 방식은 8강에서 자세히 다룹니다.`, [2, 8]),
-    title:`${K} 부족한 사주 — 특징·보완법·색깔·숫자, ${K} 많은 사주까지 | 동네보살`,
-    desc:`${K} 부족한 사주는 어떤 특징이 있을까요? ${o.ko} 기운을 채우는 색(${o.color.split("·")[0]})·숫자(${o.num})·방위·물건과 개운법, 여자 사주, 이름 소리, ${K} 많은 사주를 다스리는 법까지 쉽게 정리했어요.`,
+    title:`${K} 부족한 사주 — 특징·보완법·색깔·직업, ${o.manyWord} 많은 사주까지 | 동네보살`,
+    desc:`${K} 부족한 사주는 어떤 특징이 있을까요? ${o.ko} 기운을 채우는 색(${o.color.split("·")[0]})·숫자(${o.num})·방위·물건과 개운법, 잘 맞는 직업, 여자 사주, 이름 소리, ${o.manyWord} 많은 사주를 다스리는 법까지 쉽게 정리했어요.`,
     url:`${DOMAIN}/ohaeng-${o.en}.html`, img:`img/char/el-${ei}-f.webp`, hero:"img/tool/h-saju.webp",
-    h1:`${K} 부족한 사주 · ${K} 많은 사주`,
+    h1:`${K} 부족한 사주 · ${o.manyWord} 많은 사주`,
     sub:`${o.han} ${o.name} 기운 — ${o.keyword} · 색 ${o.color} · 숫자 ${o.num}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju",
-    tags:[`${K} 부족한 사주`,`${K} 부족한 사주 보완`,`${K} 부족한 사주 색깔`,`${K} 많은 사주`,`${o.ko} 기운 채우는 법`,`${K} 부족한 사주 여자`,`${o.name}${josa(o.name,"이/가")} 많은 사주`],
+    tags:[`${K} 부족한 사주`,`${K} 부족한 사주 보완`,`${K} 부족한 사주 색깔`,`${K} 많은 사주`,`${o.ko} 기운 채우는 법`,`${K} 부족한 사주 여자`,`${o.manyWord} 많은 사주`,`${K} 부족한 사주 직업`,`${K} 부족한 사주 팔찌`],
     body:`<div class="exbox"><h2>${o.ko}(${o.han}) 기운 한눈에 보기</h2>`+
       [["채우는 색",o.color],["숫자",o.num],["방위",o.dir],["계절",o.season],["맛",o.taste],["사주 글자",`${o.stems} · ${o.branches}`],["띠",o.tti],["이름 소리",o.sound],["덕목",o.virtue]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
@@ -2894,7 +2894,8 @@ function ohaengPage(o){
       `<section class="guide" id="goods"><h2>${o.ko} 기운을 채우는 물건</h2>` + GOODS_CSS + `<p style="margin:0 0 6px">${esc(o.goods)}</p>` + goodsLinks(o.ko) + GOODS_NOTE + `</section>`+
       sec(`${K} 부족한 사주 여자`, o.female, "female")+
       sec(`${o.ko} 기운을 채우는 이름 소리`, o.nameSound, "name")+
-      `<section class="guide" id="many" style="display:flow-root"><h2>${K} 많은 사주 — 특징과 다스리는 법</h2><figure class="iljufig"><img src="img/char/el-saeng-${si}.webp" alt="${esc(o.motherName)}${josa(o.motherName,"이/가")} ${esc(o.name)}${josa(o.name,"을/를")} 낳는 오행 상생 그림 | 동네보살" width="520" height="520" loading="lazy" decoding="async"><figcaption>${o.mother}${josa(o.mother,"이/가")} ${o.ko}${josa(o.ko,"을/를")} 낳는 흐름 — ${o.ko}${o.josa} 비면 ${o.mother}부터 함께 채워요</figcaption></figure><div class="intro" style="margin-top:0">${para(o.many)}</div></section>`+
+      sec(`${o.ko} 기운과 잘 맞는 직업`, o.job, "job")+
+      `<section class="guide" id="many" style="display:flow-root"><h2>${o.manyWord} 많은 사주 — 특징과 다스리는 법</h2><figure class="iljufig"><img src="img/char/el-saeng-${si}.webp" alt="${esc(o.motherName)}${josa(o.motherName,"이/가")} ${esc(o.name)}${josa(o.name,"을/를")} 낳는 오행 상생 그림 | 동네보살" width="520" height="520" loading="lazy" decoding="async"><figcaption>${o.mother}${josa(o.mother,"이/가")} ${o.ko}${josa(o.ko,"을/를")} 낳는 흐름 — ${o.ko}${o.josa} 비면 ${o.mother}부터 함께 채워요</figcaption></figure><div class="intro" style="margin-top:0">${para(o.many)}</div></section>`+
       `<section class="guide"><h2>내 사주에 ${o.ko}${o.josa} 몇 개인지 보려면</h2><p style="margin:0 0 8px">사주팔자 만세력에 생년월일과 태어난 시간을 넣으면 여덟 글자의 오행 개수가 막대로 나와요. 결과 아래에는 나를 받쳐 주는 기운과 그 기운의 물건도 함께 보여요.</p><p style="margin:0"><a class="btn" href="saju.html">내 오행 개수 보기 →</a></p></section>`,
     faq: o.faq.concat([
       [`${o.ko} 기운이 부족한지 어떻게 아나요?`,`사주 여덟 글자 가운데 ${o.stems}, ${o.branches}가 ${o.ko}에 속해요. 이 글자가 하나도 없거나 하나뿐이면 ${o.ko}${o.josa} 적은 편으로 봐요. 다만 개수보다 내 일간에게 필요한 기운인지가 더 중요해서, 사주팔자 만세력 결과의 '나를 받쳐 주는 기운'을 함께 보세요.`]
@@ -3329,6 +3330,19 @@ function iljuDaySigns(p) {
     ? `${p.han} 일주에서 확인한 신살은 ${signs.join("·")}입니다. <a href="sinsal.html">전체 사주로 확인하기</a>`
     : `${p.han} 일주는 일주 단독 판정 5종(천을·문창·양인·백호·괴강)에 해당하지 않습니다. <a href="sinsal.html">전체 사주로 확인하기</a>`;
 }
+// "계묘일주 정미년"·"정화일간 정미년"(네이버 자동완성, 2026-10-24) — 위 글자는 정(丁)이 주는 십성, 아래 글자는 미(未)와의 합충. 계산표는 칼럼 zodiac-2027 과 같다
+const Y27 = require("./columns/zodiac-2027.js").Y2027;
+function ilju2027(p){
+  const gi = Y27.GAN.findIndex(g => g[0] === p.gan.ko), ji = "자축인묘진사오미신유술해".indexOf(p.ji.ko);
+  if (gi < 0 || ji < 0) throw new Error("ilju2027: 글자 못 찾음 " + p.en);
+  const tg = Y27.tenGod(gi, 3), q = s => `“${s.replace(/\.?\s*$/, "")}.”`;
+  return `<section class="guide" id="y2027"><h2>${p.ko}일주 2027년 정미년 운세</h2><div class="intro" style="margin-top:0">` +
+    `<p>2027년은 하늘 글자 정(丁)과 땅 글자 미(未)가 만나는 정미년, 붉은 양의 해입니다. 정은 촛불 같은 불, 미는 한여름 끝의 마른 흙이라 열기와 무게가 함께 실리는 해로 봅니다.</p>` +
+    `<p>${p.ko}일주의 위 글자 ${p.gan.ko}${p.gan.el}에게 올해 하늘의 정화는 <b>${tg}</b>의 기운입니다. 올해 일과 돈의 흐름을 한 줄로 줄이면 이렇습니다. ${q(Y27.GLINE[gi])}</p>` +
+    `<p>아래 글자 ${p.ji.ko}(${p.ji.tti}띠 자리)와 올해 땅의 미토는 <b>${Y27.ZREL[ji]}</b> 관계입니다. 배우자와 가까운 사람, 생활의 흐름은 이렇게 봅니다. ${q(Y27.ZLINE[ji])}</p>` +
+    `<p>여기까지는 일주 두 글자로 본 큰 흐름입니다. 태어난 해와 달, 시까지 넣으면 그 해의 달별 흐름과 내게 필요한 기운이 올해 들어오는지도 볼 수 있습니다. <a href="newyear.html">2027 신년운세</a>에서 생년월일로 확인하고, 띠·일간별 한 해 흐름은 <a href="column-zodiac-2027.html">2027 정미년 한눈에</a>에서 함께 보세요.</p>` +
+    `</div></section>`;
+}
 function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
@@ -3348,7 +3362,7 @@ function iljuPage(p){
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
     parent:"saju.html", parentName:"사주팔자 만세력",
     tool:"saju", preset:"",
-    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`${p.ko}일주 연예인`,`일주 ${p.ko}`],
+    tags:[`${p.ko}일주`,`${p.ko}일주 여자`,`${p.ko}일주 남자`,`${p.ko}일주 성격`,`${p.ko}일주 연예인`,`${p.ko}일주 정미년`,`일주 ${p.ko}`],
     body:
       `<div class="exbox"><h2>${p.ko}일주 한눈에 보기</h2>`+
       [["일주",`${p.han} ${p.ko}일주 (60갑자 ${p.k+1}번째)`],
@@ -3386,6 +3400,7 @@ function iljuPage(p){
 
       `<section class="guide"><h2>${p.ko}일주가 조심할 것</h2>`+
       `<div class="intro" style="margin-top:0">${para(C.care)}</div>${iljuFig(p, "care")}</section>`+
+      ilju2027(p)+
 
       `<section class="guide"><h2>십이운성 ${p.un}${josa(p.un,"과/와")} 일지 십성 ${p.tengod}</h2><div class="intro" style="margin-top:0">`+
       `<p>${gEl}의 ${J.ko} 자리인 ${p.un}: ${esc(first(ILJU_SRC.UN_DESC[p.un], 1))}</p>`+
