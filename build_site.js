@@ -1245,7 +1245,11 @@ function todayFortune(dt){
       ? `<div class="sibs">${L.map(([ko, b, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${b.slice(0, 4)}년생</small></span>`).join("")}</div>`
       : `<p>오늘 생일인 유명인은 자료에 없습니다.</p>`) + NOTE("생일은 위키데이터 공개 자료이고, 매일 한국 시각 0시에 바뀝니다.") + `</section>`;
     // 홈 한 줄(#home-bday) — 날마다 바뀌는 홈 내용 + 닮은 연예인 찾기로 잇는다
-    out.bdayHome = L.length ? `<a class="home-bday" href="celeb.html"><b>오늘 생일인 연예인</b><span>${L.slice(0, 5).map(r => r[0]).join(" · ")}</span><i>나랑 사주 닮은 연예인도 보기 →</i></a>` : ""; }
+    out.bdayHome = L.length ? `<a class="home-bday" href="celeb.html"><b>오늘 생일인 연예인</b><span>${L.slice(0, 5).map(r => r[0]).join(" · ")}</span><i>나랑 사주 닮은 연예인도 보기 →</i></a>` : "";
+    // 오늘의 탄생화(2026-10-24) — 날짜별 탄생화 366쪽(flower-MMDD.html)으로 들어가는 날마다 바뀌는 입구. 홈·유명인 쪽에 한 줄
+    const fk = md.replace("-", ""), fl = require("./content_flower.js").daily[fk];
+    const flLine = `<a class="home-bday" href="flower-${fk}.html"><b>오늘의 탄생화</b><span>${fl.flower} · 꽃말 ${fl.meaning}</span><i>오늘 생일 꽃 이야기 보기 →</i></a>`;
+    out.bdayHome += flLine; out.bday += flLine; }
   // 오늘의 행운의 숫자(lucky.html, 2026-10-09) — 하도(河圖) 오행 수: 수 1·6, 화 7·2, 목 3·8, 금 9·4, 토 5·10 (양=홀수, 음=짝수)
   { const HADO = { 목: [3, 8], 화: [7, 2], 토: [5, 10], 금: [9, 4], 수: [1, 6] }, SE = ["목","목","화","화","토","토","금","금","수","수"], BE = ["수","토","목","목","토","화","화","토","금","금","토","수"],
       GEN = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" }, EN = { 목: "나무(木)", 화: "불(火)", 토: "흙(土)", 금: "쇠(金)", 수: "물(水)" }, s = today.d.s, b = today.d.b, dayN = HADO[SE[s]][s % 2], dayB = HADO[BE[b]][b % 2];
@@ -2206,14 +2210,14 @@ const BIRTHSTONE = [["가넷", "Garnet", "짙은 붉은색", "", "우정·진실
   ["토파즈", "Topaz", "노란색·주황색", "시트린", "우정·희망·건강"], ["터키석", "Turquoise", "청록색", "탄자나이트·지르콘", "성공·행운·여행의 안전"]];
 // 달마다 '○월 탄생석 목걸이' 쿠팡 파트너스 검색 링크(2026-10-10) — 탄생석은 사는 검색어. 대가 문구(.cpx)는 placeAds 가 맨 위에
 const BS_CP = ["hINBtugAxw", "hINBCy89ts", "hINBLGOZlQ", "hINBUUMIrQ", "hINB3V3Fqm", "hINCc8SZZ6", "hINCmhEL1w", "hINCvsuUGO", "hINCEE2D8u", "hINCNPjAxE", "hINCWSuyHc", "hINC5440u4"];
-const bsLink = (i, txt) => `<a href="https://link.coupang.com/a/${BS_CP[i]}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${txt}</a>`;
+const bsLink = (i, txt) => `<a href="https://link.coupang.com/a/${(BIRTH_GOODS && BIRTH_GOODS.stone[i][1]) || BS_CP[i]}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${txt}</a>`;
 function birthstonePage() {
-  const rows = BIRTHSTONE.map((b, i) => `<tr><th scope="row"><a href="birth-${i + 1}.html">${i + 1}월</a></th><td><b>${b[0]}</b><small>${b[1]}</small><br>${bsLink(i, "목걸이 보기 →")}</td><td>${b[2]}</td><td>${b[4]}${b[3] ? `<br><small>함께 쓰는 돌: ${b[3]}</small>` : ""}</td></tr>`).join("");
+  const rows = BIRTHSTONE.map((b, i) => `<tr><th scope="row"><a href="birth-${i + 1}.html">${i + 1}월</a></th><td><b>${b[0]}</b><small>${b[1]}</small><br>${bsLink(i, BIRTH_GOODS ? "팔찌 보기 →" : "목걸이 보기 →")}</td><td>${b[2]}</td><td>${b[4]}${b[3] ? `<br><small>함께 쓰는 돌: ${b[3]}</small>` : ""}</td></tr>`).join("");
   const STARS = STAR_PAGES.map(s => ({ en: s.en, ko: s.ko }));
-  const js = `<script>(function(){var B=${JSON.stringify(BIRTHSTONE.map(b => [b[0], b[4], b[3]]))},S=${JSON.stringify(STARS)},CP=${JSON.stringify(BS_CP)},R=[[1,20,10],[2,19,11],[3,21,0],[4,20,1],[5,21,2],[6,22,3],[7,23,4],[8,23,5],[9,23,6],[10,23,7],[11,22,8],[12,22,9]];` +
+  const js = `<script>(function(){var B=${JSON.stringify(BIRTHSTONE.map(b => [b[0], b[4], b[3]]))},S=${JSON.stringify(STARS)},CP=${JSON.stringify(BS_CP.map((c, i) => (BIRTH_GOODS && BIRTH_GOODS.stone[i][1]) || c))},R=[[1,20,10],[2,19,11],[3,21,0],[4,20,1],[5,21,2],[6,22,3],[7,23,4],[8,23,5],[9,23,6],[10,23,7],[11,22,8],[12,22,9]];` +
     `function star(m,d){for(var i=0;i<R.length;i++){if(R[i][0]===m)return d>=R[i][1]?R[i][2]:R[(i+11)%12][2]}}var i=document.getElementById("bsd"),o=document.getElementById("bso");` +
     `function go(){var v=(i.value||"").replace(/\\D/g,""),m,d;if(v.length===8){m=+v.slice(4,6);d=+v.slice(6,8)}else if(v.length===4){m=+v.slice(0,2);d=+v.slice(2,4)}if(!(m>=1&&m<=12&&d>=1&&d<=31)){o.innerHTML='<p class="sjw-note">생일을 0315 나 19900315 처럼 넣어 주세요.</p>';return}` +
-    `var b=B[m-1],s=S[star(m,d)];o.innerHTML='<div class="res"><span>'+m+'월 탄생석</span><b>'+b[0]+(b[2]?' (함께 쓰는 돌: '+b[2]+')':'')+'</b></div><div class="res"><span>전해지는 뜻</span><b>'+b[1]+'</b></div><div class="res"><span>내 별자리</span><b><a href="star-'+s.en+'.html">'+s.ko+'</a></b></div><div class="sj-goods" style="margin-top:12px"><a href="https://link.coupang.com/a/'+CP[m-1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+m+'월 탄생석 목걸이, 쿠팡에서 보기 →</a></div>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"birthstone"}))}catch(e){}}` +
+    `var b=B[m-1],s=S[star(m,d)];o.innerHTML='<div class="res"><span>'+m+'월 탄생석</span><b>'+b[0]+(b[2]?' (함께 쓰는 돌: '+b[2]+')':'')+'</b></div><div class="res"><span>전해지는 뜻</span><b>'+b[1]+'</b></div><div class="res"><span>내 별자리</span><b><a href="star-'+s.en+'.html">'+s.ko+'</a></b></div><div class="sj-goods" style="margin-top:12px"><a href="https://link.coupang.com/a/'+CP[m-1]+'" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">'+m+'월 탄생석 '+b[0]+' 팔찌, 쿠팡에서 보기 →</a></div>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"birthstone"}))}catch(e){}}` +
     `document.getElementById("bsgo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
