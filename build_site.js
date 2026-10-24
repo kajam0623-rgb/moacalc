@@ -2371,16 +2371,18 @@ const TTI = require("./content_ttigunghap.js");
 const ttiPairUrl = (a, b) => "tti-pair-" + TTI.JI[Math.min(a, b)].en + "-" + TTI.JI[Math.max(a, b)].en + ".html";
 const ttiHubUrl = i => "tti-gunghap-" + TTI.JI[i].en + ".html";
 const TTI_CLS = { "삼합": "sam", "육합": "yuk", "충": "chung", "원진": "won", "형": "hyung", "같은 띠": "same", "무난": "plain" };
-// 띠 궁합 짝 페이지 '서로에게 주면 좋은 선물'(2026-10-10) — 물건·링크는 hub.html EL_GOODS 하나만 고친다(쿠팡 파트너스 검색 링크).
+// 띠 궁합 짝 페이지 '서로에게 주면 좋은 선물'(2026-10-10) — 물건·링크는 hub.html EL_GOODS 하나만 고친다(2026-10-24부터 쿠팡 파트너스 상품 링크+썸네일 → 사진 카드).
 // 선물 기운 = 그 띠의 오행을 낳아 주는 오행(띠 운세 도구 '오늘의 행운'과 같은 규칙). 대가 문구(.cpx)는 placeAds 가 맨 위에 넣는다
 const EL_GOODS = new Function("return " + src.match(/var EL_GOODS=(\{[\s\S]*?\]\]\});/)[1])();
 const GEN_OF = { 목: "수", 화: "목", 토: "화", 금: "토", 수: "금" };
-const cpChips = items => `<div class="sj-goods">` + items.map(([n, c]) => `<a href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${n} →</a>`).join("") + `</div>`;
+// 썸네일(셋째 칸)이 있으면 사진 카드 3칸, 없으면(검색 링크) 글자 칩 — hub.html cpRow 와 같은 모양
+const cpChips = items => { const card = items[0][2];
+  return `<div class="sj-goods">` + (card ? `<div class="gd">` : ``) + items.map(([n, c, im]) => `<a${card ? ` class="gc"` : ``} href="https://link.coupang.com/a/${c}" target="_blank" rel="sponsored nofollow noopener" referrerpolicy="unsafe-url" onclick="try{navigator.sendBeacon(&quot;/api/hit&quot;,JSON.stringify({e:&quot;goods_click&quot;}))}catch(x){}">${card ? `<img src="${im}" alt="${n}" width="212" height="212" loading="lazy" decoding="async">${n}<i>쿠팡에서 보기 →</i>` : `${n} →`}</a>`).join("") + (card ? `</div>` : ``) + `</div>`; };
 const goodsLinks = g => cpChips(EL_GOODS[g]);
 // 주제 물건 칸(이사·침실 등) — 쿠팡 파트너스 검색 링크
 const cpSec = (h, lead, items) => `<section class="guide"><h2>${h}</h2>` + GOODS_CSS + `<p style="margin:0 0 6px">${lead}</p>` + cpChips(items) + GOODS_NOTE + `</section>`;
-const GOODS_CSS = `<style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}</style>`;
-const GOODS_NOTE = `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 검색 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p>`;
+const GOODS_CSS = `<style>.sj-goods{margin:0 0 14px}.sj-goods a{display:inline-block;margin:0 6px 6px 0;padding:7px 12px;border-radius:999px;border:1px solid rgba(240,140,60,.5);background:rgba(240,140,60,.12);font-size:13px;font-weight:700;text-decoration:none;color:inherit}.sj-goods .gd{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:396px}.sj-goods a.gc{display:flex;flex-direction:column;margin:0;padding:6px;border-radius:12px;font-size:12.5px;line-height:1.35;text-align:center}.sj-goods a.gc img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:8px;background:#fff;margin-bottom:5px}.sj-goods a.gc i{font-style:normal;font-size:11px;font-weight:600;opacity:.7;margin-top:2px}</style>`;
+const GOODS_NOTE = `<p style="font-size:12px;color:var(--muted);margin:0">쿠팡 파트너스 링크이며, 구매 시 동네보살이 수수료를 받습니다.</p>`;
 const genLine = (name, el) => `<p style="margin:0 0 6px">${name}${josa(name, "은/는")} ${el} 기운이라, 그 기운을 낳아 주는 <b>${GEN_OF[el]} 기운</b> 물건이 힘이 됩니다.</p>`;
 function ttiGiftSec(A, B, same) {
   const row = Z => genLine(Z.name, Z.ele) + goodsLinks(GEN_OF[Z.ele]);
