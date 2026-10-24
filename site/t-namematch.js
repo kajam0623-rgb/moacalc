@@ -36,7 +36,7 @@ TOOLS.push({id:"namematch",cat:"재미·운세",icon:"",name:"이름 궁합",des
       // 결과 공유 링크는 두 이름을 싣고(받은 사람이 열자마자 같은 결과를 본다), 초대 링크는 내 이름(첫 칸)만 싣는다(받은 사람이 자기 이름만 넣는다)
       bindShare(el,"이름 궁합",A+" ♥ "+B+" 이름궁합 "+r.score+"점 · "+band.type+". 동네보살에서 해 보기:","a="+encodeURIComponent(A)+"&b="+encodeURIComponent(B));
       bindShare(el,"이름 궁합",A+josa(A,"가/이")+" 이름궁합 보자고 보냈어요. 내 이름만 넣으면 바로 나와요:","a="+encodeURIComponent(A),".invite-btn","invite_make");
-      if(typeof cpRow==="function")out.insertAdjacentHTML("beforeend",cpRow([["커플링","hIY53jNlaC"],["커플 잠옷","hIY6cnZwrs"],["커플 키링","hIY6ly7geO"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
+      if(typeof cpRow==="function")out.insertAdjacentHTML("beforeend",cpRow([["커플링","h6ByKHY5NQ","https://thumbnail3.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/images/2016/12/23/22/9/0fd6d0f3-702c-43c3-8e8f-fd9d2c7cf628.jpg"],["커플 머그컵","h6BVEcZ3aC","https://thumbnail10.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/266722641540583-866c20af-6bfe-4a62-b6db-fb2743688198.jpg"],["커플 키링","h6BQg1iQy4","https://t3c.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/3da7/debfc0b518898371c43c1916f6b62bd5ca16a90480162725c0472c22e5b1.jpg"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
       saveScore(el,"이름궁합","이름 궁합",A+" ♥ "+B,r.score,band.type,band.msg,band.good,r.score>=55?"heart":"diary");}
     el.querySelector("#go").addEventListener("click",function(){go(true);});
     ["#a","#b"].forEach(function(q){el.querySelector(q).addEventListener("keydown",function(e){if(e.key==="Enter")go(true);});});

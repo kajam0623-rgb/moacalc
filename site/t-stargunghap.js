@@ -50,7 +50,7 @@ TOOLS.push({id:"stargunghap",cat:"재미·운세",icon:"",name:"별자리 궁합
       '<p class="note">별자리의 원소(불·흙·공기·물), 황도 각도(합·섹스타일·스퀘어·트라인·오포지션), 수호성 친화를 종합한 서양 점성술 궁합입니다. 태양 별자리 기준이며, 정밀 궁합은 달·상승궁까지 봐야 합니다. 참고용.</p>';
       fillSg();
       bindShare(el,"별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b]+" 궁합 "+sc+"점 · "+grade+". 동네보살에서 확인:");
-      el.querySelector("#out").insertAdjacentHTML("beforeend",cpRow([["커플링","hIY53jNlaC"],["커플 잠옷","hIY6cnZwrs"],["커플 키링","hIY6ly7geO"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
+      el.querySelector("#out").insertAdjacentHTML("beforeend",cpRow([["커플링","h6ByKHY5NQ","https://thumbnail3.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/images/2016/12/23/22/9/0fd6d0f3-702c-43c3-8e8f-fd9d2c7cf628.jpg"],["커플 머그컵","h6BVEcZ3aC","https://thumbnail10.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/266722641540583-866c20af-6bfe-4a62-b6db-fb2743688198.jpg"],["커플 키링","h6BQg1iQy4","https://t3c.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/3da7/debfc0b518898371c43c1916f6b62bd5ca16a90480162725c0472c22e5b1.jpg"]],"두 사람 사이에 하나 — 커플 선물, 쿠팡에서 바로 보기"));
       saveScore(el,"별자리궁합","별자리 궁합",ST_KO[a]+" ♥ "+ST_KO[b],sc,grade,ST_ELE[a%4]+josa(ST_ELE[a%4],"와/과")+" "+ST_ELE[b%4]+josa(ST_ELE[b%4],"가/이")+" 만나면 — "+grade,SGD?SGD.pair[Math.min(a,b)+"-"+Math.max(a,b)].core:E[2]);askFx(el,{score:sc,grade:grade,pose:sc>=60?"heart":"smile",say:sc>=85?"두 별이 참 잘 어울려요! 이 인연 아껴 두세요.":sc>=72?"결이 좋은 사이예요. 이야기만 자주 나누면 오래가요.":sc>=58?"서로 맞춰 가는 재미가 있는 사이에요. 아래 '이렇게 하면 더 좋아지네'를 보세요.":"다름이 매력인 사이예요. 아래 '이렇게 하면 더 좋아지네'가 길잡이가 되어 줄 거예요."});}
     askWire(el,go,["두 사람의 별자리를 세운다","불·흙·공기·물 원소를 견준다","하늘에서의 거리를 재어 본다"],"두 사람 것을 아직 안 물어봤어요.");
     }});

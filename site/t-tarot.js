@@ -528,7 +528,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       try{rd.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});}catch(e){}
       bindShare(rd,"동네보살 타로","동네보살 타로 — "+ques.q+": "+picks.map(function(p){return M[p.i][1]+(p.rev?"(역)":"");}).join(", "));
       bindSave(rd,{file:"동네보살-타로",draw:drawShare});
-      rd.insertAdjacentHTML("beforeend",cpRow([["유니버셜 웨이트 타로 카드","hIXZiWxjQO"],["타로 입문 책","hIXZr5Ij6W"],["타로 천 스프레드 매트","hIXZBg0tDo"]],"직접 뽑아 보고 싶다면 — 타로 카드, 쿠팡에서 바로 보기"));
+      rd.insertAdjacentHTML("beforeend",cpRow([["유니버셜 웨이트 타로 카드","h6BYWZ22to","https://thumbnail11.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/image_audit/advertiser/1756963343830/480aaf7c-17ab-4c1d-b607-5418507bb244.png"],["타로 입문 책","h6B101RTX2","https://thumbnail15.coupangcdn.com/thumbnails/remote/212x212ex/image/retail-product-api/A00077021/10770297/12408153/main/9791160074352_L.jpg"],["타로 천 스프레드 매트","h6B5eC799E","https://t3a.coupangcdn.com/thumbnails/remote/212x212ex/image/vendor_inventory/485f/2fb9f304c307411624e9fec0763c2a218be33fca56471319754522cfa8ea.png"]],"직접 뽑아 보고 싶다면 — 타로 카드, 쿠팡에서 바로 보기"));
       [rd.querySelector(".share-btn"),rd.querySelector(".save-btn")].forEach(function(sb){sb.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();sb.click();}});});
       tailAsk(rd.querySelector("#tailbox"),tarotTail);
       keyClick(rd.querySelector("#tr-again"),function(){start();el.scrollIntoView({behavior:RM?"auto":"smooth",block:"start"});});
