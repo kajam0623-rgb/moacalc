@@ -2254,6 +2254,8 @@ const celebsOn = (m, d) => {
   if (!CELEB_BY_MD) { CELEB_BY_MD = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) (CELEB_BY_MD[b.slice(5, 7) + b.slice(8, 10)] ||= []).push([ko, +b.slice(0, 4), c]); }
   return CELEB_BY_MD[mmdd(m, d)] || [];
 };
+// 달 그림(2026-10-24, 그 달 탄생화 꽃다발+탄생석) — 있으면 달·날짜 쪽 대표 그림(공유·검색 썸네일), 없으면 공용 그림
+const birthImg = m => fs.existsSync(path.join(IMG_SRC, "birth", `birth-${m}.webp`)) ? `img/birth/birth-${m}.webp` : "img/tool/h-horoscope.webp";
 const BIRTH_SIBS = `<div class="sibs">${Array.from({ length: 12 }, (_, i) => `<a href="birth-${i + 1}.html">${i + 1}월</a>`).join("")}<a href="birthstone.html">탄생석 전체</a></div>`;
 // 쿠팡: 탄생석 팔찌(2,080)·목걸이(1,560)·반지(1,350), 꽃다발(3.9만)·프리저브드플라워(5,280) — 상품 링크가 생기면 BIRTH_GOODS 에, 없으면 탄생석 목걸이 검색 링크
 const BIRTH_GOODS = (() => { try { return require("./content_birth_goods.js"); } catch (e) { return null; } })();
@@ -2273,7 +2275,7 @@ function birthMonthPage(m) {
     crumb: `${m}월 탄생석·탄생화`, date: "2026-10-24",
     title: `${m}월 탄생석·탄생화·별자리 — ${b[0]}, ${F.flowers[0]}, ${sA.ko}·${sB.ko} | 동네보살`,
     desc: `${m}월 탄생석은 ${b[0]}${b[3] ? `(함께 쓰는 돌 ${b[3]})` : ""}, ${m}월 탄생화는 ${F.flowers.join("·")}입니다. ${m}월생 별자리는 ${m}월 ${rs[1] - 1}일까지 ${sA.ko}, ${rs[1]}일부터 ${sB.ko}. 날짜별 탄생화와 꽃말, ${m}월생 유명인까지.`,
-    url: `${DOMAIN}/birth-${m}.html`, img: "img/tool/h-horoscope.webp", hero: "img/tool/h-horoscope.webp",
+    url: `${DOMAIN}/birth-${m}.html`, img: birthImg(m), hero: "img/tool/h-horoscope.webp",
     h1: `${m}월 탄생석·탄생화·별자리`, sub: `탄생석 ${b[0]} · 탄생화 ${F.flowers[0]} · ${sA.ko}·${sB.ko}`,
     parent: "birthstone.html", parentName: "탄생석", tool: "horoscope", noTool: true,
     tags: [`${m}월 탄생석`, `${m}월 탄생화`, `${m}월 별자리`, `${m}월생`, `${m}월 탄생석 목걸이`, "탄생화 꽃말"],
@@ -2281,6 +2283,7 @@ function birthMonthPage(m) {
       [[`${m}월 탄생석`, b[0] + (b[3] ? ` (함께 쓰는 돌 ${b[3]})` : "")], ["탄생석 색·뜻", `${b[2]} · ${b[4]}`], [`${m}월 탄생화`, F.flowers.join(" · ")], ["탄생화 꽃말", F.meaning],
        [`${m}월 1~${rs[1] - 1}일`, sA.ko], [`${m}월 ${rs[1]}~${MDAYS[m - 1]}일`, sB.ko]]
         .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") + `</div>` +
+      (birthImg(m).includes("birth-") ? `<figure class="iljufig ls"><img src="${birthImg(m)}" alt="${m}월 탄생화 ${esc(F.flowers.join("·"))}와 탄생석 ${b[0]} 그림" width="1200" height="800" loading="lazy" decoding="async"></figure>` : "") +
       `<div class="sibs" style="margin:10px 0 4px"><a href="#stone">${m}월 탄생석</a><a href="#flower">${m}월 탄생화</a><a href="#star">${m}월 별자리</a><a href="#days">날짜별 탄생화</a></div>` +
       `<div class="intro">${para(T.intro)}</div>` +
       sec(`${m}월 탄생석 ${b[0]} — 색과 뜻`, para(T.stone), "stone") +
@@ -2305,7 +2308,7 @@ function flowerDayPage(m, d) {
     crumb: `${m}월 ${d}일 탄생화`, date: "2026-10-24",
     title: `${m}월 ${d}일 탄생화 — ${f.flower}, 꽃말 ${f.meaning.split(",")[0].trim()} | ${m}월 ${d}일 별자리·탄생석`,
     desc: `${m}월 ${d}일 탄생화는 ${f.flower}, 꽃말은 ${f.meaning}입니다. ${m}월 ${d}일생 별자리는 ${s.ko}, 탄생석은 ${b[0]}.${cel.length ? ` 같은 날 태어난 ${cel.slice(0, 2).map(c => c[0]).join("·")}까지.` : ""}`,
-    url: `${DOMAIN}/${flowerUrl(m, d)}`, img: "img/tool/h-horoscope.webp", hero: "img/tool/h-horoscope.webp",
+    url: `${DOMAIN}/${flowerUrl(m, d)}`, img: birthImg(m), hero: "img/tool/h-horoscope.webp",
     h1: `${m}월 ${d}일 탄생화 — ${f.flower}`, sub: `꽃말 ${f.meaning} · 별자리 ${s.ko} · 탄생석 ${b[0]}`,
     parent: `birth-${m}.html`, parentName: `${m}월 탄생석·탄생화`, tool: "horoscope", noTool: true,
     tags: [`${m}월 ${d}일 탄생화`, `${m}월${d}일 탄생화`, `${f.flower} 꽃말`, `${m}월 ${d}일 별자리`, `${m}월 ${d}일 생일`],
