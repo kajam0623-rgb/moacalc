@@ -1436,6 +1436,7 @@ const iljinChips = cur => '<div class="sibs">'+ILJIN_PAGES.map(p=>p.en===cur
 const ILJU_SRC = require("./content_ilju.js");
 // 60편 각자의 원고. 천간·지지 공용 원고만으로는 같은 천간 6편·같은 지지 5편이 문장을 나눠 써서 찍어 낸 페이지가 된다
 const ILJU_TEXT = require("./content_ilju60.js");
+const ILJU_GENDER = require("./content_ilju_gender.js");
 const ILJU_PAGES = Array.from({length:60}, (_, k) => {
   const s = k % 10, b = k % 12;
   const g = ILGAN_PAGES[s], j = ILJU_SRC.JIJU[b];
@@ -3075,13 +3076,35 @@ const iljuFig = (p, at) => iljuImgs(p.en).filter(f => f.at === at).map(f =>
 const iljuShareRow = p => `<div class="ttishare">` + ttiBtn("이 일주 공유하기", "share_click", `${p.ko}일주`, `${p.ko}일주(${p.han}) — ${p.txt.tag}. 내 일주는 뭘까? 동네보살에서 보기:`, `${DOMAIN}/ilju-${p.en}.html?from=share`) + `</div>` + TTI_SHARE_JS;
 // 일주별 유명인(2026-10-10) — 네이버 'OO일주 연예인' 일주마다 월 200회 안팎. content_celeb.json(위키데이터) 의 생일로 일주를 계산해 유명한 순 12명까지
 let CELEB_BY_ILJU = null;
-const iljuCelebSec = p => {
+const iljuCelebs = p => {
   if (!CELEB_BY_ILJU) { CELEB_BY_ILJU = {}; for (const [ko, b, c] of require("./content_celeb.json").rows) { const [y, m, d] = b.split("-").map(Number), q = FORT.sjPillars(y, m, d, null, 0, false); (CELEB_BY_ILJU[q.d.s + "-" + q.d.b] ||= []).push([ko, y, c]); } }
-  const L = (CELEB_BY_ILJU[p.s + "-" + p.b] || []).slice(0, 12);
+  return (CELEB_BY_ILJU[p.s + "-" + p.b] || []).slice(0, 12);
+};
+const iljuCelebSec = p => {
+  const L = iljuCelebs(p);
   if (!L.length) return "";
-  return `<section class="guide"><h2>${p.ko}일주 유명인</h2><div class="intro" style="margin-top:0">` +
+  return `<section class="guide" id="celeb"><h2>${p.ko}일주 연예인·유명인</h2><div class="intro" style="margin-top:0">` +
     `<div class="sibs">${L.map(([ko, y, c]) => `<span>${ko} <small style="color:var(--muted)">${c} · ${y}</small></span>`).join("")}</div>` +
     `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">출생 시각 미반영 · <a href="celeb.html">생일 출처·계산 기준</a></p></div></section>`;
+};
+// 일주끼리 짝(2026-10-24) — 잘 맞는 짝: 일간 합(갑기·을경·병신·정임·무계)+일지 육합 → 일간 합+일지 삼합 → 일지 삼합+일간을 낳는 기운.
+// 부딪히기 쉬운 짝: 일간끼리 극 + 일지 충. 음양이 맞지 않는 간지(갑축 등)는 60갑자에 없으니 거른다
+function iljuPairs(p) {
+  const ok = (x, y) => x % 2 === y % 2, el = x => x >> 1, hs = (p.s + 5) % 10, sam = [(p.b + 4) % 12, (p.b + 8) % 12];
+  const good = [], bad = [], cb = (p.b + 6) % 12;
+  if (ok(hs, ENGINE.sjYukhap(p.b))) good.push([hs, ENGINE.sjYukhap(p.b), "일간 합과 일지 육합이 함께 있는 짝"]);
+  for (const y of sam) if (ok(hs, y)) good.push([hs, y, "일간 합과 일지 삼합이 함께 있는 짝"]);
+  for (const y of sam) for (let x = 0; x < 10; x++) if (ok(x, y) && (el(x) + 1) % 5 === el(p.s)) good.push([x, y, "일지 삼합에 나를 북돋는 기운이 오는 짝"]);
+  for (let x = 0; x < 10; x++) if (ok(x, cb) && (el(x) === (el(p.s) + 2) % 5 || el(p.s) === (el(x) + 2) % 5)) bad.push([x, cb]);
+  const page = ([s, b]) => ILJU_PAGES.find(q => q.s === s && q.b === b);
+  return { good: good.map(g => [page(g), g[2]]), bad: bad.map(page) };
+}
+const iljuMatchSec = p => {
+  const { good, bad } = iljuPairs(p), a = q => `<a href="ilju-${q.en}.html">${q.ko}일주</a>`;
+  return `<section class="guide" id="match"><h2>${p.ko}일주와 잘 맞는 일주</h2><div class="intro" style="margin-top:0">` +
+    `<ul>${good.map(([q, why]) => `<li>${a(q)} — ${why}</li>`).join("")}</ul>` +
+    `<p>부딪히기 쉬운 짝은 ${bad.map(a).join("·")}입니다. 일간끼리 서로 누르고 일지가 충(${ENGINE.SJ_B[p.b]}↔${ENGINE.SJ_B[(p.b + 6) % 12]})이라 생각이 엇갈리기 쉬운데, 서로 다른 점을 역할 나누기로 돌리면 오히려 빈틈을 메워 줍니다.</p>` +
+    `<p style="color:var(--muted);font-size:13px;margin:6px 0 0">일주(태어난 날)끼리만 본 기준입니다. 연·월까지 넣은 두 사람의 궁합은 <a href="gunghap.html">궁합 보기</a>에서 확인하세요.</p></div></section>`;
 };
 // Only report signs decidable from the day pillar; do not fabricate other pillars.
 function iljuDaySigns(p) {
@@ -3099,11 +3122,16 @@ function iljuPage(p){
   const G = p.gan, J = p.ji, S = p.ss, C = p.txt;
   const gEl = `${G.ko}${G.el}`, jEl = `${J.ko}${J.el}`;
   const first = (t, n) => t.trim().split(/(?<=[.?!])\s+/).slice(0, n).join(" ");
+  // 검색어는 'OO일주 여자'(일주마다 월 300~480회)가 가장 크고 'OO일주 연예인'은 클릭률이 13~18%라(2026-10 네이버), 제목 앞에 여자·남자, 설명에 연예인 이름을 둔다
+  const W = ILJU_GENDER[p.en], celebs = iljuCelebs(p), pairs = iljuPairs(p);
+  const gsec = (who, h, look, love, marry, seat) => `<section class="guide" id="${h}"><h2>${p.ko}일주 ${who} — 성격·연애·결혼</h2><div class="intro" style="margin-top:0">` +
+    [["첫인상과 분위기", look], ["연애할 때", love], ["결혼과 가정", marry], [`배우자 자리로 본 ${who === "여자" ? "남편" : "아내"}`, seat]]
+      .map(([t, x]) => `<h3 style="font-size:15px;margin:14px 0 6px">${p.ko}일주 ${who} ${t}</h3><p style="margin-bottom:10px">${x}</p>`).join("") + `</div>`;
   return seoPage({
     crumb:`${p.ko}일주`,
     learn: learnMore(`지장간을 읽는 방법을 확인하세요.`, [10]),
-    title:`${p.ko}일주 성격 — ${C.tag}, 여자·남자 차이 | 동네보살`,
-    desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(C.core,1)} 여자와 남자의 차이, 일과 재물까지.`,
+    title:`${p.ko}일주 여자·남자 성격과 연애 — ${C.tag} | 동네보살`,
+    desc:`${p.ko}일주(${p.han}) — ${C.tag}. ${first(W.wLook,1)} 남자의 연애·결혼, 잘 맞는 ${pairs.good[0][0].ko}일주${celebs.length >= 3 ? `, ${celebs.slice(0, 3).map(c => c[0]).join("·")} 같은 ${p.ko}일주 연예인` : ""}까지.`,
     url:`${DOMAIN}/ilju-${p.en}.html`, img:(iljuImgs(p.en)[0] || {}).rel || `img/char/ilgan-${G.en}.webp`, hero:"img/tool/h-saju.webp",
     h1:`${p.han} ${p.ko}일주 — ${C.tag}`,
     sub:`일간 ${gEl}(${G.yy}) · 일지 ${J.ko} ${J.tti}띠 ${J.el} · 십이운성 ${p.un} · 일지 십성 ${p.tengod}`,
@@ -3122,6 +3150,7 @@ function iljuPage(p){
        ["공망(空亡)",`${gmTxt(p.gm)} — ${p.gm.sun}`]]
         .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
       `<div class="res"><span>충(沖) — 부딪히는 띠</span><b>${esc(p.chung)}띠</b></div></div>`+ iljuShareRow(p) + iljuFig(p, "top") +
+      `<div class="sibs" style="margin:10px 0 4px"><a href="#woman">${p.ko}일주 여자</a><a href="#man">${p.ko}일주 남자</a><a href="#match">잘 맞는 일주</a>${celebs.length ? `<a href="#celeb">${p.ko}일주 연예인</a>` : ""}</div>` +
       luckGoodsSec(`${p.ko}일주`, G.el, `<p style="font-size:13px;color:var(--muted);margin:0 0 8px">일간(${G.ko}${G.el})만 본 기준입니다. 내 사주 전체로 본 필요한 기운은 <a href="saju.html">사주 풀이</a> 결과 맨 위에 따로 나옵니다.</p>`) +
 
       `<div class="intro"><p><a href="column-gapja-60.html">60갑자</a>의 ${p.k+1}번째 조합은 ${p.han}입니다.</p>`+
@@ -3132,10 +3161,9 @@ function iljuPage(p){
       `<section class="guide"><h2>${C.tag} — ${p.ko}일주가 드러나는 장면</h2>`+
       `<div class="intro" style="margin-top:0">${para(C.scene)}</div>${iljuFig(p, "scene")}</section>`+
 
-      `<section class="guide"><h2>${p.ko}일주 여자와 남자</h2><div class="intro" style="margin-top:0">`+
-      `<p style="margin-bottom:10px"><b>${p.ko}일주 여자</b><br>${C.woman}</p>`+
-      `<p style="margin-bottom:10px"><b>${p.ko}일주 남자</b><br>${C.man}</p>`+
-      `<p><a href="gunghap.html">생년월일로 두 사람의 궁합을 확인하세요.</a></p></div>${iljuFig(p, "love")}</section>`+
+      gsec("여자", "woman", W.wLook, W.wLove, W.wMarry, C.woman) + `${iljuFig(p, "love")}</section>` +
+      gsec("남자", "man", W.mLook, W.mLove, W.mMarry, C.man) + `</section>` +
+      iljuMatchSec(p) +
 
       `<section class="guide"><h2>일지 ${J.ko}(${J.han}) — 배우자 자리</h2><div class="intro" style="margin-top:0">`+
       `<p>${p.han}의 일지 ${J.han}: 지장간과 ${G.han} 기준 십성입니다.</p>`+
@@ -3158,6 +3186,10 @@ function iljuPage(p){
       `<p>${J.han} 기준 삼합은 ${esc(p.samhap.join("·"))}, 육합은 ${esc(p.yukhap)}, 충은 ${esc(p.chung)}입니다. <a href="tti-gunghap.html">관계표의 읽는 법</a>을 함께 보세요.</p></div></section>`+iljuCelebSec(p),
     faq:[
       [`${p.ko}일주는 어떤 성격인가요?`,`${G.metaphor}에 비유되는 ${gEl} 일간이 ${jEl} 위에 앉은 일주입니다. ${first(C.core,2)}`],
+      [`${p.ko}일주 여자는 어떤 사람인가요?`, first(W.wLook,2)],
+      [`${p.ko}일주 남자는 연애할 때 어떤가요?`, first(W.mLove,2)],
+      [`${p.ko}일주와 잘 맞는 일주는 무엇인가요?`, `${pairs.good.map(([q]) => q.ko + "일주").join("·")}입니다. ${pairs.good[0][0].ko}일주는 ${pairs.good[0][1]}입니다.`],
+      ...(celebs.length ? [[`${p.ko}일주 연예인은 누가 있나요?`, `생일로 계산하면 ${celebs.slice(0, 5).map(c => c[0]).join("·")} 등이 ${p.ko}일주입니다(출생 시각 미반영).`]] : []),
       [`${p.ko}일주의 일에서는 어떤 점을 살펴보나요?`, first(C.work,2)]],
     sibTitle:"다른 일주도 보기", sibs:`<div class="sibs"><a href="ilju-${ILJU_PAGES[(p.k+59)%60].en}.html">이전: ${ILJU_PAGES[(p.k+59)%60].ko}</a><a href="column-gapja-60.html">60갑자 전체 보기</a><a href="ilju-${ILJU_PAGES[(p.k+1)%60].en}.html">다음: ${ILJU_PAGES[(p.k+1)%60].ko}</a></div>`,
     related:["saju","gunghap","todayfortune","newyear"]});
