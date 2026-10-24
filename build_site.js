@@ -1118,7 +1118,8 @@ ${t.id==="todayfortune" ? '<div id="goods-sv"></div><section class="guide"><h2>�
  : t.id==="tojeong" ? '<section class="guide"><h2>2027 정미년 함께 보기</h2>'+SEASON_LINKS+'</section>'
  : t.id==="tarot" ? '<section class="guide"><h2>카드별 뜻 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">메이저 22장과 마이너 56장, 78장 모두의 정방향·역방향과 연애·재회·일에서의 뜻입니다.</p>'+tarotChips(null)+'</section>'
  : t.id==="saju" ? '<section class="guide"><h2>일간별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">사주 여덟 글자 중 나 자신에 해당하는 글자입니다.</p>'+ilganChips(null)+'</section>'+
-                   '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>' : ""}
+                   '<section class="guide"><h2>십성별로 자세히 보기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">일간과 다른 글자의 관계가 만드는 열 가지 성격입니다.</p>'+sipseongChips(null)+'</section>'+
+                   '<section class="guide"><h2>부족한 오행 채우기</h2><p style="color:var(--muted);font-size:13px;margin:0 0 10px">결과의 오행 막대에서 비어 있거나 적은 기운을 골라 보세요. 색·숫자·물건으로 채우는 법이 나와요.</p>'+ohaengChips(null)+'</section>' : ""}
 ${introHtml}${cardShowHtml(t.id)}
 ${guideHtml}${elemHtml}${exHtml}${moreHtml}${cauHtml}${toolColumnsHtml(t.id)}${faqHtml}
 ${adSlot()}
@@ -2863,6 +2864,45 @@ function sipseongPage(s){
     related:["saju","todayfortune","newyear","gunghap"]});
 }
 
+/* 오행 5종 "금이 부족한 사주 / 금이 많은 사주"(2026-10-24) — 네이버 자동완성 '금이 부족한 사주 보완·팔찌·색깔·특징·개운법·여자·숫자·이름' 묶음.
+   물건 칸은 EL_GOODS(오행 물건 사진 카드)를 보완법 바로 뒤, 사람이 읽는 자리에 둔다 */
+const OHAENG_PAGES = require("./content_ohaeng.js");
+const OH_IMG = { mok: ["wood", "sumok"], hwa: ["fire", "mokhwa"], to: ["earth", "hwato"], geum: ["metal", "togeum"], su: ["water", "geumsu"] };
+const ohaengChips = cur => '<div class="sibs">' + OHAENG_PAGES.map(o => o.en === cur
+  ? `<span class="cur">${o.ko}${o.josa} 부족한 사주</span>` : `<a href="ohaeng-${o.en}.html">${o.ko}${o.josa} 부족한 사주</a>`).join("") + '</div>';
+function ohaengPage(o){
+  const K = `${o.ko}${o.josa}`, sec = (h, t, id) => `<section class="guide"${id ? ` id="${id}"` : ""}><h2>${h}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`;
+  const [ei, si] = OH_IMG[o.en];
+  return seoPage({
+    crumb:`${K} 부족한 사주`,
+    learn: learnMore(`${o.ko}(${o.han})${josa(o.ko,"은/는")} 다섯 기운 가운데 하나예요. 내 사주에 ${o.ko}${o.josa} 몇 개인지는 사주팔자 만세력에 생년월일을 넣으면 오행 막대로 바로 보여요. 오행이 서로 돕고 누르는 흐름은 2강, 내게 필요한 기운을 고르는 방식은 8강에서 자세히 다룹니다.`, [2, 8]),
+    title:`${K} 부족한 사주 — 특징·보완법·색깔·숫자, ${K} 많은 사주까지 | 동네보살`,
+    desc:`${K} 부족한 사주는 어떤 특징이 있을까요? ${o.ko} 기운을 채우는 색(${o.color.split("·")[0]})·숫자(${o.num})·방위·물건과 개운법, 여자 사주, 이름 소리, ${K} 많은 사주를 다스리는 법까지 쉽게 정리했어요.`,
+    url:`${DOMAIN}/ohaeng-${o.en}.html`, img:`img/char/el-${ei}-f.webp`, hero:"img/tool/h-saju.webp",
+    h1:`${K} 부족한 사주 · ${K} 많은 사주`,
+    sub:`${o.han} ${o.name} 기운 — ${o.keyword} · 색 ${o.color} · 숫자 ${o.num}`,
+    parent:"saju.html", parentName:"사주팔자 만세력",
+    tool:"saju",
+    tags:[`${K} 부족한 사주`,`${K} 부족한 사주 보완`,`${K} 부족한 사주 색깔`,`${K} 많은 사주`,`${o.ko} 기운 채우는 법`,`${K} 부족한 사주 여자`,`${o.name}${josa(o.name,"이/가")} 많은 사주`],
+    body:`<div class="exbox"><h2>${o.ko}(${o.han}) 기운 한눈에 보기</h2>`+
+      [["채우는 색",o.color],["숫자",o.num],["방위",o.dir],["계절",o.season],["맛",o.taste],["사주 글자",`${o.stems} · ${o.branches}`],["띠",o.tti],["이름 소리",o.sound],["덕목",o.virtue]]
+        .map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+
+      `<div class="res"><span>${o.ko}${o.josa} 비었을 때</span><b>${esc(o.motherName)}(${o.mother}) 기운까지 함께 채우면 좋아요</b></div></div>`+
+      `<div class="intro">${para(o.intro)}</div>`+
+      sec(`${K} 부족한 사주 특징`, o.lack, "lack")+
+      sec(`${K} 부족한 사주 보완법 — 색깔·숫자·방위·개운법`, o.fix, "fix")+
+      `<section class="guide" id="goods"><h2>${o.ko} 기운을 채우는 물건</h2>` + GOODS_CSS + `<p style="margin:0 0 6px">${esc(o.goods)}</p>` + goodsLinks(o.ko) + GOODS_NOTE + `</section>`+
+      sec(`${K} 부족한 사주 여자`, o.female, "female")+
+      sec(`${o.ko} 기운을 채우는 이름 소리`, o.nameSound, "name")+
+      `<section class="guide" id="many" style="display:flow-root"><h2>${K} 많은 사주 — 특징과 다스리는 법</h2><figure class="iljufig"><img src="img/char/el-saeng-${si}.webp" alt="${esc(o.motherName)}${josa(o.motherName,"이/가")} ${esc(o.name)}${josa(o.name,"을/를")} 낳는 오행 상생 그림 | 동네보살" width="520" height="520" loading="lazy" decoding="async"><figcaption>${o.mother}${josa(o.mother,"이/가")} ${o.ko}${josa(o.ko,"을/를")} 낳는 흐름 — ${o.ko}${o.josa} 비면 ${o.mother}부터 함께 채워요</figcaption></figure><div class="intro" style="margin-top:0">${para(o.many)}</div></section>`+
+      `<section class="guide"><h2>내 사주에 ${o.ko}${o.josa} 몇 개인지 보려면</h2><p style="margin:0 0 8px">사주팔자 만세력에 생년월일과 태어난 시간을 넣으면 여덟 글자의 오행 개수가 막대로 나와요. 결과 아래에는 나를 받쳐 주는 기운과 그 기운의 물건도 함께 보여요.</p><p style="margin:0"><a class="btn" href="saju.html">내 오행 개수 보기 →</a></p></section>`,
+    faq: o.faq.concat([
+      [`${o.ko} 기운이 부족한지 어떻게 아나요?`,`사주 여덟 글자 가운데 ${o.stems}, ${o.branches}가 ${o.ko}에 속해요. 이 글자가 하나도 없거나 하나뿐이면 ${o.ko}${o.josa} 적은 편으로 봐요. 다만 개수보다 내 일간에게 필요한 기운인지가 더 중요해서, 사주팔자 만세력 결과의 '나를 받쳐 주는 기운'을 함께 보세요.`]
+    ]),
+    sibTitle:"다른 오행도 보기", sibs:ohaengChips(o.en),
+    related:["saju","todayfortune","newyear","gunghap"]});
+}
+
 /* 타로 카드 뜻 — "연인 카드 역방향", "죽음 카드 뜻" 같은 검색어를 받는다.
    카드 뜻은 어느 사이트나 비슷하므로, 연애·재회·일로 나눈 풀이와 그림 해설을 카드마다 따로 쓴다. */
 const ROMAN = ["0","I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX","XXI"];
@@ -3459,6 +3499,8 @@ const conceptGroups = [
       ILGAN_PAGES.map(g=>[`ilgan-${g.en}.html`, `${g.ko}${g.el} 일간`, g.metaphor])],
     ["십성 10", "내 일간이 다른 글자와 맺는 열 가지 관계. 성격·재물·인연을 읽는 틀이다.",
       SIPSEONG_PAGES.map(s=>[`sipseong-${s.en}.html`, `${s.ko} 뜻`, s.keyword])],
+    ["오행 5", "나무·불·흙·쇠·물 다섯 기운. 부족할 때와 많을 때 채우는 색·숫자·물건을 정리했다.",
+      OHAENG_PAGES.map(o=>[`ohaeng-${o.en}.html`, `${o.ko}${o.josa} 부족한 사주`, `${o.han} ${o.name} · ${o.color}`])],
     ["개념 6", "사주에 나오는 말의 뜻. 기관 자료 출처를 밝힌 질문형 해설이다.",
       CONCEPT_PAGES.map(c=>[`concept-${c.en}.html`, c.ko, c.keyword])],
     ["타로 " + TAROT_PAGES.length, "메이저 22장과 마이너 56장. 정방향·역방향과 연애·재회·일에서의 뜻.",
@@ -4025,6 +4067,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
+  OHAENG_PAGES.map(o=>smUrl("ohaeng-"+o.en+".html")).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("learn.html")+"\n"+LEARN.LECTURES.filter(c=>c.en).map(c=>smUrl(c.page)).join("\n")+"\n"+
@@ -4559,6 +4602,7 @@ TTI.JI.forEach(z=>fs.writeFileSync(path.join(OUT,ttiHubUrl(z.i)), ttiHubPage(z.i
 TTI.PAIR_LIST.forEach(p=>fs.writeFileSync(path.join(OUT,ttiPairUrl(p.a,p.b)), ttiPairPage(p.a,p.b)));
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
+OHAENG_PAGES.forEach(o=>fs.writeFileSync(path.join(OUT,"ohaeng-"+o.en+".html"), ohaengPage(o)));
 TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
 CONCEPT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"concept-"+c.en+".html"), conceptPage(c)));
 fs.writeFileSync(path.join(OUT,"learn.html"), learnHubPage());

@@ -609,7 +609,7 @@ t("배우기 카드·진도 칸은 떠 있는 캐릭터 아래로 내린다(clea
 t("사주 궁합: 일간 십성은 두 방향을 평균 내 점수가 순서와 무관하다", src.includes("r2=sjTenGod(b.d.s,a.d.s)") && src.includes("sc+=((RD1[r1]||0)+(RD1[r2]||0))/2;") && src.includes("((AT[f.r1]||0)+(AT[f.r2]||0))/2") && src.includes("((TK[f.r1]||0)+(TK[f.r2]||0))/2"), true);
 t("이름 궁합: 순서를 바꾸면 점수가 달라진다는 안내가 글자 수가 같을 때도 있다", (src.match(/이름 1·2의 순서를 바꾸면 점수가 달라집니다/g) || []).length, 2);
 // 일간·일주·십성·띠·일진·월력 페이지가 강의로 가는 문맥 링크를 갖는다(본문 링크 0개였음)
-t("생성 페이지 9군(별자리·띠·일간·십성·개념·타로 + 띠 궁합 허브·띠별·짝)이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "9|true");
+t("생성 페이지 10군(별자리·띠·일간·십성·오행·개념·타로 + 띠 궁합 허브·띠별·짝)이 강의 링크 블록(learnMore)을 갖는다", (bs.match(/    learn: learnMore\(/g) || []).length + "|" + bs.includes("${o.body}\n${o.learn || \"\"}"), "10|true");
 // 2027 정미(丁未)년 원고: 띠는 태세 지지 미(未)와의 관계, 일간은 천간 정(丁)과 미 본기 기(己)의 십성이 엔진 계산과 같아야 한다
 { const ZO = require("./content_zodiac.js"), IL = require("./content_ilgan.js");
   const REL = b => b === 7 ? "본명년" : (b + 6) % 12 === 7 ? "충(沖) 관계" : sjYukhap(b) === 7 ? "육합을 이룹니다" : b % 4 === 3 ? "삼합" : b === 0 ? "해(害) 관계" : b === 10 ? "형(刑)이자 파(破)" : "충·합 관계가 없습니다";
