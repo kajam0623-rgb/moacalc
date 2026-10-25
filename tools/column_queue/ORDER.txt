@@ -11,5 +11,5 @@
 # 올림 2026-10-21 daeboreum-2027
 # 올림 2026-10-24 ilju-chatgi
 # 올림 2026-10-24 ilju-gunghap
-mugwan-saju
-singang-sinyak
+# 올림 2026-10-25 mugwan-saju
+# 올림 2026-10-25 singang-sinyak
