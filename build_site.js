@@ -4722,13 +4722,16 @@ function placeAds() {
     const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
     if (!/<meta name="(robots|googlebot)"/.test(h.slice(0, h.indexOf("</head>")))) fs.writeFileSync(p, h.replace("</head>", '<meta name="googlebot" content="noindex, follow">\n</head>')); }
   const AD = ADSENSE_CLIENT ? `<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}" crossorigin="anonymous"></script>` : "";
-  let on = 0, off = 0;
+  let on = 0, off = 0, thinOff = 0;
   for (const f of fs.readdirSync(OUT)) {
     if (!f.endsWith(".html")) continue;
     const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
     if (!h.includes("@@ADS@@")) continue;
     const skip = NO_AD.has(f) || /<meta name="robots" content="noindex/.test(h.slice(0, h.indexOf("</head>")));
-    let out = h.replace("@@ADS@@", skip ? "" : AD);
+    // 2026-10-26 애드센스 재반려("가치가 별로 없는 콘텐츠") — 본문 1,000자 미만 화면(날짜별 탄생화 366 등)엔 애드센스만 뺀다. 쿠팡 배너·검색 노출은 그대로
+    const thin = !skip && mainChars(h) < THIN_AD;
+    if (thin) thinOff++;
+    let out = h.replace("@@ADS@@", skip || thin ? "" : AD);
     if (!skip && AD) {
       if ((out.match(/<main id="main">/g) || []).length !== 1 || (out.match(/<\/main>/g) || []).length !== 1) throw new Error("쿠팡 배너: main 이 하나가 아님 " + f);
       // 위에도 하나(사용자 2026-10-08 "상단에도 배너 하나") — 문구 바로 밑. 한 쪽에 위·아래 두 개까지
@@ -4738,7 +4741,14 @@ function placeAds() {
     fs.writeFileSync(p, out);
     skip ? off++ : on++;
   }
-  console.log("   광고 로더: " + on + "쪽에 싣고 " + off + "쪽은 뺌(검색 제외·목록·일기·약관)");
+  console.log("   광고 로더: " + (on - thinOff) + "쪽에 싣고 " + off + "쪽은 뺌(검색 제외·목록·일기·약관), 본문 " + THIN_AD + "자 미만 " + thinOff + "쪽은 애드센스만 뺌");
+}
+// 애드센스 사전 점검 스킬과 같은 잣대: <main> 본문에서 스크립트·머리·바닥·메뉴·aside 를 빼고 공백 없이 센 글자 수
+const THIN_AD = 1000;
+function mainChars(h) {
+  const m = h.match(/<main\b[\s\S]*?<\/main>/);
+  return (m ? m[0] : h).replace(/<(script|style|noscript|svg|template|header|footer|nav|aside)\b[\s\S]*?<\/\1>/g, " ")
+    .replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, "x").replace(/\s+/g, "").length;
 }
 placeAds();
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
