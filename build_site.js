@@ -2083,8 +2083,59 @@ function celebPage() {
       ["유명인 생일은 어디서 가져왔나요?", `위키데이터 공개 자료에서 생년월일이 날짜까지 나온 한국 인물 ${n.toLocaleString()}명을 가져왔습니다. 정치인과 공직자는 뺐습니다.`],
       ["태어난 시각을 넣으면 더 정확해지나요?", "유명인 대부분은 태어난 시각이 알려지지 않아 연·월·일 세 기둥만 비교합니다. 내 사주 전체는 사주풀이에서 시각까지 넣어 보세요."],
       ["점수가 높으면 그 사람처럼 되나요?", "같은 기운을 타고났다는 재미있는 비교일 뿐이고, 삶은 사람마다 다릅니다. 닮은 점에서 내 강점을 찾아보는 정도로 즐겨 주세요."]],
-    sibTitle: "사주 함께 보기", sibs: `<div class="sibs"><a href="saju.html">무료 사주풀이</a><a href="dict.html">60일주 사전</a><a href="sinsal.html">신살 모음</a><a href="mbti.html">MBTI 궁합</a><a href="gunghap.html">궁합</a></div>`,
+    sibTitle: "사주 함께 보기", sibs: `<div class="sibs"><a href="saju.html">무료 사주풀이</a><a href="saju-job.html">사주 직업 적성</a><a href="dict.html">60일주 사전</a><a href="sinsal.html">신살 모음</a><a href="mbti.html">MBTI 궁합</a><a href="gunghap.html">궁합</a></div>`,
     related: ["saju", "gunghap", "todayfortune", "tarot"] });
+}
+
+// ── 사주 직업 적성(saju-job.html, 작업판 90, 2026-10-28) — 네이버 자동완성 '사주 직업운·직업 적성·직업 추천·직업궁·직업 보는 법' 9개. 원고 content_saju_job.js
+// 계산은 core.js 엔진 그대로: ghTg(십성 무리 개수)·GH_GRP·sjTenGod(직업궁=월지 본기)·sjStrength(필요한 기운). 추천 셋 = 가장 많은 무리 · 직업궁 무리(같으면 다음 무리) · 필요한 기운의 오행 분야
+const JOB = require("./content_saju_job.js");
+function sajuJobPage() {
+  const G = Object.fromEntries(Object.entries(JOB.GRP).map(([k, g]) => [k, { n: g.name, s: g.sip, p: g.plain, j: g.jobs, w: g.why }]));
+  const E = JOB.EL.map(e => ({ k: e.ko, h: e.han, n: e.name, j: e.jobs, w: e.why }));
+  const js = `<script>document.addEventListener("DOMContentLoaded",function(){var G=${JSON.stringify(G)},E=${JSON.stringify(E)},ORD=["식","재","관","인","비"],` +
+    `i=document.getElementById("jbd"),hh=document.getElementById("jbh"),o=document.getElementById("jbo");` +
+    `function go(){if(typeof sjPillars!=="function"||typeof ghTg!=="function"){o.innerHTML='<p class="sjw-note">계산기를 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.</p>';return}var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 여덟 자리로 넣어 주세요.</p>';return}` +
+    `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").trim(),dt=new Date(y,m-1,d);if(!(y>=1900&&y<=2100&&dt.getMonth()===m-1&&dt.getDate()===d)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}` +
+    `if(h!==""&&!(/^\\d{1,2}$/.test(h)&&+h<=23)){o.innerHTML='<p class="sjw-note">태어난 시는 0부터 23 사이 숫자로 넣어 주세요. 모르면 비워 두세요.</p>';return}h=h===""?null:+h;` +
+    `var p=sjPillars(y,m,d,h,30,true),c=ghTg(p),ks=ORD.slice().sort(function(a,b){return c[b]-c[a]||ORD.indexOf(a)-ORD.indexOf(b)}),` +
+    `mt=sjTenGod(p.d.s,SJ_BMAIN[p.m.b]),mg=GH_GRP[mt],g1=ks[0],g2=mg!==g1?mg:ks[1],ye=sjStrength(p).yong,` +
+    `r1='내 사주 글자 가운데 '+G[g1].p+'('+G[g1].s+') 기운이 '+c[g1]+'개로 가장 많은 편이에요. ',` +
+    `r2=g2===mg?'일하는 자리로 보는 태어난 달(직업궁)에 '+mt+' 기운이 앉아 있어요. ':(c[g2]?'다음으로 많은 기운이 '+G[g2].p+'('+G[g2].s+'), '+c[g2]+'개예요. ':'글자로는 드러나지 않았지만 새로 익히면 균형이 잡히는 쪽이에요. '),` +
+    `r3='내 사주에 힘을 보태 주는 기운은 '+E[ye].k+' 기운이에요. ',` +
+    `L=[[G[g1].n,G[g1].j,r1+G[g1].w],[G[g2].n,G[g2].j,r2+G[g2].w],[E[ye].n,E[ye].j,r3+E[ye].w]];` +
+    `o.innerHTML='<div class="exbox" style="margin-top:12px"><div class="res"><span>나에게 잘 맞는 일</span><b>3가지</b></div>'+L.map(function(x,k){return '<div style="margin-top:12px"><b style="font-size:16px">'+(k+1)+'. '+x[0]+'</b><p style="margin:4px 0 0">예: '+x[1]+'</p><p style="margin:6px 0 0;color:var(--muted)">'+x[2]+'</p></div>'}).join("")+'</div>'+` +
+    `'<p class="sjw-note">십성 다섯 갈래 개수(일간 빼고 '+(p.h?'일곱':'다섯')+' 글자): 비겁 '+c.비+'개 · 식상 '+c.식+'개 · 재성 '+c.재+'개 · 관성 '+c.관+'개 · 인성 '+c.인+'개입니다. 직업궁은 월주 '+SJ_S[p.m.s]+SJ_B[p.m.b]+', 월지 대표 기운의 십성은 '+mt+'입니다. 10년마다 바뀌는 직업운은 <a href="saju.html?q=job">사주 직업운 풀이</a>에서 볼 수 있습니다.</p>'+shareBtn();` +
+    `var top=L.map(function(x){return x[0]});bindSave(o,{file:"사주직업적성",tool:"사주 직업 적성",headline:"나에게 잘 맞는 일 세 가지",body:top.map(function(x,k){return (k+1)+". "+x}).join("  ")});` +
+    `bindShare(o,"사주 직업 적성","내 사주에 잘 맞는 일: "+top.join(", "));try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"saju-job"}))}catch(e){}}` +
+    `document.getElementById("jbgo").onclick=go;[i,hh].forEach(function(x){x.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})});</script>`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  const grpBox = Object.values(JOB.GRP).map(g => `<div class="exbox" style="margin-top:8px"><b>${g.name}</b> <span style="color:var(--muted);font-size:13px">${g.plain} · <a href="${g.link[0]}">${g.link[1]}</a>·<a href="${g.link[2]}">${g.link[3]}</a></span><p style="margin:6px 0 0">${g.doc}</p><p style="margin:4px 0 0">예: ${g.jobs}</p></div>`).join("");
+  const elTbl = `<div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">기운</th><th scope="col">어울리는 분야</th></tr></thead><tbody>${JOB.EL.map(e => `<tr><td><a href="${e.page}">${e.ko} ${e.han}</a></td><td><b>${e.name}</b><br>${e.jobs}</td></tr>`).join("")}</tbody></table></div>`;
+  return seoPage({
+    crumb: "사주 직업 적성", date: "2026-10-28",
+    title: "사주 직업 적성 무료, 생년월일로 보는 나에게 맞는 직업 추천과 직업운 보는 법 | 동네보살",
+    desc: "생년월일만 넣으면 오행과 십성으로 나에게 잘 맞는 일 세 가지를 쉬운 말로 알려 드립니다. 사주로 직업 보는 법, 직업궁(태어난 달), 십성 다섯 갈래와 오행별 어울리는 직업까지 정리했습니다.",
+    url: `${DOMAIN}/saju-job.html`, img: "img/bosal/scroll.webp", hero: "img/tool/h-saju.webp",
+    h1: "사주 직업 적성", sub: "생년월일만 넣으면 오행·십성으로 잘 맞는 일 세 가지가 바로 나옵니다",
+    parent: "saju.html", parentName: "사주팔자", tool: "saju", noTool: true,
+    tags: ["사주 직업 적성", "사주 직업운", "사주 직업 추천", "직업궁", "사주 직업 보는 법", "십성 직업"],
+    body: `<div class="sjw" id="jbw"><h2>내 사주에 맞는 일 찾기</h2><label for="jbd">생년월일 (양력)</label><div class="sjw-row"><input id="jbd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="jbgo">적성 보기</button></div>` +
+      `<label for="jbh" style="margin-top:8px">태어난 시 (0~23시, 모르면 비워 두세요)</label><input id="jbh" type="text" inputmode="numeric" maxlength="2" placeholder="예) 14" autocomplete="off" style="max-width:10em"><p class="sjw-note">생년월일은 이 화면에서만 계산하고 서버로 보내지 않습니다. 시를 모르면 연·월·일 세 기둥만 봅니다.</p><div id="jbo" aria-live="polite"></div></div>` + js +
+      sec("사주로 직업 보는 법", para(`사주로 직업을 볼 때는 세 가지를 차례로 봅니다. 먼저 사주 여덟 글자가 나를 기준으로 어떤 역할을 하는지(십성) 세어, 어떤 방식으로 일할 때 힘이 나는지 봅니다. 다음으로 태어난 달의 기둥(직업궁)을 보고 사회에 나가 일하는 무대의 바탕을 읽습니다. 마지막으로 내 사주에 힘을 보태 주는 오행을 찾아, 그 기운이 도는 분야를 고릅니다.\n위 계산 칸은 이 세 가지를 그대로 따라 잘 맞는 일 세 가지를 보여 드립니다. 첫째는 사주에 가장 많은 십성 갈래, 둘째는 직업궁의 십성(첫째와 같으면 다음으로 많은 갈래), 셋째는 힘을 보태 주는 오행의 분야입니다.`)) +
+      sec("십성 다섯 갈래와 어울리는 일", `<p style="margin-bottom:10px">십성은 열 가지지만 둘씩 묶으면 다섯 갈래가 됩니다. 사주에 어느 갈래가 많은지가 일하는 방식, 곧 직업 적성의 큰 줄기입니다.</p>${grpBox}`) +
+      sec("오행 다섯 기운과 어울리는 분야", `<p style="margin-bottom:10px">오행은 일의 분야를 고를 때 씁니다. 내 사주에 힘을 보태 주는 기운이 도는 분야에서 일하면 마음이 편하고 오래 가기 쉽다고 봅니다.</p>${elTbl}`) +
+      sec("직업궁은 태어난 달", para(`직업궁은 태어난 달의 기둥(월주)을 말합니다. 부모 곁을 떠나 사회에 나가 일하는 자리로 보고, 그 아래 글자(월지)에 담긴 대표 기운이 나에게 어떤 십성인지로 일의 바탕을 읽습니다.\n예를 들어 월지가 정관이면 조직 안에서 책임을 맡는 일, 식신이면 만들고 보여 주는 일, 편재면 사고팔고 굴리는 일이 바탕이 됩니다. 직업궁은 사주 전체에서 한 자리일 뿐이라, 많은 갈래와 함께 보아야 흐름이 또렷해집니다.`)) +
+      sec("직업운이 열리는 때", para(`적성이 방향이라면 직업운은 때입니다. 10년마다 바뀌는 큰 흐름(대운)과 해마다 오는 기운(세운)에 관성·재성이나 내 사주에 힘을 보태 주는 기운이 들어오면 자리 이동, 승진, 새 일 제안이 잦다고 봅니다.\n내 10년 흐름과 올해 직업운은 <a href="saju.html?q=job">사주 직업운 풀이</a>에서, 사람을 만나는 일과 잘 맞는 매력의 기운은 <a href="sinsal-dohwa.html">도화살 테스트</a>에서 볼 수 있습니다.`)) +
+      sec("결과를 읽을 때 기억할 것", para(`사주로 본 적성은 정답이 아니라 힘을 편하게 쓰는 방향입니다. 같은 갈래 안에도 직업은 수백 가지가 있으니, 추천에 나온 이름보다 '왜 이 일이 맞는지'를 읽고 내 관심과 경험에 비추어 보세요.\n세 가지가 서로 달라 보여도 괜찮습니다. 예를 들어 만들고 보여 주는 일과 맡은 자리를 책임지는 일이 함께 나오면, 조직 안에서 기획이나 교육을 맡는 식으로 둘을 묶어 쓸 수 있습니다.`)) +
+      sec("함께 보기", `<div class="sibs"><a href="saju.html">무료 사주풀이</a><a href="saju.html?q=job">사주 직업운</a><a href="sinsal-dohwa.html">도화살 테스트</a><a href="learn-day-master.html">일간 보는 법</a><a href="ohaeng-mok.html">오행 나무</a><a href="sipseong-jeonggwan.html">정관 뜻</a><a href="celeb.html">닮은 연예인 찾기</a></div>`),
+    faq: [["사주로 직업을 정할 수 있나요?", "사주는 힘을 편하게 쓰는 방향을 알려 줄 뿐 직업을 정하지는 않습니다. 추천에 나온 이유를 내 관심과 경험에 비추어 고르는 데 쓰세요."],
+      ["직업궁은 무엇인가요?", "태어난 달의 기둥(월주)을 직업궁이라고 합니다. 사회에 나가 일하는 자리로 보고, 월지 대표 기운의 십성으로 일의 바탕을 읽습니다."],
+      ["태어난 시를 모르면 결과가 달라지나요?", "시를 넣으면 시주 두 글자가 더해져 십성 개수가 바뀔 수 있습니다. 모르면 연·월·일 여섯 글자로 보고, 이때도 직업궁(태어난 달)은 그대로 봅니다."],
+      ["직업운이 좋은 해는 어떻게 보나요?", "대운과 해마다 오는 기운에 관성·재성이나 내 사주에 힘을 보태 주는 기운이 들어오는 때를 봅니다. 사주 직업운 풀이에서 10년 흐름과 올해를 함께 볼 수 있습니다."],
+      ["사주 직업 적성 보기는 무료인가요?", "네, 무료이고 가입도 없습니다. 생년월일은 화면에서만 계산하고 서버로 보내지 않습니다."]],
+    sibTitle: "사주 함께 보기", sibs: `<div class="sibs"><a href="saju.html">무료 사주풀이</a><a href="dict.html">60일주 사전</a><a href="sinsal.html">신살 모음</a><a href="celeb.html">닮은 연예인 찾기</a><a href="gunghap.html">궁합</a></div>`,
+    related: ["saju", "gunghap", "newyear", "todayfortune"] });
 }
 
 // ── 주역 64괘(juyeok.html, 2026-10-09) — 원고 content_juyeok.js(위키백과 King Wen 표, 한국식 이름 대조). 점은 화면에서 여섯 효를 뽑는다(서버로 보내지 않음)
@@ -4130,7 +4181,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   OHAENG_PAGES.map(o=>smUrl("ohaeng-"+o.en+".html")).join("\n")+"\n"+
@@ -4239,6 +4290,7 @@ ${ILJU_PAGES.filter(p=>p.b===0||p.k<10).map(p=>`- [${p.ko}일주(${p.han})](${DO
 ## 무료 만세력
 
 - [무료 만세력](${DOMAIN}/manse.html): 생년월일시를 넣으면 사주 여덟 글자·오행·대운을 계산한다. 연주는 입춘, 월주는 절입 순간, 일주는 자정, 시주는 12시진(자시 23:30~01:29) 기준. 절기는 태양 황경(입춘 315°, 경칩 345° …)으로 분 단위 계산.
+- [사주 직업 적성](${DOMAIN}/saju-job.html): 생년월일로 십성 갈래 개수(가장 많은 갈래)·직업궁(월지 본기 십성)·필요한 기운(억부 용신 오행)을 보고 잘 맞는 일 세 가지.
 - [닮은 연예인 찾기 — 사주로](${DOMAIN}/celeb.html): 생년월일로 위키데이터 한국 유명인(배우·가수·운동선수 등, 정치·공직 제외) 가운데 사주가 닮은 5명. 점수 = 같은 일간 30(같은 오행 15)·일주 20·계절 20·오행 구성 30, 연·월·일 세 기둥.
 - [주역 64괘](${DOMAIN}/juyeok.html): 64괘 이름(중천건·중지곤·수뢰둔…), 위아래 괘, 괘마다 큰 뜻 한 줄(문왕 차례, 위키백과 표 기준), 여섯 효를 뽑는 주역 점.
 - [잘 때 머리 방향·침대 방향](${DOMAIN}/bed-direction.html): 팔택풍수 본명괘(태어난 해 네 자리 합 → 남 11-n·여 n+4, 5는 남2·여8, 입춘 경계)로 천의·복위·생기·연년 방향 계산, 침대 위치·현관 거울 풍수, 북쪽 머리 풍습.
@@ -4654,6 +4706,7 @@ fs.writeFileSync(path.join(OUT,"bujeok.html"), bujeokPage());
 fs.writeFileSync(path.join(OUT,"bed-direction.html"), bedDirPage());
 fs.writeFileSync(path.join(OUT,"juyeok.html"), juyeokPage());
 fs.writeFileSync(path.join(OUT,"celeb.html"), celebPage());
+fs.writeFileSync(path.join(OUT,"saju-job.html"), sajuJobPage());
 fs.writeFileSync(path.join(OUT,"mbti.html"), mbtiPage());
 fs.writeFileSync(path.join(OUT,"sinsal.html"), sinsalHubPage());
 fs.writeFileSync(path.join(OUT,"sinsal-12.html"), sinsal12Page());
@@ -4830,6 +4883,7 @@ const rssRows = [
   [DOMAIN + "/sinsal.html", "신살 뜻 모음 — 도화살·화개살·역마살·천을귀인", "사주 신살 뜻과 찾는 법을 한곳에. 생년월일로 내 신살 8가지를 바로 확인합니다."],
   ...SINSAL.PAGES.map(p => [`${DOMAIN}/sinsal-${p.en}.html`, p.title, p.desc]),
   [DOMAIN + "/mbti.html", "MBTI 궁합 — 16유형 궁합표·유형별 잘 맞는 MBTI", "두 사람의 MBTI를 고르면 궁합 점수와 잘 통하는 점, 맞춰 가면 좋은 점을 네 글자씩 풀어 드립니다. 16×16 MBTI 궁합표도 함께."],
+  [DOMAIN + "/saju-job.html", "사주 직업 적성, 생년월일로 보는 나에게 맞는 일 세 가지", "오행과 십성, 직업궁(태어난 달)으로 잘 맞는 일 세 가지를 쉬운 말로 알려 드립니다."],
   [DOMAIN + "/celeb.html", "닮은 연예인 찾기 — 사주로 보는 나와 닮은 유명인", "생년월일만 넣으면 배우·가수·운동선수 가운데 사주가 가장 닮은 유명인 5명을 찾아 드립니다."],
   [DOMAIN + "/juyeok.html", "주역 64괘 — 괘 이름과 뜻, 주역 점", "64괘 이름과 위아래 괘, 괘마다의 큰 뜻을 쉬운 말로. 여섯 효를 뽑아 오늘의 괘를 받아 보세요."],
   [DOMAIN + "/bed-direction.html", "잘 때 머리 방향·침대 방향 — 본명괘 계산기", "생년월일로 본명괘를 계산해 건강·숙면에 좋은 머리 방향을 알려 드립니다. 침대 위치와 현관 거울 풍수까지."],
