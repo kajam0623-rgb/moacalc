@@ -2892,7 +2892,7 @@ function ohaengPage(o){
       sec(`${K} 부족한 사주 특징`, o.lack, "lack")+
       sec(`${K} 부족한 사주 보완법 — 색깔·숫자·방위·개운법`, o.fix, "fix")+
       `<section class="guide" id="goods"><h2>${o.ko} 기운을 채우는 물건</h2>` + GOODS_CSS + `<p style="margin:0 0 6px">${esc(o.goods)}</p>` + goodsLinks(o.ko) + GOODS_NOTE + `</section>`+
-      sec(`${K} 부족한 사주 여자`, o.female, "female")+
+      sec(`${K} 부족한 사주 여자`, o.female, "female").replace(/<\/div><\/section>$/, `<p style="margin:0"><a href="ohaeng-${o.en}-woman.html">${o.manyWord} 많은 사주 여자 — 성격·연애·결혼·직업 →</a></p></div></section>`)+
       sec(`${o.ko} 기운을 채우는 이름 소리`, o.nameSound, "name")+
       sec(`${o.ko} 기운과 잘 맞는 직업`, o.job, "job")+
       `<section class="guide" id="many" style="display:flow-root"><h2>${o.manyWord} 많은 사주 — 특징과 다스리는 법</h2><figure class="iljufig"><img src="img/char/el-saeng-${si}.webp" alt="${esc(o.motherName)}${josa(o.motherName,"이/가")} ${esc(o.name)}${josa(o.name,"을/를")} 낳는 오행 상생 그림 | 동네보살" width="520" height="520" loading="lazy" decoding="async"><figcaption>${o.mother}${josa(o.mother,"이/가")} ${o.ko}${josa(o.ko,"을/를")} 낳는 흐름 — ${o.ko}${o.josa} 비면 ${o.mother}부터 함께 채워요</figcaption></figure><div class="intro" style="margin-top:0">${para(o.many)}</div></section>`+
@@ -2902,6 +2902,40 @@ function ohaengPage(o){
     ]),
     sibTitle:"다른 오행도 보기", sibs:ohaengChips(o.en),
     related:["saju","todayfortune","newyear","gunghap"]});
+}
+
+/* "○○가 많은 사주 여자" 6쪽(2026-10-27 시험판) — 네이버 자동완성 '사주 여자'·'많은 사주 여자' 묶음. 원고 content_saju_women.js */
+const WOMAN_PAGES = require("./content_saju_women.js");
+const womanUrl = w => w.oh ? `ohaeng-${w.oh}-woman.html` : `${w.key}-saju-woman.html`;
+const womanChips = cur => '<div class="sibs">' + WOMAN_PAGES.map(w => w.key === cur
+  ? `<span class="cur">${w.kw}</span>` : `<a href="${womanUrl(w)}">${w.kw}</a>`).join("") + '</div>';
+function womanPage(w){
+  const o = w.oh && OHAENG_PAGES.find(x => x.en === w.oh);
+  const sec = (h, t, id) => `<section class="guide" id="${id}"><h2>${h}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`;
+  const img = o ? `img/char/el-${OH_IMG[o.en][0]}-f.webp` : "img/tool/h-saju.webp";
+  return seoPage({
+    crumb: w.kw,
+    title:`${w.kw} — 성격·연애·결혼·직업·개운법 | 동네보살`,
+    desc:`${w.kw}는 어떤 사람일까요? ${w.tag.split(" — ")[1]}. 첫인상과 성격, 연애할 때, 결혼과 가정, 잘 맞는 직업, 개운법까지 쉽게 풀었어요.`,
+    url:`${DOMAIN}/${womanUrl(w)}`, img, hero:"img/tool/h-saju.webp",
+    h1: w.kw,
+    sub: w.tag,
+    parent: o ? `ohaeng-${o.en}.html` : "saju.html", parentName: o ? `${o.manyWord} 많은 사주` : "사주팔자 만세력",
+    tool:"saju",
+    tags:[w.kw, `${w.kw} 성격`, `${w.kw} 연애`, `${w.kw} 결혼`, `${w.kw} 직업`, `${w.kw} 개운법`],
+    body:`<div class="exbox"><h2>${w.short} 한눈에 보기</h2>`+
+      w.sum.map(r=>`<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("")+`</div>`+
+      `<p class="sibs" style="margin:12px 0"><a href="#first">첫인상과 성격</a><a href="#love">연애</a><a href="#marry">결혼과 가정</a><a href="#job">직업</a><a href="#luck">개운법</a></p>`+
+      sec(`${w.kw} 첫인상과 성격`, w.first, "first")+
+      sec(`${w.kw} 연애할 때`, w.love, "love")+
+      sec(`${w.kw} 결혼과 가정`, w.marry, "marry")+
+      sec(`${w.kw} 직업 — 잘 맞는 일`, w.job, "job")+
+      sec(`${w.kw} 개운법`, w.luck, "luck")+
+      (o ? `<section class="guide"><h2>${o.ko}(${o.han}) 기운을 더 알고 싶다면</h2><p style="margin:0">색·숫자·방위·물건으로 채우는 법과 ${o.ko}${o.josa} 부족할 때의 풀이는 <a href="ohaeng-${o.en}.html">${o.ko}${o.josa} 부족한 사주 · ${o.manyWord} 많은 사주</a>에 정리했어요.</p></section>` : "")+
+      `<section class="guide"><h2>내 사주로 확인하려면</h2><p style="margin:0 0 8px">${o ? `${o.ko}${o.josa} 정말 많은지는 여덟 글자의 오행 개수로 봐요.` : `재성이 정말 없는지는 여덟 글자의 십성으로 봐요.`} 사주팔자 만세력에 생년월일과 태어난 시간을 넣으면 바로 나와요. 같은 짜임이라도 일간과 힘의 균형에 따라 드러나는 모습이 달라요.</p><p style="margin:0"><a class="btn" href="saju.html">내 사주 바로 보기 →</a></p></section>`,
+    faq: w.faq,
+    sibTitle:"다른 여자 사주도 보기", sibs:womanChips(w.key),
+    related:["saju","gunghap","love","newyear"]});
 }
 
 /* 타로 카드 뜻 — "연인 카드 역방향", "죽음 카드 뜻" 같은 검색어를 받는다.
@@ -4083,6 +4117,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   OHAENG_PAGES.map(o=>smUrl("ohaeng-"+o.en+".html")).join("\n")+"\n"+
+  WOMAN_PAGES.map(w=>smUrl(womanUrl(w))).join("\n")+"\n"+
   TAROT_PAGES.map(c=>smUrl("tarot-"+c.en+".html")).join("\n")+"\n"+
   CONCEPT_PAGES.map(c=>smUrl("concept-"+c.en+".html")).join("\n")+"\n"+
   smUrl("learn.html")+"\n"+LEARN.LECTURES.filter(c=>c.en).map(c=>smUrl(c.page)).join("\n")+"\n"+
@@ -4618,6 +4653,7 @@ TTI.PAIR_LIST.forEach(p=>fs.writeFileSync(path.join(OUT,ttiPairUrl(p.a,p.b)), tt
 ILGAN_PAGES.forEach(g=>fs.writeFileSync(path.join(OUT,"ilgan-"+g.en+".html"), ilganPage(g)));
 SIPSEONG_PAGES.forEach(s=>fs.writeFileSync(path.join(OUT,"sipseong-"+s.en+".html"), sipseongPage(s)));
 OHAENG_PAGES.forEach(o=>fs.writeFileSync(path.join(OUT,"ohaeng-"+o.en+".html"), ohaengPage(o)));
+WOMAN_PAGES.forEach(w=>fs.writeFileSync(path.join(OUT,womanUrl(w)), womanPage(w)));
 TAROT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"tarot-"+c.en+".html"), tarotPage(c)));
 CONCEPT_PAGES.forEach(c=>fs.writeFileSync(path.join(OUT,"concept-"+c.en+".html"), conceptPage(c)));
 fs.writeFileSync(path.join(OUT,"learn.html"), learnHubPage());

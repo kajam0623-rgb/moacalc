@@ -4448,24 +4448,24 @@
   "d": "2026-10-24"
  },
  "ohaeng-mok.html": {
-  "h": "ffcc0b2a",
-  "d": "2026-10-24"
+  "h": "9909e0ae",
+  "d": "2026-10-27"
  },
  "ohaeng-hwa.html": {
-  "h": "52ae9a90",
-  "d": "2026-10-24"
+  "h": "a0379966",
+  "d": "2026-10-27"
  },
  "ohaeng-to.html": {
-  "h": "4ee247c0",
-  "d": "2026-10-24"
+  "h": "88b74bd2",
+  "d": "2026-10-27"
  },
  "ohaeng-geum.html": {
-  "h": "2058450e",
-  "d": "2026-10-24"
+  "h": "933d258f",
+  "d": "2026-10-27"
  },
  "ohaeng-su.html": {
-  "h": "2af1f3fa",
-  "d": "2026-10-24"
+  "h": "0439e3a9",
+  "d": "2026-10-27"
  },
  "column-ilju-chatgi.html": {
   "h": "c333f274",
@@ -4482,5 +4482,29 @@
  "column-singang-sinyak.html": {
   "h": "098b8e51",
   "d": "2026-10-25"
+ },
+ "ohaeng-mok-woman.html": {
+  "h": "e32afa28",
+  "d": "2026-10-27"
+ },
+ "ohaeng-hwa-woman.html": {
+  "h": "2a2accc4",
+  "d": "2026-10-27"
+ },
+ "ohaeng-to-woman.html": {
+  "h": "80e5928b",
+  "d": "2026-10-27"
+ },
+ "ohaeng-geum-woman.html": {
+  "h": "89dcddc4",
+  "d": "2026-10-27"
+ },
+ "ohaeng-su-woman.html": {
+  "h": "9c458a65",
+  "d": "2026-10-27"
+ },
+ "mujae-saju-woman.html": {
+  "h": "6b46d207",
+  "d": "2026-10-27"
  }
 }
