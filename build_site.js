@@ -2404,6 +2404,22 @@ const sinWidget = p => `<div class="sjw" id="snw"><h2>내 사주에 ${p.ko}${jos
   `var tg=pil?'':'<p class="sjw-note">이 사주에서 '+NM+' 글자: '+ts.map(function(s){return SJ_S[s]}).concat(tb.map(function(b){return SJ_B[b]})).filter(function(x,j,a){return a.indexOf(x)===j}).join("·")+'</p>';` +
   `o.innerHTML='<div class="exbox" style="margin-top:12px"><div class="res"><span>'+NM+'</span><b>'+(has?'있습니다 (★ 표시한 기둥)':'이 사주에는 없습니다')+'</b></div>'+rows+'</div>'+tg;try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"sinsal-"+EN}))}catch(e){}}` +
   `document.getElementById("sngo").onclick=go;i.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})();</script>`;
+// 도화살 테스트(작업판 89, 2026-10-28) — 판정은 엔진 sjSinsal, 자리는 같은 표 SJ_DOHWA(연지·일지 삼합)로 네 기둥 지지를 대 본다. 새 계산 없음
+const dohwaTest = () => `<div class="sjw" id="dhw"><h2>도화살 테스트</h2><label for="dhd">생년월일 (양력)</label><div class="sjw-row"><input id="dhd" type="text" inputmode="numeric" maxlength="8" placeholder="예) 19900315" autocomplete="off"><button type="button" id="dhgo">테스트하기</button></div>` +
+  `<label for="dhh" style="margin-top:8px">태어난 시 (0~23시, 모르면 비워 두세요)</label><input id="dhh" type="text" inputmode="numeric" maxlength="2" placeholder="예) 14" autocomplete="off" style="max-width:10em"><p class="sjw-note">생년월일은 이 화면에서만 계산하고 서버로 보내지 않습니다. 시를 모르면 연·월·일 세 기둥만 봅니다.</p><div id="dho" aria-live="polite"></div></div>` +
+  `<script>(function(){var i=document.getElementById("dhd"),hh=document.getElementById("dhh"),o=document.getElementById("dho"),` +
+  `SEAT=["바깥 모임과 사회생활에서 눈에 띄는 인기예요. 처음 만난 사람도 금방 호감을 보여요.","일터와 모임에서 호감을 얻는 힘이에요. 사람을 만나는 일에서 특히 빛나요.","가까운 사이에서 매력이 커요. 연인·배우자와의 관계에서 끌림이 강한 편이에요.","나이가 들수록 주변에 사람이 모여요. 후배·아랫사람과도 잘 통해요."];` +
+  `function go(){if(typeof sjPillars!=="function"||typeof sjSinsal!=="function"){o.innerHTML='<p class="sjw-note">계산기를 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.</p>';return}var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 여덟 자리로 넣어 주세요.</p>';return}` +
+  `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").replace(/\\D/g,""),dt=new Date(y,m-1,d);if(!(y>=1900&&y<=2100&&dt.getMonth()===m-1&&dt.getDate()===d)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}h=h===""?null:Math.min(23,+h);` +
+  `var p=sjPillars(y,m,d,h,30,true),has=sjSinsal(p).indexOf("도화살")>=0,L=[SJ_DOHWA[sjSamhap(p.y.b)],SJ_DOHWA[sjSamhap(p.d.b)]],hit=[],` +
+  `cols=[["연주","태어난 해",p.y],["월주","태어난 달",p.m],["일주","태어난 날",p.d]].concat(p.h?[["시주","태어난 시",p.h]]:[]);` +
+  `var rows=cols.map(function(c,k){var on=L.indexOf(c[2].b)>=0;if(on)hit.push(k);return '<div class="row"><span>'+c[0]+' · '+c[1]+'</span><b>'+SJ_S[c[2].s]+SJ_B[c[2].b]+(on?' ★ 도화':'')+'</b></div>'}).join("");` +
+  `var lt=L[0]===L[1]?SJ_B[L[0]]:'띠(연지) 기준 '+SJ_B[L[0]]+', 태어난 날(일지) 기준 '+SJ_B[L[1]],` +
+  `say=has?hit.map(function(k){return '<p style="margin-bottom:10px"><b>'+cols[k][0]+'에 있는 도화</b> · '+SEAT[k]+'</p>'}).join("")+'<p style="margin-bottom:10px">도화는 사람을 끄는 매력과 인기의 기운이에요. 첫인상과 말투로 사람을 얻는 힘이라, 사람을 만나는 일과 이어 주면 큰 강점이 돼요.</p>'` +
+  `:'<p style="margin-bottom:10px">도화가 없다고 매력이 없다는 뜻은 아니에요. 첫눈에 끌리는 쪽보다 오래 볼수록 믿음이 가는 쪽으로 사람을 얻는 편이라고 봐요. 매력을 보는 또 다른 신살인 <a href="sinsal-hongyeom.html">홍염살</a>과 사주 전체도 함께 보세요.</p>'+(p.h?'':'<p style="margin-bottom:10px">태어난 시를 넣으면 시주까지 넣어 다시 봐요.</p>');` +
+  `o.innerHTML='<div class="exbox" style="margin-top:12px"><div class="res"><span>도화살</span><b>'+(has?'있어요':'없어요')+'</b></div>'+rows+'</div><div class="intro" style="margin-top:10px">'+say+'</div>'+` +
+  `'<p class="sjw-note">이 사주의 도화 글자는 '+lt+'입니다. 이 글자가 네 기둥의 지지 가운데 있으면 도화살이 있다고 봅니다. 사주 전체는 <a href="saju.html">무료 사주풀이</a>에서 볼 수 있습니다.</p>';try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"sinsal-dohwa"}))}catch(e){}}` +
+  `document.getElementById("dhgo").onclick=go;[i,hh].forEach(function(x){x.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})})();</script>`;
 const sinsalHref = en => SINSAL.PAGES.some(p => p.en === en) ? `sinsal-${en}.html` : `sinsal.html#${en}`;
 const sinsalName = en => (SINSAL.PAGES.find(p => p.en === en) || SINSAL.EXTRA.find(p => p.en === en)).ko;
 const SINSAL_SIBS = `<div class="sibs"><a href="sinsal.html">신살 모음</a><a href="sinsal-12.html">12신살 표</a>${SINSAL.PAGES.map(p => `<a href="sinsal-${p.en}.html">${p.ko}</a>`).join("")}</div>`;
@@ -2416,10 +2432,10 @@ function sinsalPage(p) {
     crumb: p.ko, date: "2026-10-09",
     title: p.title + " | 동네보살", desc: p.desc,
     url: `${DOMAIN}/sinsal-${p.en}.html`, img: SINSAL_IMG(p.en), hero: SINSAL_IMG(p.en),
-    h1: `${p.ko} 뜻과 찾는 법`, sub: p.more ? `${p.han} · 아래 계산 칸에 생년월일을 넣으면 내 사주에 ${p.ko}${josa(p.ko, "이/가")} 있는지, 어느 기둥인지 바로 나옵니다` : `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
-    parent: "sinsal.html", parentName: "신살 모음", tool: "saju",
-    tags: [p.kw, `${p.kw} 뜻`, `${p.kw} 있는 사람`, `${p.kw} 찾는 법`, "신살", "사주 신살"],
-    body: (p.more ? sinWidget(p) : "") + `<div class="intro">${para(p.lead)}</div>` +
+    h1: p.test ? `${p.ko} 테스트와 뜻` : `${p.ko} 뜻과 찾는 법`, sub: p.test ? `${p.han} · 생년월일만 넣으면 내 사주에 ${p.ko}이 있는지, 연·월·일·시 어느 자리인지 바로 나옵니다` : p.more ? `${p.han} · 아래 계산 칸에 생년월일을 넣으면 내 사주에 ${p.ko}${josa(p.ko, "이/가")} 있는지, 어느 기둥인지 바로 나옵니다` : `${p.han} · 위 칸에 생년월일을 넣으면 내 사주에 ${p.ko}이 있는지 바로 나옵니다`,
+    parent: "sinsal.html", parentName: "신살 모음", tool: "saju", noTool: !!p.test,
+    tags: [...(p.test ? [`${p.kw} 테스트`, `${p.kw} 테스트 무료`, `${p.kw} 사주`] : []), p.kw, `${p.kw} 뜻`, `${p.kw} 있는 사람`, `${p.kw} 찾는 법`, "신살", "사주 신살"],
+    body: (p.more ? sinWidget(p) : p.test ? dohwaTest() : "") + `<div class="intro">${para(p.lead)}</div>` +
       sec(`${p.ko} 찾는 법`, `<p style="margin-bottom:10px">${p.rule}</p>${tbl}`) +
       sec(`${p.ko} 있는 사람의 특징`, para(p.mean)) +
       (SINSAL_GENDER[p.en] ? sec(`${p.ko} 여자와 남자`, `<h3 style="font-size:15px;margin:4px 0 6px">${p.ko} 여자</h3><p style="margin-bottom:10px">${SINSAL_GENDER[p.en].woman}</p><h3 style="font-size:15px;margin:14px 0 6px">${p.ko} 남자</h3><p style="margin-bottom:10px">${SINSAL_GENDER[p.en].man}</p>`) : "") +
