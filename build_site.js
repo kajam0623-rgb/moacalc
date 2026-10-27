@@ -2410,7 +2410,8 @@ const dohwaTest = () => `<div class="sjw" id="dhw"><h2>도화살 테스트</h2><
   `<script>(function(){var i=document.getElementById("dhd"),hh=document.getElementById("dhh"),o=document.getElementById("dho"),` +
   `SEAT=["바깥 모임과 사회생활에서 눈에 띄는 인기예요. 처음 만난 사람도 금방 호감을 보여요.","일터와 모임에서 호감을 얻는 힘이에요. 사람을 만나는 일에서 특히 빛나요.","가까운 사이에서 매력이 커요. 연인·배우자와의 관계에서 끌림이 강한 편이에요.","나이가 들수록 주변에 사람이 모여요. 후배·아랫사람과도 잘 통해요."];` +
   `function go(){if(typeof sjPillars!=="function"||typeof sjSinsal!=="function"){o.innerHTML='<p class="sjw-note">계산기를 불러오는 중입니다. 잠시 뒤 다시 눌러 주세요.</p>';return}var v=(i.value||"").replace(/\\D/g,"");if(v.length!==8){o.innerHTML='<p class="sjw-note">생년월일을 19900315 처럼 여덟 자리로 넣어 주세요.</p>';return}` +
-  `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").replace(/\\D/g,""),dt=new Date(y,m-1,d);if(!(y>=1900&&y<=2100&&dt.getMonth()===m-1&&dt.getDate()===d)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}h=h===""?null:Math.min(23,+h);` +
+  `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").trim(),dt=new Date(y,m-1,d);if(!(y>=1900&&y<=2100&&dt.getMonth()===m-1&&dt.getDate()===d)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}` +
+  `if(h!==""&&!(/^\\d{1,2}$/.test(h)&&+h<=23)){o.innerHTML='<p class="sjw-note">태어난 시는 0부터 23 사이 숫자로 넣어 주세요. 모르면 비워 두세요.</p>';return}h=h===""?null:+h;` +
   `var p=sjPillars(y,m,d,h,30,true),has=sjSinsal(p).indexOf("도화살")>=0,L=[SJ_DOHWA[sjSamhap(p.y.b)],SJ_DOHWA[sjSamhap(p.d.b)]],hit=[],` +
   `cols=[["연주","태어난 해",p.y],["월주","태어난 달",p.m],["일주","태어난 날",p.d]].concat(p.h?[["시주","태어난 시",p.h]]:[]);` +
   `var rows=cols.map(function(c,k){var on=L.indexOf(c[2].b)>=0;if(on)hit.push(k);return '<div class="row"><span>'+c[0]+' · '+c[1]+'</span><b>'+SJ_S[c[2].s]+SJ_B[c[2].b]+(on?' ★ 도화':'')+'</b></div>'}).join("");` +
