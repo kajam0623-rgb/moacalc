@@ -2099,13 +2099,13 @@ function sajuJobPage() {
     `var y=+v.slice(0,4),m=+v.slice(4,6),d=+v.slice(6,8),h=(hh.value||"").trim(),dt=new Date(y,m-1,d);if(!(y>=1900&&y<=2100&&dt.getMonth()===m-1&&dt.getDate()===d)){o.innerHTML='<p class="sjw-note">날짜를 다시 확인해 주세요.</p>';return}` +
     `if(h!==""&&!(/^\\d{1,2}$/.test(h)&&+h<=23)){o.innerHTML='<p class="sjw-note">태어난 시는 0부터 23 사이 숫자로 넣어 주세요. 모르면 비워 두세요.</p>';return}h=h===""?null:+h;` +
     `var p=sjPillars(y,m,d,h,30,true),c=ghTg(p),ks=ORD.slice().sort(function(a,b){return c[b]-c[a]||ORD.indexOf(a)-ORD.indexOf(b)}),` +
-    `mt=sjTenGod(p.d.s,SJ_BMAIN[p.m.b]),mg=GH_GRP[mt],g1=ks[0],g2=mg!==g1?mg:ks[1],ye=sjStrength(p).yong,` +
+    `mt=sjTenGod(p.d.s,SJ_BMAIN[p.m.b]),mg=GH_GRP[mt],g1=ks[0],ye=sjStrength(p).yong,yg=["비","식","재","관","인"][(ye-SJ_ES[p.d.s]+5)%5],g2=mg!==g1?mg:c[ks[1]]?ks[1]:yg!==g1?yg:ks[1],` +
     `r1='내 사주 글자 가운데 '+G[g1].p+'('+G[g1].s+') 기운이 '+c[g1]+'개로 가장 많은 편이에요. ',` +
-    `r2=g2===mg?'일하는 자리로 보는 태어난 달(직업궁)에 '+mt+' 기운이 앉아 있어요. ':(c[g2]?'다음으로 많은 기운이 '+G[g2].p+'('+G[g2].s+'), '+c[g2]+'개예요. ':'글자로는 드러나지 않았지만 새로 익히면 균형이 잡히는 쪽이에요. '),` +
+    `r2=g2===mg?'일하는 자리로 보는 태어난 달(직업궁)에 '+mt+' 기운이 앉아 있어요. ':c[g2]?'다음으로 많은 기운이 '+G[g2].p+'('+G[g2].s+'), '+c[g2]+'개예요. ':g2===yg?'사주 글자로는 드러나지 않았지만, 내 사주에 힘을 보태 주는 기운과 이어지는 갈래예요. 처음엔 낯설어도 천천히 익혀 두면 균형을 잡아 주는 쪽이에요.':'사주 글자로는 드러나지 않은 갈래예요. 관심이 있다면 천천히 익혀 볼 만한 쪽이에요.',w2=g2===mg||c[g2]?G[g2].w:'',` +
     `r3='내 사주에 힘을 보태 주는 기운은 '+E[ye].k+' 기운이에요. ',` +
-    `L=[[G[g1].n,G[g1].j,r1+G[g1].w],[G[g2].n,G[g2].j,r2+G[g2].w],[E[ye].n,E[ye].j,r3+E[ye].w]];` +
+    `L=[[G[g1].n,G[g1].j,r1+G[g1].w],[G[g2].n,G[g2].j,r2+w2],[E[ye].n,E[ye].j,r3+E[ye].w]];` +
     `o.innerHTML='<div class="exbox" style="margin-top:12px"><div class="res"><span>나에게 잘 맞는 일</span><b>3가지</b></div>'+L.map(function(x,k){return '<div style="margin-top:12px"><b style="font-size:16px">'+(k+1)+'. '+x[0]+'</b><p style="margin:4px 0 0">예: '+x[1]+'</p><p style="margin:6px 0 0;color:var(--muted)">'+x[2]+'</p></div>'}).join("")+'</div>'+` +
-    `'<p class="sjw-note">십성 다섯 갈래 개수(일간 빼고 '+(p.h?'일곱':'다섯')+' 글자): 비겁 '+c.비+'개 · 식상 '+c.식+'개 · 재성 '+c.재+'개 · 관성 '+c.관+'개 · 인성 '+c.인+'개입니다. 직업궁은 월주 '+SJ_S[p.m.s]+SJ_B[p.m.b]+', 월지 대표 기운의 십성은 '+mt+'입니다. 10년마다 바뀌는 직업운은 <a href="saju.html?q=job">사주 직업운 풀이</a>에서 볼 수 있습니다.</p>'+shareBtn();` +
+    `'<p class="sjw-note">십성 다섯 갈래 개수(일간 빼고 '+(p.h?'일곱':'다섯')+' 글자): 비겁 '+c.비+'개 · 식상 '+c.식+'개 · 재성 '+c.재+'개 · 관성 '+c.관+'개 · 인성 '+c.인+'개입니다(개수가 같으면 식상·재성·관성·인성·비겁 순으로 앞에 둡니다). 직업궁은 월주 '+SJ_S[p.m.s]+SJ_B[p.m.b]+', 월지 대표 기운의 십성은 '+mt+'입니다. 10년마다 바뀌는 직업운은 <a href="saju.html?q=job">사주 직업운 풀이</a>에서 볼 수 있습니다.</p>'+shareBtn();` +
     `var top=L.map(function(x){return x[0]});bindSave(o,{file:"사주직업적성",tool:"사주 직업 적성",headline:"나에게 잘 맞는 일 세 가지",body:top.map(function(x,k){return (k+1)+". "+x}).join("  ")});` +
     `bindShare(o,"사주 직업 적성","내 사주에 잘 맞는 일: "+top.join(", "));try{navigator.sendBeacon("/api/hit",JSON.stringify({e:"fortune_view",tool:"saju-job"}))}catch(e){}}` +
     `document.getElementById("jbgo").onclick=go;[i,hh].forEach(function(x){x.addEventListener("keydown",function(e){if(e.key==="Enter")go()})})});</script>`;
