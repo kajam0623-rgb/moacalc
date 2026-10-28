@@ -112,18 +112,18 @@
 # 요청됨 2026-10-27 https://dongnebosal.com/birth-6.html
 # 요청됨 2026-10-27 https://dongnebosal.com/birth-7.html
 # 요청됨 2026-10-27 https://dongnebosal.com/birth-8.html
-https://dongnebosal.com/birth-9.html
-https://dongnebosal.com/birth-10.html
-https://dongnebosal.com/birth-11.html
-https://dongnebosal.com/birth-12.html
-https://dongnebosal.com/sinsal-cheondeok.html
-https://dongnebosal.com/sinsal-woldeok.html
-https://dongnebosal.com/sinsal-taegeuk.html
-https://dongnebosal.com/sinsal-goran.html
-https://dongnebosal.com/sinsal-wolsal.html
-https://dongnebosal.com/ohaeng-mok-woman.html
-https://dongnebosal.com/ohaeng-hwa-woman.html
-https://dongnebosal.com/ohaeng-to-woman.html
+# 요청됨 2026-10-28 https://dongnebosal.com/birth-9.html
+# 요청됨 2026-10-28 https://dongnebosal.com/birth-10.html
+# 요청됨 2026-10-28 https://dongnebosal.com/birth-11.html
+# 요청됨 2026-10-28 https://dongnebosal.com/birth-12.html
+# 요청됨 2026-10-28 https://dongnebosal.com/sinsal-cheondeok.html
+# 요청됨 2026-10-28 https://dongnebosal.com/sinsal-woldeok.html
+# 요청됨 2026-10-28 https://dongnebosal.com/sinsal-taegeuk.html
+# 요청됨 2026-10-28 https://dongnebosal.com/sinsal-goran.html
+# 요청됨 2026-10-28 https://dongnebosal.com/sinsal-wolsal.html
+# 요청됨 2026-10-28 https://dongnebosal.com/ohaeng-mok-woman.html
+# 요청됨 2026-10-28 https://dongnebosal.com/ohaeng-hwa-woman.html
+# 요청됨 2026-10-28 https://dongnebosal.com/ohaeng-to-woman.html
 https://dongnebosal.com/ohaeng-geum-woman.html
 https://dongnebosal.com/ohaeng-su-woman.html
 https://dongnebosal.com/mujae-saju-woman.html
