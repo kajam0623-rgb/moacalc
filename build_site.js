@@ -4462,7 +4462,7 @@ body:has(.hero2.nite){overflow-x:clip;}
 .sjw label{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:6px;}
 .sjw-row{display:flex;gap:8px;}.sjw-row input{flex:1;min-width:0;font:inherit;font-size:16px;padding:12px;border-radius:12px;border:1.5px solid var(--line-2);background:var(--surface);color:var(--ink);}
 .sjw-row button{border:0;border-radius:12px;padding:12px 16px;font:inherit;font-weight:800;background:#E6B25A;color:#1b1406;cursor:pointer;white-space:nowrap;}
-.sjw-note{font-size:12.5px;color:var(--muted);margin:8px 2px 0;}.sjw-err{font-size:13px;font-weight:700;color:var(--deduct);margin:10px 0 0;}
+.sjw-note{font-size:12.5px;color:var(--muted);margin:8px 2px 0;}.lnin{margin:8px 2px 0;font-size:13.5px;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;}.lnin label{display:inline-flex;align-items:center;gap:5px;margin:0;font-size:13.5px;font-weight:700;color:var(--ink);cursor:pointer;}.lnin-n{flex-basis:100%;margin:0;font-size:12.5px;color:var(--muted);}.lnin-n:empty{display:none;}.sjw-err{font-size:13px;font-weight:700;color:var(--deduct);margin:10px 0 0;}
 .sjw-res{margin-top:12px;font-size:14.5px;line-height:1.7;}.sjw-res p{margin:6px 0;}
 .sjw-y{list-style:none;padding:0;margin:8px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
 .sjw-y li{border:1px solid var(--line-2);border-radius:10px;padding:8px 4px;text-align:center;font-size:13px;}.sjw-y li b{display:block;font-size:14px;}.sjw-y span.on{color:var(--accent);font-weight:800;}
@@ -4992,6 +4992,16 @@ if (fs.existsSync(IMG_SRC)) {
     }
   })(IMG_SRC, path.join(OUT,"img"));
   console.log("   이미지 복사:", n, "개");
+}
+{ // 음력 생일 입력(2026-10-28): 홈·SEO 위젯의 숫자 생일칸에 '음력 생일이에요' 체크 — lunar_in.js 를 붙인다
+  fs.copyFileSync(path.join(__dirname, "lunar_in.js"), path.join(OUT, "lunar-in.js"));
+  let n = 0;
+  for (const f of fs.readdirSync(OUT)) if (f.endsWith(".html")) {
+    const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
+    if (!/id="hb"|<label for="[^"]+">생년월일[^<]*<\/label><div class="sjw-row">/.test(h) || h.includes("lunar-in.js")) continue;
+    fs.writeFileSync(p, h.replace("</body>", '<script src="lunar-in.js" defer></script>\n</body>')); n++;
+  }
+  console.log("   음력 생일 입력:", n, "쪽");
 }
 { // 공유 미리보기: 카카오톡 스크랩은 JPG·PNG만 읽는다 → og:image 의 webp 를 img/ogj/ 의 같은 경로 JPG 로(없으면 node tools/og_jpg.js)
   let n = 0, miss = 0;

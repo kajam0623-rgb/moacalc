@@ -235,6 +235,7 @@ TOOLS.push({id:"tarot",cat:"재미·운세",icon:"",name:"타로 카드",desc:"�
       chat.innerHTML='<div class="bs-me">'+topic.name+'</div>'+say(topic.hi+' '+topic.say)+say("생일을 알려 주면 사주와 패를 같이 놓고 볼게요. 싫으면 그냥 넘어가도 돼요.")+
         '<div class="bs-birth"><label for="tr-bd">생년월일 (양력)</label><input type="date" id="tr-bd" value=""></div>'+
         opts(["사주도 같이 볼게요","카드만 볼게요"]);
+      var bdIn=el.querySelector("#tr-bd");lunarPick(bdIn.parentNode,bdIn,null,new Date().getFullYear());
       bindOpts(function(i){
         var inp=el.querySelector("#tr-bd"),v=inp.value;
         if(i===0){if(!/^\d{4}-\d{2}-\d{2}$/.test(v)){inp.focus();return;}birth=v;}
