@@ -1745,16 +1745,21 @@ function nybPage(y) {
   // rel.name 은 "해묘미(亥卯未) 삼합"처럼 지지를 그대로 쓴 원문이라 풀이 없이 보여 주면 안 읽힌다. 관계 종류(rel.type)만 덧붙인다
   const relRow = f.rel.type === "무난" ? f.relPlain : f.rel.type === "같은 띠" ? `${f.relPlain}(본명년)` : `${f.relPlain} — ${f.rel.type}`;
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  // 맨 위 한 줄 — 판정은 삼재 계산기와 같은 함수(SAMJAE.samjae)
+  const sjLine = `<p class="nyb-sj" style="margin:0 0 12px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.6" data-sj="${f.samjae || "아니오"}">2027년 삼재인가요? <b>${f.samjae ? `예 — ${f.samjae}` : "아니오"}</b> · ` +
+    (f.samjae ? `2025년부터 이어진 세 해를 마무리하는 해예요. 정리하고 새 계획을 세우기 좋아요.` : `다음 삼재는 ${f.sjNext}~${f.sjNext + 2}년이에요.`) +
+    ` <a href="samjae.html" style="color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px">삼재 계산기로 보기</a></p>`;
+  const sjT = f.samjae ? `·${f.samjae}` : "";
   return seoPage({
     crumb: `${y}년생`, date: SEASON_DATE,
-    title: `${y}년생 2027년 운세 — ${f.ko}년생 ${A}(${yy}년생) | 동네보살`,
+    title: `${y}년생 2027년 운세${sjT} — ${f.ko}년생 ${A}(${yy}년생) | 동네보살`,
     desc: `${y}년생(${yy}년생 ${f.color} ${A})은 2027년에 만 ${f.age[1]}세가 됩니다. ${t.sum}`,
     // 배너는 열두 띠 그림(모든 띠에 맞는다). 신년운세 배너(h-newyear)는 2026 병오년의 말 그림이라 다른 띠에 어색하다
     url: `${DOMAIN}/${nybUrl(y)}`, img: `img/char/zo-${f.en}.webp`, hero: "img/tool/h-zodiacfortune.webp",
-    h1: `${y}년생 2027년 운세`, sub: `${f.ko}(${f.han})년생 · ${f.color} ${A} · 2027년 만 ${f.age[0]}~${f.age[1]}세`,
+    h1: `${y}년생 2027년 운세${f.samjae ? `와 ${f.samjae}` : ""}`, sub: `${f.ko}(${f.han})년생 · ${f.color} ${A} · 2027년 만 ${f.age[0]}~${f.age[1]}세`,
     parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
     tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`, `${yy}년생 연예인`],
-    body: `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
+    body: sjLine + `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
       [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `세는나이 ${2027-y+1}세 · 만 ${f.age[0]}~${f.age[1]}세`],
        ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
         .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
