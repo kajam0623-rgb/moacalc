@@ -1966,13 +1966,71 @@ function sonlessDays(y, m) {
     if (L.day % 10 === 9 || L.day % 10 === 0) out.push({ d, wd: new Date(y, m - 1, d).getDay(), lm: L.month, ld: L.day, leap: !!L.intercalation }); }
   return out;
 }
+const SL_CSS = `<style>.sl-days{display:flex;flex-wrap:wrap;gap:6px}.sl-days span{display:inline-flex;flex-direction:column;align-items:center;padding:6px 9px;border:1px solid var(--line);border-radius:10px;font-weight:600;line-height:1.25}.sl-days small{font-weight:400;font-size:11px;color:var(--muted)}.sl-days .sl-we{border-color:var(--accent);color:var(--accent)}.sjt th small{display:block;font-weight:400;font-size:11px;color:var(--muted)}</style>`;
+// ── 달별 손없는날(sonless-11.html·sonless-12.html, 2026-10-29 시험판) — 네이버 11월손없는날 12,630·12월손없는날 6,780.
+// ponytail: 연도가 2026 으로 박혀 있다. 해가 바뀌면 SONLESS_MONTHS 에 새 달을 넣고 쪽 이름에 연도를 붙일지 정한다.
+const SONLESS_MONTHS = [[2026, 11], [2026, 12]];
+const SONLESS_TIPS = {
+  11: { season: "늦가을에서 초겨울로 넘어가는 달",
+    tips: [["해가 짧아져요", "11월 말이면 서울 기준 오후 5시 조금 넘어 해가 져요. 짐 나르기는 오전 일찍 시작하고, 새집 조명이 다 들어오는지 미리 확인해 두면 저녁 정리가 편해요."],
+      ["김장철과 겹쳐요", "김치냉장고는 옮기기 전날 전원을 끄고 안을 비워 물기를 닦아 두세요. 김장 날짜를 이삿날 앞뒤로 너무 붙이지 않는 편이 몸이 덜 고돼요."],
+      ["보일러부터 틀어 보세요", "입주 전에 새집 보일러를 한 번 돌려 온수와 난방이 되는지 보세요. 겨울을 앞두고 고장을 알면 수리 일정을 잡기가 훨씬 쉬워요."],
+      ["창틀 결로를 살펴요", "일교차가 커지는 때라 창가 곰팡이 자국이 드러나기 쉬워요. 이사 전 집을 볼 때 창틀과 벽 모서리를 같이 보세요."]] },
+  12: { season: "한 해를 마무리하는 한겨울 달",
+    tips: [["동파를 막아요", "세탁기는 옮기기 전에 급수 호스와 배수 호스의 물을 빼 두세요. 영하로 떨어지는 날에는 남은 물이 얼어 호스가 터질 수 있어요."],
+      ["연말 계약이 몰려요", "전세·월세 계약이 12월 말에 끝나는 집이 많아 이삿짐 업체 예약이 빨리 차요. 날짜를 정했다면 한 달 앞서 견적을 받아 두세요."],
+      ["화분과 가전은 따뜻하게", "식물은 찬바람을 맞으면 잎이 상해요. 신문지나 비닐로 감싸고 차에는 마지막에 실어 바로 내리세요. 모니터·TV 같은 가전도 담요로 덮으면 좋아요."],
+      ["연말 휴무를 확인해요", "성탄절과 연말에는 쉬는 관공서·업체가 있어요. 인터넷·가스 이전 신청은 이삿날보다 일주일쯤 먼저 해 두세요."]] }
+};
+function sonlessMonthPage(y, m) {
+  const WD = "일월화수목금토", ds = sonlessDays(y, m), T = SONLESS_TIPS[m];
+  const isWe = s => s.wd === 0 || s.wd === 6, we = ds.filter(isWe), wk = ds.filter(s => !isWe(s));
+  const dd = s => `${s.d}일(${WD[s.wd]})`, list = a => a.map(dd).join(", ");
+  const chip = s => `<span class="${isWe(s) ? "sl-we" : ""}">${m}/${s.d}(${WD[s.wd]})<small>음 ${s.leap ? "윤" : ""}${s.lm}.${s.ld}</small></span>`;
+  const idx = SONLESS_MONTHS.findIndex(([a, b]) => a === y && b === m), next = SONLESS_MONTHS[idx + 1], prev = SONLESS_MONTHS[idx - 1];
+  const nm = m === 12 ? 1 : m + 1, nextLink = next ? `<a href="sonless-${next[1]}.html">${next[1]}월 손없는날</a>` : `<a href="sonless.html">${nm}월 손없는날(14달 달력)</a>`;
+  const sum = `${y}년 ${m}월 손 없는 날은 ${list(ds)}로 모두 ${ds.length}일이에요.`;
+  const weSum = we.length ? `주말에 걸린 날은 ${list(we)}${we.length === 1 ? " 하루뿐" : ""}이에요.` : "주말에 걸린 날은 없어요.";
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  const rows = ds.map(s => `<tr><th scope="row">${m}월 ${s.d}일</th><td>${WD[s.wd]}요일${isWe(s) ? " (주말)" : ""}</td><td>음력 ${s.leap ? "윤" : ""}${s.lm}월 ${s.ld}일</td></tr>`).join("");
+  return seoPage({
+    crumb: `${m}월 손없는날`, date: "2026-10-29",
+    title: `${m}월 손없는날 ${y} — 이사 날짜·요일 한눈에 | 동네보살`,
+    desc: `${sum} ${weSum} ${m}월 이사 날짜 고르는 법과 ${m}월에 챙기면 좋은 이사 준비까지 정리했어요.`,
+    url: `${DOMAIN}/sonless-${m}.html`, img: "img/tool/h-lunar.webp", hero: "img/tool/h-lunar.webp",
+    h1: `${m}월 손없는날 ${y} — 이사 날짜·요일 한눈에`, sub: `${y}년 ${m}월 · 손 없는 날 ${ds.length}일 · 주말 ${we.length}일`,
+    parent: "sonless.html", parentName: "손 없는 날 달력", tool: "manse", noTool: true,
+    tags: [`${m}월 손없는날`, `${m}월 손없는날 ${y}`, `${y}년 ${m}월 손없는날`, `${m}월 이사 손없는날`, `${m}월 이사 날짜`, "손없는날"],
+    body: SL_CSS +
+      `<div class="exbox"><h2>${y}년 ${m}월 손 없는 날</h2><div class="sl-days">${ds.map(chip).join("")}</div>` +
+      `<p style="margin:10px 0 0">${sum} ${weSum}</p>` +
+      `<p style="color:var(--muted);font-size:13px;margin:6px 0 0">색이 들어간 날은 토·일요일이에요. 날짜 아래 작은 글씨는 음력 날짜예요.</p></div>` +
+      `<section class="guide"><h2>${m}월 손없는날 날짜·요일·음력</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">양력</th><th scope="col">요일</th><th scope="col">음력</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+        `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">날짜별 일진과 절기는 <a href="manse-${y}-${String(m).padStart(2, "0")}.html">${y}년 ${m}월 만세력</a>에서 볼 수 있어요.</p></section>` +
+      cpSec("이사 준비물, 미리 챙기기", "날짜를 정했다면 짐 싸기 준비물부터 챙겨 두면 이삿날이 한결 가벼워요.", [["이사 박스", "h6ComuztD2", "https://thumbnail7.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/3804150279642044-4b47f37f-e2bc-47a3-9534-1dee5e76fb55.jpg"], ["에어캡 뽁뽁이", "h6Cq8bCnDw", "https://thumbnail1.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/7030551841613962-3bc0b742-c543-4c48-9a04-9419126e4b7a.jpg"], ["이불 압축팩", "h6Ct4cRhU4", "https://thumbnail15.coupangcdn.com/thumbnails/remote/212x212ex/image/retail/images/997610570099452-1bf5e072-945e-44ee-882c-59cb3ebdf3fb.jpg"]]) +
+      sec(`${m}월 손없는날 고르는 법`, para(`${weSum.replace("이에요.", "이고,")} 평일은 ${list(wk)}이에요. 주말 손 없는 날은 찾는 집이 많아 이삿짐 업체 예약이 먼저 차고 요금도 오르기 쉬워요. 주말을 바란다면 날짜를 정하자마자 견적부터 받아 두세요.\n` +
+        `평일에 시간을 낼 수 있다면 평일 손 없는 날이 업체를 고르기도, 값을 맞추기도 편해요. 계약 만기일이나 잔금 날짜를 먼저 적어 두고, 그 앞뒤에 있는 손 없는 날을 후보로 두 개쯤 골라 업체와 맞춰 보는 방법을 많이 써요.`)) +
+      sec(`${m}월 이사, 이것만 챙겨요`, `<p style="margin-bottom:10px">${m}월은 ${T.season}이에요. 이 무렵 이사에서 자주 놓치는 것들이에요.</p>` + T.tips.map(([h, t]) => `<h3>${h}</h3><p>${t}</p>`).join("") +
+        `<h3>전입신고는 14일 안에</h3><p>이사한 날부터 14일 안에 전입신고를 해야 해요. 정부24에서 온라인으로도 할 수 있고, 전월세라면 확정일자도 같이 받아 두면 마음이 놓여요.</p>`) +
+      sec("손 없는 날이란", para(`'손'은 날짜에 따라 동서남북을 옮겨 다니며 사람이 하는 일을 방해한다고 믿던 민간의 귀신이에요. 음력 끝자리가 9와 0인 날에는 하늘로 올라가 어느 방향에도 없다고 여겨, 음력 9·10일, 19·20일, 29·30일을 손 없는 날이라 불렀어요.\n오래된 풍습이라 지키면 마음이 든든하고, 형편이 안 되면 편한 날을 고르셔도 괜찮아요.`)) +
+      sec("휴대폰 달력에 넣기", `<p style="margin-bottom:10px">손 없는 날을 휴대폰 달력에 넣어 두면 날짜를 고를 때마다 찾아보지 않아도 돼요. <a href="${ICS_SON.replace("https://", "webcal://")}">손 없는 날 달력 구독</a>을 누르거나, 파일로 받으려면 <a href="calendar-sonless.ics">손 없는 날 달력(.ics)</a>을 내려받으세요.</p>`) +
+      sec("다른 달도 보기", `<p style="margin-bottom:10px">${prev ? `<a href="sonless-${prev[1]}.html">${prev[1]}월 손없는날</a> · ` : ""}다음 달은 ${nextLink}, 14달 치 한 번에 보려면 <a href="sonless.html">손 없는 날 달력</a>에서 볼 수 있어요.</p>`),
+    faq: [
+      [`${y}년 ${m}월 손없는날은 언제인가요?`, sum],
+      [`${m}월 주말 손없는날은 언제인가요?`, `${y}년 ${m}월 손 없는 날 가운데 ${weSum}`],
+      ["손 없는 날은 어떻게 정하나요?", "음력 날짜의 끝자리가 9나 0인 날, 곧 음력 9·10일, 19·20일, 29·30일이에요. 양력으로는 달마다 날짜가 바뀌어 달력으로 확인해야 해요."],
+      ["손 없는 날에 이사하면 더 비싼가요?", "찾는 집이 많아 주말 손 없는 날은 예약이 먼저 차고 요금이 오르는 일이 많아요. 평일 손 없는 날을 고르거나 한 달쯤 앞서 견적을 받아 두면 부담을 줄일 수 있어요."]],
+    sibTitle: "날짜 함께 보기", sibs: `<div class="sibs"><a href="sonless.html">손 없는 날 달력</a>${SONLESS_MONTHS.filter(([a, b]) => b !== m).map(([a, b]) => `<a href="sonless-${b}.html">${b}월 손없는날</a>`).join("")}<a href="manse-${y}-${String(m).padStart(2, "0")}.html">${m}월 만세력</a><a href="calendar-2027.html">2027년 달력</a><a href="bed-direction.html">침대 방향</a></div>`,
+    related: ["manse", "lunar", "iljin", "todayfortune"] });
+}
 function sonlessPage() {
   const WD = "일월화수목금토", Y0 = KST_NOW.getUTCFullYear(), M0 = KST_NOW.getUTCMonth() + 1;
   const months = Array.from({ length: 14 }, (_, i) => { const t = new Date(Y0, M0 - 1 + i, 1); return [t.getFullYear(), t.getMonth() + 1]; });
   const cur = sonlessDays(Y0, M0), nxt = sonlessDays(...months[1]);
   const chip = (y, m, s) => `<span class="${s.wd === 0 || s.wd === 6 ? "sl-we" : ""}">${m}/${s.d}(${WD[s.wd]})<small>음 ${s.leap ? "윤" : ""}${s.lm}.${s.ld}</small></span>`;
   const table = months.map(([y, m]) => { const ds = sonlessDays(y, m), we = ds.filter(s => s.wd === 0 || s.wd === 6).length;
-    return `<tr><th scope="row"><a href="manse-${y}-${String(m).padStart(2, "0")}.html">${y}년 ${m}월</a><small>주말 ${we}일</small></th><td class="sl-days">${ds.map(s => chip(y, m, s)).join("")}</td></tr>`; }).join("");
+    const own = SONLESS_MONTHS.some(([a, b]) => a === y && b === m) ? `<small><a href="sonless-${m}.html">${m}월 손없는날 자세히</a></small>` : "";
+    return `<tr><th scope="row"><a href="manse-${y}-${String(m).padStart(2, "0")}.html">${y}년 ${m}월</a><small>주말 ${we}일</small>${own}</th><td class="sl-days">${ds.map(s => chip(y, m, s)).join("")}</td></tr>`; }).join("");
   const sum = (y, m, ds) => `${y}년 ${m}월 손 없는 날은 ${ds.map(s => s.d + "일(" + WD[s.wd] + ")").join(", ")}입니다.`;
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
@@ -1983,10 +2041,11 @@ function sonlessPage() {
     h1: `손 없는 날 달력 — ${M0}월·${months[1][1]}월 이사 날짜`, sub: "음력 9·10, 19·20, 29·30일 · 양력 날짜와 요일로",
     parent: "manse.html", parentName: "무료 만세력", tool: "manse", noTool: true,
     tags: ["손없는날", `${M0}월 손없는날`, `${months[1][1]}월 손없는날`, "이사 손없는날", `${Y0 + 1} 손없는날`, "이사 날짜", "결혼 날짜"],
-    body: `<style>.sl-days{display:flex;flex-wrap:wrap;gap:6px}.sl-days span{display:inline-flex;flex-direction:column;align-items:center;padding:6px 9px;border:1px solid var(--line);border-radius:10px;font-weight:600;line-height:1.25}.sl-days small{font-weight:400;font-size:11px;color:var(--muted)}.sl-days .sl-we{border-color:var(--accent);color:var(--accent)}.sjt th small{display:block;font-weight:400;font-size:11px;color:var(--muted)}</style>` +
+    body: SL_CSS +
       `<div class="exbox"><h2>이번 달 손 없는 날 — ${Y0}년 ${M0}월</h2><div class="sl-days">${cur.map(s => chip(Y0, M0, s)).join("")}</div>` +
       `<h2 style="margin-top:14px">다음 달 — ${months[1][0]}년 ${months[1][1]}월</h2><div class="sl-days">${nxt.map(s => chip(...months[1], s)).join("")}</div>` +
-      `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">색이 들어간 날은 토·일요일입니다. 날짜 아래 작은 글씨는 음력 날짜입니다.</p></div>` +
+      `<p style="color:var(--muted);font-size:13px;margin:10px 0 0">색이 들어간 날은 토·일요일입니다. 날짜 아래 작은 글씨는 음력 날짜입니다.</p>` +
+      `<p style="margin:10px 0 0">달마다 따로 보기: ${SONLESS_MONTHS.map(([y, m]) => `<a href="sonless-${m}.html">${y}년 ${m}월 손없는날</a>`).join(" · ")}</p></div>` +
       `<section class="guide"><h2>손 없는 날 달력 — ${months[0][0]}년 ${months[0][1]}월부터 14달</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">달</th><th scope="col">손 없는 날(양력·요일·음력)</th></tr></thead><tbody>${table}</tbody></table></div>` +
         `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">달 이름을 누르면 그달 날짜별 일진·음력·절기가 있는 만세력 월력으로 갑니다. 휴대폰 달력에 넣고 싶다면 <a href="calendar-sonless.ics">손 없는 날 달력 구독(.ics)</a>을 누르세요.</p></section>` +
       sec("손 없는 날이란", para(`'손'은 날짜에 따라 동서남북을 옮겨 다니며 사람이 하는 일을 훼방 놓는다고 믿던 민간의 귀신입니다. 음력 1·2일은 동쪽, 3·4일은 남쪽, 5·6일은 서쪽, 7·8일은 북쪽에 있다가 끝자리가 9와 0인 날에는 하늘로 올라가 어느 방향에도 없다고 여겼습니다.\n그래서 음력 9·10일, 19·20일, 29·30일을 '손 없는 날'이라 부르고, 이삿날이나 혼삿날, 가게 여는 날로 즐겨 골랐습니다. 한 달에 대개 여섯 번 있고, 음력 달이 29일로 끝나는 달은 다섯 번입니다.`)) +
@@ -4181,7 +4240,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+SONLESS_MONTHS.map(([y,m])=>smUrl(`sonless-${m}.html`)).join("\n")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   OHAENG_PAGES.map(o=>smUrl("ohaeng-"+o.en+".html")).join("\n")+"\n"+
@@ -4698,6 +4757,7 @@ for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.g
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
 fs.writeFileSync(path.join(OUT,"sonless.html"), sonlessPage());
+SONLESS_MONTHS.forEach(([y, m]) => fs.writeFileSync(path.join(OUT, `sonless-${m}.html`), sonlessMonthPage(y, m)));
 fs.writeFileSync(path.join(OUT,"calendar-2027.html"), cal2027Page());
 fs.writeFileSync(path.join(OUT,"ahopsu.html"), ahopsuPage());
 fs.writeFileSync(path.join(OUT,"birthstone.html"), birthstonePage());
@@ -4891,6 +4951,7 @@ const rssRows = [
   [DOMAIN + "/birthstone.html", "탄생석 — 1월~12월 탄생석 의미와 색", "달마다 탄생석과 색, 전해지는 뜻. 생일을 넣으면 탄생석과 별자리를 함께 알려 드립니다."],
   [DOMAIN + "/ahopsu.html", "아홉수 계산기 — 올해·내년 아홉수 나이와 년생", "태어난 해를 넣으면 올해가 아홉수인지 세는 나이·만 나이로 알려 드립니다. 해마다 아홉수 년생 표도 함께."],
   [DOMAIN + "/calendar-2027.html", "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴", "2027년 공휴일은 일요일 포함 76일. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에."],
+  ...SONLESS_MONTHS.map(([y, m]) => [`${DOMAIN}/sonless-${m}.html`, `${m}월 손없는날 ${y} — 이사 날짜·요일 한눈에`, `${y}년 ${m}월 손 없는 날을 날짜·요일·음력으로 정리하고 ${m}월 이사 준비까지 담았어요.`]),
   [DOMAIN + "/sonless.html", "손 없는 날 달력 — 이번 달 이사 손없는날", "음력 끝자리가 9·0인 손 없는 날을 이번 달부터 14달 치 양력 날짜와 요일로 정리했습니다. 이사·결혼 날짜 고를 때 주말 손 없는 날을 한눈에 봅니다."],
   [DOMAIN + "/tti.html", "띠 순서·띠 계산기 — 2026·2027·2028년 무슨 띠", "2027년은 정미년 양띠, 2026년은 병오년 말띠, 2028년은 무신년 원숭이띠. 띠 순서와 띠별 나이표, 태어난 해로 띠를 계산합니다."],
   [DOMAIN + "/samjae.html", "삼재 계산기 — 2027 삼재띠·2028 삼재띠", "2027년 삼재띠는 돼지띠·토끼띠·양띠(날삼재), 2028년은 호랑이띠·말띠·개띠(들삼재). 태어난 해로 삼재 연도를 계산합니다."],
