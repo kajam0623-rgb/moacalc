@@ -1749,7 +1749,9 @@ function nybPage(y) {
   // 맨 위 한 줄 — 판정은 삼재 계산기와 같은 함수(SAMJAE.samjae)
   const sjLine = `<p class="nyb-sj" style="margin:0 0 12px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:14px;line-height:1.6" data-sj="${f.samjae || "아니오"}">2027년 삼재인가요? <b>${f.samjae ? `예 — ${f.samjae}` : "아니오"}</b> · ` +
     (f.samjae ? `2025년부터 이어진 세 해를 마무리하는 해예요. 정리하고 새 계획을 세우기 좋아요.` : `다음 삼재는 ${f.sjNext}~${f.sjNext + 2}년이에요.`) +
-    ` <a href="samjae.html" style="color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px">삼재 계산기로 보기</a></p>`;
+    ` <a href="samjae.html" style="color:var(--accent-ink);text-decoration:underline;text-underline-offset:2px">삼재 계산기로 보기</a>` +
+    // 나이 한 줄 — 세는나이 = 그해 − 출생년 + 1, 만 나이는 생일 전~후 범위(f.age 는 2027 기준)
+    `<br><span class="nyb-age">${y}년생은 2026년 ${2026 - y + 1}살(만 ${f.age[0] - 1}~${f.age[1] - 1}살), 2027년 ${2027 - y + 1}살(만 ${f.age[0]}~${f.age[1]}살) · ${A}</span></p>`;
   const sjT = f.samjae ? `·${f.samjae}` : "";
   return seoPage({
     crumb: `${y}년생`, date: SEASON_DATE,
