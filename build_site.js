@@ -1752,14 +1752,15 @@ function nybPage(y) {
   const sjT = f.samjae ? `·${f.samjae}` : "";
   return seoPage({
     crumb: `${y}년생`, date: SEASON_DATE,
-    title: `${y}년생 2027년 운세${sjT} — ${f.ko}년생 ${A}(${yy}년생) | 동네보살`,
+    // '84년생 쥐띠 오늘의 운세' — 네이버 첫 화면 사이트 칸에 calsgo·사주술사가 있는 자리(2026-11-01 실측). 오늘 글은 worker.js 가 #today-sv 에 끼운다
+    title: `${y}년생 2027년 운세${sjT}·오늘의 운세 — ${yy}년생 ${f.ko}년생 ${A} | 동네보살`,
     desc: `${y}년생(${yy}년생 ${f.color} ${A})은 2027년에 만 ${f.age[1]}세가 됩니다. ${t.sum}`,
     // 배너는 열두 띠 그림(모든 띠에 맞는다). 신년운세 배너(h-newyear)는 2026 병오년의 말 그림이라 다른 띠에 어색하다
     url: `${DOMAIN}/${nybUrl(y)}`, img: `img/char/zo-${f.en}.webp`, hero: "img/tool/h-zodiacfortune.webp",
     h1: `${y}년생 2027년 운세${f.samjae ? `와 ${f.samjae}` : ""}`, sub: `${f.ko}(${f.han})년생 · ${f.color} ${A} · 2027년 만 ${f.age[0]}~${f.age[1]}세`,
     parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
     tags: [`${y}년생 2027년 운세`, `${yy}년생 운세`, `${A} 2027년 운세`, `${f.ko}년생`, `${y}년생 나이`, `${y}년생 띠`, `${yy}년생 연예인`],
-    body: sjLine + `<div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
+    body: sjLine + `<div id="today-sv"></div><div class="exbox"><h2>${y}년생 한눈에 보기</h2>` +
       [["태어난 해", `${f.ko}(${f.han})년 · ${f.color} ${A}`], ["2027년 나이", `세는나이 ${2027-y+1}세 · 만 ${f.age[0]}~${f.age[1]}세`],
        ["한 해의 주제", f.stem[1]], ["정미년과 띠", relRow], ["2027년 삼재", sjRow]]
         .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +

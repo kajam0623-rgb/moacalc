@@ -34,6 +34,9 @@ export default {
     if (pathname === "/" || pathname === "/index.html") return todayFortune(req, env, "bdayHome", 0, "#home-bday");
     if (pathname === "/weekly.html") return todayFortune(req, env, "week", 0, "#week-sv");
     if (pathname === "/monthly.html") return todayFortune(req, env, "month", 0, "#month-sv");
+    const ny = pathname.match(/^\/newyear-(\d{4})\.html$/);
+    if (ny) return todayFortune(req, env, "zodiac-" + TTI_EN[(+ny[1] - 4) % 12], 0, "#today-sv", ny[1].slice(2));
+    if (pathname === "/sitemap.xml") return sitemapToday(req, env);
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
@@ -41,6 +44,7 @@ export default {
     await env.DB.prepare("DELETE FROM visitors WHERE day < ?").bind(kstDay(90)).run();
     await env.DB.prepare("DELETE FROM invites WHERE day < ?").bind(kstDay(7)).run();
     try { await env.DB.prepare("DELETE FROM errors WHERE day < ?").bind(kstDay(30)).run(); } catch {}
+    try { await indexNowDaily(env); } catch {}
   },
 };
 
@@ -91,21 +95,54 @@ async function lunarTitle(req, env) {
   const lun = todayCache[day] && todayCache[day].lunar;
   return lun ? new HTMLRewriter().on("title", { element(e) { e.prepend(`오늘 음력 ${lun} · `); } }).transform(res) : res;
 }
-async function todayFortune(req, env, key, off = 0, sel = "#today-sv") {
+// 년생별 2027 운세(newyear-YYYY)는 그 띠의 오늘 글을 받고 제목만 'OO년생 쥐띠 오늘의 운세'로 바꾼다
+const TTI_EN = ["rat", "ox", "tiger", "rabbit", "dragon", "snake", "horse", "goat", "monkey", "rooster", "dog", "pig"];
+async function todayFortune(req, env, key, off = 0, sel = "#today-sv", yy = "") {
   const res = await env.ASSETS.fetch(req), day = kstDay(off);
   if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
   if (!todayCache[day]) {
     const r = await env.ASSETS.fetch(new URL(`/today/${day}.json`, req.url));
     if (r.ok) todayCache = { ...Object.fromEntries(Object.entries(todayCache).filter(([d]) => d >= kstDay())), [day]: await r.json() };
   }
-  const html = todayCache[day] && todayCache[day][key];
+  let html = todayCache[day] && todayCache[day][key];
+  if (html && yy) html = html.replace(/오늘의 (\S+띠) 운세/, `${yy}년생 $1 오늘의 운세`);
   if (!html) return res;
   const rw = new HTMLRewriter().on(sel, { element(e) { e.setInnerContent(html, { html: true }); } });
   // 오늘 글을 끼운 허브 두 쪽은 제목 앞에 날짜를 붙인다('10월 9일 띠별 운세 …') — 날짜로 찾는 검색과 결과 화면의 신선도
   const [, m, d] = day.split("-").map(Number);
-  if (key === "goodsToday" || key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow" || /^(star|zodiac)-/.test(key)) rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
+  if (key === "goodsToday" || key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow" || (!yy && /^(star|zodiac)-/.test(key))) rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
   else if (key === "month") rw.on("title", { element(e) { e.prepend(`${m}월 운세 · `); } });   // '10월운세' 4천·이번달운세 3천
+  else if (key === "week") {   // '11월 2일~8일 주간 운세' — 날짜 검색('11월 2일 띠별 운세')은 사이트 칸에 우리가 뜬다(2026-11-01 실측)
+    const dt = new Date(day + "T00:00:00Z"), mon = new Date(dt - ((dt.getUTCDay() + 6) % 7) * 864e5), sun = new Date(+mon + 6 * 864e5);
+    const a = `${mon.getUTCMonth() + 1}월 ${mon.getUTCDate()}일`, z = sun.getUTCMonth() === mon.getUTCMonth() ? `${sun.getUTCDate()}일` : `${sun.getUTCMonth() + 1}월 ${sun.getUTCDate()}일`;
+    rw.on("title", { element(e) { e.prepend(`${a}~${z} `); } });
+  }
   return rw.transform(res);
+}
+
+// 날마다 글이 바뀌는 쪽은 사이트맵 lastmod 를 그날(주간은 그 주 월요일, 이달은 1일)로 바꿔 내보낸다.
+// 빌드 lastmod.json 은 배포 날짜에 멈춰 있어(2026-11-01 기준 띠별 10/21·내일 10/10) 수집기가 다시 올 근거가 없었다
+const DAILY_RE = /^(|index\.html|zodiacfortune\.html|horoscope\.html|tomorrow\.html|todayfortune\.html|love\.html|lucky\.html|celeb\.html|lunar\.html|zodiac-[a-z]+\.html|star-[a-z]+\.html|newyear-\d{4}\.html)$/;
+function dailyMod(p, day) {
+  if (p === "weekly.html") { const d = new Date(day + "T00:00:00Z"); return new Date(d - ((d.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10); }
+  if (p === "monthly.html") return day.slice(0, 8) + "01";
+  return DAILY_RE.test(p) ? day : null;
+}
+async function sitemapToday(req, env) {
+  const res = await env.ASSETS.fetch(req);
+  if (!res.ok) return res;
+  const day = kstDay(), xml = (await res.text()).replace(/<loc>https:\/\/dongnebosal\.com\/([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g,
+    (all, p, old) => { const d = dailyMod(p, day); return d && d > old ? all.replace(old, d) : all; });
+  return new Response(xml, { headers: res.headers });
+}
+// 매일 03시(한국 시각, cron 0 18 UTC) 그날 바뀐 쪽만 IndexNow 로 알린다 — 공용과 네이버 직접(tools/indexnow.js 와 같은 두 곳)
+const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c";
+async function indexNowDaily(env) {
+  const day = kstDay(), xml = await (await env.ASSETS.fetch("https://dongnebosal.com/sitemap.xml")).text();
+  const urlList = [...xml.matchAll(/<loc>(https:\/\/dongnebosal\.com\/([^<]*))<\/loc>/g)].filter(m => dailyMod(m[2], day) === day).map(m => m[1]);
+  const body = JSON.stringify({ host: "dongnebosal.com", key: INDEXNOW_KEY, keyLocation: `https://dongnebosal.com/${INDEXNOW_KEY}.txt`, urlList });
+  for (const h of ["api.indexnow.org", "searchadvisor.naver.com"])
+    console.log("indexnow", h, urlList.length, (await fetch(`https://${h}/indexnow`, { method: "POST", headers: { "Content-Type": "application/json; charset=utf-8" }, body })).status);
 }
 
 async function hit(req, env) {

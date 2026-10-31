@@ -1581,7 +1581,10 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
 //    하나라도 빠지면 그 쪽만 조용히 글이 안 붙는다 ──
 { const w = fs.readFileSync("worker.js", "utf8"), wr = fs.readFileSync("wrangler.jsonc", "utf8"), re = new RegExp(w.match(/const TODAY_RE = \/(.+)\/;/)[1]),
     pages = ["horoscope", "zodiacfortune", ...require("./content_star.js").map(s => "star-" + s.en), ...require("./content_zodiac.js").map(z => "zodiac-" + z.en)];
-  t("오늘의 운세: 26쪽 모두 wrangler·worker 정규식이 받고, 빌드가 빈 자리(#today-sv)를 4곳에 둔다", [pages.length, pages.filter(p => !(/"run_worker_first": true/.test(wr) || wr.includes(`"/${p}.html"`)) || !re.test(`/${p}.html`)).join(","), bs.split('<div id="today-sv"></div>').length - 1].join("|"), "26||4");
+  t("오늘의 운세: 26쪽 모두 wrangler·worker 정규식이 받고, 빌드가 빈 자리(#today-sv)를 5곳에 둔다(년생별 2027 쪽 포함)", [pages.length, pages.filter(p => !(/"run_worker_first": true/.test(wr) || wr.includes(`"/${p}.html"`)) || !re.test(`/${p}.html`)).join(","), bs.split('<div id="today-sv"></div>').length - 1].join("|"), "26||5");
+  // 년생별 2027 쪽(newyear-YYYY)은 worker 가 띠 글을 받아 'OO년생 쥐띠 오늘의 운세'로 바꾼다 — 띠 순서가 어긋나면 남의 띠 글이 붙는다
+  const TE = JSON.parse(w.match(/const TTI_EN = (\[[^\]]+\]);/)[1]), nyRe = new RegExp(w.match(/html\.replace\(\/(.+?)\/, `\$\{yy\}년생 \$1 오늘의 운세`\)/)[1]);
+  t("년생 쪽 오늘의 운세: 1984=쥐·1950=범·2009=소, 제목 바꾸기", [TE[(1984 - 4) % 12], TE[(1950 - 4) % 12], TE[(2009 - 4) % 12], "<h2>오늘의 쥐띠 운세 — 11월 1일</h2>".replace(nyRe, "84년생 $1 오늘의 운세")].join("|"), "rat|tiger|ox|<h2>84년생 쥐띠 오늘의 운세 — 11월 1일</h2>");
 }
 // ── 오늘의 운세 상위 N% — TF_PCT(60일주×필요한 기운)는 엔진으로 다시 잰 표본과 맞고, 점수는 tfScore 하나로 셈한다 ──
 { const R = require("./tools/sajupct/make_tf_pct.js").make(7), tot = A => A.flat().reduce((a, b) => a + b, 0), T1 = tot(TF_PCT), T2 = tot(R);
