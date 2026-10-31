@@ -3811,6 +3811,7 @@ ${x.imgAlt ? `<figure style="margin:0 0 16px"><img src="img/dream/${d.k}.webp" w
 <div class="intro" style="margin:0 0 18px">${para(d.lead)}</div>
 <section class="guide dm-e"><h2>동네보살 한마디</h2><p>${esc(e.text)}</p>${dreamShareRow(`${d.kw} 해몽`, `${d.kw} — ${e.text.split(".")[0]}. 동네보살 풀이 보기:`, `dream-${d.k}.html`, { title: `${d.kw} 해몽`, kind: e.kind, text: e.text, img: x.imgAlt ? `img/dream/${d.k}.webp` : "" })}</section>
 <section class="guide"><h2>${esc(d.kw)}, 장면별 풀이</h2>${d.cases.concat(x.more || []).map(([h, t]) => `<p style="margin-bottom:10px"><b>${esc(h)}</b><br>${esc(t)}</p>`).join("")}</section>
+${(x.extra || []).map(([h, t]) => `<section class="guide"><h2>${esc(h)}</h2><div class="intro" style="margin-top:0">${para(t)}</div></section>`).join("")}
 <section class="guide"><h2>마음 쪽에서 보면</h2><div class="intro" style="margin-top:0">${para(d.mind)}</div></section>
 ${x.old ? `<section class="guide"><h2>옛 해몽에서는</h2><div class="intro" style="margin-top:0">${para(x.old)}</div></section>` : ""}
 ${x.sci ? `<section class="guide"><h2>연구로 보면</h2><div class="intro" style="margin-top:0">${para(x.sci)}</div></section>` : ""}
