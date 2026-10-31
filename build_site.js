@@ -64,7 +64,8 @@ const LEARN_V = require("crypto").createHash("md5").update(LEARN_JS).digest("hex
 const COLIMG = require("./content_column_img.js");   // 보살 칼럼 그림 — 홈 벤토 타일 14·칼럼 글 안 큰 그림 36 (img/col/*.webp)
 const ILJUIMG = require("./content_ilju_img.js");    // 일주 페이지 그림 — 사용자의 '일주 60편 시리즈' 그림 (img/ilju/*.webp, tools/iljuimg)
 const SAMJAE = require("./content_samjae.js");       // 삼재 규칙과 삼재 계산기 페이지 원고
-const NYB = require("./content_newyear_by.js");      // 년생별 2027 운세 60 — 계산 + 원고(content_newyear_by_text.js, tools/newyear2027)
+const NYB = require("./content_newyear_by.js");
+const TTI27 = require("./content_tti2027.js");   // 띠별 2027년 운세(tti2027-<en>.html, 작업판 127) — 원고만, 계산은 NYB.facts      // 년생별 2027 운세 60 — 계산 + 원고(content_newyear_by_text.js, tools/newyear2027)
 const COLUMN_PAGES = require("./content_column.js");   // 보살 칼럼 — 사주·운세 볼 때 헷갈리는 것들(columns/*.js)
 const ILJIN_SRC = require("./content_iljin.js");
 
@@ -1771,13 +1772,44 @@ function nybPage(y) {
       `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${t.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
       sec(`1월~2월 초에 태어났다면 — 띠가 바뀌는 날`, `<p>${y}년 ${ipchunText(ip)}부터 ${f.han} ${A}입니다. 그 전 출생은 ${pf.han} ${pf.animal}에 해당합니다.${y - 1 >= NYB.Y0 ? ` <a href="${nybUrl(y - 1)}">${y - 1}년생 풀이</a>를 확인하세요.` : ""}</p>`) +
       nybCelebSec(y) +
-      sec(`더 자세히 보기`, `<p><a href="newyear.html">생일로 보는 신년운세</a> · <a href="tti-gunghap-${f.en}.html">${A} 궁합</a> · <a href="samjae.html">삼재 계산 기준</a></p>` +
+      sec(`더 자세히 보기`, `<p>${TTI27.PAGES.some(p => p.en === f.en) ? `<a href="tti2027-${f.en}.html">2027년 ${A} 운세</a> · ` : ""}<a href="newyear.html">생일로 보는 신년운세</a> · <a href="tti-gunghap-${f.en}.html">${A} 궁합</a> · <a href="samjae.html">삼재 계산 기준</a></p>` +
         `<p style="margin-bottom:10px">같은 ${A}: ${same.map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join(" · ")}</p>` +
         `<p style="color:var(--muted);font-size:13px;margin:8px 0 0"><a href="column-new-year-start.html">연도별 풀이의 범위·입춘 기준</a></p>`),
     faq: [
       [`${y}년생이 올해 먼저 해 볼 일은 무엇인가요?`, t.tips[0]],
       [`${y}년생의 생활에서는 어떤 점을 챙기나요?`, t.life]],
     sibTitle: `${Math.floor(y / 10) * 10}년대생 2027년 운세`, sibs: `<div class="sibs">${[y-1,y+1].filter(x => NYB.YEARS.includes(x)).map(x => `<a href="${nybUrl(x)}">${x}년생</a>`).join("")}<a href="newyear.html">출생연도 전체 보기</a></div>`,
+    related: ["newyear", "tojeong", "zodiacfortune", "saju"] });
+}
+
+// 띠별 2027년 운세 — 원고 content_tti2027.js, 년생 표는 NYB.facts(년생별 쪽과 같은 계산)
+function tti2027Page(p) {
+  const ys = NYB.YEARS.filter(y => ((y - 4) % 12 + 12) % 12 === p.b), A = p.ko + "띠", url = `tti2027-${p.en}.html`;
+  const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
+  const rows = ys.map(y => { const f = NYB.facts(y); return `<tr><th scope="row"><a href="${nybUrl(y)}">${y}년생</a></th><td>${f.ko}(${f.han}) · ${f.color} ${A}</td><td>만 ${f.age[1]}세</td><td>${esc(f.stem[1])}</td></tr>`; }).join("");
+  return seoPage({
+    crumb: `2027년 ${A} 운세`, date: "2026-10-31",
+    title: `2027년 ${A} 운세 — 정미년 ${A} ${ys.map(y => String(y).slice(2)).join("·")}년생 한 해 흐름·날삼재 | 동네보살`,
+    desc: p.sum,
+    url: `${DOMAIN}/${url}`, img: `img/char/zo-${p.en}.webp`, hero: "img/tool/h-zodiacfortune.webp",
+    h1: `2027년 ${A} 운세`, sub: `정미(丁未)년 · ${ys.join("·")}년생 · 날삼재`,
+    parent: "newyear.html", parentName: "신년운세", tool: "newyear", noTool: true,
+    tags: [`2027년 ${A} 운세`, `${A} 2027년 운세`, `정미년 ${A}`, `${A} 날삼재`, `${A} 나이`],
+    body: `<div class="exbox"><h2>2027년 ${A} 한눈에 보기</h2>` +
+      [["2027년", "정미(丁未)년 · 붉은 양의 해"], ["정미년과 " + A, NYB.facts(ys[0]).relPlain], ["삼재", "날삼재 · 2025~2027 삼재의 마지막 해"], ["12신살", "화개살의 해(해묘미 묶음)"]]
+        .map(r => `<div class="row"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join("") +
+      `<div class="res ttisum"><span>한 줄로</span><b>${esc(p.sum)}</b></div></div>` +
+      `<div class="intro">${para(p.lead)}</div>` +
+      sec(`정미년과 ${A}`, para(p.rel)) + sec("12신살로 보면", para(p.sinsal)) +
+      `<section class="guide"><h2>년생별로 보면</h2><div class="sjt-wrap"><table class="sjt"><thead><tr><th scope="col">년생</th><th scope="col">태어난 해</th><th scope="col">2027년 나이</th><th scope="col">한 해의 주제</th></tr></thead><tbody>${rows}</tbody></table></div>` +
+      `<ul style="margin-top:12px">${ys.map(y => `<li><a href="${nybUrl(y)}">${y}년생</a>: ${esc(p.byYear[y])}</li>`).join("")}</ul>` +
+      `<p style="color:var(--muted);font-size:13px;margin:8px 0 0">한 해의 주제는 2027년의 하늘 글자 정(丁)이 태어난 해의 하늘 글자에게 어떤 기운인지로 정했습니다. 년생을 누르면 그해 풀이를 자세히 볼 수 있습니다.</p></section>` +
+      sec("일과 돈", para(p.work)) + sec("사람과 가족", para(p.people)) + sec("건강과 생활", para(p.life)) +
+      `<section class="guide"><h2>2027년에 해 보면 좋은 세 가지</h2><ul>${p.tips.map(x => `<li>${esc(x)}</li>`).join("")}</ul></section>` +
+      sec("1월~2월 초에 태어났다면", `<p>띠는 양력 1월 1일이 아니라 입춘(2월 4일 무렵)에 바뀝니다. 입춘 전에 태어났다면 앞 해의 띠일 수 있으니 <a href="tti.html">띠 계산기</a>나 년생별 쪽의 '띠가 바뀌는 날'을 확인하세요. 개인의 한 해는 태어난 날까지 넣어 보는 <a href="newyear.html">2027 신년운세</a>에서 볼 수 있습니다.</p>`) +
+      sec("더 자세히 보기", `<p><a href="zodiac-${p.en}.html">${A} 운세·성격</a> · <a href="tti-gunghap-${p.en}.html">${A} 궁합</a> · <a href="samjae.html">삼재 계산기</a></p>`),
+    faq: p.faq,
+    sibTitle: "2027 정미년 함께 보기", sibs: `<div class="sibs">${TTI27.PAGES.filter(q => q.en !== p.en).map(q => `<a href="tti2027-${q.en}.html">2027년 ${q.ko}띠 운세</a>`).join("")}<a href="newyear.html#by-year">년생별 2027 운세</a><a href="samjae.html">삼재 계산기</a></div>`,
     related: ["newyear", "tojeong", "zodiacfortune", "saju"] });
 }
 
@@ -4246,7 +4278,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   smUrl("")+"\n"+pubMeta.map(t=>smUrl(t.id+".html")).join("\n")+"\n"+
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
-  smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+
+  smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+TTI27.PAGES.map(p=>smUrl(`tti2027-${p.en}.html`)).join("\n")+"\n"+
   smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+SONLESS_MONTHS.map(([y,m])=>smUrl(`sonless-${m}.html`)).join("\n")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
@@ -4784,6 +4816,7 @@ fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
 NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));
+TTI27.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,`tti2027-${p.en}.html`), tti2027Page(p)));
 fs.writeFileSync(path.join(OUT,"tti-gunghap.html"), ttiMainPage());
 TTI.JI.forEach(z=>fs.writeFileSync(path.join(OUT,ttiHubUrl(z.i)), ttiHubPage(z.i)));
 TTI.PAIR_LIST.forEach(p=>fs.writeFileSync(path.join(OUT,ttiPairUrl(p.a,p.b)), ttiPairPage(p.a,p.b)));
