@@ -1015,7 +1015,7 @@ function siteNav(currentId){
 // 운세 페이지는 "계산기" 대신 검색어에 맞는 타이틀을 쓴다
 const h1Override = { namematch: "이름 궁합 테스트" }; // 메뉴·카드 이름과 달리 이 검색어로 제목을 맞춘다
 const titleOverride = {
-todayfortune:"오늘의 운세 — 생년월일로 보는 무료 운세·오늘 운세",
+todayfortune:"오늘의 운세 — 생년월일로 보는 무료 운세·지정일 운세",
 horoscope:"별자리 운세 — 오늘의 별자리 운세·12별자리 날짜 무료",
 zodiacfortune:"띠별 운세 — 오늘의 띠별 운세·12띠 오늘 운세 무료",
 stargunghap:"별자리 궁합 — 12별자리 커플 궁합 무료",
@@ -1023,7 +1023,7 @@ saju:"무료 사주풀이 — 생년월일로 사주팔자·재물운·연애운
 gunghap:"무료 궁합 — 사주 궁합 테스트·생년월일 궁합·띠 궁합 보기",
 tojeong:"2027 토정비결 — 무료 토정비결 보기 144괘",
 newyear:"2027 신년운세 — 2027년 운세·올해 운세·정미년 무료 신년운세",
-tarot:"무료 타로 — 타로카드 뽑기·오늘의 타로·연애 타로",
+tarot:"무료 타로 — 타로카드 뽑기·연애 타로·속마음 타로·재회 타로",
 namematch:"이름 궁합 — 획수로 보는 무료 이름궁합 테스트",
 gongmang:"공망 찾기 — 내 일주 공망 무료 계산",
 lunar:"음력 계산기 — 양력 음력 변환·음력 생일·윤달 무료",
@@ -1108,6 +1108,7 @@ function toolPage(t){
 ${fs.existsSync(path.join(IMG_SRC,"tool","h-"+t.id+".webp"))
  ? `<div class="toolhero"><img src="img/tool/h-${t.id}.webp" alt="${esc(t.name)}" width="1000" height="667" fetchpriority="high" decoding="async" onerror="this.closest('.toolhero').remove()">${thBosal(t.id)}<div class="cap"><h1>${h1Override[t.id]||t.name}</h1><div class="tl">${t.desc}</div></div></div>`
  : `<h1 class="th">${h1Override[t.id]||t.name}</h1>\n<div class="tl">${t.desc}</div>`}
+${t.id==="newyear" ? "<section class=\"guide\" id=\"ny-answer\"><h2>2027년 신년운세, 답부터</h2><p>2027년은 정미년(丁未年), 붉은 양의 해입니다. 사주에서는 입춘인 2027년 2월 4일 오전 10시 46분(한국 시각)부터 정미년으로 보고, 음력 설날은 2월 7일입니다. 2027년 삼재띠는 돼지띠·토끼띠·양띠이고, 2025년에 든 삼재가 나가는 마지막 해라 날삼재라고 부릅니다. 민간에서는 삼재가 나가는 해에는 이사를 해도 괜찮다고 여겨 왔습니다. 2028년부터는 호랑이띠·말띠·개띠가 삼재에 듭니다. 내 사주로 본 2027년은 아래에 생년월일을 넣으면 바로 볼 수 있습니다.</p><p class=\"note\" style=\"font-size:12px;color:var(--muted)\">근거: 입춘 시각은 <a href=\"https://www.hko.gov.hk/tc/gts/astronomy/data/files/24SolarTerms_2027.xml\" rel=\"noopener\">홍콩천문대 2027년 24절기표</a>(2월 4일 09:46 홍콩 시각, 한국은 1시간 빠른 10:46), 설날은 우주항공청 월력요항, 삼재 드는 해는 <a href=\"https://folkency.nfm.go.kr/topic/detail/2303\" rel=\"noopener\">한국민속대백과사전 삼재맞이</a>(해·묘·미 해에 태어난 사람은 사·오·미 해에 삼재)를 따랐습니다. <a href=\"samjae.html\">삼재 계산기</a></p></section>" : ""}
 ${t.id==="tarot" ? `${TRUST_TAROT}` : t.cat==="재미·운세" ? `${TRUST_GEN}` : ""}
 <div class="card tool" id="tool"></div>
 ${tagHtml}
@@ -2130,12 +2131,12 @@ function cal2027Page() {
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
     crumb: "2027년 달력", date: "2026-10-09",
-    title: "2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴, 음력·손 없는 날 | 동네보살",
+    title: "27년 손없는날·2027년 달력 — 공휴일·대체공휴일·설날·추석 연휴, 음력 | 동네보살",
     desc: "2027년 공휴일은 일요일 포함 76일입니다. 설 연휴 2월 6~9일, 추석 9월 14~16일, 노동절·제헌절과 대체공휴일 7일까지 달력 한 장에 담았습니다.",
     url: `${DOMAIN}/calendar-2027.html`, img: "img/tool/h-lunar.webp", hero: "img/tool/h-lunar.webp",
-    h1: "2027년 달력 — 공휴일·연휴 한눈에", sub: "우주항공청 월력요항 기준 · 음력 1일·15일, 24절기, 손 없는 날 표시",
+    h1: "27년 손없는날·2027년 달력 — 공휴일·연휴 한눈에", sub: "우주항공청 월력요항 기준 · 음력 1일·15일, 24절기, 손 없는 날 표시",
     parent: "manse.html", parentName: "무료 만세력", tool: "manse", noTool: true,
-    tags: ["2027년 달력", "2027 공휴일", "2027 대체공휴일", "2027 설날", "2027 추석", "2027 음력 달력", "2027 연휴"],
+    tags: ["2027년 달력", "27년 손없는날", "2027년 손없는날", "2027 공휴일", "2027 대체공휴일", "2027 설날", "2027 추석", "2027 음력 달력", "2027 연휴"],
     body: `<style>.c-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}.c-m h3{margin:0 0 6px;font-size:16px}.c-t{width:100%;border-collapse:collapse;table-layout:fixed}.c-t th{font-size:11px;color:var(--muted);font-weight:600;padding:2px 0}.c-t th:first-child,.c-t .c-h b{color:#d33}.c-t th:last-child,.c-t .c-s b{color:var(--accent)}.c-t td{vertical-align:top;text-align:center;padding:3px 0;height:38px;border-top:1px solid var(--line)}.c-t td b{display:block;font-size:13px;font-weight:600}.c-t td small{display:block;font-size:9.5px;line-height:1.15;color:var(--muted);word-break:keep-all}.c-t .c-h small{color:#d33}.c-t .c-son b{text-decoration:underline;text-decoration-color:var(--accent);text-underline-offset:3px}.c-hol td{padding:6px 8px;border-top:1px solid var(--line)}.c-hol .c-alt td{color:#d33}</style>` +
       `<div class="exbox"><h2>2027년 연휴 한눈에</h2>` +
       [["설날 연휴", "2월 6일(토) ~ 9일(화) · 4일 (설날 2월 7일 일요일 → 9일 대체공휴일)"], ["추석 연휴", "9월 14일(화) ~ 16일(목) · 추석 9월 15일"], ["3일 이상 연휴", "신정·설·삼일절·노동절·제헌절·광복절·추석·개천절·한글날·성탄절, 10번"],

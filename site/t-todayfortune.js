@@ -23,6 +23,7 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
     "정인":[84,"도와주는 사람과 배움이 찾아오는 날이에요. 어른이든 스승이든 반가운 서류든, 든든하게 기댈 수 있는 도움이 내 쪽으로 내려와요.","배운 만큼 그대로 쌓여 나중에 돈으로 돌아오는 날이에요. 합격과 승인, 반가운 소식도 들어오기 좋아요.","도움을 받거든 고맙다고 말로 꼭 전해 보세요. 문자 한 줄도 좋아요. 그러면 좋은 일이 두 배로 돌아와요.","혼자 끙끙 애쓰기보다 도움을 청해 보세요. 오늘은 손을 내밀면 대부분 열려요.",[2,0,6,6],
      "서로 보살피고 기대는 마음이 깊어지는 날이에요. 상대의 힘든 이야기를 끝까지 들어주는 것만으로 사이가 한층 가까워져요. 어른이나 선배가 소개해 주는 자리에서 좋은 인연이 닿기도 하니, 오는 제안은 마다하지 마세요.","공부와 서류 일이 환하게 풀리는 날이에요. 합격, 승인, 자격 같은 반가운 소식이 오기 쉬워요. 막힌 일이 있으면 경험 많은 선배에게 물어보세요. 내가 한참 고민한 문제를 그 사람은 한마디로 풀어 줄 거예요.","몸이 회복되는 힘이 좋은 날이에요. 미뤄 둔 검진이나 치료를 시작하기에도 좋으니 병원 예약부터 잡아 보세요.",TF_LINE["정인"]]};
     el.innerHTML='<label for="d">생년월일 (양력)</label><input type="text" id="d" inputmode="numeric" maxlength="10" placeholder="예) 19900315" aria-describedby="derr"><p class="tf-err" id="derr" role="alert"></p>'+
+    '<label for="tfday" style="margin-top:12px">다른 날 보기 (기본은 오늘)</label><input type="date" id="tfday" min="1950-01-01" max="2100-12-31">'+
     '<button id="go" style="margin-top:14px;width:100%;padding:13px;border:none;font:inherit;font-weight:800">'+ASK_LABEL+'</button>'+
     '<div id="out"></div>';
     function bar(n,v){return rateBar(n,v);}
@@ -30,7 +31,10 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       var dv=bdParse(el.querySelector("#d").value).split("-");if(dv.length<3)return;
       track("fortune_view",{tool:"todayfortune"});
       // 점수는 tfToday 한 곳에서 — 띠·별자리 운세가 같은 값을 보여 준다
-      var now=new Date(),ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
+      var now=new Date(),dayIn=el.querySelector("#tfday"),pv=((dayIn&&dayIn.value)||"").split("-"),isToday=true;
+      if(pv.length===3&&+pv[0]>=1950){var pd=new Date(+pv[0],+pv[1]-1,+pv[2]);if(pd.toDateString()!==now.toDateString()){now=pd;isToday=false;}}
+      var dayWord=isToday?"오늘":"이날";
+      var ty=now.getFullYear(),tm=now.getMonth()+1,td=now.getDate();
       var tf=tfToday(+dv[0],+dv[1],+dv[2],now),me=tf.me,today=tf.today,rel=tf.rel,T=TXT[rel],score=tf.score,grade=tf.grade,tfP=tfPct(score,today);
       var myB=me.d.b,tB=today.d.b,bonusArt=tf.art,bonus="",hlSuf="";
       if(bonusArt==="삼합"){bonus="내 태어난 날 글자와 오늘 날짜 글자가 삼합이에요. 사람이 나서서 나를 돕는 흐름이 하나 더 얹혔어요.";hlSuf=" 사람이 힘을 보탠다.";}
@@ -73,11 +77,11 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
         var Q=(TFQ||{})[k];if(!Q||!Q.ten||!Q.ten[rel])return "";
         return '<p>'+Q.ten[rel]+(bonusArt==="충"?" "+Q.chung:bonusArt?" "+Q.hap:"")+'</p><span class="tail-foot">오늘 날짜의 글자와 내 사주를 맞춰 본 풀이입니다. <a href="column-sipseong-lookup-table.html">십성 조견표 보기</a></span>';}};});
       var tfTail={tool:"todayfortune",intro:"오늘 일 가운데 더 궁금한 게 있나요?<br>어떤 내용이에요?",first:["confess","contract","interview","spend"],load:tfqLoad,pool:tfPool};
-      el.querySelector("#out").innerHTML=
+      el.querySelector("#out").innerHTML=(isToday?'':'<p class="note">'+ty+'년 '+tm+'월 '+td+'일 기준으로 본 지정일 운세예요. 아래 글의 "오늘"은 고른 날을 말해요.</p>')+
       '<div class="tf-id">'+SJ_ILGAN_ID[me.d.s]+'</div>'+
       '<div class="tf-hl">'+T[9]+hlSuf+'</div>'+
-      '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · 오늘 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
-      '<div class="v">'+score+'<small>점 · '+grade+'</small></div>'+(tfP<=60?'<div class="tf-pct">오늘 1950~2009년생 가운데 <b>상위 '+tfP+'%</b></div>':'')+'<div class="s">나를 뜻하는 글자 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
+      '<div class="out" style="margin-top:16px"><div class="k">'+ty+'.'+String(tm).padStart(2,"0")+'.'+String(td).padStart(2,"0")+' · '+dayWord+' 일진 '+SJ_SH[today.d.s]+SJ_BH[today.d.b]+'('+SJ_S[today.d.s]+SJ_B[today.d.b]+')</div>'+
+      '<div class="v">'+score+'<small>점 · '+grade+'</small></div>'+(tfP<=60?'<div class="tf-pct">'+dayWord+' 1950~2009년생 가운데 <b>상위 '+tfP+'%</b></div>':'')+'<div class="s">나를 뜻하는 글자 '+SJ_S[me.d.s]+' 기준으로 오늘은 <b>'+rel+'</b>의 날</div></div>'+
       '<div class="sj-bars">'+bar("애정",sub[0])+bar("재물",sub[1])+bar("직장",sub[2])+bar("건강",sub[3])+'</div>'+
       zoCard(me.y.b)+
       '<div class="sj-sec"><h3>총운</h3><p>'+(bonusArt?conceptArt(ART_HAP[bonusArt],bonusArt):"")+T[1]+'<br><br>'+UN_MOOD[un]+'<br><br>'+(bonus||"내 태어난 날 글자와 오늘 날짜 글자는 조용해요. 삼합도 충도 육합도 없어요. 오늘 벌어지는 일은 남이 흔들어서가 아니라 내가 고른 결과라는 뜻이에요.")+'</p></div>'+
@@ -98,12 +102,13 @@ TOOLS.push({id:"todayfortune",cat:"재미·운세",icon:"",name:"오늘의 운�
       shareBtn()+
       '<p class="note">오늘 날짜의 두 글자와 나를 뜻하는 글자가 맺는 관계, 태어난 날 글자와 오늘 글자가 붙는지 부딪히는지, 기운의 단계, 나를 받쳐 주는 기운을 함께 보는 전통 방식입니다. 받쳐 주는 기운은 힘이 넉넉한 편이면 덜어내는 쪽, 채워 가며 크는 편이면 돕는 쪽을 씁니다. 매일 자정에 일진이 바뀝니다. 참고용.</p>';
       // 보살 말투는 풀이에만 쓴다 — 계산 방식 고지는 존댓말 유지
-      bindShare(el,"오늘의 운세","오늘의 운세 "+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
-      diaryAdd({t:"오늘의 운세",s:score,g:grade,h:TF_LINE[rel]});
+      bindShare(el,"오늘의 운세",(isToday?"오늘의 운세 ":ty+"."+tm+"."+td+" 운세 ")+score+"점 · "+grade+" — "+rel+"의 날. "+T[1].split(".")[0]+". 동네보살에서 확인:");
+      if(isToday)diaryAdd({t:"오늘의 운세",s:score,g:grade,h:TF_LINE[rel]});
       tailAsk(el.querySelector("#tailbox"),tfTail);
       var sbx=el.querySelector("#out .share-btn");if(sbx)sbx.insertAdjacentHTML("beforebegin",diaryNote());
-      bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+" 오늘의 운세",
+      bindSave(el,{file:"오늘의운세",tool:ty+"."+String(tm).padStart(2,"0")+"."+String(td).padStart(2,"0")+(isToday?" 오늘의 운세":" 지정일 운세"),
         ident:SJ_ILGAN_ID[me.d.s],score:score,grade:grade,headline:T[9]+hlSuf,body:T[1],badge:tfP<=60?"오늘 운 상위 "+tfP+"%":""});
-      askFx(el,{score:score,grade:grade,streak:true,bujeok:true,open:5});}
+      askFx(el,{score:score,grade:grade,streak:true&&isToday,bujeok:true,open:5});}
+    (function(){var di=el.querySelector("#tfday"),n=new Date();if(di)di.value=n.getFullYear()+"-"+String(n.getMonth()+1).padStart(2,"0")+"-"+String(n.getDate()).padStart(2,"0");})();
     bdBind(el,"#d","#derr");
     askWire(el,go,["오늘 날짜의 글자부터 짚는다","내 글자와 견주어 본다","날 글자의 관계와 받쳐 주는 기운을 본다"],"오늘 것을 아직 안 물어봤어요.");}});
