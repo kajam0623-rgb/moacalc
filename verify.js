@@ -287,9 +287,9 @@ t("타로 상징 스토리 78개", tarotData.STORY.length === 78 && tarotData.ST
 t("타로 카드 오행 78장 (0~4)", tarotData.CARD_EL.length === 78 && tarotData.CARD_EL.every(e => e >= 0 && e <= 4), true);
 t("타로 스프레드 자리는 풀이 원고에 있는 키만", tarotData.TOPICS.every(tp => tp.sp.length >= 1 && tp.sp.length <= 3 &&
   tp.sp.every(([k]) => k === "answer" || TREAD[0].role[k] !== undefined)), true);
-const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","exam","family","friend","health","day"];
+const ROLE_K = ["past","now","future","mine","theirs","block","advice","cause","fix"], TOPIC_K = ["love","money","work","exam","family","friend","health","day","reunion","crush"];
 t("타로 고민 키는 원고 topic 키와 일치", tarotData.TOPICS.map(tp => tp.k).join(","), TOPIC_K.join(","));
-t("타로 풀이 원고 78장 · 자리 9 · 고민 8×정역 · 한마디", TREAD.length === 78 && TREAD.every((c, i) => c.no === i &&
+t("타로 풀이 원고 78장 · 자리 9 · 고민 10×정역 · 한마디", TREAD.length === 78 && TREAD.every((c, i) => c.no === i &&
   ROLE_K.every(k => typeof c.role[k] === "string" && c.role[k].length >= 30) &&
   TOPIC_K.every(k => Array.isArray(c.topic[k]) && c.topic[k].length === 2 && c.topic[k].every(x => x.length >= 40)) && c.one.length >= 10), true);
 const readLines = TREAD.flatMap(c => ROLE_K.map(k => c.role[k]).concat(...TOPIC_K.map(k => c.topic[k]), [c.one]));
@@ -311,7 +311,7 @@ t("타로 종합 원소 문장 5 · 여정 구간 3", tarotData.EL_LINE.length =
 t("타로 결과는 진지한 보살 로딩(최소 5.2초) 뒤에 차례로 띄운다 — 움직임 줄이기를 켠 기기에서도 로딩을 건너뛰지 않는다", tarotSrc.includes("mascot-serious.webp") && /Math\.max\(5200,/.test(tarotSrc) && tarotSrc.includes("tr-in") && !/if\(RM\)\{render\(\);return;\}/.test(tarotSrc) && /if\(RM\)\{wait\(1800,spread\);return;\}/.test(tarotSrc), true);
 t("타로 진지한 보살 이미지 파일 존재", fs.existsSync("img/mascot-serious.webp"), true);
 t("타로 게임 연출: 문질러 섞기·입자·날아가 꽂히기", tarotSrc.includes("bindRub()") && tarotSrc.includes("function burst(") && tarotSrc.includes("tr-fly"), true);
-t("타로 첫 화면 고민 8칸 (두 줄 격자에 빈칸 없음)", tarotData.TOPICS.length, 8);
+t("타로 첫 화면 고민 10칸 (두 줄 격자에 빈칸 없음)", tarotData.TOPICS.length, 10);
 t("타로 관계 풀이 5관계 × 고민 수", tarotData.REL.length === 5 && tarotData.REL.every(r => r.length === tarotData.TOPICS.length) && tarotData.CLOSE.length === tarotData.TOPICS.length, true);
 t("타로 예/아니오 성향은 카드 뜻 페이지와 같음", tarotData.YN.join(","), require("./content_tarot.js").map(c => c.yesno).join(","));
 t("타로 예/아니오 줄은 성향 3종 × 정역", ["예","아니오","조건부"].every(k => tarotData.YN_LINE[k] && tarotData.YN_LINE[k].length === 2), true);
