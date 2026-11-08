@@ -37,6 +37,9 @@ export default {
     const ny = pathname.match(/^\/newyear-(\d{4})\.html$/);
     if (ny) return todayFortune(req, env, "zodiac-" + TTI_EN[(+ny[1] - 4) % 12], 0, "#today-sv", ny[1].slice(2));
     if (pathname === "/sitemap.xml") return sitemapToday(req, env);
+    if (pathname === "/daily.html") return dailyHub(req, env);
+    const dd = pathname.match(/^\/daily-(\d{4}-\d{2}-\d{2})\.html$/);
+    if (dd) return dailyDated(req, env, dd[1]);
     return env.ASSETS.fetch(req);
   },
   // 방문자 구분값은 90일만 둔다 (개인정보처리방침과 맞춘다)
@@ -120,9 +123,69 @@ async function todayFortune(req, env, key, off = 0, sel = "#today-sv", yy = "") 
   return rw.transform(res);
 }
 
+// 날짜별 운세(2026-11-09) — 네이버 '오늘의운세'·'띠별운세' 상위가 날짜 박힌 매일 새 기사였다. 틀(/daily.html)에 그날 글을 채워
+// /daily-YYYY-MM-DD.html 로 내보낸다. 내일부터 지난 30일까지만 열고 나머지는 목록으로 보낸다(빌드가 지난 31일 치 파일을 만든다)
+const DAILY_BACK = 30, WD_KO = "일월화수목금토", DOMAIN = "https://dongnebosal.com";
+const STAR_KEYS = ["aries", "taurus", "gemini", "cancer", "leo", "virgo", "libra", "scorpio", "sagittarius", "capricorn", "aquarius", "pisces"];
+const dailyDays = () => Array.from({ length: DAILY_BACK + 2 }, (_, i) => kstDay(i - 1));   // 내일, 오늘, 어제 … 30일 전
+const dLabel = day => { const dt = new Date(day + "T00:00:00Z"); return `${dt.getUTCMonth() + 1}월 ${dt.getUTCDate()}일 ${WD_KO[dt.getUTCDay()]}요일`; };
+async function dayJson(req, env, day) {
+  if (todayCache[day]) return todayCache[day];
+  const r = await env.ASSETS.fetch(new URL(`/today/${day}.json`, req.url));
+  return r.ok ? r.json() : null;
+}
+function dailyLd(o) {
+  return '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@type": "Article", headline: o.title, description: o.desc,
+    inLanguage: "ko", url: o.url, image: DOMAIN + "/img/og/zodiacfortune.jpg", datePublished: o.day + "T00:00:00+09:00", dateModified: o.day + "T00:00:00+09:00",
+    author: { "@type": "Organization", name: "동네보살 편집팀", url: DOMAIN + "/about.html" }, publisher: { "@id": DOMAIN + "/#org", "@type": "Organization", name: "동네보살", url: DOMAIN + "/" } }) + "</script>" +
+    '<script type="application/ld+json">' + JSON.stringify({ "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: [
+      { "@type": "ListItem", position: 1, name: "홈", item: DOMAIN + "/" }, { "@type": "ListItem", position: 2, name: "날짜별 운세", item: DOMAIN + "/daily.html" },
+      { "@type": "ListItem", position: 3, name: o.label, item: o.url }] }) + "</script>";
+}
+async function dailyDated(req, env, day) {
+  const days = dailyDays();
+  if (!days.includes(day)) return Response.redirect(DOMAIN + "/daily.html", 301);
+  const [j, tpl] = await Promise.all([dayJson(req, env, day), env.ASSETS.fetch(new URL("/daily.html", req.url))]);
+  if (!j) return Response.redirect(DOMAIN + "/daily.html", 301);
+  if (!tpl.ok) return tpl;
+  const label = dLabel(day), url = `${DOMAIN}/daily-${day}.html`, i = days.indexOf(day);
+  const top = ((j.zodiacfortune || "").match(/점수가 가장 높은 띠는 ([^.<]+)입니다/) || [])[1];
+  const title = `${label} 오늘의 운세 — 띠별 운세·별자리 운세 | 동네보살`;
+  const desc = `${label} 12띠 운세와 12별자리 운세를 점수와 총운·재물·애정·조언으로 풀었습니다.${top ? ` 이날 띠 1등은 ${top}.` : ""} 일진과 달의 자리로 계산한 무료 운세입니다.`;
+  const fix = h => (day === kstDay() ? h : h.replace(/<h2>오늘의 /g, "<h2>"));
+  const nav = `<nav class="sibs" aria-label="날짜 이동" style="margin:4px 0 14px">${i < days.length - 1 ? `<a href="daily-${days[i + 1]}.html">← ${dLabel(days[i + 1])}</a>` : ""}<a href="daily.html">날짜 목록</a>${i > 0 ? `<a href="daily-${days[i - 1]}.html">${dLabel(days[i - 1])} →</a>` : ""}</nav>`;
+  const body = nav + fix(j.zodiacfortune || "") + TTI_EN.map(k => fix(j["zodiac-" + k] || "")).join("") + fix(j.horoscope || "") + STAR_KEYS.map(k => fix(j["star-" + k] || "")).join("") + nav;
+  const attr = (k, v) => ({ element(e) { e.setAttribute(k, v); } });
+  return new HTMLRewriter()
+    .on("title", { element(e) { e.setInnerContent(title); } })
+    .on('meta[name="description"]', attr("content", desc))
+    .on('meta[property="og:title"]', attr("content", title))
+    .on('meta[property="og:description"]', attr("content", desc))
+    .on('meta[property="og:url"]', attr("content", url))
+    .on('link[rel="canonical"]', attr("href", url))
+    .on('script[type="application/ld+json"]', { element(e) { e.remove(); } })
+    .on("head", { element(e) { e.append(dailyLd({ title, desc, url, day, label }), { html: true }); } })
+    .on("h1", { element(e) { e.setInnerContent(`${label} 오늘의 운세`); } })
+    .on("#daily-sv", { element(e) { e.setInnerContent(body, { html: true }); } })
+    .transform(tpl);
+}
+// 목록 쪽: 오늘 띠별·별자리 요약 + 내일부터 지난 30일까지 날짜 링크(전문은 날짜 쪽에만 둬 같은 글이 두 주소에 겹치지 않게)
+async function dailyHub(req, env) {
+  const res = await env.ASSETS.fetch(req), day = kstDay();
+  if (!res.ok || !(res.headers.get("content-type") || "").includes("text/html")) return res;
+  const j = await dayJson(req, env, day);
+  const list = `<section class="guide"><h2>날짜를 골라 보세요</h2><ul>${dailyDays().map(d => `<li><a href="daily-${d}.html">${dLabel(d)} 오늘의 운세</a>${d === day ? " · <b>오늘</b>" : d === kstDay(-1) ? " · 내일" : ""}</li>`).join("")}</ul></section>`;
+  const sum = j ? (j.zodiacfortune || "") + (j.horoscope || "") : "";
+  const [, m, d] = day.split("-").map(Number);
+  return new HTMLRewriter()
+    .on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } })
+    .on("#daily-sv", { element(e) { e.setInnerContent(`<p style="margin:4px 0 14px"><a href="daily-${day}.html"><b>${dLabel(day)} 운세 전체 보기 →</b></a></p>` + sum + list, { html: true }); } })
+    .transform(res);
+}
+
 // 날마다 글이 바뀌는 쪽은 사이트맵 lastmod 를 그날(주간은 그 주 월요일, 이달은 1일)로 바꿔 내보낸다.
 // 빌드 lastmod.json 은 배포 날짜에 멈춰 있어(2026-11-01 기준 띠별 10/21·내일 10/10) 수집기가 다시 올 근거가 없었다
-const DAILY_RE = /^(|index\.html|zodiacfortune\.html|horoscope\.html|tomorrow\.html|todayfortune\.html|love\.html|lucky\.html|celeb\.html|lunar\.html|zodiac-[a-z]+\.html|star-[a-z]+\.html|newyear-\d{4}\.html)$/;
+const DAILY_RE = /^(|index\.html|daily\.html|zodiacfortune\.html|horoscope\.html|tomorrow\.html|todayfortune\.html|love\.html|lucky\.html|celeb\.html|lunar\.html|zodiac-[a-z]+\.html|star-[a-z]+\.html|newyear-\d{4}\.html)$/;
 function dailyMod(p, day) {
   if (p === "weekly.html") { const d = new Date(day + "T00:00:00Z"); return new Date(d - ((d.getUTCDay() + 6) % 7) * 864e5).toISOString().slice(0, 10); }
   if (p === "monthly.html") return day.slice(0, 8) + "01";
@@ -132,14 +195,17 @@ async function sitemapToday(req, env) {
   const res = await env.ASSETS.fetch(req);
   if (!res.ok) return res;
   const day = kstDay(), xml = (await res.text()).replace(/<loc>https:\/\/dongnebosal\.com\/([^<]*)<\/loc><lastmod>([^<]*)<\/lastmod>/g,
-    (all, p, old) => { const d = dailyMod(p, day); return d && d > old ? all.replace(old, d) : all; });
+    (all, p, old) => { const d = dailyMod(p, day); return d && d > old ? all.replace(old, d) : all; })
+    // 날짜별 운세 쪽(내일~지난 30일). lastmod 는 그 날짜(내일 쪽은 오늘)
+    .replace("</urlset>", dailyDays().map(d => `<url><loc>${DOMAIN}/daily-${d}.html</loc><lastmod>${d > day ? day : d}</lastmod></url>`).join("\n") + "\n</urlset>");
   return new Response(xml, { headers: res.headers });
 }
 // 매일 03시(한국 시각, cron 0 18 UTC) 그날 바뀐 쪽만 IndexNow 로 알린다 — 공용과 네이버 직접(tools/indexnow.js 와 같은 두 곳)
 const INDEXNOW_KEY = "9f3c7a1e4b8d2f60a5c1e7b93d4f8a2c";
 async function indexNowDaily(env) {
   const day = kstDay(), xml = await (await env.ASSETS.fetch("https://dongnebosal.com/sitemap.xml")).text();
-  const urlList = [...xml.matchAll(/<loc>(https:\/\/dongnebosal\.com\/([^<]*))<\/loc>/g)].filter(m => dailyMod(m[2], day) === day).map(m => m[1]);
+  const urlList = [...xml.matchAll(/<loc>(https:\/\/dongnebosal\.com\/([^<]*))<\/loc>/g)].filter(m => dailyMod(m[2], day) === day).map(m => m[1])
+    .concat([`${DOMAIN}/daily-${day}.html`, `${DOMAIN}/daily-${kstDay(-1)}.html`]);   // 날짜별 운세 오늘·내일 쪽
   const body = JSON.stringify({ host: "dongnebosal.com", key: INDEXNOW_KEY, keyLocation: `https://dongnebosal.com/${INDEXNOW_KEY}.txt`, urlList });
   for (const h of ["api.indexnow.org", "searchadvisor.naver.com"])
     console.log("indexnow", h, urlList.length, (await fetch(`https://${h}/indexnow`, { method: "POST", headers: { "Content-Type": "application/json; charset=utf-8" }, body })).status);

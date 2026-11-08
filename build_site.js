@@ -965,8 +965,8 @@ const OG_IMG_TAG = ogTag(null);
 // 브랜드 인식용 Organization — 전 페이지 공통. 검색엔진·AI가 사이트 주체를 식별한다
 const ORG_LD = '<script type="application/ld+json">'+JSON.stringify({
   "@context":"https://schema.org","@type":"Organization",
-  name:"동네보살", alternateName:"무료 사주는 동네보살", url:DOMAIN+"/",
-  logo:DOMAIN+"/img/og.png",
+  "@id":DOMAIN+"/#org", name:"동네보살", alternateName:["무료 사주는 동네보살","dongnebosal"], url:DOMAIN+"/",
+  logo:DOMAIN+"/img/v2/logo.png",   // 2026-11-09 img/og.png 는 404 였다. 240×240(구글 최소 112)
   description:"태양황경을 직접 계산하는 만세력 엔진으로 사주·오늘의 운세·별자리 운세를 무료로 풀이합니다. 무작위 문구가 아니라 계산된 결과입니다.",
   knowsAbout:["사주팔자","만세력","오늘의 운세","별자리 운세","띠별 운세","궁합","타로","십성","용신","십이운성"]
 })+'</script>';
@@ -1867,6 +1867,31 @@ const TOMORROW_FAQ = [
   ["내 생년월일로 내일 운세를 볼 수 있나요?", "띠와 별자리는 같은 해·같은 별자리 사람 모두의 공통 흐름입니다. 생년월일로 보는 개인 운세는 오늘의 운세에서 볼 수 있고, 자정이 지나면 그날 기준으로 다시 계산됩니다."],
   ["내일 점수가 낮게 나오면 어떻게 하나요?", "점수는 그날 기운이 얼마나 순하게 흐르는지를 나타낼 뿐, 좋고 나쁨이 정해진 것은 아닙니다. 한 줄 풀이에 적힌 대로 일정에 여유를 두고 말을 한 번 고르면 충분히 편하게 보낼 수 있습니다."],
 ];
+// ── 날짜별 운세(daily.html, 2026-11-09) — 네이버 '오늘의운세' 523만·'띠별운세' 131만 상위가 전부 날짜 박힌 매일 새 기사였다(bnt·광주매일·조선비즈).
+// 이 쪽은 틀이다. worker.js 가 /daily.html 엔 오늘 요약과 최근 날짜 목록을, /daily-YYYY-MM-DD.html 엔 그날 띠 12·별자리 12 전문을 #daily-sv 에 끼운다
+const DAILY_FAQ = [
+  ["날짜별 운세는 언제 새로 올라오나요?", "매일 한국 시각 0시에 그날 쪽이 새로 열립니다. 내일 쪽은 하루 먼저 열려 있고, 지난 30일 쪽은 그대로 남아 있어 날짜를 눌러 다시 볼 수 있습니다."],
+  ["날짜별 운세는 어떻게 계산하나요?", "띠별 운세는 그날 일진(그날의 간지)과 띠가 맺는 관계로, 별자리 운세는 그날 낮 12시 달의 자리와 별자리의 관계로 계산합니다. 같은 날짜면 언제 열어도 같은 글이 나옵니다."],
+  ["내 생년월일로 보려면 어떻게 하나요?", "띠와 별자리는 같은 해·같은 별자리 사람 모두의 공통 흐름입니다. 생년월일로 보는 개인 운세는 오늘의 운세에서 볼 수 있습니다."],
+];
+function dailyPage() {
+  return seoPage({
+    crumb: "날짜별 운세", date: "2026-11-09",
+    title: "날짜별 오늘의 운세 — 띠별·별자리 운세 매일 | 동네보살",
+    desc: "날짜마다 12띠 운세와 12별자리 운세를 점수·총운·재물·애정·조언으로 풀어 한 쪽에 모았습니다. 매일 0시에 새 날짜가 열리고 지난 30일은 다시 볼 수 있습니다.",
+    url: `${DOMAIN}/daily.html`, img: "img/og/zodiacfortune.jpg", hero: "img/tool/h-todayfortune.webp",
+    h1: "날짜별 오늘의 운세", sub: "띠별 12 · 별자리 12 · 매일 0시에 새 날짜",
+    parent: "todayfortune.html", parentName: "오늘의 운세", tool: "todayfortune", noTool: true,
+    tags: ["오늘의 운세", "띠별 운세", "별자리 운세", "날짜별 운세", "무료 운세"],
+    body: `<div class="intro">${para(`날짜마다 열두 띠와 열두 별자리의 하루를 한 쪽에 모았습니다. 띠별 운세는 그날 일진으로, 별자리 운세는 그날 낮 12시 달의 자리로 계산해 점수와 총운·재물·애정·조언을 붙였습니다.
+생년월일로 보는 개인 운세는 <a href="todayfortune.html">오늘의 운세</a>에서, 하루 앞은 <a href="tomorrow.html">내일의 운세</a>에서 볼 수 있습니다.`)}</div>` +
+      `<div id="daily-sv"><section class="guide"><h2>오늘의 띠별·별자리 운세</h2><p>날짜별 운세를 불러오지 못했습니다. <a href="zodiacfortune.html">띠별 운세</a>나 <a href="horoscope.html">별자리 운세</a>에서 오늘 운세를 보세요.</p></section></div>` +
+      `<section class="guide"><h2>함께 보기</h2><div class="sibs"><a href="todayfortune.html">오늘의 운세</a><a href="tomorrow.html">내일의 운세</a><a href="zodiacfortune.html">띠별 운세</a><a href="horoscope.html">별자리 운세</a><a href="weekly.html">주간 운세</a><a href="monthly.html">이달의 운세</a></div></section>`,
+    faq: DAILY_FAQ,
+    sibTitle: "운세 더 보기", sibs: SEASON_LINKS,
+    related: ["todayfortune", "zodiacfortune", "horoscope", "saju"] });
+}
+
 function tomorrowPage() {
   return seoPage({
     crumb: "내일의 운세", date: "2026-10-08",
@@ -4227,7 +4252,8 @@ load(function(){var ol=document.getElementById("zrank");if(!ol||!window.zfRank)r
 var sl=document.getElementById("srank");if(sl&&window.hsRank)sl.innerHTML=hsRank().map(function(z,i){return '<li><a href="horoscope.html?s='+z.i+'#go"><em>'+(i+1)+'</em><b>'+ST_KO[z.i]+'</b><span>'+HS_LINE[z.md]+(z.rk===2?' · 수호성의 요일':'')+'</span><i>'+z.score+'</i></a></li>';}).join("");
 ol.innerHTML=zfRank().map(function(z,i){return '<li><a href="zodiacfortune.html?b='+z.b+'#go"><em>'+(i+1)+'</em><b>'+SJ_TTI[z.b]+'띠</b><span>'+(z.rel==="평"?ZF_TGW[z.tg]+" 날":ZF_LINE[z.rel])+'</span><i>'+z.score+'</i></a></li>';}).join("");});
 wire();})();</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":"무료 사주는 동네보살","url":"${DOMAIN}/","description":"${esc(desc)}"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"동네보살","alternateName":["무료 사주는 동네보살","dongnebosal"],"url":"${DOMAIN}/","description":"${esc(desc)}","publisher":{"@id":"${DOMAIN}/#org"}}</script>
+${ORG_LD}
 <script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches&&"IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target);}});},{rootMargin:"0px 0px -8% 0px"});document.querySelectorAll(".grp").forEach(function(g){g.classList.add("reveal");io.observe(g);});}</script>
 </body></html>`;
 }
@@ -4282,7 +4308,7 @@ let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www
   STAR_PAGES.map(s=>smUrl("star-"+s.en+".html")).join("\n")+"\n"+
   ZODIAC_PAGES.map(z=>smUrl("zodiac-"+z.en+".html")).join("\n")+"\n"+
   smUrl("samjae.html")+"\n"+smUrl("tti.html")+"\n"+NYB.YEARS.map(y=>smUrl(nybUrl(y))).join("\n")+"\n"+TTI27.PAGES.map(p=>smUrl(`tti2027-${p.en}.html`)).join("\n")+"\n"+
-  smUrl("tomorrow.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+SONLESS_MONTHS.map(([y,m])=>smUrl(`sonless-${m}.html`)).join("\n")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
+  smUrl("tomorrow.html")+"\n"+smUrl("daily.html")+"\n"+smUrl("weekly.html")+"\n"+smUrl("monthly.html")+"\n"+smUrl("sonless.html")+"\n"+SONLESS_MONTHS.map(([y,m])=>smUrl(`sonless-${m}.html`)).join("\n")+"\n"+smUrl("calendar-2027.html")+"\n"+smUrl("ahopsu.html")+"\n"+smUrl("birthstone.html")+"\n"+Array.from({length:12},(_,i)=>[smUrl(`birth-${i+1}.html`),...Array.from({length:MDAYS[i]},(_,d)=>smUrl(flowerUrl(i+1,d+1)))].join("\n")).join("\n")+"\n"+smUrl("bujeok.html")+"\n"+smUrl("bed-direction.html")+"\n"+smUrl("juyeok.html")+"\n"+smUrl("celeb.html")+"\n"+smUrl("saju-job.html")+"\n"+smUrl("mbti.html")+"\n"+smUrl("sinsal.html")+"\n"+smUrl("sinsal-12.html")+"\n"+SINSAL.PAGES.map(p=>smUrl("sinsal-"+p.en+".html")).join("\n")+"\n"+smUrl("love.html")+"\n"+smUrl("lucky.html")+"\n"+smUrl("tti-gunghap.html")+"\n"+TTI.JI.map(z=>smUrl(ttiHubUrl(z.i))).join("\n")+"\n"+TTI.PAIR_LIST.map(p=>smUrl(ttiPairUrl(p.a,p.b))).join("\n")+"\n"+
   ILGAN_PAGES.map(g=>smUrl("ilgan-"+g.en+".html")).join("\n")+"\n"+
   SIPSEONG_PAGES.map(s=>smUrl("sipseong-"+s.en+".html")).join("\n")+"\n"+
   OHAENG_PAGES.map(o=>smUrl("ohaeng-"+o.en+".html")).join("\n")+"\n"+
@@ -4794,7 +4820,8 @@ STAR_PAGES.forEach((s,i)=>fs.writeFileSync(path.join(OUT,"star-"+s.en+".html"), 
 ZODIAC_PAGES.forEach((z,i)=>fs.writeFileSync(path.join(OUT,"zodiac-"+z.en+".html"), zodiacPage(z,i)));
 // 오늘의 운세 글 — worker.js 가 그날(한국 시각) 파일을 #today-sv 에 끼운다. 빌드 PC 시계(한국 시각) 기준 오늘부터
 fs.mkdirSync(path.join(OUT,"today"));
-for (let k = 0, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + k);
+// 2026-11-09 지난 31일 치도 만든다 — 날짜별 운세(daily-YYYY-MM-DD)가 지난 30일 쪽을 계속 보여 줘야 한다(배포마다 자산이 통째로 바뀐다)
+for (let k = -31, t0 = new Date(); k < TODAY_DAYS; k++) { const dt = new Date(t0.getFullYear(), t0.getMonth(), t0.getDate() + k);
   fs.writeFileSync(path.join(OUT,"today",ymd(dt)+".json"), JSON.stringify({ ...todayFortune(dt), week: periodBlock("week", dt), month: periodBlock("month", dt) })); }
 fs.writeFileSync(path.join(OUT,"samjae.html"), samjaePage());
 fs.writeFileSync(path.join(OUT,"tti.html"), ttiPage());
@@ -4816,6 +4843,7 @@ SINSAL.PAGES.forEach(p=>fs.writeFileSync(path.join(OUT,"sinsal-"+p.en+".html"), 
 fs.writeFileSync(path.join(OUT,"love.html"), lovePage());
 fs.writeFileSync(path.join(OUT,"lucky.html"), luckyPage());
 fs.writeFileSync(path.join(OUT,"tomorrow.html"), tomorrowPage());
+fs.writeFileSync(path.join(OUT,"daily.html"), dailyPage());
 fs.writeFileSync(path.join(OUT,"weekly.html"), periodPage("week"));
 fs.writeFileSync(path.join(OUT,"monthly.html"), periodPage("month"));
 NYB.YEARS.forEach(y=>fs.writeFileSync(path.join(OUT,nybUrl(y)), nybPage(y)));
@@ -4941,7 +4969,8 @@ function placeAds() {
     // 2026-10-26 애드센스 재반려("가치가 별로 없는 콘텐츠") — 본문 1,000자 미만 화면(날짜별 탄생화 366 등)엔 애드센스만 뺀다. 쿠팡 배너·검색 노출은 그대로
     const thin = !skip && mainChars(h) < THIN_AD;
     if (thin) thinOff++;
-    let out = h.replace("@@ADS@@", skip || thin ? "" : AD);
+    // 2026-11-09 날짜별 운세(daily.html 틀 → worker 가 daily-YYYY-MM-DD 로 씀)는 날마다 새 주소라 애드센스 '찍어낸 쪽' 위험 — 애드센스만 빼고 쿠팡은 둔다
+    let out = h.replace("@@ADS@@", skip || thin || f === "daily.html" ? "" : AD);
     if (!skip && AD) {
       if ((out.match(/<main id="main">/g) || []).length !== 1 || (out.match(/<\/main>/g) || []).length !== 1) throw new Error("쿠팡 배너: main 이 하나가 아님 " + f);
       // 위에도 하나(사용자 2026-10-08 "상단에도 배너 하나") — 문구 바로 밑. 한 쪽에 위·아래 두 개까지
@@ -4961,6 +4990,14 @@ function mainChars(h) {
     .replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, "x").replace(/\s+/g, "").length;
 }
 placeAds();
+/* 2026-11-09 구글 Discover·검색 큰 그림 허용. 구글 문서: max-image-preview:large 가 없으면 Discover 카드가 작은 그림으로만 나간다.
+   robots 메타가 이미 있는 쪽(noindex 등)은 건드리지 않는다. googlebot noindex(LOW_INDEX)는 placeAds 가 먼저 붙였다 */
+{ let n = 0;
+  for (const f of fs.readdirSync(OUT)) { if (!f.endsWith(".html")) continue;
+    const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8"), i = h.indexOf("</head>");
+    if (i < 0 || /<meta name="robots"/.test(h.slice(0, i))) continue;
+    fs.writeFileSync(p, h.slice(0, i) + '<meta name="robots" content="max-image-preview:large">\n' + h.slice(i)); n++; }
+  console.log("   큰 그림 허용(max-image-preview:large): " + n + "쪽"); }
 fs.writeFileSync(path.join(OUT,"llms.txt"), llmsTxt);
 /* RSS 2.0 — 네이버 서치어드바이저가 사이트맵과 별개로 받는 수집 경로.
    전 페이지를 넣지 않는다. 새로 늘어나는 구간(월력·일주·일진)과 주요 도구만
