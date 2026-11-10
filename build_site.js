@@ -4953,8 +4953,9 @@ function cpMid(m, f) {
 /* 색인 줄이기(2026-10-16): 구글이 "크롤링됨-미색인 146·발견됨-미색인 382" — 젊은 도메인에 같은 틀 페이지가 많아 걸러졌다. 검색 수요가 적은 틀 묶음은
    noindex,follow (페이지·링크는 그대로). 띠 궁합 짝 78쪽, 타로 마이너 카드 56쪽
    2026-10-21: 네이버엔 잘 노출돼 구글 전용(googlebot)으로 바꾸고 사이트맵에도 다시 넣는다 — 네이버(Yeti)는 robots 만 본다
-   2026-11-05: 날짜별 탄생화 366쪽(flower-MMDD, 본문 중앙값 1,437자)도 구글 전용 noindex — 9/11 이후 구글 노출 0, 얇은 틀 비율 낮추기 */
-const LOW_INDEX = /^(tti-pair-|tarot-(cups|pentacles|swords|wands)-|flower-\d{4}\.html$)/;
+   2026-11-05: 날짜별 탄생화 366쪽(flower-MMDD, 본문 중앙값 1,437자)도 구글 전용 noindex — 9/11 이후 구글 노출 0, 얇은 틀 비율 낮추기
+   2026-11-11: 구글 색인 10쪽·14일 노출 5. 같은 틀로 찍은 년생별 운세 60·월력 36·신살 낱쪽·달별(birth) 쪽도 구글 전용 noindex(사용자 승인, 네이버 유지) */
+const LOW_INDEX = /^(tti-pair-|tarot-(cups|pentacles|swords|wands)-|flower-\d{4}\.html$|newyear-\d{4}\.html$|manse-\d{4}-\d{2}\.html$|sinsal-[a-z0-9-]+\.html$|birth-\d+\.html$)/;
 function placeAds() {
   for (const f of fs.readdirSync(OUT)) { if (!f.endsWith(".html") || !LOW_INDEX.test(f)) continue;
     const p = path.join(OUT, f), h = fs.readFileSync(p, "utf8");
