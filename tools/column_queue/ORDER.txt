@@ -15,3 +15,9 @@
 # 올림 2026-10-25 singang-sinyak
 blood-type-gunghap
 move-direction-2027
+taegeuk-gwiin-ilju
+jangseong-sal-woman
+banan-sal-woman
+yukhae-sal-woman
+jeongmi-2027-sinsal
+cheonwol-deok-gwiin

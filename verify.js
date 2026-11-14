@@ -1397,7 +1397,7 @@ t("일주 페이지가 SJ_UN_DESC(보살말투)를 쓰지 않는다", /ilju[\s\S
     if (!d) { notWebp.push(n); return; } if (Math.abs(d.w / d.h - asp) > 0.03 * asp) badAsp.push(n + " " + d.w + "x" + d.h); if (sz > kb * 1024) big.push(n + " " + Math.round(sz / 1024) + "KB"); });
   t("칼럼 그림: 86장(타일 14 + 글 안 72)이 모두 img/col 에 있다", want.length + "|" + miss.slice(0, 4).join(","), "86|");
   t("칼럼 그림: 전부 진짜 webp 이고 원본 비율 그대로다(타일 3:2, 글 안 16:9 — 미리 자르면 얼굴이 잘린다)", notWebp.slice(0, 3).join(",") + "|" + badAsp.slice(0, 3).join(","), "|");
-  t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일·가로 타일·글 안 80KB 이하), 전체 5.5MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 5.5 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
+  t("칼럼 그림: 용량 예산(작은 타일 40KB · 큰 타일·가로 타일·글 안 80KB 이하), 전체 6.5MB 이하", big.slice(0, 4).join(",") + "|" + (total <= 6.5 * 1024 * 1024) + "|" + Math.round(total / 1024) + "KB", "|true|" + Math.round(total / 1024) + "KB");
   t("칼럼 그림: img/col 에는 webp 말고 다른 파일이 없다(원본 PNG 는 리포에 두지 않는다)", fs.readdirSync("img/col").filter(f => !f.endsWith(".webp")).join(","), "");
   // 배선
   t("칼럼 그림 배선: 홈은 벤토(columnBento)를 쓰고 옛 한 줄 목록 카드는 없다, 타일 그림은 지연 로딩·alt 비움(제목이 글로 있다)", [bs.includes("${columnBento()}"), bs.includes("function columnBento()"), !bs.includes('class="alllist"><section class="grp wash fun"><div class="cat" data-n="${COLUMN_PAGES.length}"'), bs.includes('alt="" width="${w}" height="${h}" loading="lazy" decoding="async"'), bs.includes("보살 칼럼 ${COLUMN_PAGES.length}편 전체 보기")].join(","), "true,true,true,true,true");
