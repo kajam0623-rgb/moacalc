@@ -15,8 +15,8 @@
 # 올림 2026-10-25 singang-sinyak
 # 보류(11-14 승인 범위 밖, 사장님 말 있으면 # 지움) blood-type-gunghap
 # 보류(11-14 승인 범위 밖, 사장님 말 있으면 # 지움) move-direction-2027
-taegeuk-gwiin-ilju
-jangseong-sal-woman
+# 올림 2026-11-14 taegeuk-gwiin-ilju
+# 올림 2026-11-14 jangseong-sal-woman
 banan-sal-woman
 yukhae-sal-woman
 jeongmi-2027-sinsal

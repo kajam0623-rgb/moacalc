@@ -1,5 +1,5 @@
 // 사용: node install.js en1 en2 …  — C:/tmp/col-new/<en>.js·.figs.json 을 리포에 넣고 그림 작업·알트·verify 개수를 맞춘다
-const fs = require("fs"), R = "C:/Users/닥터원츠/salary-calc/", N = R + "tools/column_queue/";
+const fs = require("fs"), R = require("path").resolve(__dirname, "../..").replace(/\\/g, "/") + "/", N = R + "tools/column_queue/";
 const ens = process.argv.slice(2); if (!ens.length) throw "en 없음";
 const J = JSON.parse(fs.readFileSync(R + "tools/colimg/jobs.json", "utf8"));
 let ci = fs.readFileSync(R + "content_column_img.js", "utf8"); let added = 0;
