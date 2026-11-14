@@ -7,11 +7,13 @@ const PS1 = process.env.IMGGEN_PS1 || (process.env.USERPROFILE + "\\.claude\\scr
 fs.mkdirSync(RAW, { recursive: true });   // 원본 PNG(장당 2~3MB)는 리포 밖에 둔다
 const jobs = JSON.parse(fs.readFileSync(DIR + "/jobs.json", "utf8"));
 const only = process.argv.slice(2);
-const STYLE = "Cinematic East-Asian fantasy illustration in a painterly semi-realistic anime style, deep midnight-navy and black night atmosphere with warm gold glowing light particles and thin golden light lines, elegant soft rim lighting, rich detail, mystical oriental fortune-telling mood, Korean traditional hanbok clothing wherever people appear";
+// 2026-11-14 사장님: "이미지 귀엽게, AI 티 나게 말고" → 반실사·빛 입자·영화 조명 버리고 손그림 그림책 풍
+const STYLE = "cute hand-drawn Korean picture-book illustration, simple round chibi characters with big heads and small dot eyes, flat soft gouache colors with a light paper texture, gentle pastel palette with a few muted navy accents, simple uncluttered background, friendly cozy mood, Korean hanbok wherever people appear. Not photorealistic, not semi-realistic, not cinematic, no glowing particles, no light rays, no lens flare, no rim lighting, no glossy 3D render, no dramatic shadows";
+const plain = s => s.replace(/^Cinematic[^,]*,\s*deep midnight-navy night,\s*warm gold light,\s*/i, "");
 const AVOID = "Avoid any text, letters, numbers, Chinese characters, calligraphy, signs, watermark, logo, UI elements, extra fingers";
 const build = j => j.kind === "tile"
-  ? `Use case: stylized-concept. Asset type: website tile image for a Korean fortune-telling column. Subject and scene: ${j.subject}. Style: ${STYLE}. Composition: 1536x1024 landscape 3:2, main subject centered slightly above the middle with generous margins, a calmer darker area along the bottom third. Lighting: moody night lighting with a warm golden glow. ${AVOID}.`
-  : `Use case: stylized-concept. Asset type: large inline illustration for a Korean fortune-telling article. Subject and scene: ${j.subject}. Style: ${STYLE}. Composition: 2048x1152 wide 16:9 cinematic, subject centered with generous margins. Lighting: moody night lighting with a warm golden glow. ${AVOID}.`;
+  ? `Use case: stylized-concept. Asset type: website tile image for a Korean fortune-telling column. Subject and scene: ${plain(j.subject)}. Style: ${STYLE}. Composition: 1536x1024 landscape 3:2, main subject centered slightly above the middle with generous margins, a calmer darker area along the bottom third. Lighting: soft even light, flat shading. ${AVOID}.`
+  : `Use case: stylized-concept. Asset type: large inline illustration for a Korean fortune-telling article. Subject and scene: ${plain(j.subject)}. Style: ${STYLE}. Composition: 2048x1152 wide 16:9, subject centered with generous margins. Lighting: soft even light, flat shading. ${AVOID}.`;
 const log = s => { const t = new Date().toTimeString().slice(0, 8) + " " + s; console.log(t); fs.appendFileSync(LOG, t + "\n"); };
 let ok = 0, fail = 0;
 for (const j of jobs) {

@@ -2194,8 +2194,8 @@ function celebPage() {
   const sec = (h, body) => `<section class="guide"><h2>${h}</h2><div class="intro" style="margin-top:0">${body}</div></section>`;
   return seoPage({
     crumb: "닮은 연예인 찾기", date: "2026-10-10",
-    title: "닮은 연예인 찾기 — 사주로 보는 나와 닮은 연예인·운동선수 | 동네보살",
-    desc: `생년월일만 넣으면 배우·가수·운동선수 ${n.toLocaleString()}명 가운데 나와 사주가 가장 닮은 유명인 5명을 찾아 드립니다. 얼굴이 아니라 타고난 기운으로 보는 닮은꼴, 무료입니다.`,
+    title: "닮은 사주 찾기 — 나와 사주가 닮은 연예인·운동선수 | 동네보살",
+    desc: `생년월일만 넣으면 배우·가수·운동선수 ${n.toLocaleString()}명 가운데 나와 사주가 가장 닮은 유명인 5명을 찾아 드립니다(닮은 사주 찾기). 얼굴이 아니라 타고난 기운으로 보는 닮은꼴, 무료입니다.`,
     url: `${DOMAIN}/celeb.html`, img: "img/bosal/cheer.webp", hero: "img/tool/h-saju.webp",
     h1: "닮은 연예인 찾기 — 사주로", sub: `배우·가수·운동선수 ${n.toLocaleString()}명 · 생년월일만 넣으면 끝`,
     parent: "saju.html", parentName: "사주팔자", tool: "saju", noTool: true,
