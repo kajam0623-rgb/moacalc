@@ -17,7 +17,7 @@
 # 보류(11-14 승인 범위 밖, 사장님 말 있으면 # 지움) move-direction-2027
 # 올림 2026-11-14 taegeuk-gwiin-ilju
 # 올림 2026-11-14 jangseong-sal-woman
-banan-sal-woman
-yukhae-sal-woman
+# 올림 2026-11-15 banan-sal-woman
+# 올림 2026-11-15 yukhae-sal-woman
 jeongmi-2027-sinsal
 cheonwol-deok-gwiin
