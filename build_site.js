@@ -1846,7 +1846,7 @@ function ttiColorPage() {
   const X = TTIO.COLOR_TEXT, ZJ = require("./content_ttigunghap.js").JI, yi = TTIO.yearInfo;
   const NAMES = ["푸른", "붉은", "노란", "흰", "검은"], OH = ["나무(목)", "불(화)", "흙(토)", "쇠(금)", "물(수)"], GG = ["갑·을", "병·정", "무·기", "경·신", "임·계"];
   const rows = ZJ.map(z => { const cells = [0, 1, 2, 3, 4].map(c => { const ys = []; for (let y = 1924; y <= 2043; y++) if (TTIO.branchOf(y) === z.i && Math.floor(TTIO.stemOf(y) / 2) === c) ys.push(y);
-      return `<td>${NAMES[c]} ${esc(z.name.replace("띠", ""))}<small>${yi(ys[0]).gz} · ${ys.join("·")}</small></td>`; }).join("");
+      return `<td><b>${yi(ys[0]).gz}</b><br><small>${ys.join("·")}</small></td>`; }).join("");
     return `<tr><th scope="row"><a href="zodiac-${z.en}.html">${z.name}</a></th>${cells}</tr>`; }).join("");
   const near = [2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(y => { const f = yi(y); return `<div class="row"><span>${y}년</span><b>${f.gz}년(${f.han}) · ${f.color} ${f.animal}</b></div>`; }).join("");
   const five = NAMES.map((n, c) => `<tr><th scope="row">${n}</th><td>${GG[c]}</td><td>${OH[c]}</td></tr>`).join("");
