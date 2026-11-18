@@ -114,7 +114,7 @@ async function todayFortune(req, env, key, off = 0, sel = "#today-sv", yy = "") 
   // 오늘 글을 끼운 허브 두 쪽은 제목 앞에 날짜를 붙인다('10월 9일 띠별 운세 …') — 날짜로 찾는 검색과 결과 화면의 신선도
   const [, m, d] = day.split("-").map(Number);
   if (key === "goodsToday" || key === "zodiacfortune" || key === "horoscope" || key === "love" || key === "lucky" || key === "tomorrow" || (!yy && /^(star|zodiac)-/.test(key))) rw.on("title", { element(e) { e.prepend(`${m}월 ${d}일 `); } });
-  else if (key === "month") rw.on("title", { element(e) { e.prepend(`${m}월 운세 · `); } });   // '10월운세' 4천·이번달운세 3천
+  else if (key === "month") rw.on("title", { element(e) { e.prepend(`${m}월 운세·${m}월 띠별 운세 · `); } });   // '10월운세' 4천·이번달운세 3천·'11월띠별운세' 530(2026-11-18)
   else if (key === "week") {   // '11월 2일~8일 주간 운세' — 날짜 검색('11월 2일 띠별 운세')은 사이트 칸에 우리가 뜬다(2026-11-01 실측)
     const dt = new Date(day + "T00:00:00Z"), mon = new Date(dt - ((dt.getUTCDay() + 6) % 7) * 864e5), sun = new Date(+mon + 6 * 864e5);
     const a = `${mon.getUTCMonth() + 1}월 ${mon.getUTCDate()}일`, z = sun.getUTCMonth() === mon.getUTCMonth() ? `${sun.getUTCDate()}일` : `${sun.getUTCMonth() + 1}월 ${sun.getUTCDate()}일`;
